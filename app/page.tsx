@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   FiBook,
   FiUsers,
@@ -118,8 +119,9 @@ export default function ShelfLanding() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="bg-emerald-700 p-2 rounded-lg">
-                <img
+                <Image
                   src="/logo.svg"
+                  alt="Shelf Logo"
                   className="w-5 h-5 text-white"
                 />
               </div>
