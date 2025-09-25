@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 Shelf
 
-## Getting Started
+**Shelf** is a modern e-library built for students, lecturers, and readers who want a simple way to access, organize, and share knowledge. More than just a bookshelf, Shelf brings learning and leisure together in one clean, cross-platform space.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## What Shelf Offers
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🎯 Personalized Experience
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* Choose your department and interests when signing up.
+* Get tailored recommendations, from textbooks and lecture notes to novels and self-help books.
+* Dashboards highlight both academic and leisure reads that matter to you.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🗂️ Folder System
 
-## Learn More
+* **Public Folders**: Shared collections for classes, clubs, or communities. Examples include:
 
-To learn more about Next.js, take a look at the following resources:
+  * *300 Level Engineering Notes* (academic – all lecture notes for a semester)
+  * *Campus Fiction Club: African Short Stories* (literature – a shared reading list for a student club)
+  * *Vogue Paris 2011 All Issues* (magazines – a full year’s archive in one place)
+  * *Marvel’s Civil War Saga* (comics – the complete storyline collected for fans)
+* **Private Folders**: Keep your own reading neatly organized.
+* Drag-and-drop makes managing folders effortless.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🎨 Clean & Modern Design
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* Minimalist interface with smooth typography and white space.
+* Smart search and filters for quick discovery.
+* Personalized dashboard with trending uploads and quick folder access.
 
-## Deploy on Vercel
+### 💻 Built for All Devices
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Works seamlessly on both **desktop** and **mobile**.
+* Multi-column browsing for large screens, simplified layout for smaller ones.
+* Consistent design across platforms.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🌍 Community & Sharing
+
+* Rate, review, and recommend books.
+* Discover what’s popular through *Most Downloaded*, *Recently Shared*, and *Top Folders*.
+* Upload books to contribute to the community — all uploads are reviewed for quality before being shared.
+
+### 📖 Flexible Reading Options
+
+* **Downloadable** → Notes, open-source PDFs, and shared resources.
+* **Online Reader** → Built-in reading with bookmarking and highlighting tools.
+
+---
+
+## Why Shelf?
+
+Shelf combines the practicality of academic resources with the enjoyment of personal reading. It’s a platform where knowledge is organized, accessible, and shaped by the community.
+
+
