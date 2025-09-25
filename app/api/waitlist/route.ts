@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const client = await clientPromise;
-    const db = client.db("waitlistDB");
+    const db = client.db("shelfDB");
     const collection = db.collection<WaitlistEntry>("waitlist");
 
     const totalSignups = await collection.countDocuments();
