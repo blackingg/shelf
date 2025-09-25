@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
     const client = await clientPromise;
-    const db = client.db("waitlistDB"); 
+    const db = client.db("waitlistDB");
     const collection = db.collection<WaitlistEntry>("waitlist");
 
     const existingEntry = await collection.findOne({
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const client = await clientPromise;
     const db = client.db("waitlistDB");
