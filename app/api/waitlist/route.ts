@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("waitlistDB");
