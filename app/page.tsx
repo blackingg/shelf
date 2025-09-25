@@ -199,7 +199,7 @@ export default function ShelfLanding() {
                     isDuplicate ? "text-yellow-600" : "text-green-600"
                   }`}
                 >
-                  We’ll notify you when Shelf launches.
+                  {"  We’ll notify you when Shelf launches."}
                 </div>
               </div>
             )}
@@ -328,7 +328,7 @@ export default function ShelfLanding() {
           )}
 
           <p className="text-white mt-6 text-sm">
-            No spam, ever. We'll just let you know when we launch.
+            {"  No spam, ever. We'll just let you know when we launch."}
           </p>
         </div>
 
