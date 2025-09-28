@@ -119,10 +119,12 @@ export default function ShelfLanding() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="bg-emerald-700 p-2 rounded-lg">
-                <img
+                <Image
+                  width={20}
+                  height={20}
                   src="/logo.svg"
                   alt="Shelf Logo"
-                  className="w-5 h-5 text-white"
+                  className="text-white"
                 />
               </div>
               <span className="text-2xl font-bold text-gray-900">Shelf</span>
