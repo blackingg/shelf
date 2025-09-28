@@ -119,7 +119,7 @@ export default function ShelfLanding() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="bg-emerald-700 p-2 rounded-lg">
-                <Image
+                <img
                   src="/logo.svg"
                   alt="Shelf Logo"
                   className="w-5 h-5 text-white"
@@ -290,7 +290,7 @@ export default function ShelfLanding() {
           w-full px-8 py-4 rounded-lg font-medium 
           bg-emerald-500 hover:bg-emerald-600 
           text-white hover:text-white 
-          transition-colors duration-200 
+          transition-colors cursor-pointer duration-200 
           flex items-center justify-center space-x-2
           disabled:opacity-50
         "
