@@ -21,7 +21,6 @@
   * *Vogue Paris 2011 All Issues* (magazines – a full year’s archive in one place)
   * *Marvel’s Civil War Saga* (comics – the complete storyline collected for fans)
 * **Private Folders**: Keep your own reading neatly organized.
-* Drag-and-drop makes managing folders effortless.
 
 ### 🎨 Clean & Modern Design
 
