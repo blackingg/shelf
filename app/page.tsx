@@ -122,6 +122,8 @@ export default function ShelfLanding() {
                 <Image
                   src="/logo.svg"
                   alt="Shelf Logo"
+                  width={16}
+                  height={16}
                   className="w-5 h-5 text-white"
                 />
               </div>
@@ -341,7 +343,7 @@ export default function ShelfLanding() {
               <span className="text-xl font-bold text-white">Shelf</span>
             </div>
             <p className="text-white text-sm">
-              © 2025 Shelf. Building the future of digital libraries.
+              © {new Date().getFullYear()} Shelf. Building the future of digital libraries.
             </p>
           </div>
         </div>
