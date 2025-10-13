@@ -1,12 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Select, { SingleValue } from "react-select";
 import {
-  FiArrowRight,
-  FiArrowLeft,
-  FiCheck,
   FiHeart,
   FiUser,
   FiBook,
@@ -26,6 +22,12 @@ import {
   FaGamepad,
   FaPodcast,
 } from "react-icons/fa";
+import { AppHeader } from "@/app/components/Layout/AppHeader";
+import { PageContainer } from "@/app/components/Layout/PageContainer";
+import { Card } from "@/app/components/Layout/Card";
+import { StepHeader } from "@/app/components/Onboarding/StepHeader";
+import { InterestButton } from "@/app/components/Onboarding/InterestButton";
+import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 
 interface OptionType {
   value: string;
@@ -49,6 +51,7 @@ interface GroupedHobbies {
 }
 
 export default function Onboarding() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     school: "",
@@ -164,68 +167,70 @@ export default function Onboarding() {
   const handleFinish = async (): Promise<void> => {
     setIsLoading(true);
     await new Promise((res) => setTimeout(res, 1500));
-    window.location.href = "/app/library";
+    router.push("/app/library");
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      handleFinish();
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => Math.max(0, prev - 1));
+  };
+
+  const toggleHobby = (hobbyName: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      hobbies: prev.hobbies.includes(hobbyName)
+        ? prev.hobbies.filter((h) => h !== hobbyName)
+        : [...prev.hobbies, hobbyName],
+    }));
+  };
+
+  const getStepIcon = () => {
+    if (currentStep === 0)
+      return <FiUser className="w-7 h-7 text-emerald-700" />;
+    if (currentStep === 1)
+      return <FiBook className="w-7 h-7 text-emerald-700" />;
+    return <FiHeart className="w-7 h-7 text-emerald-700" />;
+  };
+
+  const getStepTitle = () => {
+    if (currentStep === 0) return "Which school do you attend?";
+    if (currentStep === 1) return "What's your department?";
+    return "What interests you?";
+  };
+
+  const getStepDescription = () => {
+    if (currentStep === 0)
+      return "We'll personalize your content based on your school.";
+    if (currentStep === 1)
+      return "Helps us recommend books and resources for your field.";
+    return "Choose at least 3 to personalize your experience.";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex flex-col">
-      {/* Header */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex justify-between items-center h-16">
-            <Link
-              href="/"
-              className="flex items-center space-x-3"
-            >
-              <div className="bg-emerald-700 p-2 rounded-lg">
-                <Image
-                  width={20}
-                  height={20}
-                  src="/logo.svg"
-                  alt="Shelf Logo"
-                />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">Shelf</span>
-            </Link>
-            <p className="text-sm text-gray-800">
-              Step {currentStep + 1} of {steps.length}
-            </p>
-          </div>
-        </div>
-      </nav>
+    <>
+      <AppHeader
+        rightContent={
+          <p className="text-sm text-gray-800">
+            Step {currentStep + 1} of {steps.length}
+          </p>
+        }
+      />
 
-      {/* Main */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <PageContainer>
         <div className="max-w-lg w-full">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 transition-all duration-300">
-            {/* Step Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center bg-emerald-100 w-14 h-14 rounded-full mb-4">
-                {currentStep === 0 && (
-                  <FiUser className="w-7 h-7 text-emerald-700" />
-                )}
-                {currentStep === 1 && (
-                  <FiBook className="w-7 h-7 text-emerald-700" />
-                )}
-                {currentStep === 2 && (
-                  <FiHeart className="w-7 h-7 text-emerald-700" />
-                )}
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                {currentStep === 0
-                  ? "Which school do you attend?"
-                  : currentStep === 1
-                  ? "What’s your department?"
-                  : "What interests you?"}
-              </h2>
-              <p className="text-gray-700">
-                {currentStep === 0
-                  ? "We’ll personalize your content based on your school."
-                  : currentStep === 1
-                  ? "Helps us recommend books and resources for your field."
-                  : "Choose at least 3 to personalize your experience."}
-              </p>
-            </div>
+          <Card>
+            <StepHeader
+              icon={getStepIcon()}
+              title={getStepTitle()}
+              description={getStepDescription()}
+            />
 
             {/* Step 1: School */}
             {currentStep === 0 && (
@@ -312,30 +317,13 @@ export default function Onboarding() {
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {list.map((hobby) => (
-                        <button
+                        <InterestButton
                           key={hobby.name}
-                          onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              hobbies: prev.hobbies.includes(hobby.name)
-                                ? prev.hobbies.filter((h) => h !== hobby.name)
-                                : [...prev.hobbies, hobby.name],
-                            }));
-                          }}
-                          className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 text-sm transition-all ${
-                            formData.hobbies.includes(hobby.name)
-                              ? "border-emerald-700 bg-emerald-50 text-emerald-900"
-                              : "border-gray-200 text-gray-800 hover:border-gray-300"
-                          }`}
-                        >
-                          <span className="flex items-center space-x-2">
-                            {hobby.icon}
-                            <span>{hobby.name}</span>
-                          </span>
-                          {formData.hobbies.includes(hobby.name) && (
-                            <FiCheck className="w-4 h-4 text-emerald-700" />
-                          )}
-                        </button>
+                          name={hobby.name}
+                          icon={hobby.icon}
+                          isSelected={formData.hobbies.includes(hobby.name)}
+                          onClick={() => toggleHobby(hobby.name)}
+                        />
                       ))}
                     </div>
                   </div>
@@ -343,58 +331,17 @@ export default function Onboarding() {
               </div>
             )}
 
-            {/* Navigation */}
-            <div className="flex justify-between items-center mt-10">
-              <button
-                onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
-                disabled={currentStep === 0}
-                className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-medium transition-all ${
-                  currentStep === 0
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <FiArrowLeft />
-                <span>Back</span>
-              </button>
-
-              <button
-                onClick={
-                  currentStep < steps.length - 1
-                    ? () => setCurrentStep((prev) => prev + 1)
-                    : handleFinish
-                }
-                disabled={!canProceed() || isLoading}
-                className={`flex items-center space-x-2 px-8 py-3 rounded-xl font-medium transition-all ${
-                  canProceed() && !isLoading
-                    ? "bg-emerald-700 text-white hover:bg-emerald-800 focus:ring-2 focus:ring-emerald-500 shadow-lg"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Setting up...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>
-                      {currentStep === steps.length - 1
-                        ? "Get Started"
-                        : "Continue"}
-                    </span>
-                    {currentStep === steps.length - 1 ? (
-                      <FiCheck className="w-4 h-4" />
-                    ) : (
-                      <FiArrowRight className="w-4 h-4" />
-                    )}
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+            <NavigationButtons
+              onBack={handleBack}
+              onNext={handleNext}
+              canGoBack={currentStep > 0}
+              canProceed={canProceed()}
+              isLastStep={currentStep === steps.length - 1}
+              isLoading={isLoading}
+            />
+          </Card>
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </>
   );
 }
