@@ -135,7 +135,7 @@ export default function SignupPage() {
     }
   };
 
-  const handleGoogleSignup = () => {
+  const handleGoogleAuth = () => {
     addNotification("info", "Google sign-up coming soon!");
     console.log("Google signup clicked");
     // Handle Google OAuth
@@ -279,7 +279,7 @@ export default function SignupPage() {
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
-                onClick={handleGoogleSignup}
+                onClick={handleGoogleAuth}
               />
             </div>
           </Card>

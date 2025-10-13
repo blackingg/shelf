@@ -4,7 +4,7 @@ import type {
   NotificationType,
   Notification,
 } from "../types/notification";
-import { NotificationContainer } from "../components/Notification/NotificationContainer";
+import { NotificationStack } from "../components/Notification/NotificationStack";
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
   undefined
@@ -47,7 +47,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{ notifications, addNotification, removeNotification }}
     >
       {children}
-      <NotificationContainer />
+      <NotificationStack />
     </NotificationContext.Provider>
   );
 };

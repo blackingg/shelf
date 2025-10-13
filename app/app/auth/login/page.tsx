@@ -10,6 +10,7 @@ import { Button } from "@/app/components/Form/Button";
 import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 interface FormData {
   email: string;
@@ -24,6 +25,7 @@ interface FormErrors {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -94,6 +96,12 @@ export default function LoginPage() {
     if (e.key === "Enter") {
       handleSubmit();
     }
+  };
+
+  const handleGoogleAuth = () => {
+    addNotification("info", "Google sign-up coming soon!");
+    console.log("Google signup clicked");
+    // Handle Google OAuth
   };
 
   return (
@@ -199,7 +207,7 @@ export default function LoginPage() {
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
-                onClick={() => console.log("Google login clicked")}
+                onClick={handleGoogleAuth}
               />
             </div>
           </Card>

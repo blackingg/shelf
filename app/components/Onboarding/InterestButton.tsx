@@ -8,7 +8,7 @@ export const InterestButton: React.FC<{
 }> = ({ name, icon, isSelected, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 text-sm transition-all ${
+    className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 text-sm transition-all cursor-pointer ${
       isSelected
         ? "border-emerald-700 bg-emerald-50 text-emerald-900"
         : "border-gray-200 text-gray-800 hover:border-gray-300"
