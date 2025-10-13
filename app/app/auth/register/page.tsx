@@ -18,6 +18,7 @@ import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 interface FormData {
   fullName: string;
@@ -36,6 +37,7 @@ interface FormErrors {
 
 export default function SignupPage() {
   const router = useRouter();
+  const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
@@ -100,6 +102,7 @@ export default function SignupPage() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      addNotification("error", "Please fix the errors in the form");
       return;
     }
 
@@ -108,13 +111,19 @@ export default function SignupPage() {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
+      addNotification(
+        "success",
+        "Account created successfully! Welcome aboard."
+      );
       console.log("Signup successful:", formData);
       router.push("/app/onboarding");
     } catch (error) {
       console.error("Signup failed:", error);
+      const errorMessage = "An error occurred during signup. Please try again.";
       setErrors({
-        general: "An error occurred during signup. Please try again.",
+        general: errorMessage,
       });
+      addNotification("error", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -127,6 +136,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
+    addNotification("info", "Google sign-up coming soon!");
     console.log("Google signup clicked");
     // Handle Google OAuth
   };
