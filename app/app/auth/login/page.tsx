@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiMail, FiLock, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
@@ -101,12 +100,12 @@ export default function LoginPage() {
     <>
       <AppHeader
         rightContent={
-          <Link
-            href="/app/auth/register"
-            className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors"
+          <button
+            onClick={() => router.push("/app/auth/register")}
+            className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors cursor-pointer"
           >
             Don't have an account? Sign Up
-          </Link>
+          </button>
         }
       />
 
@@ -208,12 +207,12 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               New to Shelf?{" "}
-              <Link
-                href="/app/auth/register"
-                className="text-emerald-700 hover:text-emerald-800 font-medium"
+              <button
+                onClick={() => router.push("/app/auth/register")}
+                className="text-emerald-700 hover:text-emerald-800 font-medium cursor-pointer"
               >
                 Create an account
-              </Link>
+              </button>
             </p>
           </div>
         </div>

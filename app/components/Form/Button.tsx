@@ -18,7 +18,7 @@ export const Button: React.FC<{
   className = "",
 }) => {
   const baseStyles =
-    "w-full py-3 px-6 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2";
+    "w-full py-3 px-6 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer";
 
   const variantStyles = {
     primary:

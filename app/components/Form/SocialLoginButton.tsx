@@ -15,7 +15,7 @@ export const SocialLoginButton: React.FC<{
   return (
     <button
       onClick={onClick}
-      className="w-full inline-flex justify-center items-center py-2.5 px-4 rounded-xl border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+      className="w-full inline-flex justify-center items-center py-2.5 px-4 rounded-xl border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
     >
       {icons[provider]}
       {labels[provider]}

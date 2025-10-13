@@ -145,12 +145,12 @@ export default function SignupPage() {
     <>
       <AppHeader
         rightContent={
-          <Link
-            href="/app/auth/login"
+          <button
+            onClick={() => router.push("/app/auth/login")}
             className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors"
           >
             Already have an account? Sign In
-          </Link>
+          </button>
         }
       />
 
@@ -248,15 +248,15 @@ export default function SignupPage() {
                   <span>
                     I agree to the{" "}
                     <Link
-                      href="/terms"
-                      className="text-emerald-700 hover:text-emerald-800 font-medium"
+                      href="/docs/terms"
+                      className="text-emerald-700 hover:text-emerald-800 font-medium hover:underline cursor-pointer"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
-                      href="/privacy"
-                      className="text-emerald-700 hover:text-emerald-800 font-medium"
+                      href="/docs/privacy"
+                      className="text-emerald-700 hover:text-emerald-800 font-medium hover:underline cursor-pointer"
                     >
                       Privacy Policy
                     </Link>
