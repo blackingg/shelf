@@ -24,8 +24,12 @@ export const Sidebar: React.FC = () => {
   const mainItems: SidebarItem[] = [
     { label: "My Library", icon: <FiBook />, href: "/app/library" },
     { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
-    { label: "Categories", icon: <FiTag />, href: "/app/categories" },
-    { label: "Departments", icon: <FiBriefcase />, href: "/app/departments" },
+    { label: "Categories", icon: <FiTag />, href: "/app/library/categories" },
+    {
+      label: "Departments",
+      icon: <FiBriefcase />,
+      href: "/app/library/departments",
+    },
   ];
 
   const bottomItems: SidebarItem[] = [
@@ -33,7 +37,19 @@ export const Sidebar: React.FC = () => {
     { label: "Logout", icon: <FiLogOut />, href: "/logout" },
   ];
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+
+    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/*
+    if (
+      href === "/app/library" &&
+      pathname.startsWith("/app/library/categories")
+    ) {
+      return false;
+    }
+
+    return pathname.startsWith(`${href}/`);
+  };
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex flex-col">

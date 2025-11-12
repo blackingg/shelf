@@ -1,28 +1,14 @@
 "use client";
 import { useState } from "react";
-import { SearchBar } from "@/app/components/Library/SearchBar";
+import { PageHeader } from "@/app/components/Library/PageHeader";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiChevronRight, FiBell, FiChevronDown } from "react-icons/fi";
-import Image from "next/image";
+import { FiChevronRight } from "react-icons/fi";
 
 export default function LibraryPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
   const [selectedBook, setSelectedBook] = useState<any>(null);
-
-  const categories = [
-    "All",
-    "Sci-Fi",
-    "Fantasy",
-    "Drama",
-    "Business",
-    "Education",
-    "Geography",
-    "Comics",
-    "Magazines",
-  ];
 
   const recommendedBooks = [
     {
@@ -141,33 +127,10 @@ export default function LibraryPage() {
   return (
     <>
       <main className="flex-1 overflow-y-auto">
-        <header className="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-30">
-          <div className="flex items-center justify-between">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-            />
-            <div className="flex items-center space-x-4 ml-6">
-              <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <FiBell className="w-6 h-6 text-gray-600" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-              <button className="flex items-center space-x-3 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors">
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden relative">
-                  <Image
-                    src="/avatar.jpg"
-                    alt="User"
-                    width={40}
-                    height={40}
-                    className="object-cover"
-                  />
-                </div>
-                <span className="font-medium text-gray-900">Balogun</span>
-                <FiChevronDown className="w-4 h-4 text-gray-600" />
-              </button>
-            </div>
-          </div>
-        </header>
+        <PageHeader
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         <div className="p-8">
           <div className="mb-10">
@@ -193,11 +156,7 @@ export default function LibraryPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Categories
             </h2>
-            <CategoryFilter
-              categories={categories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
+            <CategoryFilter />
             <div className="grid grid-cols-5 gap-6 mt-6">
               {categoryBooks.map((book) => (
                 <BookCard
