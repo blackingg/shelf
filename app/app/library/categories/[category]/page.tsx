@@ -176,9 +176,10 @@ export default function CategoryPage({
 
   const categoryName = getCategoryName(resolvedParams.category);
 
-  let categoryBooks = ALL_BOOKS.filter(
-    (book) => book.category === resolvedParams.category
-  );
+  let categoryBooks =
+    resolvedParams.category.toLowerCase() === "all"
+      ? ALL_BOOKS
+      : ALL_BOOKS.filter((book) => book.category === resolvedParams.category);
 
   if (searchQuery) {
     categoryBooks = categoryBooks.filter(
