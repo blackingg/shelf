@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Select, { SingleValue } from "react-select";
 import {
@@ -28,6 +28,7 @@ import { Card } from "@/app/components/Layout/Card";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
+import { SCHOOLS, getDepartmentsBySchoolId, School } from "@/app/types/schools";
 
 interface OptionType {
   value: string;
@@ -35,7 +36,8 @@ interface OptionType {
 }
 
 interface FormData {
-  school: string;
+  schoolId: string;
+  schoolName: string;
   department: string;
   hobbies: string[];
 }
@@ -54,7 +56,8 @@ export default function Onboarding() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
-    school: "",
+    schoolId: "",
+    schoolName: "",
     department: "",
     hobbies: [],
   });
@@ -62,43 +65,21 @@ export default function Onboarding() {
 
   const steps = ["School", "Department", "Interests"];
 
-  const schools: string[] = [
-    "University of Ibadan",
-    "University of Lagos",
-    "Obafemi Awolowo University",
-    "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
-    "Covenant University",
-    "Babcock University",
-    "Federal University of Technology, Akure",
-    "Lagos State University",
-    "Landmark University",
-    "University of Ilorin",
-    "Pan-Atlantic University",
-  ];
-
-  const schoolOptions: OptionType[] = schools.map((school) => ({
-    value: school,
-    label: school,
+  // Generate school options from SCHOOLS data
+  const schoolOptions: OptionType[] = SCHOOLS.map((school) => ({
+    value: school.id,
+    label: school.name,
   }));
 
-  const departments: string[] = [
-    "Computer Science",
-    "Engineering",
-    "Medicine",
-    "Law",
-    "Business Administration",
-    "Economics",
-    "Psychology",
-    "Mass Communication",
-    "Architecture",
-    "Fine Arts",
-  ];
-
-  const departmentOptions: OptionType[] = departments.map((dept) => ({
-    value: dept,
-    label: dept,
-  }));
+  // Generate department options based on selected school
+  const departmentOptions: OptionType[] = useMemo(() => {
+    if (!formData.schoolId) return [];
+    const departments = getDepartmentsBySchoolId(formData.schoolId);
+    return departments.map((dept) => ({
+      value: dept,
+      label: dept,
+    }));
+  }, [formData.schoolId]);
 
   const hobbies: Hobby[] = [
     // Academics
@@ -158,7 +139,7 @@ export default function Onboarding() {
   }, {} as GroupedHobbies);
 
   const canProceed = (): boolean => {
-    if (currentStep === 0) return formData.school !== "";
+    if (currentStep === 0) return formData.schoolId !== "";
     if (currentStep === 1) return formData.department !== "";
     if (currentStep === 2) return formData.hobbies.length >= 3;
     return false;
@@ -166,6 +147,7 @@ export default function Onboarding() {
 
   const handleFinish = async (): Promise<void> => {
     setIsLoading(true);
+    console.log("Onboarding completed:", formData);
     await new Promise((res) => setTimeout(res, 1500));
     router.push("/app/library");
   };
@@ -180,6 +162,16 @@ export default function Onboarding() {
 
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleSchoolChange = (option: SingleValue<OptionType>) => {
+    const school = SCHOOLS.find((s: School) => s.id === option?.value);
+    setFormData({
+      ...formData,
+      schoolId: option?.value || "",
+      schoolName: school?.name || "",
+      department: "",
+    });
   };
 
   const toggleHobby = (hobbyName: string) => {
@@ -240,8 +232,13 @@ export default function Onboarding() {
                 </label>
                 <Select<OptionType, false>
                   options={schoolOptions}
-                  onChange={(option: SingleValue<OptionType>) =>
-                    setFormData({ ...formData, school: option?.value || "" })
+                  onChange={handleSchoolChange}
+                  value={
+                    formData.schoolId
+                      ? schoolOptions.find(
+                          (opt) => opt.value === formData.schoolId
+                        )
+                      : null
                   }
                   placeholder="Start typing..."
                   classNamePrefix="react-select"
@@ -282,8 +279,16 @@ export default function Onboarding() {
                       department: option?.value || "",
                     })
                   }
+                  value={
+                    formData.department
+                      ? departmentOptions.find(
+                          (opt) => opt.value === formData.department
+                        )
+                      : null
+                  }
                   placeholder="Type to search..."
                   classNamePrefix="react-select"
+                  isDisabled={!formData.schoolId}
                   styles={{
                     control: (base) => ({
                       ...base,
@@ -304,6 +309,11 @@ export default function Onboarding() {
                     }),
                   }}
                 />
+                {!formData.schoolId && (
+                  <p className="text-sm text-gray-500">
+                    Please select a school first
+                  </p>
+                )}
               </div>
             )}
 
