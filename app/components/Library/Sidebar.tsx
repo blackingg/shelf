@@ -1,0 +1,91 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import {
+  FiBook,
+  FiSettings,
+  FiLogOut,
+  FiBriefcase,
+  FiTag,
+  FiFolder,
+} from "react-icons/fi";
+
+interface SidebarItem {
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  badge?: number;
+}
+
+export const Sidebar: React.FC = () => {
+  const pathname = usePathname();
+
+  const mainItems: SidebarItem[] = [
+    { label: "My Library", icon: <FiBook />, href: "/app/library" },
+    { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
+    { label: "Category", icon: <FiTag />, href: "/app/categories" },
+    { label: "Department", icon: <FiBriefcase />, href: "/app/departments" },
+  ];
+
+  const bottomItems: SidebarItem[] = [
+    { label: "Settings", icon: <FiSettings />, href: "/app/settings" },
+    { label: "Logout", icon: <FiLogOut />, href: "/logout" },
+  ];
+
+  const isActive = (href: string) => pathname === href;
+
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex flex-col">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <div className="bg-emerald-700 p-2 rounded-lg">
+            <Image
+              width={20}
+              height={20}
+              src="/logo.svg"
+              alt="Shelf Logo"
+              className="text-white"
+            />
+          </div>
+          <span className="text-xl font-bold text-gray-900">Shelf</span>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-1">
+        {mainItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              isActive(item.href)
+                ? "bg-emerald-600 text-white shadow-lg"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span className="w-5 h-5">{item.icon}</span>
+            <span className="font-medium">{item.label}</span>
+            {item.badge && (
+              <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {item.badge}
+              </span>
+            )}
+          </Link>
+        ))}
+      </nav>
+
+      <nav className="px-4 py-6 border-t border-gray-200 space-y-1">
+        {bottomItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-all duration-200"
+          >
+            <span className="w-5 h-5">{item.icon}</span>
+            <span className="font-medium">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
+    </aside>
+  );
+};
