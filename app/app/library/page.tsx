@@ -25,14 +25,14 @@ export default function LibraryPage() {
   const recommendedBooks = [
     {
       id: 1,
-      title: "The Psychology of...",
+      title: "The Psychology of Money",
       author: "Morgan Housel",
       coverImage: "/books/psychology.jpg",
       rating: 4.8,
     },
     {
       id: 2,
-      title: "How Innovation...",
+      title: "How Innovation Works",
       author: "Matt Ridley",
       coverImage: "/books/innovation.jpg",
       rating: 4.6,
@@ -46,10 +46,10 @@ export default function LibraryPage() {
     },
     {
       id: 4,
-      title: "Stupore E Tremori",
-      author: "Amelie Nothomb",
-      coverImage: "/books/stupore.jpg",
-      rating: 4.3,
+      title: "The Great Gatsby",
+      author: "F. Scott Fitzgerald",
+      coverImage: "/books/gatsby.jpg",
+      rating: 4.4,
     },
   ];
 
@@ -63,17 +63,17 @@ export default function LibraryPage() {
     },
     {
       id: 6,
-      title: "Real Help",
-      author: "Ayodeji Awosika",
-      coverImage: "/books/realhelp.jpg",
+      title: "Vogue: September Issue 2024",
+      author: "Vogue Magazine",
+      coverImage: "/books/vogue.jpg",
       rating: 4.7,
     },
     {
       id: 7,
-      title: "The Fact of a Body",
-      author: "T Mares",
-      coverImage: "/books/fact.jpg",
-      rating: 4.8,
+      title: "Batman: Year One (Full Run)",
+      author: "Frank Miller & David Mazzucchelli",
+      coverImage: "/books/batman.jpg",
+      rating: 4.9,
     },
     {
       id: 8,
@@ -84,9 +84,9 @@ export default function LibraryPage() {
     },
     {
       id: 9,
-      title: "Through the...",
-      author: "Cate Elmond",
-      coverImage: "/books/through.jpg",
+      title: "Norwegian Wood",
+      author: "Haruki Murakami",
+      coverImage: "/books/wood.jpg",
       rating: 4.6,
     },
   ];

@@ -71,13 +71,15 @@ export const BookDetailPanel: React.FC<{
           <p className="text-xs text-emerald-200 font-medium mt-1">Reviews</p>
         </div>
       </div>
-      <div className="mb-6 flex-1 overflow-y-auto">
+      <div className="mb-6 flex-1 flex flex-col min-h-0">
         <h3 className="text-sm font-semibold text-emerald-200 mb-2 uppercase tracking-wide">
           About this book
         </h3>
-        <p className="text-sm text-emerald-100 leading-relaxed line-clamp-6">
-          {book.description}
-        </p>
+        <div className="custom-scrollbar overflow-y-auto flex-1 pr-2">
+          <p className="text-sm text-emerald-100 leading-relaxed">
+            {book.description}
+          </p>
+        </div>
       </div>
       <div className="space-y-3 mt-auto">
         <button

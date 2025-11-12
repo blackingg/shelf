@@ -24,8 +24,8 @@ export const Sidebar: React.FC = () => {
   const mainItems: SidebarItem[] = [
     { label: "My Library", icon: <FiBook />, href: "/app/library" },
     { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
-    { label: "Category", icon: <FiTag />, href: "/app/categories" },
-    { label: "Department", icon: <FiBriefcase />, href: "/app/departments" },
+    { label: "Categories", icon: <FiTag />, href: "/app/categories" },
+    { label: "Departments", icon: <FiBriefcase />, href: "/app/departments" },
   ];
 
   const bottomItems: SidebarItem[] = [
