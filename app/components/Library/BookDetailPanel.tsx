@@ -22,7 +22,7 @@ export const BookDetailPanel: React.FC<{
       onClick={onClose}
     />
 
-    <div className="fixed top-0 right-0 h-full w-96 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50 animate-slide-in">
+    <div className="fixed top-0 right-0 h-full w-2/9 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50 animate-slide-in">
       <button
         onClick={onClose}
         className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-lg transition-all duration-200 group"

@@ -20,6 +20,8 @@ export default function LibraryPage() {
     "Business",
     "Education",
     "Geography",
+    "Comics",
+    "Magazines",
   ];
 
   const recommendedBooks = [
@@ -29,6 +31,11 @@ export default function LibraryPage() {
       author: "Morgan Housel",
       coverImage: "/books/psychology.jpg",
       rating: 4.8,
+      pages: 256,
+      readingCount: 1203,
+      reviews: 210,
+      description:
+        "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
     },
     {
       id: 2,
@@ -36,6 +43,11 @@ export default function LibraryPage() {
       author: "Matt Ridley",
       coverImage: "/books/innovation.jpg",
       rating: 4.6,
+      pages: 368,
+      readingCount: 842,
+      reviews: 95,
+      description:
+        "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
     },
     {
       id: 3,
@@ -43,6 +55,11 @@ export default function LibraryPage() {
       author: "Paul Jarvis",
       coverImage: "/books/company.jpg",
       rating: 4.5,
+      pages: 192,
+      readingCount: 643,
+      reviews: 110,
+      description:
+        "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
     },
     {
       id: 4,
@@ -50,6 +67,11 @@ export default function LibraryPage() {
       author: "F. Scott Fitzgerald",
       coverImage: "/books/gatsby.jpg",
       rating: 4.4,
+      pages: 180,
+      readingCount: 2310,
+      reviews: 345,
+      description:
+        "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
     },
   ];
 
@@ -60,6 +82,11 @@ export default function LibraryPage() {
       author: "Laline Paull",
       coverImage: "/books/bees.jpg",
       rating: 4.8,
+      pages: 384,
+      readingCount: 720,
+      reviews: 140,
+      description:
+        "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
     },
     {
       id: 6,
@@ -67,6 +94,11 @@ export default function LibraryPage() {
       author: "Vogue Magazine",
       coverImage: "/books/vogue.jpg",
       rating: 4.7,
+      pages: 250,
+      readingCount: 1050,
+      reviews: 60,
+      description:
+        "The ultimate fashion guide for the season, featuring trends, style editorials, and celebrity interviews.",
     },
     {
       id: 7,
@@ -74,6 +106,11 @@ export default function LibraryPage() {
       author: "Frank Miller & David Mazzucchelli",
       coverImage: "/books/batman.jpg",
       rating: 4.9,
+      pages: 200,
+      readingCount: 950,
+      reviews: 85,
+      description:
+        "An iconic comic series detailing Batman's early days, his struggle with crime in Gotham, and defining his legacy.",
     },
     {
       id: 8,
@@ -81,6 +118,11 @@ export default function LibraryPage() {
       author: "Jonas Karlsson",
       coverImage: "/books/room.jpg",
       rating: 4.5,
+      pages: 220,
+      readingCount: 430,
+      reviews: 48,
+      description:
+        "A surreal novel exploring loneliness, imagination, and the boundaries of reality in modern life.",
     },
     {
       id: 9,
@@ -88,6 +130,11 @@ export default function LibraryPage() {
       author: "Haruki Murakami",
       coverImage: "/books/wood.jpg",
       rating: 4.6,
+      pages: 368,
+      readingCount: 1120,
+      reviews: 175,
+      description:
+        "A poignant coming-of-age story about love, loss, and personal transformation in 1960s Japan.",
     },
   ];
 
@@ -166,15 +213,7 @@ export default function LibraryPage() {
 
       {selectedBook && (
         <BookDetailPanel
-          book={{
-            ...selectedBook,
-            totalRatings: 48,
-            pages: 320,
-            readingCount: 643,
-            reviews: 110,
-            description:
-              "Company of One offers a refreshingly original business strategy that's focused on commitment to being better instead of bigger. Why? Because staying small provides one with the freedom to pursue more meaningful pleasures in life—and avoid the headaches that...",
-          }}
+          book={selectedBook}
           onClose={() => setSelectedBook(null)}
           onReadNow={() => console.log("Read now clicked")}
         />
