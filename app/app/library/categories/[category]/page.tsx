@@ -267,7 +267,6 @@ export default function CategoryPage({
         book={selectedBook}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
-        onReadNow={() => console.log("Read now clicked")}
       />
     </>
   );

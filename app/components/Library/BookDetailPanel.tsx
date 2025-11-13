@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   FiStar,
   FiBookOpen,
@@ -18,6 +19,7 @@ interface Folder {
 
 export const BookDetailPanel: React.FC<{
   book: {
+    id: string;
     title: string;
     author: string;
     coverImage: string;
@@ -29,9 +31,9 @@ export const BookDetailPanel: React.FC<{
     description: string;
   };
   onClose: () => void;
-  onReadNow: () => void;
   isOpen: boolean;
-}> = ({ book, onClose, onReadNow, isOpen }) => {
+}> = ({ book, onClose, isOpen }) => {
+  const router = useRouter();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [bookFolders, setBookFolders] = useState<string[]>([]);
 
@@ -166,12 +168,13 @@ export const BookDetailPanel: React.FC<{
             </div>
             <div className="space-y-3 mt-auto">
               <button
-                onClick={onReadNow}
+                onClick={() => router.push(`/app/books/${book.id}/read`)}
                 className="w-full bg-white text-emerald-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
               >
                 <FiBookOpen className="w-5 h-5" />
                 <span>Read Now</span>
               </button>
+
               <div className="relative">
                 <button
                   onClick={() => setShowFolderDropdown(!showFolderDropdown)}

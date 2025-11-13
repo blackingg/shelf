@@ -170,14 +170,11 @@ export default function LibraryPage() {
         </div>
       </main>
 
-      {selectedBook && (
-        <BookDetailPanel
-          book={selectedBook}
-          isOpen={!!selectedBook}
-          onClose={() => setSelectedBook(null)}
-          onReadNow={() => console.log("Read now clicked")}
-        />
-      )}
+      <BookDetailPanel
+        book={selectedBook}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
     </>
   );
 }
