@@ -173,6 +173,7 @@ export default function LibraryPage() {
       {selectedBook && (
         <BookDetailPanel
           book={selectedBook}
+          isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
           onReadNow={() => console.log("Read now clicked")}
         />
