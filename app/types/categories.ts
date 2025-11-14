@@ -5,7 +5,7 @@ export interface Categories {
 }
 
 export const CATEGORIES: Categories[] = [
-  { id: "All", name: "All", color: "bg-gray-500" },
+  { id: "all", name: "All", color: "bg-gray-500" },
   { id: "scifi", name: "Sci-Fi", color: "bg-blue-500" },
   { id: "fantasy", name: "Fantasy", color: "bg-purple-500" },
   { id: "drama", name: "Drama", color: "bg-pink-500" },
