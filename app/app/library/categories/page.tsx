@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/app/components/Library/PageHeader";
+import { PageHeader } from "@/app/components/PageHeader";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
 import { FiGrid } from "react-icons/fi";
 import { CATEGORIES } from "@/app/types/categories";

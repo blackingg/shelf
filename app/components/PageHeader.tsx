@@ -1,7 +1,7 @@
 "use client";
 import { SearchBar } from "./SearchBar";
-import { NotificationPanel } from "../Notification/NotificationPanel";
-import { UserProfileDropdown } from "../UserProfileDropdown";
+import { NotificationPanel } from "./Notification/NotificationPanel";
+import { UserProfileDropdown } from "./UserProfileDropdown";
 
 interface PageHeaderProps {
   searchQuery: string;

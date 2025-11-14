@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { PageHeader } from "@/app/components/Library/PageHeader";
+import { PageHeader } from "@/app/components/PageHeader";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
