@@ -9,8 +9,11 @@ import {
   FiMonitor,
   FiSearch,
   FiBookmark,
+  FiTwitter,
 } from "react-icons/fi";
 import { BiLibrary } from "react-icons/bi";
+import { SiDiscord } from "react-icons/si";
+import { RiInstagramLine } from "react-icons/ri";
 
 export default function ShelfLanding() {
   const [email, setEmail] = useState("");
@@ -336,14 +339,46 @@ export default function ShelfLanding() {
 
         <div className="mt-24">
           <div className="max-w-6xl mx-auto my-6 px-6 text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="flex items-center justify-center space-x-3 mb-6">
               <div className="bg-emerald-700 p-2 rounded-lg">
                 <BiLibrary className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">Shelf</span>
             </div>
+
+            <div className="flex items-center justify-center space-x-6 mb-6">
+              <a
+                href="https://x.com/shelfng_"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-700 p-3 rounded-lg transition-all duration-200"
+                aria-label="Twitter"
+              >
+                <FiTwitter className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://discord.gg/D54Sj5CrHG"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-700 p-3 rounded-lg transition-all duration-200"
+                aria-label="Discord"
+              >
+                <SiDiscord className="w-5 h-5 text-white" />
+              </a>
+              {/* <a
+                href=""
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-700 p-3 rounded-lg transition-all duration-200"
+                aria-label="Instagram"
+              >
+                <RiInstagramLine className="w-5 h-5 text-white" />
+              </a> */}
+            </div>
+
             <p className="text-white text-sm">
-              © {new Date().getFullYear()} Shelf. Building the future of digital libraries.
+              © {new Date().getFullYear()} Shelf. Building the future of digital
+              libraries.
             </p>
           </div>
         </div>
