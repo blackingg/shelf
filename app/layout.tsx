@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   },
   title: "Shelf",
   description: "Community-driven book collections",
+  other: {
+    "google-site-verification": "A-sfbykyS0xgNPBBOCpXXNPVnVOSabEz6SV3hySn8M4",
+  },
 };
 
 export default function RootLayout({
