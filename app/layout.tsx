@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   icons: {
-    icon: "/logo.svg",
+    icon: "/logo.png",
   },
   title: "Shelf",
   description: "Community-driven book collections",
