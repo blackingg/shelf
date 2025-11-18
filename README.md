@@ -1,54 +1,218 @@
-# 📚 Shelf
+# **Shelf – Frontend (Next.js + Tailwind CSS)**
 
-**Shelf** is a modern e-library built for students, lecturers, and readers who want a simple way to access, organize, and share knowledge. More than just a bookshelf, Shelf brings learning and leisure together in one clean, cross-platform space.
-
----
-
-## What Shelf Offers
-
-### 🎯 Personalized Experience
-
-* Choose your department and interests when signing up.
-* Get tailored recommendations, from textbooks and lecture notes to novels and self-help books.
-* Dashboards highlight both academic and leisure reads that matter to you.
-
-### 🗂️ Folder System
-
-* **Public Folders**: Shared collections for classes, clubs, or communities. Examples include:
-
-  * *300 Level Engineering Notes* (academic – all lecture notes for a semester)
-  * *Campus Fiction Club: African Short Stories* (literature – a shared reading list for a student club)
-  * *Vogue Paris 2011 All Issues* (magazines – a full year’s archive in one place)
-  * *Marvel’s Civil War Saga* (comics – the complete storyline collected for fans)
-* **Private Folders**: Keep your own reading neatly organized.
-
-### 🎨 Clean & Modern Design
-
-* Minimalist interface with smooth typography and white space.
-* Smart search and filters for quick discovery.
-* Personalized dashboard with trending uploads and quick folder access.
-
-### 💻 Built for All Devices
-
-* Works seamlessly on both **desktop** and **mobile**.
-* Multi-column browsing for large screens, simplified layout for smaller ones.
-* Consistent design across platforms.
-
-### 🌍 Community & Sharing
-
-* Rate, review, and recommend books.
-* Discover what’s popular through *Most Downloaded*, *Recently Shared*, and *Top Folders*.
-* Upload books to contribute to the community — all uploads are reviewed for quality before being shared.
-
-### 📖 Flexible Reading Options
-
-* **Downloadable** → Notes, open-source PDFs, and shared resources.
-* **Online Reader** → Built-in reading with bookmarking and highlighting tools.
+Shelf is a student-powered digital library for preserving and sharing academic notes, past questions, research papers, magazines, novels, comics, and more.
+This repository contains the **Next.js + Tailwind CSS frontend**, responsible for user onboarding, document browsing, folder management, uploading, moderation UI, and the online reading experience.
 
 ---
 
-## Why Shelf?
+## 🚀 **Tech Stack**
 
-Shelf combines the practicality of academic resources with the enjoyment of personal reading. It’s a platform where knowledge is organized, accessible, and shaped by the community.
+* **Next.js 14 (App Router)**
+* **React + TypeScript**
+* **Tailwind CSS**
+* **PNPM** (preferred package manager)
+* **REST API integration** (talks to the backend repo)
+* Reusable component architecture
 
+---
 
+## 📁 **Project Structure**
+
+```
+app/
+  app/
+    auth/
+      login/
+      register/
+      forgot-password/
+    books/
+      upload/
+      [id]/
+        read/
+    folders/
+      [id]/
+        edit/
+      edit/
+    library/
+      categories/
+        [category]/
+      departments/
+        [department]/
+      search/
+    onboarding/
+    profile/
+      [username]/
+      edit/
+      settings/
+  components/
+    Folders/
+    Form/
+    Layout/
+    Library/
+    Notification/
+    Onboarding/
+    profile/
+    PageHeader.tsx
+    SearchBar.tsx
+    Sidebar.tsx
+    UserProfileDropdown.tsx
+  context/
+    NotificationContext.tsx
+  docs/
+    privacy/
+    terms/
+  types/
+    categories.ts
+    folder.ts
+    notification.ts
+    schools.ts
+
+public/
+  banner.jpg
+  logo.svg
+
+globals.css  
+layout.tsx  
+page.tsx  
+```
+
+---
+
+## 🌟 **Key Features**
+
+### **Authentication & Onboarding**
+
+* Email + password auth
+* Collects school, department, hobbies
+* Drives personalized recommendations
+
+### **Document Management**
+
+* View documents by:
+
+  * Category
+  * Department
+  * Search
+* Document details with preview panel
+* Online reader for PDFs
+
+### **Uploading**
+
+* Users can upload/donate documents
+* Backend will run SHA-256 hashing to detect duplicates
+* Users see their upload status (pending/approved/rejected)
+
+### **Folders (as groupings, not storage)**
+
+* Public folders:
+
+  * Creator-only
+  * Anyone can add
+  * Specific profiles can add
+* Private folders:
+
+  * Creator & invited contributors only
+* Folder editing, visibility toggle, contributor rules
+
+### **Moderation**
+
+* Moderators see pending uploads
+* Approve or reject documents
+* Mods must be recommended by another mod or added by admin
+
+### **Notifications**
+
+* UI for displaying stacked notifications (success/error/info)
+
+---
+
+## 🧭 **Getting Started**
+
+### **1. Clone repo**
+
+```bash
+git clone https://github.com/blackingg/shelf.git
+cd shelf
+pnpm install
+```
+
+### **2. Environment Variables**
+
+Create **.env.local**:
+
+```
+NEXT_PUBLIC_API_URL=https://your-backend-domain/api
+NEXT_PUBLIC_ENV=development
+```
+
+(Backend repo will define the full API contract.)
+
+### **3. Run dev server**
+
+```bash
+pnpm dev
+```
+
+---
+
+## 🧪 **Scripts**
+
+```bash
+pnpm dev       # Run development server
+pnpm build     # Production build
+pnpm start     # Start production server
+pnpm lint      # Lint
+```
+
+---
+
+## 🗂️ **Folder Breakdown**
+
+### **app/**
+
+Main application routes using the Next.js App Router.
+
+### **components/**
+
+Reusable UI building blocks:
+forms, headers, folder cards, library grids, onboarding UI, etc.
+
+### **context/**
+
+Global context providers (e.g., NotificationContext).
+
+### **types/**
+
+TypeScript interfaces: folders, categories, notifications, schools.
+
+### **docs/**
+
+Static pages like privacy policy and terms.
+
+### **public/**
+
+Static assets (logo, banners).
+
+---
+
+## 🤝 **Contributing**
+
+Shelf uses a simple workflow:
+
+1. Checkout the `dev` branch
+2. Create a feature branch
+3. Follow existing file structure & coding style
+4. Test your changes
+5. Submit a PR and tag a maintainer
+
+---
+
+## 🛡️ **License**
+
+MIT License
+
+---
+
+## 📞 Contact
+
+**Website:** [https://www.shelf.ng](https://www.shelf.ng)
