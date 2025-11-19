@@ -80,38 +80,39 @@ export default function ShelfLanding() {
       icon: <FiFolder className="w-6 h-6 text-emerald-700" />,
       title: "Public & Private Folders",
       description:
-        "Organize with private collections or share with public community folders",
+        "Store your documents and reading materials safely. Keep them private or share with friends and the community.",
       bullets: [
-        "Private personal collections",
-        "Public class and club folders",
+        "Your personal documents stay private",
+        "Share folders with friends or groups",
+        "All shared documents are reviewed by the community",
       ],
     },
     {
       icon: <FiUsers className="w-6 h-6 text-emerald-700" />,
       title: "Community Driven",
       description:
-        "Share, discover, and rate books with students and readers worldwide",
+        "Discover what others are reading and sharing, both for school and leisure.",
       bullets: [
-        "Rate and review books",
-        "Community recommendations",
-        "User-contributed content",
+        "Get recommendations based on what users with similar interests are reading",
+        "Explore trending academic and leisure content",
+        "Contribute your own documents and collections",
       ],
     },
     {
       icon: <FiSearch className="w-6 h-6 text-emerald-700" />,
       title: "Smart Search",
       description:
-        "Find books quickly with advanced filters by course, genre, and keywords",
+        "Quickly find folders and documents by course, genre, topic, or keywords.",
     },
     {
       icon: <FiBookmark className="w-6 h-6 text-emerald-700" />,
       title: "Built-in Reader",
-      description: "Read online with bookmarking and highlighting features",
+      description: "Read uploaded documents and other content online.",
     },
     {
       icon: <FiMonitor className="w-6 h-6 text-emerald-700" />,
       title: "Cross-Platform",
-      description: "Seamless experience across desktop and mobile devices",
+      description: "Use Shelf on any device — desktop, tablet, or phone.",
     },
   ];
 
