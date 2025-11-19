@@ -21,22 +21,21 @@ export default function ShelfLanding() {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState("0");
-
-  // Fetch current waitlist count on component mount
-  useEffect(() => {
-    const fetchWaitlistCount = async () => {
-      try {
-        const response = await fetch("/api/waitlist");
-        if (response.ok) {
-          const data = await response.json();
-          setWaitlistCount(data.totalSignups || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching waitlist count:", error);
+  const fetchWaitlistCount = async () => {
+    try {
+      const response = await fetch("/api/waitlist");
+      if (response.ok) {
+        const data = await response.json();
+        setWaitlistCount(data.totalSignups || 0);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching waitlist count:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchWaitlistCount();
-  }, []);
+  }, [isSubmitted]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +73,6 @@ export default function ShelfLanding() {
     }
   };
 
-  // === Feature cards data ===
   const features = [
     {
       icon: <FiFolder className="w-6 h-6 text-emerald-700" />,
