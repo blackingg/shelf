@@ -365,15 +365,15 @@ export default function ShelfLanding() {
               >
                 <SiDiscord className="w-5 h-5 text-white" />
               </a>
-              {/* <a
-                href=""
+              <a
+                href="https://www.instagram.com/shelf.ng_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-emerald-700 p-3 rounded-lg transition-all duration-200"
                 aria-label="Instagram"
               >
                 <RiInstagramLine className="w-5 h-5 text-white" />
-              </a> */}
+              </a>
             </div>
 
             <p className="text-white text-sm">
