@@ -332,14 +332,18 @@ export default function ShelfLanding() {
                   {[
                     {
                       icon: <FiFolder />,
-                      title: "Academic",
-                      count: "234 docs",
+                      title: "MTH 201 2021/2022",
+                      count: "17 documents",
                     },
-                    { icon: <FiBook />, title: "Novels", count: "89 books" },
                     {
-                      icon: <FiBookmark />,
+                      icon: <FiFolder />,
+                      title: "Summer Break Novels",
+                      count: "89 documents",
+                    },
+                    {
+                      icon: <FiFolder />,
                       title: "Magazines",
-                      count: "45 issues",
+                      count: "45 documents",
                     },
                   ].map((item, index) => (
                     <div
@@ -365,7 +369,7 @@ export default function ShelfLanding() {
             </motion.div>
 
             <motion.div
-              className="absolute -top-6 -left-6 bg-gradient-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-2xl shadow-xl flex items-center justify-center"
+              className="absolute -top-6 -left-6 bg-gradient-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-2xl shadow-xl flex items-center justify-center z-50"
               animate={{
                 y: [0, -20, 0],
                 rotate: [0, 10, 0],
@@ -376,7 +380,7 @@ export default function ShelfLanding() {
             </motion.div>
 
             <motion.div
-              className="absolute -bottom-6 -right-6 bg-gradient-to-br from-blue-400 to-indigo-500 w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center"
+              className="absolute -bottom-6 -right-6 bg-gradient-to-br from-blue-400 to-indigo-500 w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center z-50"
               animate={{
                 y: [0, 20, 0],
                 rotate: [0, -10, 0],
