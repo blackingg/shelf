@@ -1,18 +1,21 @@
 # **Shelf – Frontend (Next.js + Tailwind CSS)**
 
-Shelf is a student-powered digital library for preserving and sharing academic notes, past questions, research papers, magazines, novels, comics, and more.
-This repository contains the **Next.js + Tailwind CSS frontend**, responsible for user onboarding, document browsing, folder management, uploading, moderation UI, and the online reading experience.
+Shelf is a student-powered digital library for preserving and sharing academic
+notes, past questions, research papers, magazines, novels, comics, and more.
+This repository contains the **Next.js + Tailwind CSS frontend**, responsible
+for user onboarding, document browsing, folder management, uploading, moderation
+UI, and the online reading experience.
 
 ---
 
 ## 🚀 **Tech Stack**
 
-* **Next.js 14 (App Router)**
-* **React + TypeScript**
-* **Tailwind CSS**
-* **PNPM** (preferred package manager)
-* **REST API integration** (talks to the backend repo)
-* Reusable component architecture
+- **Next.js 14 (App Router)**
+- **React + TypeScript**
+- **Tailwind CSS**
+- **PNPM** (preferred package manager)
+- **REST API integration** (talks to the backend repo)
+- Reusable component architecture
 
 ---
 
@@ -71,9 +74,9 @@ public/
   banner.jpg
   logo.svg
 
-globals.css  
-layout.tsx  
-page.tsx  
+globals.css
+layout.tsx
+page.tsx
 ```
 
 ---
@@ -82,47 +85,50 @@ page.tsx
 
 ### **Authentication & Onboarding**
 
-* Email + password auth
-* Collects school, department, hobbies
-* Drives personalized recommendations
+- Email + password auth
+- Collects school, department, hobbies
+- Drives personalized recommendations
 
 ### **Document Management**
 
-* View documents by:
+- View documents by:
 
-  * Category
-  * Department
-  * Search
-* Document details with preview panel
-* Online reader for PDFs
+  - Category
+  - Department
+  - Search
+
+- Document details with preview panel
+- Online reader for PDFs
 
 ### **Uploading**
 
-* Users can upload/donate documents
-* Backend will run SHA-256 hashing to detect duplicates
-* Users see their upload status (pending/approved/rejected)
+- Users can upload/donate documents
+- Backend will run SHA-256 hashing to detect duplicates
+- Users see their upload status (pending/approved/rejected)
 
 ### **Folders (as groupings, not storage)**
 
-* Public folders:
+- Public folders:
 
-  * Creator-only
-  * Anyone can add
-  * Specific profiles can add
-* Private folders:
+  - Creator-only
+  - Anyone can add
+  - Specific profiles can add
 
-  * Creator & invited contributors only
-* Folder editing, visibility toggle, contributor rules
+- Private folders:
+
+  - Creator & invited contributors only
+
+- Folder editing, visibility toggle, contributor rules
 
 ### **Moderation**
 
-* Moderators see pending uploads
-* Approve or reject documents
-* Mods must be recommended by another mod or added by admin
+- Moderators see pending uploads
+- Approve or reject documents
+- Mods must be recommended by another mod or added by admin
 
 ### **Notifications**
 
-* UI for displaying stacked notifications (success/error/info)
+- UI for displaying stacked notifications (success/error/info)
 
 ---
 
@@ -144,8 +150,6 @@ Create **.env.local**:
 NEXT_PUBLIC_API_URL=https://your-backend-domain/api
 NEXT_PUBLIC_ENV=development
 ```
-
-(Backend repo will define the full API contract.)
 
 ### **3. Run dev server**
 
@@ -174,8 +178,8 @@ Main application routes using the Next.js App Router.
 
 ### **components/**
 
-Reusable UI building blocks:
-forms, headers, folder cards, library grids, onboarding UI, etc.
+Reusable UI building blocks: forms, headers, folder cards, library grids,
+onboarding UI, etc.
 
 ### **context/**
 
