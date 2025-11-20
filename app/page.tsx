@@ -80,7 +80,6 @@ export default function ShelfLanding() {
       description:
         "Store your documents and reading materials safely. Keep them private or share with friends and the community.",
       bullets: [
-        "Your personal documents stay private",
         "Share folders with friends or groups",
         "All shared documents are reviewed by the community",
       ],
