@@ -145,8 +145,6 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain/api
 NEXT_PUBLIC_ENV=development
 ```
 
-(Backend repo will define the full API contract.)
-
 ### **3. Run dev server**
 
 ```bash
