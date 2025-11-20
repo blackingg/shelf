@@ -238,9 +238,10 @@ export default function ShelfLanding() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              A cross-platform e-library blending academic resources with
-              leisure reading. Organize, discover, and share with personalized
-              recommendations and community-driven collections.
+              A cross-platform e-library combining academic resources and
+              leisure reading, designed to bring people together. Organize,
+              discover, and share with personalized recommendations and
+              community-powered collections.
             </motion.p>
 
             <motion.div
