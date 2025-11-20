@@ -199,7 +199,7 @@ export default function ShelfLanding() {
       </motion.nav>
 
       <section className="relative min-h-screen flex items-center justify-center pt-20 px-6">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 pt-10 md:pt-0 gap-12 items-center relative z-10">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 pt-6 gap-12 items-center relative z-10">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
