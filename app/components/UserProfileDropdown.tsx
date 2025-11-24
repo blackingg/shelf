@@ -40,7 +40,7 @@ export const UserProfileDropdown: React.FC = () => {
             className="object-cover"
           />
         </div>
-        <span className="font-medium text-gray-900">{userName}</span>
+        <span className=" hidden md:block font-medium text-gray-900">{userName}</span>
         <FiChevronDown className="w-4 h-4 text-gray-600" />
       </button>
 

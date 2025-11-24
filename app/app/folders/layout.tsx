@@ -6,7 +6,7 @@ export default function LibraryLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row  bg-gray-50">
       <Sidebar />
       {children}
     </div>
