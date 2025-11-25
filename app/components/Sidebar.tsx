@@ -150,7 +150,7 @@ export const Sidebar: React.FC = () => {
         <div>
           <button onClick={()=> setShowSideBar(!showSidebar)}>
             {
-              showSidebar ?  (<HiX className="text-emerald-800 text-4xl"/>) : (<HiMenu className="text-emerald-800 text-4xl"/>)
+              showSidebar ?  (<HiX className="text-emerald-800 text-4xl" />) : (<HiMenu className="text-emerald-800 text-4xl"/>)
             }
             
           </button>
@@ -160,8 +160,8 @@ export const Sidebar: React.FC = () => {
       </div>
 
       
-        <div className={`absolute min-h-screen top-20 w-full rounded-b-md  z-40 bg-white/90  backdrop-blur-md transiton-all duration-300 ${showSidebar ? "" : "-translate-x-full" } `}>
-          <nav className=" px-4 py-6 space-y-1">
+        <div className={` absolute min-h-[90vh] top-20 w-full rounded-b-md  z-40 bg-white/90  backdrop-blur-md transiton-all duration-300 ${showSidebar ? "" : "-translate-x-full" } `}>
+          <nav className=" px-4 py-6 mb-56 space-y-1">
         {mainItems.map((item) => (
           <Link
             key={item.href}
