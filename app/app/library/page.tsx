@@ -126,7 +126,7 @@ export default function LibraryPage() {
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto ">
         <PageHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

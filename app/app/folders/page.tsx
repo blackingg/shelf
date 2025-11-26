@@ -113,7 +113,7 @@ export default function FoldersPage() {
         />
 
         <div className="p-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle
               activeTab={activeTab}
               onTabChange={setActiveTab}
@@ -121,7 +121,7 @@ export default function FoldersPage() {
 
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center space-x-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center text-sm md:text-lg space-x-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <span>Create Folder</span>
             </button>
