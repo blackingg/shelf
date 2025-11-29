@@ -38,46 +38,46 @@ export default function ShelfLanding() {
       icon: <FiFolder className="w-7 h-7" />,
       title: "Public & Private Folders",
       description:
-        "Store your documents and reading materials safely. Keep them private or share with friends and the community.",
+        "Organize your documents with ease. Keep folders private or share them with classmates, friends, or the Shelf community.",
     },
     {
       icon: <FiUsers className="w-7 h-7" />,
       title: "Community Driven",
       description:
-        "Get recommendations based on what users with similar interests are reading. Explore trending content.",
+        "Discover what others are reading. Get recommendations from classmates, departments, and users with similar interests.",
     },
     {
       icon: <FiSearch className="w-7 h-7" />,
       title: "Smart Search",
       description:
-        "Quickly find folders and documents by course, genre, topic, or keywords.",
+        "Search instantly by course, topic, genre, or keywords. Find the exact folders and documents you need in seconds.",
     },
     {
       icon: <FiBookmark className="w-7 h-7" />,
-      title: "Built-in Reader",
+      title: "Built-In Reader",
       description:
-        "Read uploaded documents and other content online with our integrated reader.",
+        "Read documents directly on Shelf with our integrated reader. Highlight, bookmark, and pick up where you left off.",
     },
     {
       icon: <FiMonitor className="w-7 h-7" />,
       title: "Cross-Platform",
       description:
-        "Use Shelf on any device — desktop, tablet, or phone. Your library everywhere.",
+        "Access Shelf anywhere — on desktop, tablet, or phone. Your library stays synced across all your devices.",
     },
     {
       icon: <FiZap className="w-7 h-7" />,
       title: "Lightning Fast",
       description:
-        "Optimized performance ensures your content loads instantly, every time.",
+        "Enjoy smooth performance and instant loading, even with large documents and folders.",
     },
   ];
 
   const benefits = [
-    "Access thousands of books across all genres",
-    "Organize your reading with custom folders",
-    "Join a community of passionate readers",
-    "Read anywhere, anytime on any device",
-    "Get personalized book recommendations",
+    "Access thousands of academic materials and books across multiple genres",
+    "Organize your study notes and documents into clean, custom folders",
+    "Donate materials and help build a stronger academic community",
+    "Study anywhere and anytime with full cross-platform support",
+    "Receive personalized recommendations based on your university, department, and interests",
   ];
 
   const stats = [
