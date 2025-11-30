@@ -50,7 +50,7 @@ export const FolderDropdown: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-full mb-2 left-0 right-0 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70]"
+            className="relative w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70]"
           >
             <div className="p-3 border-b border-gray-200">
               <h3 className="font-semibold text-gray-900 text-sm">

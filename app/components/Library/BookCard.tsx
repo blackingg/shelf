@@ -13,7 +13,7 @@ export const BookCard: React.FC<{
     onClick={onClick}
     className={`group cursor-pointer transition-all duration-300 hover:scale-105 ${className}`}
   >
-    <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-lg mb-3">
+    <div className="relative h-65 rounded-xl overflow-hidden shadow-lg mb-3">
       <Image
         src={coverImage}
         alt={title}

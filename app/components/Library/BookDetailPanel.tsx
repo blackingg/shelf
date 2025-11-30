@@ -98,7 +98,7 @@ export const BookDetailPanel: React.FC<{
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-2/8 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50"
+            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50"
           >
             <button
               onClick={onClose}
@@ -107,7 +107,7 @@ export const BookDetailPanel: React.FC<{
             >
               <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
             </button>
-            <div className="relative aspect-[2/3] w-48 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-6 ring-4 ring-emerald-700/30">
+            <div className="relative aspect-[2/3] w-38 md:w-48 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-6 ring-4 ring-emerald-700/30">
               <Image
                 src={book.coverImage}
                 alt={book.title}
@@ -168,7 +168,7 @@ export const BookDetailPanel: React.FC<{
             </div>
             <div className="space-y-3 mt-auto">
               <button
-                onClick={() => router.push(`/app/books/${book.id}/read`)}
+                onClick={() => router.push(`/app/books/${book.id}`)}
                 className="w-full bg-white text-emerald-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
               >
                 <FiBookOpen className="w-5 h-5" />
