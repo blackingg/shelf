@@ -3,7 +3,7 @@ import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
 import { useState } from "react";
 
-export default function FolderLayout({
+export default function UserLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,9 +18,7 @@ export default function FolderLayout({
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto">{children}</div>
       </main>
     </div>
   );

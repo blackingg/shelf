@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { PageHeader } from "@/app/components/PageHeader";
+import { useRouter } from "next/navigation";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
@@ -33,7 +33,7 @@ type FolderItem = {
 type RecommendedItem = BookItem | FolderItem;
 
 export default function LibraryPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
   const [selectedBook, setSelectedBook] = useState<any>(null);
 
   const recommendedItems: RecommendedItem[] = [
@@ -42,7 +42,7 @@ export default function LibraryPage() {
       id: 1,
       title: "The Psychology of Money",
       author: "Morgan Housel",
-      coverImage: "/books/psychology.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.8,
       pages: 256,
       readingCount: 1203,
@@ -56,7 +56,7 @@ export default function LibraryPage() {
       name: "Summer Reading List",
       bookCount: 12,
       isPublic: true,
-      coverImages: ["/books/gatsby.jpg", "/books/wood.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
       createdBy: "Sarah Chen",
     },
     {
@@ -64,7 +64,7 @@ export default function LibraryPage() {
       id: 2,
       title: "How Innovation Works",
       author: "Matt Ridley",
-      coverImage: "/books/innovation.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.6,
       pages: 368,
       readingCount: 842,
@@ -77,7 +77,7 @@ export default function LibraryPage() {
       id: 3,
       title: "Company of One",
       author: "Paul Jarvis",
-      coverImage: "/books/company.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.5,
       pages: 192,
       readingCount: 643,
@@ -91,7 +91,7 @@ export default function LibraryPage() {
       name: "Design Inspiration",
       bookCount: 8,
       isPublic: true,
-      coverImages: ["/books/vogue.jpg", "/books/innovation.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
       createdBy: "Alex Morgan",
     },
     {
@@ -99,7 +99,7 @@ export default function LibraryPage() {
       id: 4,
       title: "The Great Gatsby",
       author: "F. Scott Fitzgerald",
-      coverImage: "/books/gatsby.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.4,
       pages: 180,
       readingCount: 2310,
@@ -114,7 +114,7 @@ export default function LibraryPage() {
       id: 5,
       title: "The Bees",
       author: "Laline Paull",
-      coverImage: "/books/bees.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.8,
       pages: 384,
       readingCount: 720,
@@ -126,7 +126,7 @@ export default function LibraryPage() {
       id: 6,
       title: "Vogue: September Issue 2024",
       author: "Vogue Magazine",
-      coverImage: "/books/vogue.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.7,
       pages: 250,
       readingCount: 1050,
@@ -138,7 +138,7 @@ export default function LibraryPage() {
       id: 7,
       title: "Batman: Year One (Full Run)",
       author: "Frank Miller & David Mazzucchelli",
-      coverImage: "/books/batman.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.9,
       pages: 200,
       readingCount: 950,
@@ -150,7 +150,7 @@ export default function LibraryPage() {
       id: 8,
       title: "The Room",
       author: "Jonas Karlsson",
-      coverImage: "/books/room.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.5,
       pages: 220,
       readingCount: 430,
@@ -162,7 +162,7 @@ export default function LibraryPage() {
       id: 9,
       title: "Norwegian Wood",
       author: "Haruki Murakami",
-      coverImage: "/books/wood.jpg",
+      coverImage: "/dummycover.png",
       rating: 4.6,
       pages: 368,
       readingCount: 1120,
@@ -175,10 +175,7 @@ export default function LibraryPage() {
   return (
     <>
       <main className="flex-1 overflow-y-auto ">
-        <PageHeader
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+        
 
         <div className="p-8">
           <div className="mb-10">
@@ -203,7 +200,7 @@ export default function LibraryPage() {
                         coverImages: item.coverImages,
                         createdBy: item.createdBy,
                       }}
-                      onClick={() => console.log("Folder clicked:", item.name)}
+                      onClick={() => router.push(`/app/folders/${item.id}`)}
                     />
                   );
                 } else {

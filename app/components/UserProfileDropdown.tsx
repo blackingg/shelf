@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { FiSettings, FiLogOut, FiUser, FiChevronDown } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 
@@ -8,21 +9,24 @@ export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const userName = "Balogun";
   const userEmail = "balogun@example.com";
-  const userAvatar = "/avatar.jpg";
+  const userAvatar = "/avatar.png";
+
+  const router = useRouter();
 
   const handleEditProfile = () => {
-    console.log("Edit profile clicked");
     setIsOpen(false);
+    router.push(`/app/${userName}`);
   };
 
   const handleSettings = () => {
-    console.log("Settings clicked");
     setIsOpen(false);
+    router.push("/app/settings");
   };
 
   const handleLogout = () => {
     console.log("Logout clicked");
     setIsOpen(false);
+    // Implement logout logic here
   };
 
   return (

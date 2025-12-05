@@ -1,7 +1,6 @@
 "use client";
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/app/components/PageHeader";
 import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
@@ -12,7 +11,7 @@ const ALL_BOOKS = [
     id: 1,
     title: "The Psychology of Money",
     author: "Morgan Housel",
-    coverImage: "/books/psychology.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.8,
     pages: 256,
     readingCount: 1203,
@@ -25,7 +24,7 @@ const ALL_BOOKS = [
     id: 5,
     title: "The Bees",
     author: "Laline Paull",
-    coverImage: "/books/bees.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.8,
     pages: 384,
     readingCount: 720,
@@ -37,7 +36,7 @@ const ALL_BOOKS = [
     id: 7,
     title: "Batman: Year One",
     author: "Frank Miller",
-    coverImage: "/books/batman.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.9,
     pages: 200,
     readingCount: 950,
@@ -49,7 +48,7 @@ const ALL_BOOKS = [
     id: 8,
     title: "Watchmen",
     author: "Alan Moore",
-    coverImage: "/books/watchmen.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.9,
     pages: 448,
     readingCount: 1850,
@@ -62,7 +61,7 @@ const ALL_BOOKS = [
     id: 9,
     title: "The Sandman Vol. 1",
     author: "Neil Gaiman",
-    coverImage: "/books/sandman.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.8,
     pages: 240,
     readingCount: 1420,
@@ -75,7 +74,7 @@ const ALL_BOOKS = [
     id: 10,
     title: "Saga Vol. 1",
     author: "Brian K. Vaughan",
-    coverImage: "/books/saga.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.7,
     pages: 160,
     readingCount: 890,
@@ -87,7 +86,7 @@ const ALL_BOOKS = [
     id: 11,
     title: "National Geographic - Wildlife Edition",
     author: "National Geographic",
-    coverImage: "/books/natgeo.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.6,
     pages: 120,
     readingCount: 560,
@@ -99,7 +98,7 @@ const ALL_BOOKS = [
     id: 12,
     title: "The Atlantic - Technology & Society",
     author: "The Atlantic",
-    coverImage: "/books/atlantic.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.5,
     pages: 96,
     readingCount: 445,
@@ -111,7 +110,7 @@ const ALL_BOOKS = [
     id: 13,
     title: "OAU Data Structures and Algorithms 2021/2022",
     author: "Department of Computer Science, OAU",
-    coverImage: "/books/oau-dsa.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.4,
     pages: 320,
     readingCount: 892,
@@ -124,7 +123,7 @@ const ALL_BOOKS = [
     id: 14,
     title: "Introduction to Machine Learning",
     author: "Dr. Andrew Ng",
-    coverImage: "/books/ml-intro.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.7,
     pages: 450,
     readingCount: 1340,
@@ -137,7 +136,7 @@ const ALL_BOOKS = [
     id: 15,
     title: "Calculus: Early Transcendentals",
     author: "James Stewart",
-    coverImage: "/books/calculus.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.5,
     pages: 1368,
     readingCount: 2150,
@@ -150,7 +149,7 @@ const ALL_BOOKS = [
     id: 16,
     title: "Physics for Scientists and Engineers",
     author: "Raymond A. Serway",
-    coverImage: "/books/physics.jpg",
+    coverImage: "/dummycover.png",
     rating: 4.6,
     pages: 1280,
     readingCount: 1680,
@@ -204,12 +203,7 @@ export default function CategoryPage({
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto">
-        <PageHeader
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-
+      <div className="flex-1 overflow-y-auto">
         <div className="p-8">
           <div className="mb-8">
             <button
@@ -261,7 +255,7 @@ export default function CategoryPage({
             </div>
           )}
         </div>
-      </main>
+      </div>
 
       <BookDetailPanel
         book={selectedBook}

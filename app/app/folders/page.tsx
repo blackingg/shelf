@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/app/components/PageHeader";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { FolderVisibilityToggle } from "@/app/components/Folders/FolderVisibilityToggle";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
@@ -18,21 +17,21 @@ export default function FoldersPage() {
       name: "Want to Read",
       bookCount: 12,
       isPublic: false,
-      coverImages: ["/books/psychology.jpg", "/books/innovation.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
       id: "2",
       name: "Favorites",
       bookCount: 8,
       isPublic: false,
-      coverImages: ["/books/gatsby.jpg", "/books/wood.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
       id: "3",
       name: "Study Materials",
       bookCount: 15,
       isPublic: false,
-      coverImages: ["/books/company.jpg", "/books/room.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
   ]);
 
@@ -43,7 +42,7 @@ export default function FoldersPage() {
       bookCount: 24,
       isPublic: true,
       createdBy: "Sarah Johnson",
-      coverImages: ["/books/bees.jpg", "/books/batman.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
       id: "5",
@@ -51,7 +50,7 @@ export default function FoldersPage() {
       bookCount: 18,
       isPublic: true,
       createdBy: "Mike Chen",
-      coverImages: ["/books/innovation.jpg", "/books/psychology.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
       id: "6",
@@ -59,7 +58,7 @@ export default function FoldersPage() {
       bookCount: 32,
       isPublic: true,
       createdBy: "Emily Davis",
-      coverImages: ["/books/gatsby.jpg", "/books/wood.jpg"],
+      coverImages: ["/dummycover.png", "/dummycover.png"],
     },
   ]);
 
@@ -107,11 +106,6 @@ export default function FoldersPage() {
   return (
     <>
       <main className="flex-1 overflow-y-auto">
-        <PageHeader
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-
         <div className="p-8">
           <div className="flex gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle
