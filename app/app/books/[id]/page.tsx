@@ -11,6 +11,7 @@ import {
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/app/components/Form/Button";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
+import { Folder } from "@/app/types/folder";
 
 export default function BookDetailsPage() {
   const router = useRouter();
@@ -33,11 +34,29 @@ export default function BookDetailsPage() {
     donor: "Harriman House",
   };
 
-  const [folders, setFolders] = useState([
-    { id: "1", name: "Favorites", bookCount: 12 },
-    { id: "2", name: "To Read", bookCount: 5 },
-    { id: "3", name: "Finance & Investing", bookCount: 8 },
-    { id: "4", name: "Psychology 101", bookCount: 3 },
+  const [folders, setFolders] = useState<Folder[]>([
+    {
+      id: "1",
+      name: "Favorites",
+      bookCount: 12,
+      type: "folder",
+      isPublic: false,
+    },
+    { id: "2", name: "To Read", bookCount: 5, type: "folder", isPublic: false },
+    {
+      id: "3",
+      name: "Finance & Investing",
+      bookCount: 8,
+      type: "folder",
+      isPublic: true,
+    },
+    {
+      id: "4",
+      name: "Psychology 101",
+      bookCount: 3,
+      type: "folder",
+      isPublic: false,
+    },
   ]);
 
   const handleSaveToFolder = (folderId: string) => {
@@ -49,10 +68,12 @@ export default function BookDetailsPage() {
   };
 
   const handleCreateFolder = (folderName: string) => {
-    const newFolder = {
+    const newFolder: Folder = {
       id: Math.random().toString(36).substr(2, 9),
       name: folderName,
       bookCount: 0,
+      type: "folder",
+      isPublic: false,
     };
     setFolders([...folders, newFolder]);
     handleSaveToFolder(newFolder.id);

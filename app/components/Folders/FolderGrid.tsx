@@ -1,7 +1,6 @@
 "use client";
 import { FolderCard } from "./FolderCard";
 import { FiFolder } from "react-icons/fi";
-
 import { Folder } from "@/app/types/folder";
 
 interface FolderGridProps {
