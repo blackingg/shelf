@@ -4,8 +4,8 @@ import { NotificationPanel } from "./Notification/NotificationPanel";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 
 interface PageHeaderProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({

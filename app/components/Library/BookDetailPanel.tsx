@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   FiStar,
@@ -10,26 +11,11 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { FolderDropdown } from "./FolderDropdown";
-
-interface Folder {
-  id: string;
-  name: string;
-  bookCount: number;
-}
+import { Book } from "@/app/types/book";
+import { Folder } from "@/app/types/folder";
 
 export const BookDetailPanel: React.FC<{
-  book: {
-    id: string;
-    title: string;
-    author: string;
-    coverImage: string;
-    rating: number;
-    totalRatings: number;
-    pages: number;
-    readingCount: number;
-    reviews: number;
-    description: string;
-  };
+  book: Book;
   onClose: () => void;
   isOpen: boolean;
 }> = ({ book, onClose, isOpen }) => {
@@ -38,9 +24,27 @@ export const BookDetailPanel: React.FC<{
   const [bookFolders, setBookFolders] = useState<string[]>([]);
 
   const [folders, setFolders] = useState<Folder[]>([
-    { id: "1", name: "Want to Read", bookCount: 12 },
-    { id: "2", name: "Favorites", bookCount: 8 },
-    { id: "3", name: "Study Materials", bookCount: 15 },
+    {
+      type: "folder",
+      id: "1",
+      name: "Want to Read",
+      bookCount: 12,
+      isPublic: false,
+    },
+    {
+      type: "folder",
+      id: "2",
+      name: "Favorites",
+      bookCount: 8,
+      isPublic: false,
+    },
+    {
+      type: "folder",
+      id: "3",
+      name: "Study Materials",
+      bookCount: 15,
+      isPublic: false,
+    },
   ]);
 
   const handleSaveToFolder = (folderId: string) => {
@@ -69,9 +73,11 @@ export const BookDetailPanel: React.FC<{
 
   const handleCreateFolder = (folderName: string) => {
     const newFolder: Folder = {
+      type: "folder",
       id: Date.now().toString(),
       name: folderName,
       bookCount: 1,
+      isPublic: false,
     };
     setFolders([...folders, newFolder]);
     setBookFolders([...bookFolders, newFolder.id]);
@@ -118,39 +124,53 @@ export const BookDetailPanel: React.FC<{
             <h2 className="text-2xl font-bold mb-2 text-center leading-tight">
               {book.title}
             </h2>
-            <p className="text-emerald-200 text-center mb-4 font-medium">
+            <p className="text-emerald-200 text-center mb-2 font-medium">
               {book.author}
+            </p>
+            <p className="text-emerald-200/80 text-center mb-6 text-sm">
+              Donated by{" "}
+              <Link
+                href={`/app/profile/${book.donatedBy}`}
+                className="text-white hover:text-emerald-200 hover:underline font-semibold transition-colors"
+                onClick={() => onClose()}
+              >
+                {book.donatedBy}
+              </Link>
             </p>
             <div className="flex items-center justify-center space-x-1 mb-6 bg-emerald-800/50 rounded-xl py-3 px-4">
               {[...Array(5)].map((_, i) => (
                 <FiStar
                   key={i}
                   className={`w-5 h-5 ${
-                    i < Math.floor(book.rating)
+                    i < Math.floor(book.rating || 0)
                       ? "fill-yellow-400 text-yellow-400"
                       : "text-emerald-600"
                   }`}
                 />
               ))}
-              <span className="ml-2 font-bold text-lg">{book.rating}</span>
+              <span className="ml-2 font-bold text-lg">{book.rating || 0}</span>
             </div>
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white">{book.pages}</p>
+                <p className="text-2xl font-bold text-white">
+                  {book.pages || "-"}
+                </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Pages
                 </p>
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
                 <p className="text-2xl font-bold text-white">
-                  {book.readingCount}
+                  {book.readingCount || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Ratings
                 </p>
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white">{book.reviews}</p>
+                <p className="text-2xl font-bold text-white">
+                  {book.reviews || "-"}
+                </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Reviews
                 </p>

@@ -2,16 +2,10 @@
 import { FiLock, FiGlobe, FiMoreVertical, FiBook } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
+import { Folder } from "@/app/types/folder";
 
 interface FolderCardProps {
-  folder: {
-    id: string;
-    name: string;
-    bookCount: number;
-    isPublic: boolean;
-    coverImages?: string[];
-    createdBy?: string;
-  };
+  folder: Folder;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;

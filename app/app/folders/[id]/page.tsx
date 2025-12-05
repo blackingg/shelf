@@ -11,6 +11,8 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 
+import { Book } from "@/app/types/book";
+
 export default function FolderDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -28,11 +30,13 @@ export default function FolderDetailsPage() {
     createdAt: "Sep 2024",
     books: [
       {
+        type: "book",
         id: 1,
         title: "The Psychology of Money",
         author: "Morgan Housel",
         coverImage: "/dummycover.png",
         rating: 4.8,
+        donatedBy: "Morgan Housel",
         pages: 256,
         readingCount: 1203,
         reviews: 210,
@@ -40,22 +44,26 @@ export default function FolderDetailsPage() {
           "Explores the timeless lessons on wealth, greed, and happiness...",
       },
       {
+        type: "book",
         id: 2,
         title: "The Great Gatsby",
         author: "F. Scott Fitzgerald",
         coverImage: "/dummycover.png",
         rating: 4.4,
+        donatedBy: "Fitzgerald Estate",
         pages: 180,
         readingCount: 2310,
         reviews: 345,
         description: "The quintessential Jazz Age novel...",
       },
       {
+        type: "book",
         id: 3,
         title: "Company of One",
         author: "Paul Jarvis",
         coverImage: "/dummycover.png",
         rating: 4.5,
+        donatedBy: "Paul Jarvis",
         pages: 192,
         readingCount: 643,
         reviews: 110,
@@ -63,18 +71,20 @@ export default function FolderDetailsPage() {
           "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
       },
       {
+        type: "book",
         id: 5,
         title: "The Bees",
         author: "Laline Paull",
         coverImage: "/dummycover.png",
         rating: 4.8,
+        donatedBy: "Laline Paull",
         pages: 384,
         readingCount: 720,
         reviews: 140,
         description:
           "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
       },
-    ],
+    ] as Book[],
   };
 
   return (

@@ -2,15 +2,12 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import {
-  FiFolder,
-  FiUploadCloud,
-  FiCalendar,
-  FiShield,
-} from "react-icons/fi";
+import { Folder } from "@/app/types/folder";
+import { FiFolder, FiUploadCloud, FiCalendar, FiShield } from "react-icons/fi";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
+import { Book } from "@/app/types/book";
 
 const MOCK_USER = {
   name: "Sarah Chen",
@@ -24,8 +21,9 @@ const MOCK_USER = {
   },
 };
 
-const MOCK_BOOKS = [
+const MOCK_BOOKS: Book[] = [
   {
+    type: "book",
     id: 1,
     title: "The Psychology of Money",
     author: "Morgan Housel",
@@ -34,10 +32,12 @@ const MOCK_BOOKS = [
     pages: 256,
     readingCount: 1203,
     reviews: 210,
+    donatedBy: "Sarah Chen",
     description:
       "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance.",
   },
   {
+    type: "book",
     id: 2,
     title: "How Innovation Works",
     author: "Matt Ridley",
@@ -46,10 +46,12 @@ const MOCK_BOOKS = [
     pages: 368,
     readingCount: 842,
     reviews: 95,
+    donatedBy: "Sarah Chen",
     description:
       "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
   },
   {
+    type: "book",
     id: 3,
     title: "Company of One",
     author: "Paul Jarvis",
@@ -58,10 +60,12 @@ const MOCK_BOOKS = [
     pages: 192,
     readingCount: 643,
     reviews: 110,
+    donatedBy: "Sarah Chen",
     description:
       "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
   },
   {
+    type: "book",
     id: 4,
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
@@ -70,10 +74,12 @@ const MOCK_BOOKS = [
     pages: 180,
     readingCount: 2310,
     reviews: 345,
+    donatedBy: "Sarah Chen",
     description:
       "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
   },
   {
+    type: "book",
     id: 5,
     title: "The Bees",
     author: "Laline Paull",
@@ -82,13 +88,15 @@ const MOCK_BOOKS = [
     pages: 384,
     readingCount: 720,
     reviews: 140,
+    donatedBy: "Sarah Chen",
     description:
       "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
   },
 ];
 
-const MOCK_FOLDERS = [
+const MOCK_FOLDERS: Folder[] = [
   {
+    type: "folder",
     id: "f1",
     name: "Summer Reading List",
     bookCount: 12,
@@ -97,6 +105,7 @@ const MOCK_FOLDERS = [
     createdBy: "Sarah Chen",
   },
   {
+    type: "folder",
     id: "f2",
     name: "Design Inspiration",
     bookCount: 8,
@@ -105,6 +114,7 @@ const MOCK_FOLDERS = [
     createdBy: "Sarah Chen",
   },
   {
+    type: "folder",
     id: "f3",
     name: "Tech & Society",
     bookCount: 5,

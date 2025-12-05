@@ -6,6 +6,7 @@ import { FolderList } from "@/app/components/Folders/FolderList";
 import { FolderVisibilityToggle } from "@/app/components/Folders/FolderVisibilityToggle";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FiGrid, FiList } from "react-icons/fi";
+import { Folder } from "@/app/types/folder";
 
 export default function FoldersPage() {
   const router = useRouter();
@@ -14,8 +15,9 @@ export default function FoldersPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [myFolders, setMyFolders] = useState([
+  const [myFolders, setMyFolders] = useState<Folder[]>([
     {
+      type: "folder",
       id: "1",
       name: "Want to Read",
       bookCount: 12,
@@ -24,6 +26,7 @@ export default function FoldersPage() {
       createdBy: "You",
     },
     {
+      type: "folder",
       id: "2",
       name: "Favorites",
       bookCount: 8,
@@ -32,6 +35,7 @@ export default function FoldersPage() {
       createdBy: "You",
     },
     {
+      type: "folder",
       id: "3",
       name: "Study Materials",
       bookCount: 15,
@@ -41,8 +45,9 @@ export default function FoldersPage() {
     },
   ]);
 
-  const [publicFolders, setPublicFolders] = useState([
+  const [publicFolders, setPublicFolders] = useState<Folder[]>([
     {
+      type: "folder",
       id: "4",
       name: "Best Fiction 2024",
       bookCount: 24,
@@ -51,6 +56,7 @@ export default function FoldersPage() {
       coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
+      type: "folder",
       id: "5",
       name: "Tech & Innovation",
       bookCount: 18,
@@ -59,6 +65,7 @@ export default function FoldersPage() {
       coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
+      type: "folder",
       id: "6",
       name: "Classic Literature",
       bookCount: 32,
@@ -68,8 +75,9 @@ export default function FoldersPage() {
     },
   ]);
 
-  const [bookmarkedFolders, setBookmarkedFolders] = useState([
+  const [bookmarkedFolders, setBookmarkedFolders] = useState<Folder[]>([
     {
+      type: "folder",
       id: "7",
       name: "Must Read Classics",
       bookCount: 45,
@@ -78,6 +86,7 @@ export default function FoldersPage() {
       coverImages: ["/dummycover.png", "/dummycover.png"],
     },
     {
+      type: "folder",
       id: "8",
       name: "Sci-Fi Gems",
       bookCount: 12,
@@ -88,7 +97,8 @@ export default function FoldersPage() {
   ]);
 
   const handleCreateFolder = (name: string, isPublic: boolean) => {
-    const newFolder = {
+    const newFolder: Folder = {
+      type: "folder",
       id: Date.now().toString(),
       name,
       bookCount: 0,

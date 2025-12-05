@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import {
   FiStar,
   FiBookOpen,
@@ -6,9 +6,14 @@ import {
   FiMoreVertical,
 } from "react-icons/fi";
 
+import { Book } from "@/app/types/book";
 
+interface BooksTableProps {
+  books: Book[];
+  onBookClick: (id: number) => void;
+}
 
-const BooksTable = ({ books, onBookClick }: { books: any; onBookClick: (id: string) => void }) => {
+const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -20,6 +25,9 @@ const BooksTable = ({ books, onBookClick }: { books: any; onBookClick: (id: stri
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Author
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Donor
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Rating
@@ -39,7 +47,7 @@ const BooksTable = ({ books, onBookClick }: { books: any; onBookClick: (id: stri
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {books.map((book:any) => (
+            {books.map((book: any) => (
               <tr
                 key={book.id}
                 onClick={() => onBookClick(book.id)}
@@ -60,6 +68,15 @@ const BooksTable = ({ books, onBookClick }: { books: any; onBookClick: (id: stri
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{book.author}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <Link
+                    href={`/app/profile/${book.donatedBy}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline"
+                  >
+                    {book.donatedBy}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-1">

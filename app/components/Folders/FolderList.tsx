@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { Folder } from "@/app/types/folder";
 import {
   FiFolder,
   FiLock,
@@ -9,14 +10,6 @@ import {
   FiUser,
 } from "react-icons/fi";
 
-interface Folder {
-  id: string;
-  name: string;
-  bookCount: number;
-  isPublic: boolean;
-  coverImages?: string[];
-  createdBy?: string;
-}
 
 interface FolderListProps {
   folders: Folder[];

@@ -2,14 +2,7 @@
 import { FolderCard } from "./FolderCard";
 import { FiFolder } from "react-icons/fi";
 
-interface Folder {
-  id: string;
-  name: string;
-  bookCount: number;
-  isPublic: boolean;
-  coverImages?: string[];
-  createdBy?: string;
-}
+import { Folder } from "@/app/types/folder";
 
 interface FolderGridProps {
   folders: Folder[];

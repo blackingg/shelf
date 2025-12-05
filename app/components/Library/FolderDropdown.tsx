@@ -2,11 +2,7 @@ import { useState } from "react";
 import { FiFolder, FiPlus, FiCheck } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 
-interface Folder {
-  id: string;
-  name: string;
-  bookCount: number;
-}
+import { Folder } from "@/app/types/folder";
 
 export const FolderDropdown: React.FC<{
   isOpen: boolean;
@@ -50,7 +46,7 @@ export const FolderDropdown: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70]"
+            className="absolute bottom-full left-0 mb-2 w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70]"
           >
             <div className="p-3 border-b border-gray-200">
               <h3 className="font-semibold text-gray-900 text-sm">

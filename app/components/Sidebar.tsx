@@ -6,7 +6,7 @@ import {
   FiBook,
   FiSettings,
   FiLogOut,
-  FiBriefcase,
+  // FiBriefcase,
   FiTag,
   FiFolder,
 } from "react-icons/fi";

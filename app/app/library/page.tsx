@@ -6,31 +6,10 @@ import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiChevronRight } from "react-icons/fi";
+import { Book } from "@/app/types/book";
+import { Folder } from "@/app/types/folder";
 
-type BookItem = {
-  type: "book";
-  id: number;
-  title: string;
-  author: string;
-  coverImage: string;
-  rating?: number;
-  pages?: number;
-  readingCount?: number;
-  reviews?: number;
-  description?: string;
-};
-
-type FolderItem = {
-  type: "folder";
-  id: string;
-  name: string;
-  bookCount: number;
-  isPublic: boolean;
-  coverImages?: string[];
-  createdBy?: string;
-};
-
-type RecommendedItem = BookItem | FolderItem;
+type RecommendedItem = Book | Folder;
 
 export default function LibraryPage() {
   const router = useRouter();
@@ -44,6 +23,7 @@ export default function LibraryPage() {
       author: "Morgan Housel",
       coverImage: "/dummycover.png",
       rating: 4.8,
+      donatedBy: "Morgan Housel",
       pages: 256,
       readingCount: 1203,
       reviews: 210,
@@ -66,6 +46,7 @@ export default function LibraryPage() {
       author: "Matt Ridley",
       coverImage: "/dummycover.png",
       rating: 4.6,
+      donatedBy: "Morgan Housel",
       pages: 368,
       readingCount: 842,
       reviews: 95,
@@ -79,6 +60,7 @@ export default function LibraryPage() {
       author: "Paul Jarvis",
       coverImage: "/dummycover.png",
       rating: 4.5,
+      donatedBy: "Paul Jarvis",
       pages: 192,
       readingCount: 643,
       reviews: 110,
@@ -101,6 +83,7 @@ export default function LibraryPage() {
       author: "F. Scott Fitzgerald",
       coverImage: "/dummycover.png",
       rating: 4.4,
+      donatedBy: "Fitzgerald Estate",
       pages: 180,
       readingCount: 2310,
       reviews: 345,
@@ -111,11 +94,13 @@ export default function LibraryPage() {
 
   const categoryBooks = [
     {
+      type: "book",
       id: 5,
       title: "The Bees",
       author: "Laline Paull",
       coverImage: "/dummycover.png",
       rating: 4.8,
+      donatedBy: "Laline Paull",
       pages: 384,
       readingCount: 720,
       reviews: 140,
@@ -123,11 +108,13 @@ export default function LibraryPage() {
         "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
     },
     {
+      type: "book",
       id: 6,
       title: "Vogue: September Issue 2024",
       author: "Vogue Magazine",
       coverImage: "/dummycover.png",
       rating: 4.7,
+      donatedBy: "Vogue",
       pages: 250,
       readingCount: 1050,
       reviews: 60,
@@ -135,11 +122,13 @@ export default function LibraryPage() {
         "The ultimate fashion guide for the season, featuring trends, style editorials, and celebrity interviews.",
     },
     {
+      type: "book",
       id: 7,
       title: "Batman: Year One (Full Run)",
       author: "Frank Miller & David Mazzucchelli",
       coverImage: "/dummycover.png",
       rating: 4.9,
+      donatedBy: "Frank Miller",
       pages: 200,
       readingCount: 950,
       reviews: 85,
@@ -147,11 +136,13 @@ export default function LibraryPage() {
         "An iconic comic series detailing Batman's early days, his struggle with crime in Gotham, and defining his legacy.",
     },
     {
+      type: "book",
       id: 8,
       title: "The Room",
       author: "Jonas Karlsson",
       coverImage: "/dummycover.png",
       rating: 4.5,
+      donatedBy: "Jonas Karlsson",
       pages: 220,
       readingCount: 430,
       reviews: 48,
@@ -159,11 +150,13 @@ export default function LibraryPage() {
         "A surreal novel exploring loneliness, imagination, and the boundaries of reality in modern life.",
     },
     {
+      type: "book",
       id: 9,
       title: "Norwegian Wood",
       author: "Haruki Murakami",
       coverImage: "/dummycover.png",
       rating: 4.6,
+      donatedBy: "Haruki Murakami",
       pages: 368,
       readingCount: 1120,
       reviews: 175,
@@ -192,14 +185,7 @@ export default function LibraryPage() {
                   return (
                     <FolderCard
                       key={item.id}
-                      folder={{
-                        id: item.id,
-                        name: item.name,
-                        bookCount: item.bookCount,
-                        isPublic: item.isPublic,
-                        coverImages: item.coverImages,
-                        createdBy: item.createdBy,
-                      }}
+                      folder={item}
                       onClick={() => router.push(`/app/folders/${item.id}`)}
                     />
                   );
@@ -211,6 +197,7 @@ export default function LibraryPage() {
                       author={item.author}
                       coverImage={item.coverImage}
                       rating={item.rating}
+                      donatedBy={item.donatedBy}
                       onClick={() => setSelectedBook(item)}
                     />
                   );
@@ -229,6 +216,7 @@ export default function LibraryPage() {
                 <BookCard
                   key={book.id}
                   {...book}
+                  donatedBy={book.donatedBy}
                   onClick={() => setSelectedBook(book)}
                 />
               ))}

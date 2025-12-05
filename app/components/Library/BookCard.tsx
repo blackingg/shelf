@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FiStar } from "react-icons/fi";
 
 export const BookCard: React.FC<{
@@ -6,9 +7,18 @@ export const BookCard: React.FC<{
   author: string;
   coverImage: string;
   rating?: number;
+  donatedBy?: string;
   onClick?: () => void;
   className?: string;
-}> = ({ title, author, coverImage, rating, onClick, className = "" }) => (
+}> = ({
+  title,
+  author,
+  coverImage,
+  rating,
+  donatedBy,
+  onClick,
+  className = "",
+}) => (
   <div
     onClick={onClick}
     className={`group cursor-pointer transition-all duration-300 hover:scale-105 ${className}`}
@@ -31,5 +41,14 @@ export const BookCard: React.FC<{
       {title}
     </h3>
     <p className="text-xs text-gray-500 line-clamp-1">{author}</p>
+    {donatedBy && (
+      <Link
+        href={`/app/profile/${donatedBy}`}
+        onClick={(e) => e.stopPropagation()}
+        className="text-[10px] text-emerald-600 hover:text-emerald-700 hover:underline mt-0.5 block truncate"
+      >
+        Donated by {donatedBy}
+      </Link>
+    )}
   </div>
 );
