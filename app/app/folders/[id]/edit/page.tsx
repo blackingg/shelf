@@ -1,9 +1,7 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FiArrowLeft, FiSave, FiLock, FiGlobe, FiFolder } from "react-icons/fi";
-import { motion } from "motion/react";
 
 export default function EditFolderPage() {
   const params = useParams();
@@ -46,7 +44,7 @@ export default function EditFolderPage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <button
           onClick={() => router.back()}
-          className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 mb-8 transition-colors"
+          className="group group-hover:underline flex items-center space-x-2 text-gray-500 hover:text-gray-900 mb-8 transition-colors"
         >
           <FiArrowLeft className="w-4 h-4" />
           <span>Back to Folder</span>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
-import { getCategoryName, CATEGORIES } from "@/app/types/categories";
+import { getCategoryName } from "@/app/types/categories";
 
 const ALL_BOOKS = [
   {
@@ -208,7 +208,7 @@ export default function CategoryPage({
           <div className="mb-8">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
+              className="group group-hover:underline flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
             >
               <FiArrowLeft className="w-5 h-5" />
               <span className="font-medium group-hover:underline">

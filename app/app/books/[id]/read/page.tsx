@@ -1,24 +1,17 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FiArrowLeft,
-  FiSettings,
   FiMaximize,
   FiMinimize,
   FiChevronLeft,
   FiChevronRight,
-  FiBookmark,
-  FiShare2,
   FiType,
   FiMoon,
   FiSun,
-  FiMenu,
-  FiList,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
 
 export default function ReaderPage() {
   const router = useRouter();

@@ -1,17 +1,14 @@
 "use client";
-
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FiUploadCloud,
   FiFile,
-  FiX,
   FiCheck,
   FiBook,
   FiHeart,
   FiInfo,
   FiUser,
-  FiGrid,
 } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";

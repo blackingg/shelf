@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
 import { CATEGORIES } from "@/app/types/categories";

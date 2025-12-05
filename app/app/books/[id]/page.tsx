@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import {
@@ -10,7 +9,6 @@ import {
   FiPlay,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
-import { PageHeader } from "@/app/components/PageHeader";
 import { Button } from "@/app/components/Form/Button";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
 
