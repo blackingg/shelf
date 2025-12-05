@@ -2,22 +2,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
+import { FolderList } from "@/app/components/Folders/FolderList";
 import { FolderVisibilityToggle } from "@/app/components/Folders/FolderVisibilityToggle";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
+import { FiGrid, FiList } from "react-icons/fi";
 
 export default function FoldersPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"private" | "public">("private");
+  const [activeTab, setActiveTab] = useState<"private" | "public" | "bookmarked">("private");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [privateFolders, setPrivateFolders] = useState([
+  const [myFolders, setMyFolders] = useState([
     {
       id: "1",
       name: "Want to Read",
       bookCount: 12,
       isPublic: false,
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdBy: "You",
     },
     {
       id: "2",
@@ -25,13 +29,15 @@ export default function FoldersPage() {
       bookCount: 8,
       isPublic: false,
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdBy: "You",
     },
     {
       id: "3",
       name: "Study Materials",
       bookCount: 15,
-      isPublic: false,
+      isPublic: true,
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdBy: "You",
     },
   ]);
 
@@ -62,6 +68,25 @@ export default function FoldersPage() {
     },
   ]);
 
+  const [bookmarkedFolders, setBookmarkedFolders] = useState([
+    {
+      id: "7",
+      name: "Must Read Classics",
+      bookCount: 45,
+      isPublic: true,
+      createdBy: "BookClub Official",
+      coverImages: ["/dummycover.png", "/dummycover.png"],
+    },
+    {
+      id: "8",
+      name: "Sci-Fi Gems",
+      bookCount: 12,
+      isPublic: true,
+      createdBy: "Alex Space",
+      coverImages: ["/dummycover.png", "/dummycover.png"],
+    },
+  ]);
+
   const handleCreateFolder = (name: string, isPublic: boolean) => {
     const newFolder = {
       id: Date.now().toString(),
@@ -72,11 +97,7 @@ export default function FoldersPage() {
       createdBy: "You",
     };
 
-    if (isPublic) {
-      setPublicFolders([newFolder, ...publicFolders]);
-    } else {
-      setPrivateFolders([newFolder, ...privateFolders]);
-    }
+    setMyFolders([newFolder, ...myFolders]);
   };
 
   const handleFolderClick = (folder: any) => {
@@ -84,21 +105,22 @@ export default function FoldersPage() {
   };
 
   const handleFolderEdit = (folder: any) => {
-    router.push(`/app/folders/edit/${folder.id}`);
+    router.push(`/app/folders/${folder.id}/edit`);
   };
 
   const handleFolderDelete = (folder: any) => {
     if (confirm(`Are you sure you want to delete "${folder.name}"?`)) {
-      if (folder.isPublic) {
-        setPublicFolders(publicFolders.filter((f) => f.id !== folder.id));
-      } else {
-        setPrivateFolders(privateFolders.filter((f) => f.id !== folder.id));
-      }
+      setMyFolders(myFolders.filter((f) => f.id !== folder.id));
     }
   };
 
   const displayedFolders =
-    activeTab === "private" ? privateFolders : publicFolders;
+    activeTab === "private"
+      ? myFolders
+      : activeTab === "public"
+      ? publicFolders
+      : bookmarkedFolders;
+
   const filteredFolders = displayedFolders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -107,36 +129,86 @@ export default function FoldersPage() {
     <>
       <main className="flex-1 overflow-y-auto">
         <div className="p-8">
-          <div className="flex gap-4 items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle
               activeTab={activeTab}
               onTabChange={setActiveTab}
             />
 
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center text-sm md:text-lg space-x-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <span>Create Folder</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-gray-100 p-1 rounded-lg">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-md transition-all ${
+                    viewMode === "grid"
+                      ? "bg-white text-emerald-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  title="Grid View"
+                >
+                  <FiGrid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-md transition-all ${
+                    viewMode === "list"
+                      ? "bg-white text-emerald-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  title="List View"
+                >
+                  <FiList className="w-5 h-5" />
+                </button>
+              </div>
+
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center text-sm md:text-base space-x-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <span>Create Folder</span>
+              </button>
+            </div>
           </div>
 
-          <FolderGrid
-            folders={filteredFolders}
-            onFolderClick={handleFolderClick}
-            onFolderEdit={
-              activeTab === "private" ? handleFolderEdit : undefined
-            }
-            onFolderDelete={
-              activeTab === "private" ? handleFolderDelete : undefined
-            }
-            showActions={activeTab === "private"}
-            emptyMessage={
-              activeTab === "private"
-                ? "No private folders yet. Create your first folder!"
-                : "No public folders available to explore."
-            }
-          />
+          {viewMode === "grid" ? (
+            <FolderGrid
+              folders={filteredFolders}
+              onFolderClick={handleFolderClick}
+              onFolderEdit={
+                activeTab === "private" ? handleFolderEdit : undefined
+              }
+              onFolderDelete={
+                activeTab === "private" ? handleFolderDelete : undefined
+              }
+              showActions={activeTab === "private"}
+              emptyMessage={
+                activeTab === "private"
+                  ? "No folders found. Create your first folder!"
+                  : activeTab === "bookmarked"
+                  ? "No bookmarked folders yet."
+                  : "No public folders available to explore."
+              }
+            />
+          ) : (
+            <FolderList
+              folders={filteredFolders}
+              onFolderClick={handleFolderClick}
+              onFolderEdit={
+                activeTab === "private" ? handleFolderEdit : undefined
+              }
+              onFolderDelete={
+                activeTab === "private" ? handleFolderDelete : undefined
+              }
+              showActions={activeTab === "private"}
+              emptyMessage={
+                activeTab === "private"
+                  ? "No folders found. Create your first folder!"
+                  : activeTab === "bookmarked"
+                  ? "No bookmarked folders yet."
+                  : "No public folders available to explore."
+              }
+            />
+          )}
         </div>
       </main>
 
