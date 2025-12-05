@@ -200,7 +200,7 @@ export const Sidebar: React.FC = () => {
                 <button
                   key={item.label}
                   onClick={() => {
-                    item.onClick;
+                    item.onClick?.();
                     setShowSideBar(false);
                   }}
                   className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 cursor-pointer w-full text-left"

@@ -11,19 +11,18 @@ import {
   FiMoon,
   FiSun,
 } from "react-icons/fi";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ReaderPage() {
   const router = useRouter();
-  const params = useParams();
+  // const params = useParams();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
   const [currentPage, setCurrentPage] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [totalPages, setTotalPages] = useState(42);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Mock content
@@ -53,6 +52,7 @@ export default function ReaderPage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
@@ -264,7 +264,9 @@ export default function ReaderPage() {
             >
               {chapterTitle}
             </span>
-            <h2 className="text-4xl font-bold mt-4 mb-8">No One's Crazy</h2>
+            <h2 className="text-4xl font-bold mt-4 mb-8">
+              No One&apos;s Crazy
+            </h2>
           </div>
 
           <p className="mb-6">
@@ -276,7 +278,7 @@ export default function ReaderPage() {
             People do some crazy things with money. But no one is crazy.
           </p>
           <p className="mb-6">
-            Here's the thing: People from different generations, raised by
+            Here&apos;s the thing: People from different generations, raised by
             different parents who earned different incomes and held different
             values, in different parts of the world, born into different
             economies, experiencing different job markets with different
@@ -285,10 +287,11 @@ export default function ReaderPage() {
           </p>
           <p className="mb-6">
             Everyone has their own unique experience with how the world works.
-            And what you've experienced is more compelling than what you learn
-            second-hand. So all of us—you, me, everyone—go through life anchored
-            to a set of views about how money works that vary wildly from person
-            to person. What seems crazy to you might make sense to me.
+            And what you&apos;ve experienced is more compelling than what you
+            learn second-hand. So all of us—you, me, everyone—go through life
+            anchored to a set of views about how money works that vary wildly
+            from person to person. What seems crazy to you might make sense to
+            me.
           </p>
           <p className="mb-6">
             The person who grew up in poverty thinks about risk and reward in
@@ -297,15 +300,15 @@ export default function ReaderPage() {
             person who grew up with stable prices never had to. The stock broker
             who lost everything during the Great Depression experienced
             something the tech worker basking in the glory of the late 1990s
-            can't imagine. The Australian who hasn't seen a recession in 30
-            years has experienced something the Greek worker hasn't.
+            can&apos;t imagine. The Australian who hasn&apos;t seen a recession
+            in 30 years has experienced something the Greek worker hasn&apos;t.
           </p>
           <p className="mb-6">
             On and on. The list of experiences is endless. You know stuff about
-            money that I don't, and vice versa. You go through life with
-            different beliefs, goals, and forecasts, than I do. That's not
+            money that I don&apos;t, and vice versa. You go through life with
+            different beliefs, goals, and forecasts, than I do. That&apos;s not
             because one of us is smarter than the other, or has better
-            information. It's because we've had different lives.
+            information. It&apos;s because we&apos;ve had different lives.
           </p>
         </motion.div>
       </main>

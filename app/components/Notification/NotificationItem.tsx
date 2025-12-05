@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import type { Notification } from "@/app/types/notification";
 import {
   FiX,
@@ -25,6 +25,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(onClose, 300);
+  }, [onClose]);
+
   // Auto-close only for top notification
   useEffect(() => {
     if (stackIndex === 0) {
@@ -34,12 +39,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       );
       return () => clearTimeout(timer);
     }
-  }, [stackIndex, notification.duration]);
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(onClose, 300);
-  };
+  }, [stackIndex, notification.duration, handleClose]);
 
   const icons = {
     success: <FiCheckCircle className="w-5 h-5" />,

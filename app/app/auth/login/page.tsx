@@ -112,7 +112,7 @@ export default function LoginPage() {
             onClick={() => router.push("/app/auth/register")}
             className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors cursor-pointer"
           >
-            Don't have an account? Sign Up
+            Don&apos;t have an account? Sign Up
           </button>
         }
       />

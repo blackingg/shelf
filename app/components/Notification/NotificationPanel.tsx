@@ -164,7 +164,7 @@ export const NotificationPanel: React.FC = () => {
                       No notifications yet
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      We'll notify you about important updates
+                      We&apos;ll notify you about important updates
                     </p>
                   </div>
                 ) : (

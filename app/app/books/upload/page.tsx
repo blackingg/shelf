@@ -74,28 +74,6 @@ export default function UploadPage() {
     { value: "psychology", label: "Psychology" },
   ];
 
-  const customSelectStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      padding: "0.5rem",
-      borderRadius: "0.75rem",
-      borderColor: state.isFocused ? "#10b981" : "#d1d5db",
-      boxShadow: state.isFocused ? "0 0 0 2px #d1fae5" : "none",
-      "&:hover": {
-        borderColor: "#10b981",
-      },
-    }),
-    option: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: state.isSelected
-        ? "#047857"
-        : state.isFocused
-        ? "#d1fae5"
-        : "white",
-      color: state.isSelected ? "white" : "#374151",
-    }),
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
@@ -258,10 +236,9 @@ export default function UploadPage() {
                   </label>
                   <Select
                     options={categories}
-                    styles={customSelectStyles}
                     placeholder="Select a category..."
-                    onChange={(option: any) =>
-                      setFormData({ ...formData, category: option?.value })
+                    onChange={(option: { value: string; label: string } | null) =>
+                      setFormData({ ...formData, category: option?.value || "" })
                     }
                     className="text-sm"
                   />

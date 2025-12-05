@@ -138,7 +138,7 @@ function SearchContent() {
   if (results.length === 0) {
     return (
       <div className="p-8 text-center text-gray-500">
-        No results found for "{query}".
+        No results found for &quot;{query}&quot;.
       </div>
     );
   }
@@ -146,7 +146,7 @@ function SearchContent() {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Search Results for "{query}"
+        Search Results for &quot;{query}&quot;
       </h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">

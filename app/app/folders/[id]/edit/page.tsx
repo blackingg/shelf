@@ -110,7 +110,7 @@ export default function EditFolderPage() {
                   </div>
                   <div>
                     <p className={`font-bold ${!isPublic ? "text-gray-900" : "text-gray-700"}`}>Private</p>
-                    <p className="text-sm text-gray-500 mt-1">Only you can see this folder. It won't appear on your public profile.</p>
+                    <p className="text-sm text-gray-500 mt-1">Only you can see this folder. It won&apos;t appear on your public profile.</p>
                   </div>
                 </button>
 

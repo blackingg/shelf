@@ -1,8 +1,6 @@
 import Link from "next/link";
 import {
   FiStar,
-  FiBookOpen,
-  FiMessageSquare,
   FiMoreVertical,
 } from "react-icons/fi";
 
@@ -47,7 +45,7 @@ const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {books.map((book: any) => (
+            {books.map((book) => (
               <tr
                 key={book.id}
                 onClick={() => onBookClick(book.id)}
@@ -87,21 +85,6 @@ const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <FiBookOpen className="w-4 h-4" />
-                    <span className="text-sm">{book.pages}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-600">
-                    {book.readingCount.toLocaleString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <FiMessageSquare className="w-4 h-4" />
-                    <span className="text-sm">{book.reviews}</span>
-                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <button

@@ -10,11 +10,10 @@ import { Folder } from "@/app/types/folder";
 
 export default function FoldersPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"private" | "public" | "bookmarked">("private");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
-
   const [myFolders, setMyFolders] = useState<Folder[]>([
     {
       type: "folder",
@@ -45,7 +44,7 @@ export default function FoldersPage() {
     },
   ]);
 
-  const [publicFolders, setPublicFolders] = useState<Folder[]>([
+  const [publicFolders] = useState<Folder[]>([
     {
       type: "folder",
       id: "4",
@@ -75,7 +74,7 @@ export default function FoldersPage() {
     },
   ]);
 
-  const [bookmarkedFolders, setBookmarkedFolders] = useState<Folder[]>([
+  const [bookmarkedFolders] = useState<Folder[]>([
     {
       type: "folder",
       id: "7",
@@ -110,15 +109,15 @@ export default function FoldersPage() {
     setMyFolders([newFolder, ...myFolders]);
   };
 
-  const handleFolderClick = (folder: any) => {
+  const handleFolderClick = (folder: Folder) => {
     router.push(`/app/folders/${folder.id}`);
   };
 
-  const handleFolderEdit = (folder: any) => {
+  const handleFolderEdit = (folder: Folder) => {
     router.push(`/app/folders/${folder.id}/edit`);
   };
 
-  const handleFolderDelete = (folder: any) => {
+  const handleFolderDelete = (folder: Folder) => {
     if (confirm(`Are you sure you want to delete "${folder.name}"?`)) {
       setMyFolders(myFolders.filter((f) => f.id !== folder.id));
     }

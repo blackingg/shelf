@@ -1,18 +1,6 @@
 "use client";
+import { Book } from "@/app/types/book";
 import { BookCard } from "./BookCard";
-
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  coverImage: string;
-  rating: number;
-  pages: number;
-  readingCount: number;
-  reviews: number;
-  description: string;
-  category?: string;
-}
 
 interface BookGridProps {
   books: Book[];

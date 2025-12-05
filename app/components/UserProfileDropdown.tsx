@@ -69,9 +69,11 @@ export const UserProfileDropdown: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                     {userAvatar ? (
-                      <img
+                      <Image
                         src={userAvatar}
                         alt={userName}
+                        width={48}
+                        height={48}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (

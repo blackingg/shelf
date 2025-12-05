@@ -129,7 +129,7 @@ export default function UserProfilePage() {
   const router = useRouter();
   const username = params.username as string;
   const [activeTab, setActiveTab] = useState<"donated" | "folders">("donated");
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const tabs = [
     {
@@ -204,7 +204,9 @@ export default function UserProfilePage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
+                      onClick={() =>
+                        setActiveTab(tab.id as "donated" | "folders")
+                      }
                       className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors ${
                         isActive
                           ? "border-emerald-600 text-emerald-700"
@@ -265,7 +267,7 @@ export default function UserProfilePage() {
       </div>
 
       <BookDetailPanel
-        book={selectedBook}
+        book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />

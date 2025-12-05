@@ -5,9 +5,11 @@ import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import { getCategoryName } from "@/app/types/categories";
+import { Book } from "@/app/types/book";
 
 const ALL_BOOKS = [
   {
+    type: "book",
     id: 1,
     title: "The Psychology of Money",
     author: "Morgan Housel",
@@ -16,11 +18,13 @@ const ALL_BOOKS = [
     pages: 256,
     readingCount: 1203,
     reviews: 210,
+    donatedBy: "Shelf Community",
     description:
       "Explores the timeless lessons on wealth, greed, and happiness.",
     category: "business",
   },
   {
+    type: "book",
     id: 5,
     title: "The Bees",
     author: "Laline Paull",
@@ -29,10 +33,12 @@ const ALL_BOOKS = [
     pages: 384,
     readingCount: 720,
     reviews: 140,
+    donatedBy: "Shelf Community",
     description: "A brilliantly imagined dystopian story set in a hive.",
     category: "scifi",
   },
   {
+    type: "book",
     id: 7,
     title: "Batman: Year One",
     author: "Frank Miller",
@@ -41,10 +47,12 @@ const ALL_BOOKS = [
     pages: 200,
     readingCount: 950,
     reviews: 85,
+    donatedBy: "Shelf Community",
     description: "An iconic comic series detailing Batman's early days.",
     category: "comics",
   },
   {
+    type: "book",
     id: 8,
     title: "Watchmen",
     author: "Alan Moore",
@@ -53,11 +61,13 @@ const ALL_BOOKS = [
     pages: 448,
     readingCount: 1850,
     reviews: 312,
+    donatedBy: "Shelf Community",
     description:
       "A groundbreaking graphic novel that redefined the superhero genre.",
     category: "comics",
   },
   {
+    type: "book",
     id: 9,
     title: "The Sandman Vol. 1",
     author: "Neil Gaiman",
@@ -66,11 +76,13 @@ const ALL_BOOKS = [
     pages: 240,
     readingCount: 1420,
     reviews: 268,
+    donatedBy: "Shelf Community",
     description:
       "The master of dreams embarks on an epic journey through myth and reality.",
     category: "comics",
   },
   {
+    type: "book",
     id: 10,
     title: "Saga Vol. 1",
     author: "Brian K. Vaughan",
@@ -79,10 +91,12 @@ const ALL_BOOKS = [
     pages: 160,
     readingCount: 890,
     reviews: 142,
+    donatedBy: "Shelf Community",
     description: "An epic space opera about family, love, and war.",
     category: "comics",
   },
   {
+    type: "book",
     id: 11,
     title: "National Geographic - Wildlife Edition",
     author: "National Geographic",
@@ -91,10 +105,12 @@ const ALL_BOOKS = [
     pages: 120,
     readingCount: 560,
     reviews: 78,
+    donatedBy: "Shelf Community",
     description: "Stunning photography and stories from the natural world.",
     category: "magazines",
   },
   {
+    type: "book",
     id: 12,
     title: "The Atlantic - Technology & Society",
     author: "The Atlantic",
@@ -103,10 +119,12 @@ const ALL_BOOKS = [
     pages: 96,
     readingCount: 445,
     reviews: 65,
+    donatedBy: "Shelf Community",
     description: "In-depth analysis of technology's impact on modern society.",
     category: "magazines",
   },
   {
+    type: "book",
     id: 13,
     title: "OAU Data Structures and Algorithms 2021/2022",
     author: "Department of Computer Science, OAU",
@@ -115,11 +133,13 @@ const ALL_BOOKS = [
     pages: 320,
     readingCount: 892,
     reviews: 156,
+    donatedBy: "Shelf Community",
     description:
       "Comprehensive course material covering data structures and algorithm design.",
     category: "education",
   },
   {
+    type: "book",
     id: 14,
     title: "Introduction to Machine Learning",
     author: "Dr. Andrew Ng",
@@ -128,11 +148,13 @@ const ALL_BOOKS = [
     pages: 450,
     readingCount: 1340,
     reviews: 234,
+    donatedBy: "Shelf Community",
     description:
       "A foundational guide to machine learning concepts and applications.",
     category: "education",
   },
   {
+    type: "book",
     id: 15,
     title: "Calculus: Early Transcendentals",
     author: "James Stewart",
@@ -141,11 +163,13 @@ const ALL_BOOKS = [
     pages: 1368,
     readingCount: 2150,
     reviews: 387,
+    donatedBy: "Shelf Community",
     description:
       "The definitive textbook for learning calculus and mathematical analysis.",
     category: "education",
   },
   {
+    type: "book",
     id: 16,
     title: "Physics for Scientists and Engineers",
     author: "Raymond A. Serway",
@@ -154,6 +178,7 @@ const ALL_BOOKS = [
     pages: 1280,
     readingCount: 1680,
     reviews: 298,
+    donatedBy: "Shelf Community",
     description:
       "A comprehensive introduction to physics principles and problem-solving.",
     category: "education",
@@ -166,8 +191,7 @@ export default function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const resolvedParams = use(params);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [sortBy, setSortBy] = useState<"popular" | "rating" | "recent">(
     "popular"
   );
@@ -175,25 +199,20 @@ export default function CategoryPage({
 
   const categoryName = getCategoryName(resolvedParams.category);
 
-  let categoryBooks =
+  const categoryBooks =
     resolvedParams.category.toLowerCase() === "all"
       ? ALL_BOOKS
       : ALL_BOOKS.filter((book) => book.category === resolvedParams.category);
 
-  if (searchQuery) {
-    categoryBooks = categoryBooks.filter(
-      (book) =>
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }
+  // Cast categoryBooks to Book[] because ALL_BOOKS items match Book shape but inferred loosely + extra 'category' prop
+  const displayBooks = categoryBooks as unknown as Book[];
 
-  const sortedBooks = [...categoryBooks].sort((a, b) => {
+  const sortedBooks = [...displayBooks].sort((a, b) => {
     switch (sortBy) {
       case "rating":
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       case "popular":
-        return b.readingCount - a.readingCount;
+        return (b.readingCount || 0) - (a.readingCount || 0);
       case "recent":
         return b.id - a.id;
       default:
@@ -231,7 +250,9 @@ export default function CategoryPage({
                 <FiFilter className="w-5 h-5 text-gray-600" />
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={(e) =>
+                    setSortBy(e.target.value as "popular" | "rating" | "recent")
+                  }
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-black"
                 >
                   <option value="popular">Most Popular</option>
@@ -243,10 +264,7 @@ export default function CategoryPage({
           </div>
 
           {sortedBooks.length > 0 ? (
-            <BookGrid
-              books={sortedBooks}
-              onBookClick={setSelectedBook}
-            />
+            <BookGrid books={sortedBooks} onBookClick={setSelectedBook} />
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">
@@ -258,7 +276,7 @@ export default function CategoryPage({
       </div>
 
       <BookDetailPanel
-        book={selectedBook}
+        book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />

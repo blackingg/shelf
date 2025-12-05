@@ -13,7 +13,7 @@ type RecommendedItem = Book | Folder;
 
 export default function LibraryPage() {
   const router = useRouter();
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const recommendedItems: RecommendedItem[] = [
     {
@@ -92,7 +92,7 @@ export default function LibraryPage() {
     },
   ];
 
-  const categoryBooks = [
+  const categoryBooks: Book[] = [
     {
       type: "book",
       id: 5,
@@ -226,7 +226,7 @@ export default function LibraryPage() {
       </main>
 
       <BookDetailPanel
-        book={selectedBook}
+        book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />

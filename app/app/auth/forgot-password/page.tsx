@@ -170,7 +170,7 @@ export default function ForgotPassword() {
               />
               <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
                 <p className="text-sm text-emerald-800 text-center">
-                  Didn't receive the code? Check your spam folder or click
+                  Didn&apos;t receive the code? Check your spam folder or click
                   continue to enter the code
                 </p>
               </div>
