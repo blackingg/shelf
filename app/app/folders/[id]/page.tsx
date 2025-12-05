@@ -122,7 +122,10 @@ export default function FolderDetailsPage() {
 
               {showMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-10">
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
+                  <button
+                    onClick={() => router.push(`/app/folders/${folder.id}/edit`)}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                  >
                     <FiEdit2 className="w-4 h-4" />
                     <span>Edit Folder</span>
                   </button>
