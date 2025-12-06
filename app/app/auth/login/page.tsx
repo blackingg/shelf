@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiMail, FiLock, FiAlertCircle, FiArrowRight } from "react-icons/fi";
+import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
@@ -17,12 +17,6 @@ interface FormData {
   password: string;
 }
 
-interface FormErrors {
-  email?: string;
-  password?: string;
-  general?: string;
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
@@ -30,7 +24,6 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
@@ -40,55 +33,49 @@ export default function LoginPage() {
       ...prev,
       [name]: value,
     }));
-
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
   };
 
-  const validateForm = (): FormErrors => {
-    const newErrors: FormErrors = {};
-
+  const validateForm = (): boolean => {
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      addNotification("error", "Email is required");
+      return false;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      addNotification("error", "Please enter a valid email address");
+      return false;
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required";
+      addNotification("error", "Password is required");
+      return false;
     }
 
-    return newErrors;
+    return true;
   };
 
   const handleSubmit = async (): Promise<void> => {
-    const newErrors = validateForm();
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    setErrors({});
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
+      addNotification("success", "Login successful! Welcome back.");
       console.log("Login successful:", { ...formData, rememberMe });
       router.push("/app/library");
     } catch (error) {
       console.error("Login failed:", error);
-      setErrors({ general: "Invalid email or password. Please try again." });
+      addNotification("error", "Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleForgotPassword = (): void => {
+    addNotification("info", "Password reset link coming soon!");
     console.log("Forgot password clicked");
   };
 
@@ -99,8 +86,8 @@ export default function LoginPage() {
   };
 
   const handleGoogleAuth = () => {
-    addNotification("info", "Google sign-up coming soon!");
-    console.log("Google signup clicked");
+    addNotification("info", "Google sign-in coming soon!");
+    console.log("Google login clicked");
     // Handle Google OAuth
   };
 
@@ -130,13 +117,6 @@ export default function LoginPage() {
               <p className="text-gray-600">Log in to access your library</p>
             </div>
 
-            {errors.general && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
-                <FiAlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                <p className="text-red-600 text-sm">{errors.general}</p>
-              </div>
-            )}
-
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -151,7 +131,6 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                error={errors.email}
                 icon={<FiMail className="w-5 h-5" />}
                 placeholder="Enter your email"
                 autoComplete="email"
@@ -177,7 +156,6 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  error={errors.password}
                   icon={<FiLock className="w-5 h-5" />}
                   placeholder="Enter your password"
                   autoComplete="current-password"
