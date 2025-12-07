@@ -1,36 +1,22 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { FiGrid } from "react-icons/fi";
-
+import { USER_DEPARTMENTS } from "@/app/lib/constants";
+import { getFromLocalStorage } from "@/app/helpers/localStorage";
 import { PageHeader } from "@/app/components/Library/PageHeader";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
-
 import { DEPARTMENTS } from "@/app/types/departments";
 
-const department = [
-  "Mathematics & Statistics",
-  "Computer Science & IT",
-  "Engineering & Technology",
-  "Physical Sciences (Physics, Chemistry, Geology)",
-  "Biological & Life Sciences",
-  "Medical, Health & Nursing Sciences",
-  "Pharmaceutical & Clinical Sciences",
-  "Environmental & Agricultural Sciences",
-  "Business, Management & Finance",
-  "Social Sciences & Humanities",
-  "Arts, Design & Creative Studies",
-  "Law & Political Studies",
-  "Education & Teaching",
-  "Architecture, Building & Environmental Design",
-  "Languages, Literature & Communication",
-  "Religion, Philosophy & Cultural Studies",
-];
+const userDepartment = getFromLocalStorage(USER_DEPARTMENTS);
 
-export default function DepartmentPage() {
+export default function DepartmentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+
+  if (userDepartment != null) {
+    router.push(`/app/library/departments/${userDepartment}`);
+  }
 
   return (
     <main className="flex-1 overflow-y-auto">

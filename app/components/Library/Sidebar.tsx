@@ -40,10 +40,12 @@ export const Sidebar: React.FC = () => {
   const isActive = (href: string) => {
     if (pathname === href) return true;
 
-    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/*
+    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/ or /app/library/departments/*
     if (
-      href === "/app/library" &&
-      pathname.startsWith("/app/library/categories")
+      (href === "/app/library" &&
+        pathname.startsWith("/app/library/categories")) ||
+      (href === "/app/library" &&
+        pathname.startsWith("/app/library/departments"))
     ) {
       return false;
     }
