@@ -7,6 +7,7 @@ import { getFromLocalStorage } from "@/app/helpers/localStorage";
 import { PageHeader } from "@/app/components/Library/PageHeader";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
 import { DEPARTMENTS } from "@/app/types/departments";
+import DepartmentPage from "./[department]/page";
 
 const userDepartment = getFromLocalStorage(USER_DEPARTMENTS);
 
@@ -34,18 +35,22 @@ export default function DepartmentsPage() {
             Browse books by your school's department
           </p>
         </div>
-
         <div className="grid grid-cols-4 gap-6">
           {DEPARTMENTS.map((department) => (
             <DepartmentCard
               key={department.id}
               department={department}
               onClick={() =>
-                router.push(`/app/library/departments/${department.id}`)
+                router.push(`/app/library/departments/${department.name}`)
               }
             />
           ))}
         </div>
+        userDepartment !== null && (
+        <DepartmentPage
+          params={Promise.resolve({ department: userDepartment ?? "" })}
+        />
+        )
       </div>
     </main>
   );

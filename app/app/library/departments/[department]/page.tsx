@@ -20,8 +20,9 @@ const ALL_BOOKS = [
     description:
       "Explores the timeless lessons on wealth, greed, and happiness.",
     category: "business",
-    department: "business-finance",
+    departments: ["business-finance", "social-humanities"],
   },
+
   {
     id: 5,
     title: "The Bees",
@@ -33,8 +34,9 @@ const ALL_BOOKS = [
     reviews: 140,
     description: "A brilliantly imagined dystopian story set in a hive.",
     category: "scifi",
-    department: "arts-design", // literature/fiction → best fit
+    departments: ["arts-design", "social-humanities", "life-sciences"],
   },
+
   {
     id: 7,
     title: "Batman: Year One",
@@ -46,8 +48,9 @@ const ALL_BOOKS = [
     reviews: 85,
     description: "An iconic comic series detailing Batman's early days.",
     category: "comics",
-    department: "arts-design",
+    departments: ["arts-design"],
   },
+
   {
     id: 8,
     title: "Watchmen",
@@ -60,8 +63,9 @@ const ALL_BOOKS = [
     description:
       "A groundbreaking graphic novel that redefined the superhero genre.",
     category: "comics",
-    department: "arts-design",
+    departments: ["arts-design", "social-humanities"],
   },
+
   {
     id: 9,
     title: "The Sandman Vol. 1",
@@ -74,8 +78,9 @@ const ALL_BOOKS = [
     description:
       "The master of dreams embarks on an epic journey through myth and reality.",
     category: "comics",
-    department: "arts-design",
+    departments: ["arts-design", "social-humanities"],
   },
+
   {
     id: 10,
     title: "Saga Vol. 1",
@@ -87,8 +92,9 @@ const ALL_BOOKS = [
     reviews: 142,
     description: "An epic space opera about family, love, and war.",
     category: "comics",
-    department: "arts-design",
+    departments: ["arts-design", "social-humanities"],
   },
+
   {
     id: 11,
     title: "National Geographic - Wildlife Edition",
@@ -100,8 +106,9 @@ const ALL_BOOKS = [
     reviews: 78,
     description: "Stunning photography and stories from the natural world.",
     category: "magazines",
-    department: "agric-environment", // wildlife/environment
+    departments: ["agric-environment", "life-sciences"],
   },
+
   {
     id: 12,
     title: "The Atlantic - Technology & Society",
@@ -113,8 +120,9 @@ const ALL_BOOKS = [
     reviews: 65,
     description: "In-depth analysis of technology's impact on modern society.",
     category: "magazines",
-    department: "social-humanities",
+    departments: ["social-humanities", "cs-it"],
   },
+
   {
     id: 13,
     title: "OAU Data Structures and Algorithms 2021/2022",
@@ -127,8 +135,9 @@ const ALL_BOOKS = [
     description:
       "Comprehensive course material covering data structures and algorithm design.",
     category: "education",
-    department: "cs-it",
+    departments: ["cs-it", "engineering-tech", "math-stats"],
   },
+
   {
     id: 14,
     title: "Introduction to Machine Learning",
@@ -141,8 +150,9 @@ const ALL_BOOKS = [
     description:
       "A foundational guide to machine learning concepts and applications.",
     category: "education",
-    department: "cs-it",
+    departments: ["cs-it", "math-stats", "engineering-tech"],
   },
+
   {
     id: 15,
     title: "Calculus: Early Transcendentals",
@@ -155,8 +165,9 @@ const ALL_BOOKS = [
     description:
       "The definitive textbook for learning calculus and mathematical analysis.",
     category: "education",
-    department: "math-stats",
+    departments: ["math-stats", "engineering-tech", "physical-sciences"],
   },
+
   {
     id: 16,
     title: "Physics for Scientists and Engineers",
@@ -169,7 +180,7 @@ const ALL_BOOKS = [
     description:
       "A comprehensive introduction to physics principles and problem-solving.",
     category: "education",
-    department: "physical-sciences",
+    departments: ["physical-sciences", "engineering-tech", "math-stats"],
   },
 ];
 
@@ -192,7 +203,7 @@ export default function DepartmentPage({
     resolvedParams.department == "all"
       ? ALL_BOOKS
       : ALL_BOOKS.filter(
-          (book) => book.department === resolvedParams.department
+          (book) => book.departments.includes(resolvedParams.department)
         );
 
   if (searchQuery) {
