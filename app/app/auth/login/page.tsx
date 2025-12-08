@@ -75,8 +75,7 @@ export default function LoginPage() {
   };
 
   const handleForgotPassword = (): void => {
-    addNotification("info", "Password reset link coming soon!");
-    console.log("Forgot password clicked");
+    router.push("/app/auth/forgot-password");
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {

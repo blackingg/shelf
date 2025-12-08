@@ -21,7 +21,6 @@ export default function ForgotPassword() {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (email: string) => {
@@ -29,25 +28,22 @@ export default function ForgotPassword() {
     return emailRegex.test(email);
   };
 
-  const validatePasswords = () => {
-    const newErrors: Record<string, string> = {};
-
+  const validatePasswords = (): boolean => {
     if (newPassword.length < 8) {
-      newErrors.newPassword = "Password must be at least 8 characters";
+      addNotification("error", "Password must be at least 8 characters");
+      return false;
     }
 
     if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      addNotification("error", "Passwords do not match");
+      return false;
     }
 
-    return newErrors;
+    return true;
   };
 
   const handleEmailSubmit = async () => {
-    setErrors({});
-
     if (!validateEmail(email)) {
-      setErrors({ email: "Please enter a valid email address" });
       addNotification("error", "Please enter a valid email address");
       return;
     }
@@ -62,10 +58,7 @@ export default function ForgotPassword() {
   };
 
   const handleOtpSubmit = async () => {
-    setErrors({});
-
     if (otp.length !== 6) {
-      setErrors({ otp: "Please enter a valid 6-digit code" });
       addNotification("error", "Please enter a valid 6-digit code");
       return;
     }
@@ -80,11 +73,7 @@ export default function ForgotPassword() {
   };
 
   const handlePasswordSubmit = async () => {
-    const validationErrors = validatePasswords();
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length > 0) {
-      addNotification("error", "Please fix the errors in the form");
+    if (!validatePasswords()) {
       return;
     }
 
@@ -95,6 +84,16 @@ export default function ForgotPassword() {
       addNotification("success", "Password reset successfully! Please log in.");
       // Redirect to login
       router.push("/app/auth/login");
+    }, 1500);
+  };
+
+  const handleResendCode = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      addNotification("success", "Verification code resent to your email");
+      setCurrentStep("otp");
     }, 1500);
   };
 
@@ -153,7 +152,6 @@ export default function ForgotPassword() {
                 onKeyPress={(e) =>
                   e.key === "Enter" && canProceed() && handleNext()
                 }
-                error={errors.email}
                 icon={<FiMail className="w-5 h-5" />}
                 placeholder="you@example.com"
                 autoComplete="email"
@@ -196,14 +194,14 @@ export default function ForgotPassword() {
                 onKeyPress={(e) =>
                   e.key === "Enter" && canProceed() && handleNext()
                 }
-                error={errors.otp}
                 icon={<FiKey className="w-5 h-5" />}
                 placeholder="123456"
                 autoComplete="one-time-code"
               />
               <button
-                onClick={() => setCurrentStep("sent")}
-                className="text-sm text-emerald-700 hover:text-emerald-800 font-medium mt-3"
+                onClick={handleResendCode}
+                disabled={isLoading}
+                className="text-sm text-emerald-700 hover:text-emerald-800 font-medium mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Resend code
               </button>
@@ -225,7 +223,6 @@ export default function ForgotPassword() {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    error={errors.newPassword}
                     icon={<FiLock className="w-5 h-5" />}
                     placeholder="Enter new password"
                     autoComplete="new-password"
@@ -242,7 +239,6 @@ export default function ForgotPassword() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  error={errors.confirmPassword}
                   icon={<FiLock className="w-5 h-5" />}
                   placeholder="Confirm new password"
                   autoComplete="new-password"
