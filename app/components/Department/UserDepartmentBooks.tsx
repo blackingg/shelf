@@ -1,42 +1,29 @@
 "use client";
-import { useState, use } from "react";
-import { useRouter } from "next/navigation";
-import { PageHeader } from "@/app/components/Library/PageHeader";
+import { useState } from "react";
 import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiArrowLeft, FiFilter } from "react-icons/fi";
+import { FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
 import { DEPARTMENT_BOOKS } from "@/app/data/department";
 
-export default function DepartmentPage({
+
+export default function UserDepartmentBooks({
   params,
 }: {
-  params: Promise<{ department: string }>;
+  params: { department: string };
 }) {
-  const resolvedParams = use(params);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [sortBy, setSortBy] = useState<"popular" | "rating" | "recent">(
     "popular"
   );
-  const router = useRouter();
-
-  const departmentName = getDepartmentName(resolvedParams.department);
-
+  const departmentName = getDepartmentName(params.department);
+  console.log(params.department);
   let departmentBooks =
-    resolvedParams.department == "all"
+    params.department == "all"
       ? DEPARTMENT_BOOKS
       : DEPARTMENT_BOOKS.filter((book) =>
-          book.departments.includes(resolvedParams.department)
+          book.departments.includes(params.department)
         );
-
-  if (searchQuery) {
-    departmentBooks = departmentBooks.filter(
-      (book) =>
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }
 
   const sortedBooks = [...departmentBooks].sort((a, b) => {
     switch (sortBy) {
@@ -54,20 +41,8 @@ export default function DepartmentPage({
   return (
     <>
       <main className="flex-1 overflow-y-auto">
-        <PageHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
         <div className="p-8">
           <div className="mb-8">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
-            >
-              <FiArrowLeft className="w-5 h-5" />
-              <span className="font-medium group-hover:underline">
-                Back to Departments
-              </span>
-            </button>
-
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl capitalize font-bold text-gray-900 mb-2">
