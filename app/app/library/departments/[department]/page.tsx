@@ -1,12 +1,12 @@
 "use client";
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/app/components/Library/PageHeader";
 import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
 import { DEPARTMENT_BOOKS } from "@/app/data/department";
+import { Book } from "@/app/types/book";
 
 export default function DepartmentPage({
   params,
@@ -15,7 +15,7 @@ export default function DepartmentPage({
 }) {
   const resolvedParams = use(params);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [sortBy, setSortBy] = useState<"popular" | "rating" | "recent">(
     "popular"
   );
@@ -41,9 +41,9 @@ export default function DepartmentPage({
   const sortedBooks = [...departmentBooks].sort((a, b) => {
     switch (sortBy) {
       case "rating":
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       case "popular":
-        return b.readingCount - a.readingCount;
+        return (b.readingCount || 0) - (a.readingCount || 0);
       case "recent":
         return b.id - a.id;
       default:
@@ -54,8 +54,6 @@ export default function DepartmentPage({
   return (
     <>
       <main className="flex-1 overflow-y-auto">
-        <PageHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
         <div className="p-8">
           <div className="mb-8">
             <button
@@ -96,7 +94,10 @@ export default function DepartmentPage({
           </div>
 
           {sortedBooks.length > 0 ? (
-            <BookGrid books={sortedBooks} onBookClick={setSelectedBook} />
+            <BookGrid
+              books={sortedBooks}
+              onBookClick={setSelectedBook}
+            />
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">
@@ -110,8 +111,8 @@ export default function DepartmentPage({
       {selectedBook && (
         <BookDetailPanel
           book={selectedBook}
+          isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
-          onReadNow={() => console.log("Read now clicked")}
         />
       )}
     </>

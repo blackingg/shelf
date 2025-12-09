@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiGrid, FiList, FiX } from "react-icons/fi";
+import { FiList, FiX } from "react-icons/fi";
 import { USER_DEPARTMENTS } from "@/app/lib/constants";
 import { getFromLocalStorage } from "@/app/helpers/localStorage";
-import { PageHeader } from "@/app/components/Library/PageHeader";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { DEPARTMENTS } from "@/app/data/department";
@@ -12,7 +11,6 @@ import { DEPARTMENTS } from "@/app/data/department";
 const userDepartment = getFromLocalStorage(USER_DEPARTMENTS);
 
 export default function DepartmentsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const userDepartmentId = DEPARTMENTS.find(
     (department) => department.name === userDepartment
@@ -23,8 +21,6 @@ export default function DepartmentsPage() {
 
   return (
     <main className="flex-1 overflow-y-auto">
-      <PageHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
       <div className="p-8">
         <div className="mb-8">
           <div
