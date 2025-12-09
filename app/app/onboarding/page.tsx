@@ -22,6 +22,8 @@ import {
   FaGamepad,
   FaPodcast,
 } from "react-icons/fa";
+import { addToLocalStorage } from "@/app/helpers/localStorage";
+import { USER_DEPARTMENTS } from "@/app/lib/constants";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
@@ -273,12 +275,14 @@ export default function Onboarding() {
                 </label>
                 <Select<OptionType, false>
                   options={departmentOptions}
-                  onChange={(option: SingleValue<OptionType>) =>
+                  onChange={(option: SingleValue<OptionType>) => {
                     setFormData({
                       ...formData,
                       department: option?.value || "",
-                    })
-                  }
+                    });
+                    option?.value &&
+                      addToLocalStorage(USER_DEPARTMENTS, option.value);
+                  }}
                   value={
                     formData.department
                       ? departmentOptions.find(
