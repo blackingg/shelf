@@ -6,7 +6,7 @@ import {
   FiBook,
   FiSettings,
   FiLogOut,
-  // FiBriefcase,
+  FiBriefcase,
   FiTag,
   FiFolder,
 } from "react-icons/fi";
@@ -33,11 +33,11 @@ export const Sidebar: React.FC = () => {
     { label: "My Library", icon: <FiBook />, href: "/app/library" },
     { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
     { label: "Categories", icon: <FiTag />, href: "/app/library/categories" },
-    // {
-    //   label: "Departments",
-    //   icon: <FiBriefcase />,
-    //   href: "/app/library/departments",
-    // },
+    {
+      label: "Departments",
+      icon: <FiBriefcase />,
+      href: "/app/library/departments",
+    },
   ];
 
   const bottomItems: SidebarItem[] = [
@@ -48,10 +48,12 @@ export const Sidebar: React.FC = () => {
   const isActive = (href: string) => {
     if (pathname === href) return true;
 
-    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/*
+    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/ or /app/library/departments/*
     if (
-      href === "/app/library" &&
-      pathname.startsWith("/app/library/categories")
+      (href === "/app/library" &&
+        pathname.startsWith("/app/library/categories")) ||
+      (href === "/app/library" &&
+        pathname.startsWith("/app/library/departments"))
     ) {
       return false;
     }
