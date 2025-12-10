@@ -755,7 +755,7 @@ export default function ShelfLanding() {
                     label: "Discord",
                   },
                   {
-                    href: "https://www.instagram.com/shelf.ng_",
+                    href: "https://www.instagram.com/shelf_ng",
                     icon: RiInstagramLine,
                     label: "Instagram",
                   },
