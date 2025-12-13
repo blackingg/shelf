@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BookGrid } from "@/app/components/Library/BookGrid";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
 import { DEPARTMENT_BOOKS } from "@/app/data/department";
-
 
 export default function UserDepartmentBooks({
   params,
@@ -18,25 +17,29 @@ export default function UserDepartmentBooks({
   );
   const departmentName = getDepartmentName(params.department);
   console.log(params.department);
-  let departmentBooks =
-    params.department == "all"
+
+  const departmentBooks = useMemo(() => {
+    return params.department === "all"
       ? DEPARTMENT_BOOKS
       : DEPARTMENT_BOOKS.filter((book) =>
           book.departments.includes(params.department)
         );
+  }, [params.department]);
 
-  const sortedBooks = [...departmentBooks].sort((a, b) => {
-    switch (sortBy) {
-      case "rating":
-        return b.rating - a.rating;
-      case "popular":
-        return b.readingCount - a.readingCount;
-      case "recent":
-        return b.id - a.id;
-      default:
-        return 0;
-    }
-  });
+  const sortedBooks = useMemo(() => {
+    return [...departmentBooks].sort((a, b) => {
+      switch (sortBy) {
+        case "rating":
+          return (b.rating ?? 0) - (a.rating ?? 0);
+        case "popular":
+          return (b.readingCount ?? 0) - (a.readingCount ?? 0);
+        case "recent":
+          return (b.id ?? 0) - (a.id ?? 0);
+        default:
+          return 0;
+      }
+    });
+  }, [departmentBooks, sortBy]);
 
   return (
     <>
@@ -71,7 +74,10 @@ export default function UserDepartmentBooks({
           </div>
 
           {sortedBooks.length > 0 ? (
-            <BookGrid books={sortedBooks} onBookClick={setSelectedBook} />
+            <BookGrid
+              books={sortedBooks}
+              onBookClick={setSelectedBook}
+            />
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">
@@ -82,13 +88,11 @@ export default function UserDepartmentBooks({
         </div>
       </main>
 
-      {selectedBook && (
-        <BookDetailPanel
-          book={selectedBook}
-          onClose={() => setSelectedBook(null)}
-          onReadNow={() => console.log("Read now clicked")}
-        />
-      )}
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
     </>
   );
 }
