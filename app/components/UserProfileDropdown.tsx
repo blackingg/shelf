@@ -35,7 +35,7 @@ export const UserProfileDropdown: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
       >
-        <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden relative">
+        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-200 rounded-full overflow-hidden relative">
           <Image
             src={userAvatar}
             alt="User"
@@ -44,7 +44,9 @@ export const UserProfileDropdown: React.FC = () => {
             className="object-cover"
           />
         </div>
-        <span className=" hidden md:block font-medium text-gray-900">{userName}</span>
+        <span className=" hidden md:block font-medium text-gray-900">
+          {userName}
+        </span>
         <FiChevronDown className="w-4 h-4 text-gray-600" />
       </button>
 
@@ -63,7 +65,7 @@ export const UserProfileDropdown: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
+              className="absolute top-full right-0 mt-2 w-56 lg:w-72 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
             >
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-3">

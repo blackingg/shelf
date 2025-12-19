@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export const AppHeader: React.FC<{
   logo?: string;
@@ -7,7 +8,10 @@ export const AppHeader: React.FC<{
   <nav className="bg-white backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
     <div className="max-w-6xl mx-auto px-6">
       <div className="flex justify-between items-center h-16">
-        <div className="flex items-center space-x-3">
+        <Link
+          href={"/app"}
+          className="flex items-center space-x-3"
+        >
           <div className="bg-primary p-2 rounded-lg">
             <Image
               width={20}
@@ -18,7 +22,7 @@ export const AppHeader: React.FC<{
             />
           </div>
           <span className="text-2xl font-bold text-gray-900">Shelf</span>
-        </div>
+        </Link>
         {rightContent}
       </div>
     </div>

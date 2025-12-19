@@ -65,7 +65,10 @@ export const Sidebar: React.FC = () => {
     <>
       <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex-col">
         <div className="p-2 md:p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
+          <Link
+            href={"/app"}
+            className="flex items-center space-x-2"
+          >
             <div className="bg-primary p-2 rounded-lg">
               <Image
                 width={20}
@@ -76,7 +79,7 @@ export const Sidebar: React.FC = () => {
               />
             </div>
             <span className="text-xl font-bold text-gray-900">Shelf</span>
-          </div>
+          </Link>
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-1">

@@ -163,16 +163,15 @@ export default function BookDetailsPage() {
                       <span>Add to Folder</span>
                     </button>
 
-                    <div className="absolute top-full left-0 mt-2 w-72 z-50">
-                      <FolderDropdown
-                        isOpen={showFolderDropdown}
-                        onClose={() => setShowFolderDropdown(false)}
-                        folders={folders}
-                        currentBookFolders={savedFolders}
-                        onSaveToFolder={handleSaveToFolder}
-                        onCreateFolder={handleCreateFolder}
-                      />
-                    </div>
+                    <FolderDropdown
+                      isOpen={showFolderDropdown}
+                      onClose={() => setShowFolderDropdown(false)}
+                      folders={folders}
+                      currentBookFolders={savedFolders}
+                      onSaveToFolder={handleSaveToFolder}
+                      onCreateFolder={handleCreateFolder}
+                      className="top-full mt-2 w-72"
+                    />
                   </div>
                 </div>
               </motion.div>

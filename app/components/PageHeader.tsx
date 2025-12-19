@@ -13,13 +13,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   onSearchChange,
 }) => {
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-30">
+    <header className="bg-white border-b border-gray-200 px-4 lg:px-8 py-4 sticky top-0 z-30">
       <div className="flex items-center justify-between">
         <SearchBar
           value={searchQuery}
           onChange={onSearchChange}
         />
-        <div className="flex items-center space-x-4 ml-6">
+        <div className="flex items-center lg:space-x-4">
           <NotificationPanel />
           <UserProfileDropdown />
         </div>

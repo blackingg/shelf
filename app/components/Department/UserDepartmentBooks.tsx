@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { BookGrid } from "@/app/components/Library/BookGrid";
+import { BookCard } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
@@ -74,10 +74,15 @@ export default function UserDepartmentBooks({
           </div>
 
           {sortedBooks.length > 0 ? (
-            <BookGrid
-              books={sortedBooks}
-              onBookClick={setSelectedBook}
-            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+              {sortedBooks.map((book) => (
+                <BookCard
+                  key={book.id}
+                  {...book}
+                  onClick={() => setSelectedBook(book)}
+                />
+              ))}
+            </div>
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">

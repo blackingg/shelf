@@ -11,6 +11,7 @@ export const FolderDropdown: React.FC<{
   currentBookFolders?: string[];
   folders: Folder[];
   onCreateFolder: (folderName: string) => void;
+  className?: string;
 }> = ({
   isOpen,
   onClose,
@@ -18,6 +19,7 @@ export const FolderDropdown: React.FC<{
   currentBookFolders = [],
   folders,
   onCreateFolder,
+  className = "bottom-full mb-2 w-full",
 }) => {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -46,7 +48,7 @@ export const FolderDropdown: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-full left-0 mb-2 w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70]"
+            className={`absolute left-0 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[70] ${className}`}
           >
             <div className="p-3 border-b border-gray-200">
               <h3 className="font-semibold text-gray-900 text-sm">

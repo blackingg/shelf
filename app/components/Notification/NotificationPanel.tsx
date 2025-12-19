@@ -112,7 +112,7 @@ export const NotificationPanel: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
       >
-        <FiBell className="w-6 h-6 text-gray-600" />
+        <FiBell className="lg:w-6 lg:h-6 text-gray-600" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         )}
@@ -133,7 +133,7 @@ export const NotificationPanel: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full -right-20 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
+              className="absolute top-full -right-20 mt-2 w-64 md:w-80 lg:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
             >
               <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                 <div>

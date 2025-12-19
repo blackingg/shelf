@@ -11,7 +11,9 @@ import { Folder } from "@/app/types/folder";
 export default function FoldersPage() {
   const router = useRouter();
   const [searchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"private" | "public" | "bookmarked">("private");
+  const [activeTab, setActiveTab] = useState<
+    "private" | "public" | "bookmarked"
+  >("private");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [myFolders, setMyFolders] = useState<Folder[]>([
@@ -144,7 +146,7 @@ export default function FoldersPage() {
               onTabChange={setActiveTab}
             />
 
-            <div className="flex items-center gap-3">
+            <div className="flex w-full lg:w-fit items-start justify-between gap-3">
               <div className="flex bg-gray-100 p-1 rounded-lg">
                 <button
                   onClick={() => setViewMode("grid")}

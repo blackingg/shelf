@@ -34,7 +34,7 @@ export const SearchBar: React.FC<{
   };
 
   return (
-    <div className="relative text-sm">
+    <div className="relative text-sm left-12 lg:left-0">
       <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
       <input
         type="text"
@@ -42,7 +42,7 @@ export const SearchBar: React.FC<{
         onChange={(e) => handleChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-52 md:w-96 pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 text-black rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+        className="w-46 md:w-96 pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 text-black rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 placeholder-gray-400"
       />
     </div>
   );

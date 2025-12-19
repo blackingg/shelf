@@ -23,7 +23,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
     >
       <FaBuilding className="w-6 h-6 text-white" />
     </div>
-    <h3 className="font-semibold text-gray-900 text-lg mb-1">
+    <h3 className="font-semibold text-gray-900 text-sm md:text-lg mb-1">
       {department.name}
     </h3>
     {/* <p className="text-sm text-gray-500">
