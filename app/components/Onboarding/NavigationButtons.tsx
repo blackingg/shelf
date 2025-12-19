@@ -34,7 +34,7 @@ export const NavigationButtons: React.FC<{
       disabled={!canProceed || isLoading}
       className={`flex items-center space-x-2 px-8 py-3 rounded-xl font-medium transition-all ${
         canProceed && !isLoading
-          ? "bg-emerald-700 text-white hover:bg-emerald-800 focus:ring-2 focus:ring-emerald-500 shadow-lg cursor-pointer"
+          ? "bg-primary text-white hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 shadow-lg cursor-pointer"
           : "bg-gray-200 text-gray-400 cursor-not-allowed"
       }`}
     >

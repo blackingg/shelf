@@ -3,11 +3,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #044c41;
+  --primary-foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-emerald-50: #f0fdf9;
+  --color-emerald-100: #ccfbf0;
+  --color-emerald-200: #99f6e0;
+  --color-emerald-300: #5eead2;
+  --color-emerald-400: #2dd4be;
+  --color-emerald-500: #14b8a5;
+  --color-emerald-600: #0d9488;
+  --color-emerald-700: #044c41;
+  --color-emerald-800: #064038;
+  --color-emerald-900: #06352f;
+  --color-emerald-950: #021f1b;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -29,13 +46,13 @@ body {
   width: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(4, 76, 65, 0.1);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(4, 76, 65, 0.4);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.6);
+  background: rgba(4, 76, 65, 0.6);
 }

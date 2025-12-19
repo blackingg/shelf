@@ -22,9 +22,9 @@ export const Button: React.FC<{
 
   const variantStyles = {
     primary:
-      "bg-emerald-700 text-white hover:bg-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 shadow-lg hover:shadow-xl",
+      "bg-primary text-white hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 shadow-lg hover:shadow-xl",
     secondary: "bg-gray-200 text-gray-700 hover:bg-gray-300",
-    outline: "border-2 border-emerald-700 text-emerald-700 hover:bg-emerald-50",
+    outline: "border-2 border-primary text-primary hover:bg-primary/5",
   };
 
   const disabledStyles = "bg-gray-300 text-gray-500 cursor-not-allowed";

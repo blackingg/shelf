@@ -66,7 +66,7 @@ export const Sidebar: React.FC = () => {
       <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex-col">
         <div className="p-2 md:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <div className="bg-emerald-700 p-2 rounded-lg">
+            <div className="bg-primary p-2 rounded-lg">
               <Image
                 width={20}
                 height={20}
@@ -86,7 +86,7 @@ export const Sidebar: React.FC = () => {
               href={item.href!}
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive(item.href!)
-                  ? "bg-emerald-600 text-white shadow-lg"
+                  ? "bg-primary text-white shadow-lg"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
@@ -135,7 +135,7 @@ export const Sidebar: React.FC = () => {
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md border border-gray-200"
         aria-label="Toggle menu"
       >
-        <HiMenu className="text-emerald-800 text-2xl" />
+        <HiMenu className="text-primary text-2xl" />
       </button>
 
       {showSidebar && (
@@ -152,7 +152,7 @@ export const Sidebar: React.FC = () => {
       >
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="bg-emerald-700 p-2 rounded-lg">
+            <div className="bg-primary p-2 rounded-lg">
               <Image
                 width={20}
                 height={20}
@@ -168,7 +168,7 @@ export const Sidebar: React.FC = () => {
             className="p-1"
             aria-label="Close menu"
           >
-            <HiX className="text-emerald-800 text-3xl" />
+            <HiX className="text-primary text-3xl" />
           </button>
         </div>
 
@@ -180,7 +180,7 @@ export const Sidebar: React.FC = () => {
               onClick={() => setShowSideBar(false)}
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive(item.href!)
-                  ? "bg-emerald-600 text-white shadow-lg"
+                  ? "bg-primary text-white shadow-lg"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >

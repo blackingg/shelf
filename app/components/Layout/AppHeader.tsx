@@ -8,7 +8,7 @@ export const AppHeader: React.FC<{
     <div className="max-w-6xl mx-auto px-6">
       <div className="flex justify-between items-center h-16">
         <div className="flex items-center space-x-3">
-          <div className="bg-emerald-700 p-2 rounded-lg">
+          <div className="bg-primary p-2 rounded-lg">
             <Image
               width={20}
               height={20}
