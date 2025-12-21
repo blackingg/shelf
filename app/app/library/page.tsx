@@ -21,7 +21,7 @@ export default function LibraryPage() {
     {
       type: "book",
       id: "b1",
-      donor_id: "Morgan Housel",
+      donor_id: "morgan",
       title: "The Psychology of Money",
       author: "Morgan Housel",
       pages: 234,
@@ -47,7 +47,7 @@ export default function LibraryPage() {
     {
       type: "book",
       id: "b2",
-      donor_id: "Morgan Housel",
+      donor_id: "morgan",
       title: "The Psychology of Money",
       author: "Morgan Housel",
       pages: 234,
@@ -60,7 +60,7 @@ export default function LibraryPage() {
     {
       type: "book",
       id: "b3",
-      donor_id: "Morgan Housel",
+      donor_id: "morgan",
       title: "The Psychology of Money",
       author: "Morgan Housel",
       pages: 234,
@@ -86,7 +86,7 @@ export default function LibraryPage() {
     {
       type: "book",
       id: "b4",
-      donor_id: "Morgan Housel",
+      donor_id: "morgan",
       title: "The Psychology of Money",
       author: "Morgan Housel",
       pages: 234,
@@ -102,7 +102,7 @@ export default function LibraryPage() {
     {
       id: "5",
       title: "The Bees",
-      donor_id: "LalinePaull",
+      donor_id: "laline",
       author: "Laline Paull",
       cover_image: "/dummycover.png",
       pages: 384,
@@ -114,7 +114,7 @@ export default function LibraryPage() {
     {
       id: "6",
       title: "Vogue: September Issue 2024",
-      donor_id: "Vogue",
+      donor_id: "vogue",
       author: "Vogue Magazine",
       cover_image: "/dummycover.png",
       pages: 250,
@@ -126,7 +126,7 @@ export default function LibraryPage() {
     {
       id: "7",
       title: "Batman: Year One (Full Run)",
-      donor_id: "Frank Miller",
+      donor_id: "frankmiller",
       author: "Frank Miller & David Mazzucchelli",
       cover_image: "/dummycover.png",
       pages: 200,
@@ -138,7 +138,7 @@ export default function LibraryPage() {
     {
       id: "8",
       title: "The Room",
-      donor_id: "Jonas Karlsson",
+      donor_id: "jonas",
       author: "Jonas Karlsson",
       cover_image: "/dummycover.png",
       pages: 220,
@@ -150,7 +150,7 @@ export default function LibraryPage() {
     {
       id: "9",
       title: "Norwegian Wood",
-      donor_id: "Haruki Murakami",
+      donor_id: "murakami",
       author: "Haruki Murakami",
       cover_image: "/dummycover.png",
       pages: 368,

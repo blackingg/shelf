@@ -11,11 +11,11 @@ import {
   FiMoon,
   FiSun,
 } from "react-icons/fi";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 export default function ReaderPage() {
   const router = useRouter();
-  // const params = useParams();
+  const params = useParams();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
@@ -25,7 +25,7 @@ export default function ReaderPage() {
   const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
-  // Mock content
+  // Mock content (could be fetched based on params.id)
   const title = "The Psychology of Money";
   const author = "Morgan Housel";
   const chapterTitle = "Chapter 1: No One's Crazy";
