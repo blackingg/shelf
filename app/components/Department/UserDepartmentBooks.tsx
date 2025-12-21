@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
+import { Book } from "@/app/types/book";
 import { FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
 import { DEPARTMENT_BOOKS } from "@/app/data/department";
@@ -11,7 +12,7 @@ export default function UserDepartmentBooks({
 }: {
   params: { department: string };
 }) {
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [sortBy, setSortBy] = useState<"popular" | "rating" | "recent">(
     "popular"
   );
@@ -32,9 +33,9 @@ export default function UserDepartmentBooks({
         case "rating":
           return (b.rating ?? 0) - (a.rating ?? 0);
         case "popular":
-          return (b.readingCount ?? 0) - (a.readingCount ?? 0);
+          return (b.readersCount ?? 0) - (a.readersCount ?? 0);
         case "recent":
-          return (b.id ?? 0) - (a.id ?? 0);
+          return Number(b.id || 0) - Number(a.id || 0);
         default:
           return 0;
       }

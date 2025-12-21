@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FiGrid } from "react-icons/fi";
-import { CATEGORIES } from "@/app/types/categories";
+import { CATEGORIES_LEGACY } from "@/app/types/categories";
 
 export const CategoryFilter: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -12,8 +12,10 @@ export const CategoryFilter: React.FC = () => {
   };
 
   return (
-    <div className={`grid  grid-cols-4 md:grid-cols-9 gap-2 items-center space-x-3 overflow-x-auto pb-2`}>
-      {CATEGORIES.map((category) => (
+    <div
+      className={`grid  grid-cols-4 md:grid-cols-9 gap-2 items-center space-x-3 overflow-x-auto pb-2`}
+    >
+      {CATEGORIES_LEGACY.map((category) => (
         <button
           key={category.id}
           onClick={() => handleCategoryChange(category.id)}

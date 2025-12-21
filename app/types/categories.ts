@@ -1,10 +1,14 @@
-export interface Categories {
+export interface Category {
   id: string;
+  slug: string;
   name: string;
-  color: string;
+  description: string | null;
+  icon: string | null;
+  order: number;
+  booksCount: number;
 }
 
-export const CATEGORIES: Categories[] = [
+export const CATEGORIES_LEGACY = [
   { id: "all", name: "All", color: "bg-gray-500" },
   { id: "scifi", name: "Sci-Fi", color: "bg-blue-500" },
   { id: "fantasy", name: "Fantasy", color: "bg-purple-500" },
@@ -16,11 +20,11 @@ export const CATEGORIES: Categories[] = [
 ];
 
 export const getCategoryName = (categoryId: string): string => {
-  const category = CATEGORIES.find((cat) => cat.id === categoryId);
+  const category = CATEGORIES_LEGACY.find((cat) => cat.id === categoryId);
   return category ? category.name : categoryId;
 };
 
-export const CATEGORY_NAMES: Record<string, string> = CATEGORIES.reduce(
+export const CATEGORY_NAMES: Record<string, string> = CATEGORIES_LEGACY.reduce(
   (categoryMap, category) => {
     categoryMap[category.id] = category.name;
     return categoryMap;

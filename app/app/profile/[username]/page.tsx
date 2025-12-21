@@ -23,104 +23,128 @@ const MOCK_USER = {
 
 const MOCK_BOOKS: Book[] = [
   {
-    type: "book",
-    id: 1,
+    id: "1",
+    slug: "psychology-of-money",
     title: "The Psychology of Money",
     author: "Morgan Housel",
     coverImage: "/dummycover.png",
     rating: 4.8,
-    pages: 256,
-    readingCount: 1203,
-    reviews: 210,
+    ratingsCount: 450,
+    reviewsCount: 210,
+    readersCount: 1203,
+    downloadsCount: 850,
     donatedBy: "Sarah Chen",
-    description:
-      "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description: "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance.",
+    pages: 256,
+    category: "business",
   },
   {
-    type: "book",
-    id: 2,
+    id: "2",
+    slug: "how-innovation-works",
     title: "How Innovation Works",
     author: "Matt Ridley",
     coverImage: "/dummycover.png",
     rating: 4.6,
-    pages: 368,
-    readingCount: 842,
-    reviews: 95,
+    ratingsCount: 320,
+    reviewsCount: 95,
+    readersCount: 842,
+    downloadsCount: 400,
     donatedBy: "Sarah Chen",
-    description:
-      "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description: "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
+    pages: 368,
+    category: "science",
   },
   {
-    type: "book",
-    id: 3,
+    id: "3",
+    slug: "company-of-one",
     title: "Company of One",
     author: "Paul Jarvis",
     coverImage: "/dummycover.png",
     rating: 4.5,
-    pages: 192,
-    readingCount: 643,
-    reviews: 110,
+    ratingsCount: 280,
+    reviewsCount: 110,
+    readersCount: 643,
+    downloadsCount: 300,
     donatedBy: "Sarah Chen",
-    description:
-      "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description: "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
+    pages: 192,
+    category: "business",
   },
   {
-    type: "book",
-    id: 4,
+    id: "4",
+    slug: "great-gatsby",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
     coverImage: "/dummycover.png",
     rating: 4.4,
-    pages: 180,
-    readingCount: 2310,
-    reviews: 345,
+    ratingsCount: 950,
+    reviewsCount: 345,
+    readersCount: 2310,
+    downloadsCount: 1100,
     donatedBy: "Sarah Chen",
-    description:
-      "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description: "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
+    pages: 180,
+    category: "classics",
   },
   {
-    type: "book",
-    id: 5,
+    id: "5",
+    slug: "the-bees",
     title: "The Bees",
     author: "Laline Paull",
     coverImage: "/dummycover.png",
     rating: 4.8,
-    pages: 384,
-    readingCount: 720,
-    reviews: 140,
+    ratingsCount: 340,
+    reviewsCount: 140,
+    readersCount: 720,
+    downloadsCount: 500,
     donatedBy: "Sarah Chen",
-    description:
-      "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description: "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
+    pages: 384,
+    category: "fiction",
   },
 ];
 
 const MOCK_FOLDERS: Folder[] = [
   {
-    type: "folder",
     id: "f1",
+    slug: "summer-reading-list",
     name: "Summer Reading List",
-    bookCount: 12,
-    isPublic: true,
+    description: "My list for the summer",
+    booksCount: 12,
+    bookmarksCount: 45,
+    visibility: "PUBLIC",
     coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "Sarah Chen",
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "f2",
+    slug: "design-inspiration",
     name: "Design Inspiration",
-    bookCount: 8,
-    isPublic: true,
+    description: "Cool design books",
+    booksCount: 8,
+    bookmarksCount: 32,
+    visibility: "PUBLIC",
     coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "Sarah Chen",
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "f3",
+    slug: "tech-society",
     name: "Tech & Society",
-    bookCount: 5,
-    isPublic: true,
-    coverImages: ["/dummycover.png"],
+    description: "Intersection of tech and people",
+    booksCount: 5,
+    bookmarksCount: 12,
+    visibility: "PUBLIC",
+    coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "Sarah Chen",
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -147,15 +171,15 @@ export default function UserProfilePage() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 w-full overflow-hidden">
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto w-full">
           <div className="bg-white border-b border-gray-200">
             <div className="relative h-48 bg-gradient-to-br from-emerald-950 via-emerald-900 to-gray-900">
               <div className="absolute inset-0 bg-black/10" />
             </div>
-            <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
-              <div className="relative -mt-16 mb-6 flex flex-col md:flex-row items-end md:items-end gap-6">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 pt-5 pb-8">
+              <div className="relative -mt-16 mb-6 flex flex-col md:flex-row items-start md:items-end gap-6">
                 <div className="w-32 h-32 rounded-2xl bg-white p-1 shadow-xl">
                   <div className="w-full h-full rounded-xl bg-gray-100 flex items-center justify-center text-4xl font-bold text-emerald-700">
                     {username.charAt(0).toUpperCase()}
@@ -163,12 +187,12 @@ export default function UserProfilePage() {
                 </div>
                 <div className="flex-1 pb-2">
                   <div className="flex gap-3 items-center">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                       {MOCK_USER.name}
                     </h1>
                     {MOCK_USER.mod && (
-                      <div className="flex items-center gap-2 p-2 rounded-md bg-emerald-700 border border-emerald-200 w-fit">
-                        <FiShield className="h-4 w-4 text-white" />
+                      <div className="flex items-center gap-2 p-1.5 rounded-md bg-emerald-700 border border-emerald-200 w-fit">
+                        <FiShield className="h-3.5 w-3.5 text-white" />
                       </div>
                     )}
                   </div>
@@ -231,7 +255,7 @@ export default function UserProfilePage() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 10 }}
@@ -239,7 +263,7 @@ export default function UserProfilePage() {
               transition={{ duration: 0.2 }}
             >
               {activeTab === "donated" && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                   {MOCK_BOOKS.slice(0, 3).map((book) => (
                     <BookCard
                       key={book.id}
@@ -251,7 +275,7 @@ export default function UserProfilePage() {
               )}
 
               {activeTab === "folders" && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                   {MOCK_FOLDERS.map((folder) => (
                     <FolderCard
                       key={folder.id}

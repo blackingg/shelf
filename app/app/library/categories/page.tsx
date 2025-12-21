@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
-import { CATEGORIES } from "@/app/types/categories";
+import { CATEGORIES_LEGACY } from "@/app/types/categories";
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function CategoriesPage() {
         </div>
 
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {CATEGORIES.map((category) => (
+          {CATEGORIES_LEGACY.map((category) => (
             <CategoryCard
               key={category.id}
               category={category}

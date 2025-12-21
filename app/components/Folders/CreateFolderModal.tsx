@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { FiX, FiLock, FiGlobe } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
+import { FolderVisibility } from "@/app/types/folder";
 
 interface CreateFolderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (name: string, isPublic: boolean) => void;
+  onSubmit: (name: string, visibility: FolderVisibility) => void;
 }
 
 export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
@@ -15,14 +16,14 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   onSubmit,
 }) => {
   const [folderName, setFolderName] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
+  const [visibility, setVisibility] = useState<FolderVisibility>("PRIVATE");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (folderName.trim()) {
-      onSubmit(folderName.trim(), isPublic);
+      onSubmit(folderName.trim(), visibility);
       setFolderName("");
-      setIsPublic(false);
+      setVisibility("PRIVATE");
       onClose();
     }
   };
@@ -82,31 +83,37 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                 <div className="space-y-3">
                   <button
                     type="button"
-                    onClick={() => setIsPublic(false)}
+                    onClick={() => setVisibility("PRIVATE")}
                     className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
-                      !isPublic
+                      visibility === "PRIVATE"
                         ? "border-gray-600 bg-gray-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        !isPublic ? "border-gray-600" : "border-gray-300"
+                        visibility === "PRIVATE"
+                          ? "border-gray-600"
+                          : "border-gray-300"
                       }`}
                     >
-                      {!isPublic && (
+                      {visibility === "PRIVATE" && (
                         <div className="w-3 h-3 rounded-full bg-gray-600" />
                       )}
                     </div>
                     <FiLock
                       className={`w-5 h-5 ${
-                        !isPublic ? "text-gray-600" : "text-gray-600"
+                        visibility === "PRIVATE"
+                          ? "text-gray-600"
+                          : "text-gray-600"
                       }`}
                     />
                     <div className="flex-1 text-left">
                       <p
                         className={`font-semibold ${
-                          !isPublic ? "text-gray-900" : "text-gray-900"
+                          visibility === "PRIVATE"
+                            ? "text-gray-900"
+                            : "text-gray-900"
                         }`}
                       >
                         Private
@@ -119,31 +126,37 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setIsPublic(true)}
+                    onClick={() => setVisibility("PUBLIC")}
                     className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
-                      isPublic
+                      visibility === "PUBLIC"
                         ? "border-emerald-600 bg-emerald-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        isPublic ? "border-emerald-600" : "border-gray-300"
+                        visibility === "PUBLIC"
+                          ? "border-emerald-600"
+                          : "border-gray-300"
                       }`}
                     >
-                      {isPublic && (
+                      {visibility === "PUBLIC" && (
                         <div className="w-3 h-3 rounded-full bg-emerald-600" />
                       )}
                     </div>
                     <FiGlobe
                       className={`w-5 h-5 ${
-                        isPublic ? "text-emerald-600" : "text-gray-600"
+                        visibility === "PUBLIC"
+                          ? "text-emerald-600"
+                          : "text-gray-600"
                       }`}
                     />
                     <div className="flex-1 text-left">
                       <p
                         className={`font-semibold ${
-                          isPublic ? "text-emerald-900" : "text-gray-900"
+                          visibility === "PUBLIC"
+                            ? "text-emerald-900"
+                            : "text-gray-900"
                         }`}
                       >
                         Public

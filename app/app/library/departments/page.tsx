@@ -5,7 +5,8 @@ import { FiList, FiX } from "react-icons/fi";
 import { USER_DEPARTMENTS } from "@/app/lib/constants";
 import { getFromLocalStorage } from "@/app/helpers/localStorage";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
-import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
+import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks"
+import { Department } from "@/app/types/departments";
 import { DEPARTMENTS } from "@/app/data/department";
 
 const userDepartment = getFromLocalStorage(USER_DEPARTMENTS);

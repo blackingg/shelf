@@ -6,7 +6,7 @@ import { FolderList } from "@/app/components/Folders/FolderList";
 import { FolderVisibilityToggle } from "@/app/components/Folders/FolderVisibilityToggle";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FiGrid, FiList } from "react-icons/fi";
-import { Folder } from "@/app/types/folder";
+import { Folder, FolderVisibility } from "@/app/types/folder";
 
 export default function FoldersPage() {
   const router = useRouter();
@@ -16,96 +16,124 @@ export default function FoldersPage() {
   >("private");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  
   const [myFolders, setMyFolders] = useState<Folder[]>([
     {
-      type: "folder",
       id: "1",
+      slug: "want-to-read",
       name: "Want to Read",
-      bookCount: 12,
-      isPublic: false,
+      description: "Books I want to read",
+      booksCount: 12,
+      bookmarksCount: 0,
+      visibility: "PRIVATE",
       coverImages: ["/dummycover.png", "/dummycover.png"],
       createdBy: "You",
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "2",
+      slug: "favorites",
       name: "Favorites",
-      bookCount: 8,
-      isPublic: false,
+      description: "My favorite books",
+      booksCount: 8,
+      bookmarksCount: 0,
+      visibility: "PRIVATE",
       coverImages: ["/dummycover.png", "/dummycover.png"],
       createdBy: "You",
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "3",
+      slug: "study-materials",
       name: "Study Materials",
-      bookCount: 15,
-      isPublic: true,
+      description: "Books for my studies",
+      booksCount: 15,
+      bookmarksCount: 0,
+      visibility: "PUBLIC",
       coverImages: ["/dummycover.png", "/dummycover.png"],
       createdBy: "You",
+      createdAt: new Date().toISOString(),
     },
   ]);
 
   const [publicFolders] = useState<Folder[]>([
     {
-      type: "folder",
       id: "4",
+      slug: "best-fiction-2024",
       name: "Best Fiction 2024",
-      bookCount: 24,
-      isPublic: true,
+      description: "Top fiction picks this year",
+      booksCount: 24,
+      bookmarksCount: 150,
+      visibility: "PUBLIC",
       createdBy: "Sarah Johnson",
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "5",
+      slug: "tech-innovation",
       name: "Tech & Innovation",
-      bookCount: 18,
-      isPublic: true,
+      description: "Future of technology",
+      booksCount: 18,
+      bookmarksCount: 120,
+      visibility: "PUBLIC",
       createdBy: "Mike Chen",
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "6",
+      slug: "classic-literature",
       name: "Classic Literature",
-      bookCount: 32,
-      isPublic: true,
+      description: "Timeless pieces",
+      booksCount: 32,
+      bookmarksCount: 300,
+      visibility: "PUBLIC",
       createdBy: "Emily Davis",
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdAt: new Date().toISOString(),
     },
   ]);
 
   const [bookmarkedFolders] = useState<Folder[]>([
     {
-      type: "folder",
       id: "7",
+      slug: "must-read-classics",
       name: "Must Read Classics",
-      bookCount: 45,
-      isPublic: true,
+      description: "Curated by classics lovers",
+      booksCount: 45,
+      bookmarksCount: 500,
+      visibility: "PUBLIC",
       createdBy: "BookClub Official",
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "8",
+      slug: "sci-fi-gems",
       name: "Sci-Fi Gems",
-      bookCount: 12,
-      isPublic: true,
+      description: "Hidden gems in sci-fi",
+      booksCount: 12,
+      bookmarksCount: 80,
+      visibility: "PUBLIC",
       createdBy: "Alex Space",
       coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdAt: new Date().toISOString(),
     },
   ]);
 
-  const handleCreateFolder = (name: string, isPublic: boolean) => {
+  const handleCreateFolder = (name: string, visibility: FolderVisibility) => {
     const newFolder: Folder = {
-      type: "folder",
       id: Date.now().toString(),
+      slug: name.toLowerCase().replace(/ /g, "-"),
       name,
-      bookCount: 0,
-      isPublic,
-      coverImages: [],
+      description: null,
+      booksCount: 0,
+      bookmarksCount: 0,
+      visibility,
+      coverImages: null,
       createdBy: "You",
+      createdAt: new Date().toISOString(),
     };
 
     setMyFolders([newFolder, ...myFolders]);
@@ -138,8 +166,8 @@ export default function FoldersPage() {
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-8">
+      <main className="flex-1 overflow-y-auto w-full">
+        <div className="p-4 md:p-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle
               activeTab={activeTab}

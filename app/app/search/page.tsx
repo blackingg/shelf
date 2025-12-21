@@ -7,107 +7,164 @@ import { useRouter } from "next/navigation";
 import { Book } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 
-type SearchResult = Book | Folder;
+type SearchResultItem =
+  | (Book & { type: "book" })
+  | (Folder & { type: "folder" });
 
 // Mock Data
 const allFolders: Folder[] = [
   {
-    type: "folder",
     id: "1",
+    slug: "want-to-read",
     name: "Want to Read",
-    bookCount: 12,
-    isPublic: false,
+    description: "Books I want to read",
+    booksCount: 12,
+    bookmarksCount: 0,
+    visibility: "PRIVATE",
     coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "You",
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "2",
+    slug: "favorites",
     name: "Favorites",
-    bookCount: 8,
-    isPublic: false,
+    description: "My favorite books",
+    booksCount: 8,
+    bookmarksCount: 0,
+    visibility: "PRIVATE",
     coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "You",
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "3",
+    slug: "study-materials",
     name: "Study Materials",
-    bookCount: 15,
-    isPublic: true,
+    description: "Books for my studies",
+    booksCount: 15,
+    bookmarksCount: 0,
+    visibility: "PUBLIC",
     coverImages: ["/dummycover.png", "/dummycover.png"],
     createdBy: "You",
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "4",
+    slug: "best-fiction-2024",
     name: "Best Fiction 2024",
-    bookCount: 24,
-    isPublic: true,
+    description: "Top fiction picks",
+    booksCount: 24,
+    bookmarksCount: 150,
+    visibility: "PUBLIC",
     createdBy: "Sarah Johnson",
     coverImages: ["/dummycover.png", "/dummycover.png"],
+    createdAt: new Date().toISOString(),
   },
   {
-    type: "folder",
     id: "5",
+    slug: "tech-innovation",
     name: "Tech & Innovation",
-    bookCount: 18,
-    isPublic: true,
+    description: "Future gadgets",
+    booksCount: 18,
+    bookmarksCount: 120,
+    visibility: "PUBLIC",
     createdBy: "Mike Chen",
     coverImages: ["/dummycover.png", "/dummycover.png"],
+    createdAt: new Date().toISOString(),
   },
 ];
 
 const allBooks: Book[] = [
   {
-    type: "book",
-    id: 1,
+    id: "1",
+    slug: "psychology-of-money",
     title: "The Psychology of Money",
     author: "Morgan Housel",
     coverImage: "/dummycover.png",
     rating: 4.8,
+    ratingsCount: 450,
+    reviewsCount: 210,
+    readersCount: 1203,
+    downloadsCount: 850,
     donatedBy: "Sheriff Olopade",
-    description: "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description:
+      "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
+    category: "Business",
+    pages: 256,
   },
   {
-    type: "book",
-    id: 2,
+    id: "2",
+    slug: "how-innovation-works",
     title: "How Innovation Works",
     author: "Matt Ridley",
     coverImage: "/dummycover.png",
     rating: 4.6,
+    ratingsCount: 320,
+    reviewsCount: 150,
+    readersCount: 850,
+    downloadsCount: 420,
     donatedBy: "Arogundade Sodiq",
-    description: "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description:
+      "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
+    category: "Science",
+    pages: 368,
   },
   {
-    type: "book",
-    id: 3,
+    id: "3",
+    slug: "company-of-one",
     title: "Company of One",
     author: "Paul Jarvis",
     coverImage: "/dummycover.png",
     rating: 4.5,
+    ratingsCount: 280,
+    reviewsCount: 110,
+    readersCount: 650,
+    downloadsCount: 300,
     donatedBy: "Paul Jarvis",
-    description: "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description:
+      "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
+    category: "Business",
+    pages: 192,
   },
   {
-    type: "book",
-    id: 4,
+    id: "4",
+    slug: "great-gatsby",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
     coverImage: "/dummycover.png",
     rating: 4.4,
+    ratingsCount: 950,
+    reviewsCount: 312,
+    readersCount: 4500,
+    downloadsCount: 2100,
     donatedBy: "F. Scott Fitzgerald Estate",
-    description: "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description:
+      "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
+    category: "Classics",
+    pages: 180,
   },
   {
-    type: "book",
-    id: 5,
+    id: "5",
+    slug: "the-bees",
     title: "The Bees",
     author: "Laline Paull",
     coverImage: "/dummycover.png",
     rating: 4.8,
+    ratingsCount: 340,
+    reviewsCount: 140,
+    readersCount: 720,
+    downloadsCount: 500,
     donatedBy: "Laline Paull",
-    description: "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
+    donatedAt: "2024-01-15T10:00:00Z",
+    description:
+      "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
+    category: "Science Fiction",
+    pages: 384,
   },
 ];
 
@@ -125,7 +182,10 @@ function SearchContent() {
     folder.name.toLowerCase().includes(query.toLowerCase())
   );
 
-  const results: SearchResult[] = [...filteredFolders, ...filteredBooks];
+  const results: SearchResultItem[] = [
+    ...filteredFolders.map((f) => ({ ...f, type: "folder" as const })),
+    ...filteredBooks.map((b) => ({ ...b, type: "book" as const })),
+  ];
 
   if (!query) {
     return (
@@ -163,11 +223,7 @@ function SearchContent() {
             return (
               <BookCard
                 key={`book-${item.id}`}
-                title={item.title}
-                author={item.author}
-                coverImage={item.coverImage}
-                rating={item.rating}
-                donatedBy={item.donatedBy}
+                {...item}
                 onClick={() => router.push(`/app/books/${item.id}`)}
               />
             );

@@ -43,9 +43,9 @@ export default function DepartmentPage({
       case "rating":
         return (b.rating || 0) - (a.rating || 0);
       case "popular":
-        return (b.readingCount || 0) - (a.readingCount || 0);
+        return (b.readersCount || 0) - (a.readersCount || 0);
       case "recent":
-        return b.id - a.id;
+        return Number(b.id || 0) - Number(a.id || 0);
       default:
         return 0;
     }

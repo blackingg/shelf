@@ -80,7 +80,7 @@ export const FolderDropdown: React.FC<{
                             {folder.name}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {folder.bookCount} books
+                            {folder.booksCount} books
                           </p>
                         </div>
                       </div>

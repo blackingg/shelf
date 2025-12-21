@@ -20,6 +20,13 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   showActions = false,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const isPublic = folder.visibility === "PUBLIC";
+
+  // Ensure we have at least 2 images for the stack effect if possible
+  const displayImages =
+    folder.coverImages && folder.coverImages.length > 0
+      ? folder.coverImages.slice(0, 2)
+      : [];
 
   return (
     <div
@@ -74,35 +81,36 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       )}
 
       <div className="relative pt-6 sm:pt-8 pb-3 sm:pb-4">
-        {folder.coverImages && folder.coverImages.length > 0 && (
+        {/* Stacked Images Effect */}
+        {displayImages.length > 0 && (
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[85%]">
-            {folder.coverImages[1] && (
-              <div className="absolute top-1.5 sm:top-2 left-1/2 transform -translate-x-1/2 w-[95%] h-24 sm:h-28 md:h-32 rounded-t-lg shadow-md overflow-hidden border-2 border-white">
+            {/* Second Image (back) */}
+            {displayImages.length > 1 && (
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[90%] h-24 sm:h-28 md:h-32 rounded-t-lg shadow-md overflow-hidden border-2 border-white/80 opacity-60 translate-y-[-8px] rotate-[-2deg]">
                 <Image
-                  src={folder.coverImages[1]}
-                  alt="Book cover"
+                  src={displayImages[1]}
+                  alt="Book cover back"
                   fill
                   className="object-cover"
                 />
               </div>
             )}
-            {folder.coverImages[0] && (
-              <div className="relative top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-full h-24 sm:h-28 md:h-32 rounded-t-lg shadow-lg overflow-hidden border-2 border-white">
-                <Image
-                  src={folder.coverImages[0]}
-                  alt="Book cover"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+            {/* First Image (front) */}
+            <div className="relative top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-full h-24 sm:h-28 md:h-32 rounded-t-lg shadow-lg overflow-hidden border-2 border-white z-10">
+              <Image
+                src={displayImages[0]}
+                alt="Book cover front"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         )}
 
         <div
           className={`absolute top-0 left-4 sm:left-8 w-20 sm:w-24 h-6 sm:h-8 rounded-t-xl transition-all duration-300 ${
-            folder.isPublic
-              ? "bg-gradient-to-b from-emerald-400 to-emerald-500 group-hover:from-emerald-500 group-hover:to-emerald-600"
+            isPublic
+              ? "bg-emerald-500 group-hover:from-emerald-500 group-hover:to-emerald-600"
               : "bg-gradient-to-b from-gray-400 to-gray-500 group-hover:from-gray-500 group-hover:to-gray-600"
           }`}
           style={{
@@ -112,15 +120,12 @@ export const FolderCard: React.FC<FolderCardProps> = ({
 
         <div
           className={`relative rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1 ${
-            folder.isPublic
-              ? "bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700"
+            isPublic
+              ? "bg-emerald-600 to-emerald-700"
               : "bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700"
           }`}
           style={{
-            minHeight:
-              folder.coverImages && folder.coverImages.length > 0
-                ? "180px"
-                : "140px",
+            minHeight: displayImages.length > 0 ? "180px" : "140px",
           }}
         >
           <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-end h-full">
@@ -129,7 +134,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 <h3 className="font-bold text-white text-sm sm:text-base md:text-lg leading-tight pr-2">
                   {folder.name}
                 </h3>
-                {folder.isPublic ? (
+                {isPublic ? (
                   <FiGlobe className="w-4 h-4 sm:w-5 sm:h-5 text-white/90 flex-shrink-0" />
                 ) : (
                   <FiLock className="w-4 h-4 sm:w-5 sm:h-5 text-white/90 flex-shrink-0" />
@@ -140,16 +145,14 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 <div className="flex items-center space-x-1.5 sm:space-x-2">
                   <FiBook className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-xs sm:text-sm font-medium">
-                    {folder.bookCount}{" "}
-                    {folder.bookCount === 1 ? "book" : "books"}
+                    {folder.booksCount}{" "}
+                    {folder.booksCount === 1 ? "book" : "books"}
                   </span>
                 </div>
 
-                {folder.createdBy && (
-                  <span className="text-[10px] sm:text-xs text-white/80 truncate max-w-[100px] sm:max-w-none">
-                    by {folder.createdBy}
-                  </span>
-                )}
+                <span className="text-[10px] sm:text-xs text-white/80 truncate max-w-[100px] sm:max-w-none">
+                  by {folder.createdBy}
+                </span>
               </div>
             </div>
           </div>
@@ -159,7 +162,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
 
         <div
           className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[95%] h-2 sm:h-3 rounded-b-xl -z-10 ${
-            folder.isPublic ? "bg-emerald-800/30" : "bg-gray-800/30"
+            isPublic ? "bg-emerald-800/30" : "bg-gray-800/30"
           }`}
           style={{ filter: "blur(8px)" }}
         />

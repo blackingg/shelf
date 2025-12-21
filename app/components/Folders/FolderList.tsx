@@ -10,7 +10,6 @@ import {
   FiUser,
 } from "react-icons/fi";
 
-
 interface FolderListProps {
   folders: Folder[];
   onFolderClick: (folder: Folder) => void;
@@ -77,7 +76,7 @@ export const FolderList: React.FC<FolderListProps> = ({
                   <div className="flex items-center space-x-4">
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${
-                        folder.isPublic
+                        folder.visibility === "PUBLIC"
                           ? "bg-emerald-100 text-emerald-600"
                           : "bg-gray-100 text-gray-600"
                       }`}
@@ -99,12 +98,13 @@ export const FolderList: React.FC<FolderListProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center text-sm text-gray-600">
                     <FiBook className="w-4 h-4 mr-2 text-gray-400" />
-                    {folder.bookCount} {folder.bookCount === 1 ? "book" : "books"}
+                    {folder.booksCount}{" "}
+                    {folder.booksCount === 1 ? "book" : "books"}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    {folder.isPublic ? (
+                    {folder.visibility === "PUBLIC" ? (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                         <FiGlobe className="w-3 h-3 mr-1" />
                         Public

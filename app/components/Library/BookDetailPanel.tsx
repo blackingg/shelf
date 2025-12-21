@@ -25,25 +25,40 @@ export const BookDetailPanel: React.FC<{
 
   const [folders, setFolders] = useState<Folder[]>([
     {
-      type: "folder",
       id: "1",
+      slug: "want-to-read",
       name: "Want to Read",
-      bookCount: 12,
-      isPublic: false,
+      description: "Books I want to read",
+      coverImages: [],
+      visibility: "PRIVATE",
+      booksCount: 12,
+      bookmarksCount: 0,
+      createdBy: "me",
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "2",
+      slug: "favorites",
       name: "Favorites",
-      bookCount: 8,
-      isPublic: false,
+      description: "My favorite books",
+      coverImages: null,
+      visibility: "PRIVATE",
+      booksCount: 8,
+      bookmarksCount: 0,
+      createdBy: "me",
+      createdAt: new Date().toISOString(),
     },
     {
-      type: "folder",
       id: "3",
+      slug: "study-materials",
       name: "Study Materials",
-      bookCount: 15,
-      isPublic: false,
+      description: "Books for my studies",
+      coverImages: null,
+      visibility: "PRIVATE",
+      booksCount: 15,
+      bookmarksCount: 0,
+      createdBy: "me",
+      createdAt: new Date().toISOString(),
     },
   ]);
 
@@ -53,7 +68,7 @@ export const BookDetailPanel: React.FC<{
       setFolders(
         folders.map((folder) =>
           folder.id === folderId
-            ? { ...folder, bookCount: folder.bookCount - 1 }
+            ? { ...folder, booksCount: folder.booksCount - 1 }
             : folder
         )
       );
@@ -63,7 +78,7 @@ export const BookDetailPanel: React.FC<{
       setFolders(
         folders.map((folder) =>
           folder.id === folderId
-            ? { ...folder, bookCount: folder.bookCount + 1 }
+            ? { ...folder, booksCount: folder.booksCount + 1 }
             : folder
         )
       );
@@ -73,11 +88,16 @@ export const BookDetailPanel: React.FC<{
 
   const handleCreateFolder = (folderName: string) => {
     const newFolder: Folder = {
-      type: "folder",
       id: Date.now().toString(),
+      slug: folderName.toLowerCase().replace(/ /g, "-"),
       name: folderName,
-      bookCount: 1,
-      isPublic: false,
+      description: null,
+      coverImages: null,
+      visibility: "PRIVATE",
+      booksCount: 1,
+      bookmarksCount: 0,
+      createdBy: "me",
+      createdAt: new Date().toISOString(),
     };
     setFolders([...folders, newFolder]);
     setBookFolders([...bookFolders, newFolder.id]);
@@ -161,15 +181,15 @@ export const BookDetailPanel: React.FC<{
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
                 <p className="text-2xl font-bold text-white">
-                  {book.readingCount || "-"}
+                  {book.readersCount || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
-                  Ratings
+                  Readers
                 </p>
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
                 <p className="text-2xl font-bold text-white">
-                  {book.reviews || "-"}
+                  {book.reviewsCount || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Reviews
