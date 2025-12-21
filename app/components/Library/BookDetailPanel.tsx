@@ -11,11 +11,11 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { FolderDropdown } from "./FolderDropdown";
-import { Book } from "@/app/types/book";
+import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 
 export const BookDetailPanel: React.FC<{
-  book: Book;
+  book: BookPreview;
   onClose: () => void;
   isOpen: boolean;
 }> = ({ book, onClose, isOpen }) => {
@@ -135,7 +135,7 @@ export const BookDetailPanel: React.FC<{
             </button>
             <div className="relative aspect-[2/3] w-38 md:w-48 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-6 ring-4 ring-emerald-700/30">
               <Image
-                src={book.coverImage}
+                src={book.cover_image}
                 alt={book.title}
                 fill
                 className="object-cover"
@@ -150,14 +150,14 @@ export const BookDetailPanel: React.FC<{
             <p className="text-emerald-200/80 text-center mb-6 text-sm">
               Donated by{" "}
               <Link
-                href={`/app/profile/${book.donatedBy}`}
+                href={`/app/profile/${book.donor_id}`}
                 className="text-white hover:text-emerald-200 hover:underline font-semibold transition-colors"
                 onClick={() => onClose()}
               >
-                {book.donatedBy}
+                {book.donor_id}
               </Link>
             </p>
-            <div className="flex items-center justify-center space-x-1 mb-6 bg-emerald-800/50 rounded-xl py-3 px-4">
+            {/* <div className="flex items-center justify-center space-x-1 mb-6 bg-emerald-800/50 rounded-xl py-3 px-4">
               {[...Array(5)].map((_, i) => (
                 <FiStar
                   key={i}
@@ -169,7 +169,7 @@ export const BookDetailPanel: React.FC<{
                 />
               ))}
               <span className="ml-2 font-bold text-lg">{book.rating || 0}</span>
-            </div>
+            </div> */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
                 <p className="text-2xl font-bold text-white">
@@ -181,18 +181,18 @@ export const BookDetailPanel: React.FC<{
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
                 <p className="text-2xl font-bold text-white">
-                  {book.readersCount || "-"}
+                  {book.published_year || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
-                  Readers
+                  Published
                 </p>
               </div>
               <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white">
-                  {book.reviewsCount || "-"}
+                <p className="text-2xl font-bold text-white capitalize">
+                  {book.category || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
-                  Reviews
+                  Category
                 </p>
               </div>
             </div>
@@ -208,7 +208,7 @@ export const BookDetailPanel: React.FC<{
             </div>
             <div className="space-y-3 mt-auto">
               <button
-                onClick={() => router.push(`/app/books/${book.id}`)}
+                onClick={() => router.push(`/app/books/${book.title}`)}
                 className="w-full bg-white text-emerald-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
               >
                 <FiBookOpen className="w-5 h-5" />

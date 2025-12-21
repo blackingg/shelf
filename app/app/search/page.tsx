@@ -4,11 +4,11 @@ import { useSearchParams } from "next/navigation";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { useRouter } from "next/navigation";
-import { Book } from "@/app/types/book";
+import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 
 type SearchResultItem =
-  | (Book & { type: "book" })
+  | (BookPreview & { type: "book" })
   | (Folder & { type: "folder" });
 
 // Mock Data
@@ -75,96 +75,66 @@ const allFolders: Folder[] = [
   },
 ];
 
-const allBooks: Book[] = [
+const allBooks: BookPreview[] = [
   {
     id: "1",
-    slug: "psychology-of-money",
     title: "The Psychology of Money",
     author: "Morgan Housel",
-    coverImage: "/dummycover.png",
-    rating: 4.8,
-    ratingsCount: 450,
-    reviewsCount: 210,
-    readersCount: 1203,
-    downloadsCount: 850,
-    donatedBy: "Sheriff Olopade",
-    donatedAt: "2024-01-15T10:00:00Z",
+    cover_image: "/dummycover.png",
+    donor_id: "Sheriff Olopade",
     description:
-      "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
+      "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance.",
     category: "Business",
     pages: 256,
+    published_year: 2020,
   },
   {
     id: "2",
-    slug: "how-innovation-works",
     title: "How Innovation Works",
     author: "Matt Ridley",
-    coverImage: "/dummycover.png",
-    rating: 4.6,
-    ratingsCount: 320,
-    reviewsCount: 150,
-    readersCount: 850,
-    downloadsCount: 420,
-    donatedBy: "Arogundade Sodiq",
-    donatedAt: "2024-01-15T10:00:00Z",
+    cover_image: "/dummycover.png",
+    donor_id: "Arogundade Sodiq",
     description:
       "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
     category: "Science",
     pages: 368,
+    published_year: 2019,
   },
   {
     id: "3",
-    slug: "company-of-one",
     title: "Company of One",
     author: "Paul Jarvis",
-    coverImage: "/dummycover.png",
-    rating: 4.5,
-    ratingsCount: 280,
-    reviewsCount: 110,
-    readersCount: 650,
-    downloadsCount: 300,
-    donatedBy: "Paul Jarvis",
-    donatedAt: "2024-01-15T10:00:00Z",
+    cover_image: "/dummycover.png",
+    donor_id: "Paul Jarvis",
     description:
       "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
     category: "Business",
     pages: 192,
+    published_year: 2019,
   },
   {
     id: "4",
-    slug: "great-gatsby",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
-    coverImage: "/dummycover.png",
-    rating: 4.4,
-    ratingsCount: 950,
-    reviewsCount: 312,
-    readersCount: 4500,
-    downloadsCount: 2100,
-    donatedBy: "F. Scott Fitzgerald Estate",
-    donatedAt: "2024-01-15T10:00:00Z",
+    cover_image: "/dummycover.png",
+    donor_id: "F. Scott Fitzgerald Estate",
     description:
       "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
     category: "Classics",
     pages: 180,
+    published_year: 1925,
   },
   {
     id: "5",
-    slug: "the-bees",
     title: "The Bees",
     author: "Laline Paull",
-    coverImage: "/dummycover.png",
-    rating: 4.8,
-    ratingsCount: 340,
-    reviewsCount: 140,
-    readersCount: 720,
-    downloadsCount: 500,
-    donatedBy: "Laline Paull",
-    donatedAt: "2024-01-15T10:00:00Z",
+    cover_image: "/dummycover.png",
+    donor_id: "Laline Paull",
     description:
       "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
     category: "Science Fiction",
     pages: 384,
+    published_year: 2014,
   },
 ];
 
@@ -222,7 +192,6 @@ function SearchContent() {
           } else {
             return (
               <BookCard
-                key={`book-${item.id}`}
                 {...item}
                 onClick={() => router.push(`/app/books/${item.id}`)}
               />

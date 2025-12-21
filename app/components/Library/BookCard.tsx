@@ -5,17 +5,17 @@ import { FiStar } from "react-icons/fi";
 export const BookCard: React.FC<{
   title: string;
   author: string;
-  coverImage: string;
+  cover_image: string;
   rating?: number;
-  donatedBy?: string;
+  donor_id?: string;
   onClick?: () => void;
   className?: string;
 }> = ({
   title,
   author,
-  coverImage,
+  cover_image,
   rating,
-  donatedBy,
+  donor_id,
   onClick,
   className = "",
 }) => (
@@ -25,7 +25,7 @@ export const BookCard: React.FC<{
   >
     <div className="relative h-65 rounded-xl overflow-hidden shadow-lg mb-3">
       <Image
-        src={coverImage}
+        src={cover_image}
         alt={title}
         fill
         className="object-cover"
@@ -41,13 +41,13 @@ export const BookCard: React.FC<{
       {title}
     </h3>
     <p className="text-xs text-gray-500 line-clamp-1">{author}</p>
-    {donatedBy && (
+    {donor_id && (
       <Link
-        href={`/app/profile/${donatedBy}`}
+        href={`/app/profile/${donor_id}`}
         onClick={(e) => e.stopPropagation()}
         className="text-[10px] text-emerald-600 hover:text-emerald-700 hover:underline mt-0.5 block truncate"
       >
-        Donated by {donatedBy}
+        Donated by {donor_id}
       </Link>
     )}
   </div>

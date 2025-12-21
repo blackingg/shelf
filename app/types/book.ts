@@ -1,20 +1,33 @@
 export interface Book {
   id: string;
-  slug: string;
+  donor_id: string;
   title: string;
   author: string;
   description: string;
-  coverImage: string;
+  category: string;
+  cover_image: string;
+  pages: number;
+  file_url: string;
+  file_size: number;
+  file_type: string;
+  department: string;
+  isbn?: string;
+  publisher?: string;
+  published_year?: number;
+  tags?: string[];
+}
+
+export type BookPreview = Partial<Book> & {
+  id: string;
+  title: string;
+  donor_id: string;
+  author: string;
+  cover_image: string;
   pages: number;
   category: string;
-  rating: number;
-  ratingsCount: number;
-  reviewsCount: number;
-  readersCount: number;
-  downloadsCount: number;
-  donatedBy: string;
-  donatedAt: string;
-}
+  description: string;
+  published_year: number;
+};
 
 export interface BookFilterParams {
   search?: string;
