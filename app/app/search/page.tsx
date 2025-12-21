@@ -266,7 +266,6 @@ function SearchContent() {
               } else {
                 return (
                   <BookCard
-                    key={`book-${item.id}`}
                     {...item}
                     onClick={() => setSelectedBook(item)}
                   />

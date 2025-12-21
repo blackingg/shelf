@@ -180,7 +180,6 @@ export default function LibraryPage() {
                 if (item.type === "folder") {
                   return (
                     <FolderCard
-                      key={item.id}
                       folder={item}
                       onClick={() => router.push(`/app/folders/${item.id}`)}
                     />
@@ -205,7 +204,6 @@ export default function LibraryPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-6">
               {categoryBooks.map((book) => (
                 <BookCard
-                  key={book.title}
                   {...book}
                   onClick={() => setSelectedBook(book)}
                 />

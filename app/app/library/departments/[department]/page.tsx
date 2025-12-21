@@ -6,7 +6,7 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import { getDepartmentName } from "@/app/helpers/department";
 import { DEPARTMENT_BOOKS } from "@/app/data/department";
-import { Book } from "@/app/types/book";
+import { BookPreview } from "@/app/types/book";
 
 export default function DepartmentPage({
   params,
@@ -15,10 +15,8 @@ export default function DepartmentPage({
 }) {
   const resolvedParams = use(params);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [sortBy, setSortBy] = useState<"popular" | "rating" | "recent">(
-    "popular"
-  );
+  const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  const [sortBy, setSortBy] = useState<"title" | "author" | "year">("title");
   const router = useRouter();
 
   const departmentName = getDepartmentName(resolvedParams.department);
@@ -26,8 +24,14 @@ export default function DepartmentPage({
   let departmentBooks =
     resolvedParams.department == "all"
       ? DEPARTMENT_BOOKS
-      : DEPARTMENT_BOOKS.filter((book) =>
-          book.departments.includes(resolvedParams.department)
+      : DEPARTMENT_BOOKS.filter(
+          (book) =>
+            book.title
+              .toLowerCase()
+              .includes(resolvedParams.department.toLowerCase()) ||
+            book.author
+              .toLowerCase()
+              .includes(resolvedParams.department.toLowerCase())
         );
 
   if (searchQuery) {
@@ -40,12 +44,12 @@ export default function DepartmentPage({
 
   const sortedBooks = [...departmentBooks].sort((a, b) => {
     switch (sortBy) {
-      case "rating":
-        return (b.rating || 0) - (a.rating || 0);
-      case "popular":
-        return (b.readersCount || 0) - (a.readersCount || 0);
-      case "recent":
-        return Number(b.id || 0) - Number(a.id || 0);
+      case "title":
+        return a.title.localeCompare(b.title);
+      case "author":
+        return a.author.localeCompare(b.author);
+      case "year":
+        return (b.published_year || 0) - (a.published_year || 0);
       default:
         return 0;
     }
@@ -82,12 +86,14 @@ export default function DepartmentPage({
                 <select
                   title="sortBy"
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={(e) =>
+                    setSortBy(e.target.value as "title" | "author" | "year")
+                  }
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-black"
                 >
-                  <option value="popular">Most Popular</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="recent">Recently Added</option>
+                  <option value="title">Title (A-Z)</option>
+                  <option value="author">Author (A-Z)</option>
+                  <option value="year">Newest First</option>
                 </select>
               </div>
             </div>
@@ -97,7 +103,6 @@ export default function DepartmentPage({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {sortedBooks.map((book) => (
                 <BookCard
-                  key={book.id}
                   {...book}
                   onClick={() => setSelectedBook(book)}
                 />
@@ -115,7 +120,7 @@ export default function DepartmentPage({
 
       {selectedBook && (
         <BookDetailPanel
-          book={selectedBook}
+          book={selectedBook!}
           isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
         />
