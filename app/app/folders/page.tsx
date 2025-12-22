@@ -5,17 +5,22 @@ import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { FolderList } from "@/app/components/Folders/FolderList";
 import { FolderVisibilityToggle } from "@/app/components/Folders/FolderVisibilityToggle";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
+import { ConfirmModal } from "@/app/components/ConfirmModal";
 import { FiGrid, FiList } from "react-icons/fi";
 import { Folder, FolderVisibility } from "@/app/types/folder";
 
 export default function FoldersPage() {
   const router = useRouter();
+  const currentUser = "You"; // Current logged-in user
+
   const [searchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<
     "private" | "public" | "bookmarked"
   >("private");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
 
   // Mock Data
   const [myFolders, setMyFolders] = useState<Folder[]>([
@@ -28,7 +33,7 @@ export default function FoldersPage() {
       bookmarksCount: 0,
       visibility: "PRIVATE",
       coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: "You",
+      createdBy: currentUser,
       createdAt: new Date().toISOString(),
     },
     {
@@ -40,7 +45,7 @@ export default function FoldersPage() {
       bookmarksCount: 0,
       visibility: "PRIVATE",
       coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: "You",
+      createdBy: currentUser,
       createdAt: new Date().toISOString(),
     },
     {
@@ -52,12 +57,12 @@ export default function FoldersPage() {
       bookmarksCount: 0,
       visibility: "PUBLIC",
       coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: "You",
+      createdBy: currentUser,
       createdAt: new Date().toISOString(),
     },
   ]);
 
-  const [publicFolders] = useState<Folder[]>([
+  const [publicFolders] = useState<(Folder & { collaborator?: any })[]>([
     {
       id: "4",
       slug: "best-fiction-2024",
@@ -93,10 +98,11 @@ export default function FoldersPage() {
       createdBy: "Emily Davis",
       coverImages: ["/dummycover.png", "/dummycover.png"],
       createdAt: new Date().toISOString(),
+      collaborator: { role: "EDITOR" },
     },
   ]);
 
-  const [bookmarkedFolders] = useState<Folder[]>([
+  const [bookmarkedFolders] = useState<(Folder & { collaborator?: any })[]>([
     {
       id: "7",
       slug: "must-read-classics",
@@ -120,6 +126,7 @@ export default function FoldersPage() {
       createdBy: "Alex Space",
       coverImages: ["/dummycover.png", "/dummycover.png"],
       createdAt: new Date().toISOString(),
+      collaborator: { role: "EDITOR" },
     },
   ]);
 
@@ -133,7 +140,7 @@ export default function FoldersPage() {
       bookmarksCount: 0,
       visibility,
       coverImages: null,
-      createdBy: "You",
+      createdBy: currentUser,
       createdAt: new Date().toISOString(),
     };
 
@@ -149,9 +156,17 @@ export default function FoldersPage() {
   };
 
   const handleFolderDelete = (folder: Folder) => {
-    if (confirm(`Are you sure you want to delete "${folder.name}"?`)) {
-      setMyFolders(myFolders.filter((f) => f.id !== folder.id));
+    setFolderToDelete(folder);
+    console.log("Deleting folder:", folder);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (folderToDelete) {
+      setMyFolders(myFolders.filter((f) => f.id !== folderToDelete.id));
     }
+    setShowDeleteModal(false);
+    setFolderToDelete(null);
   };
 
   const displayedFolders =
@@ -214,13 +229,10 @@ export default function FoldersPage() {
             <FolderGrid
               folders={filteredFolders}
               onFolderClick={handleFolderClick}
-              onFolderEdit={
-                activeTab === "private" ? handleFolderEdit : undefined
-              }
-              onFolderDelete={
-                activeTab === "private" ? handleFolderDelete : undefined
-              }
-              showActions={activeTab === "private"}
+              onFolderEdit={handleFolderEdit}
+              onFolderDelete={handleFolderDelete}
+              showActions={true}
+              currentUser={currentUser}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
@@ -233,13 +245,10 @@ export default function FoldersPage() {
             <FolderList
               folders={filteredFolders}
               onFolderClick={handleFolderClick}
-              onFolderEdit={
-                activeTab === "private" ? handleFolderEdit : undefined
-              }
-              onFolderDelete={
-                activeTab === "private" ? handleFolderDelete : undefined
-              }
-              showActions={activeTab === "private"}
+              onFolderEdit={handleFolderEdit}
+              onFolderDelete={handleFolderDelete}
+              showActions={true}
+              currentUser={currentUser}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
@@ -256,6 +265,27 @@ export default function FoldersPage() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateFolder}
+      />
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Folder?"
+        message={
+          folderToDelete && (
+            <p className="text-gray-600 text-center">
+              Are you sure you want to delete{" "}
+              <span className="font-bold text-gray-900">
+                "{folderToDelete.name}"
+              </span>
+              ?
+            </p>
+          )
+        }
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDanger={true}
       />
     </>
   );

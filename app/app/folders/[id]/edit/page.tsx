@@ -11,7 +11,6 @@ import {
   FiPlus,
   FiX,
   FiCheck,
-  FiAlertTriangle,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
@@ -19,11 +18,13 @@ import {
   Folder,
   FolderVisibility,
   FolderRoles,
+  Collaborator,
 } from "@/app/types/folder";
-import { motion, AnimatePresence } from "motion/react";
+import { ConfirmModal } from "@/app/components/ConfirmModal";
 
 type MockData = Partial<Folder> & {
   collaborators: Invite[];
+  collaborator?: Collaborator;
 };
 
 export default function EditFolderPage() {
@@ -33,18 +34,25 @@ export default function EditFolderPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
+  const currentUser = "Sarah Chen"; // Mock current user
+
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState<FolderVisibility>("PUBLIC");
+  const [folderData, setFolderData] = useState<MockData | null>(null);
 
   // Collaboration State
   const [collaborators, setCollaborators] = useState<Invite[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] =
     useState<Exclude<FolderRoles, "OWNER">>("VIEWER");
-  const [isOwner, setIsOwner] = useState(true); // Mocking ownership
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Permissions
+  const isOwner = folderData?.createdBy === currentUser;
+  const isEditor = folderData?.collaborator?.role === "EDITOR";
+  const canEdit = isOwner || isEditor;
 
   // Mock Fetch Data
   useEffect(() => {
@@ -54,6 +62,26 @@ export default function EditFolderPage() {
       description:
         "A collection of books I want to read this summer, focusing on self-improvement and fiction.",
       visibility: "PUBLIC",
+      createdBy: "Sarah Chen",
+      collaborator: {
+        id: "collab1",
+        userId: "user1",
+        folderId: "folder1",
+        role: "EDITOR",
+        permissions: ["ALL"],
+        user: {
+          id: "user1",
+          fullName: "Sarah Chen",
+          username: "sarahc",
+          email: "sarah@example.com",
+          avatar: null,
+          bio: null,
+          booksCount: 0,
+          foldersCount: 0,
+          createdAt: new Date().toISOString(),
+          uuid: "uuid1",
+        },
+      },
       collaborators: [
         {
           id: "1",
@@ -76,6 +104,7 @@ export default function EditFolderPage() {
       ],
     };
 
+    setFolderData(mockData);
     setName(mockData.name || "");
     setDescription(mockData.description || "");
     setVisibility(mockData.visibility || "PRIVATE");
@@ -88,6 +117,25 @@ export default function EditFolderPage() {
       setInviteRole("EDITOR");
     }
   }, [visibility, inviteRole]);
+
+  if (folderData && !canEdit) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">403</h1>
+          <p className="text-gray-600 mb-8">
+            You don't have permission to edit this folder.
+          </p>
+          <button
+            onClick={() => router.push("/app/folders")}
+            className="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Folders
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleInvite = (e: React.FormEvent) => {
     e.preventDefault();
@@ -289,93 +337,95 @@ export default function EditFolderPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 pt-8">
-              <label className="text-sm font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                <FiUsers className="w-4 h-4 text-gray-500" />
-                <span>Collaborators</span>
-              </label>
+            {isOwner && (
+              <div className="border-t border-gray-100 pt-8">
+                <label className="text-sm font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                  <FiUsers className="w-4 h-4 text-gray-500" />
+                  <span>Collaborators</span>
+                </label>
 
-              <div className="bg-gray-50 rounded-xl p-4 md:p-6 space-y-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <input
-                    type="email"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="Enter email address"
-                    className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm"
-                  />
-                  <select
-                    value={inviteRole}
-                    onChange={(e) =>
-                      setInviteRole(
-                        e.target.value as Exclude<FolderRoles, "OWNER">
-                      )
-                    }
-                    className="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white"
-                  >
-                    {visibility !== "PUBLIC" && (
-                      <option value="VIEWER">Viewer</option>
-                    )}
-                    <option value="EDITOR">Editor</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={handleInvite}
-                    disabled={!inviteEmail}
-                    className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                  >
-                    <FiPlus className="w-4 h-4" />
-                    <span>Invite</span>
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {collaborators.map((collaborator) => (
-                    <div
-                      key={collaborator.id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                <div className="bg-gray-50 rounded-xl p-4 md:p-6 space-y-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <input
+                      type="email"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      placeholder="Enter email address"
+                      className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm"
+                    />
+                    <select
+                      value={inviteRole}
+                      onChange={(e) =>
+                        setInviteRole(
+                          e.target.value as Exclude<FolderRoles, "OWNER">
+                        )
+                      }
+                      className="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 uppercase">
-                          {collaborator.email[0]}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {collaborator.email}
-                          </p>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xs text-gray-500 capitalize">
-                              {collaborator.role.toLowerCase()}
-                            </span>
-                            {collaborator.status === "PENDING" && (
-                              <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide rounded">
-                                Pending
+                      {visibility !== "PUBLIC" && (
+                        <option value="VIEWER">Viewer</option>
+                      )}
+                      <option value="EDITOR">Editor</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={handleInvite}
+                      disabled={!inviteEmail}
+                      className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    >
+                      <FiPlus className="w-4 h-4" />
+                      <span>Invite</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {collaborators.map((collaborator) => (
+                      <div
+                        key={collaborator.id}
+                        className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 uppercase">
+                            {collaborator.email[0]}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {collaborator.email}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs text-xs text-gray-500 capitalize">
+                                {collaborator.role.toLowerCase()}
                               </span>
-                            )}
+                              {collaborator.status === "PENDING" && (
+                                <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide rounded">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveCollaborator(collaborator.id)
+                          }
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Remove collaborator"
+                        >
+                          <FiX className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleRemoveCollaborator(collaborator.id)
-                        }
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Remove collaborator"
-                      >
-                        <FiX className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  {collaborators.length === 0 && (
-                    <div className="text-center py-4 text-sm text-gray-500 italic">
-                      No collaborators yet. Invite someone to contribute this
-                      folder!
-                    </div>
-                  )}
+                    ))}
+                    {collaborators.length === 0 && (
+                      <div className="text-center py-4 text-sm text-gray-500 italic">
+                        No collaborators yet. Invite someone to contribute this
+                        folder!
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {isOwner && (
               <div className="border-t border-gray-100 pt-8">
@@ -421,64 +471,22 @@ export default function EditFolderPage() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {showDeleteModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-              onClick={() => setShowDeleteModal(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl p-6 shadow-xl z-50"
-            >
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-xl">
-                  <FiAlertTriangle className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Delete Folder?
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    This action cannot be undone.
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-gray-600 text-center mb-8">
-                Are you sure you want to permanently delete{" "}
-                <span className="font-bold text-gray-900">"{name}"</span>?
-              </p>
-
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  disabled={isDeleteLoading}
-                  className="flex-1 px-4 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isDeleteLoading ? (
-                    <span>Deleting...</span>
-                  ) : (
-                    <span>Yes, Delete</span>
-                  )}
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Folder?"
+        message={
+          <p className="text-gray-600 text-center">
+            Are you sure you want to permanently delete{" "}
+            <span className="font-bold text-gray-900">"{name}"</span>?
+          </p>
+        }
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isLoading={isDeleteLoading}
+        isDanger={true}
+      />
     </div>
   );
 }

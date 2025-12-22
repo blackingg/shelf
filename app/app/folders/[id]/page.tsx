@@ -13,10 +13,11 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 
 import { Book } from "@/app/types/book";
-import { Folder } from "@/app/types/folder";
+import { Folder, Collaborator } from "@/app/types/folder";
 
 type ExtendedFolder = Folder & {
   books: Book[];
+  collaborator?: Collaborator;
 };
 
 export default function FolderDetailsPage() {
@@ -24,6 +25,8 @@ export default function FolderDetailsPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
+
+  const currentUser = "Sarah Chen"; // Mock current user
 
   // Mock Data
   const folder: ExtendedFolder = {
@@ -38,6 +41,25 @@ export default function FolderDetailsPage() {
     createdBy: "Sarah Chen",
     createdAt: "2024-09-01T10:00:00Z",
     coverImages: ["/dummycover.png"],
+    collaborator: {
+      id: "collab-1",
+      userId: "user-1",
+      folderId: "1",
+      role: "EDITOR",
+      permissions: ["EDIT_BOOKS"],
+      user: {
+        id: "user-1",
+        uuid: "uuid-1",
+        fullName: "John Doe",
+        username: "johndoe",
+        email: "john@example.com",
+        avatar: null,
+        bio: "Book lover",
+        booksCount: 10,
+        foldersCount: 5,
+        createdAt: new Date().toISOString(),
+      },
+    },
     books: [
       {
         id: "1",
@@ -106,6 +128,17 @@ export default function FolderDetailsPage() {
     setShowMenu(false);
   };
 
+  const isOwner = folder.createdBy === currentUser;
+  const isEditor = folder.collaborator?.role === "EDITOR";
+  const isCollaborator = !!folder.collaborator;
+
+  const canEdit = isOwner || isEditor;
+  const canDelete = isOwner;
+  const canSeeShare =
+    folder.visibility === "PUBLIC" || isOwner || isCollaborator;
+
+  const hasMenuActions = canEdit || canDelete || canSeeShare;
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-4 md:p-8 space-y-6">
@@ -142,40 +175,52 @@ export default function FolderDetailsPage() {
               </div>
             </div>
 
-            <div className="relative self-end lg:self-start">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
-              >
-                <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
-              </button>
+            {hasMenuActions && (
+              <div className="relative self-end lg:self-start">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                >
+                  <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
+                </button>
 
-              {showMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-10">
-                  <button
-                    onClick={() =>
-                      router.push(`/app/folders/${folder.id}/edit`)
-                    }
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                  >
-                    <FiEdit2 className="w-4 h-4" />
-                    <span>Edit Folder</span>
-                  </button>
-                  <button
-                    onClick={handleShare}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                  >
-                    <FiShare2 className="w-4 h-4" />
-                    <span>Share</span>
-                  </button>
-                  <div className="border-t border-gray-100 my-1" />
-                  <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
-                    <FiTrash2 className="w-4 h-4" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              )}
-            </div>
+                {showMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-10">
+                    {canEdit && (
+                      <button
+                        onClick={() =>
+                          router.push(`/app/folders/${folder.id}/edit`)
+                        }
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                      >
+                        <FiEdit2 className="w-4 h-4" />
+                        <span>Edit Folder</span>
+                      </button>
+                    )}
+                    {canSeeShare && (
+                      <button
+                        onClick={handleShare}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                      >
+                        <FiShare2 className="w-4 h-4" />
+                        <span>Share</span>
+                      </button>
+                    )}
+                    {canDelete && (
+                      <>
+                        {(canEdit || canSeeShare) && (
+                          <div className="border-t border-gray-100 my-1" />
+                        )}
+                        <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
+                          <FiTrash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div>

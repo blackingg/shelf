@@ -2,14 +2,15 @@
 import { FiLock, FiGlobe, FiMoreVertical, FiBook } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
-import { Folder } from "@/app/types/folder";
+import { Folder, Collaborator } from "@/app/types/folder";
 
 interface FolderCardProps {
-  folder: Folder;
+  folder: Folder & { collaborator?: Collaborator };
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
+  currentUser: string;
 }
 
 export const FolderCard: React.FC<FolderCardProps> = ({
@@ -18,9 +19,16 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onEdit,
   onDelete,
   showActions = false,
+  currentUser,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
+
+  const isOwner = folder.createdBy === currentUser;
+  const isEditor = folder.collaborator?.role === "EDITOR";
+  const canEdit = isOwner || isEditor;
+  const canDelete = isOwner;
+  const hasActions = canEdit || canDelete;
 
   // Ensure we have at least 2 images for the stack effect if possible
   const displayImages =
@@ -33,7 +41,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       onClick={onClick}
       className="group cursor-pointer relative"
     >
-      {showActions && (
+      {showActions && hasActions && (
         <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-20">
           <button
             onClick={(e) => {
@@ -54,26 +62,30 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 }}
               />
               <div className="absolute right-0 mt-2 w-36 sm:w-40 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit?.();
-                    setShowMenu(false);
-                  }}
-                  className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-50"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete?.();
-                    setShowMenu(false);
-                  }}
-                  className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50"
-                >
-                  Delete
-                </button>
+                {canEdit && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit?.();
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Edit
+                  </button>
+                )}
+                {canDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete?.();
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </>
           )}

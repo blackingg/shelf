@@ -1,15 +1,16 @@
 "use client";
 import { FolderCard } from "./FolderCard";
 import { FiFolder } from "react-icons/fi";
-import { Folder } from "@/app/types/folder";
+import { Folder, Collaborator } from "@/app/types/folder";
 
 interface FolderGridProps {
-  folders: Folder[];
+  folders: (Folder & { collaborator?: Collaborator })[];
   onFolderClick: (folder: Folder) => void;
   onFolderEdit?: (folder: Folder) => void;
   onFolderDelete?: (folder: Folder) => void;
   showActions?: boolean;
   emptyMessage?: string;
+  currentUser?: string;
 }
 
 export const FolderGrid: React.FC<FolderGridProps> = ({
@@ -19,6 +20,7 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
   onFolderDelete,
   showActions = false,
   emptyMessage = "No folders yet",
+  currentUser = "You",
 }) => {
   if (folders.length === 0) {
     return (
@@ -41,6 +43,7 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
           onEdit={() => onFolderEdit?.(folder)}
           onDelete={() => onFolderDelete?.(folder)}
           showActions={showActions}
+          currentUser={currentUser}
         />
       ))}
     </div>
