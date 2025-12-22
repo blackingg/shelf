@@ -10,11 +10,12 @@ UI, and the online reading experience.
 
 ## 🚀 **Tech Stack**
 
-- **Next.js 14 (App Router)**
-- **React + TypeScript**
+- **Next.js 16 (App Router)**
+- **React 19 + TypeScript**
 - **Tailwind CSS**
+- **Redux Toolkit** (State Management)
 - **PNPM** (preferred package manager)
-- **REST API integration** (talks to the backend repo)
+- **REST API integration**
 - Reusable component architecture
 
 ---
@@ -46,14 +47,17 @@ app/
     profile/
       [username]/
       edit/
-      settings/
+    settings/
+    search/
   components/
+    Department/
     Folders/
     Form/
     Layout/
     Library/
     Notification/
     Onboarding/
+    Settings/
     profile/
     PageHeader.tsx
     SearchBar.tsx
@@ -65,10 +69,12 @@ app/
     privacy/
     terms/
   types/
+    book.ts
     categories.ts
     folder.ts
     notification.ts
     schools.ts
+    user.ts
 
 public/
   banner.jpg
@@ -92,11 +98,9 @@ page.tsx
 ### **Document Management**
 
 - View documents by:
-
   - Category
   - Department
   - Search
-
 - Document details with preview panel
 - Online reader for PDFs
 
@@ -106,19 +110,17 @@ page.tsx
 - Backend will run SHA-256 hashing to detect duplicates
 - Users see their upload status (pending/approved/rejected)
 
-### **Folders (as groupings, not storage)**
+### **Folders & Collaboration**
 
-- Public folders:
+- **Visibility Options**:
+  - **Public**: Visible to everyone.
+  - **Private**: Visible only to owner and added collaborators.
+  - **Unlisted**: Accessible via link only (optional).
 
-  - Creator-only
-  - Anyone can add
-  - Specific profiles can add
-
-- Private folders:
-
-  - Creator & invited contributors only
-
-- Folder editing, visibility toggle, contributor rules
+- **Collaboration Roles**:
+  - **Owner**: Full control, can delete folder.
+  - **Editor**: Can add/remove books and invite viewers.
+  - **Viewer**: Read-only access.
 
 ### **Moderation**
 
@@ -128,7 +130,7 @@ page.tsx
 
 ### **Notifications**
 
-- UI for displaying stacked notifications (success/error/info)
+- Global notification system for success, error, and info alerts.
 
 ---
 
@@ -174,7 +176,7 @@ pnpm lint      # Lint
 
 ### **app/**
 
-Main application routes using the Next.js App Router.
+Main application routes using the Next.js App Router (v16).
 
 ### **components/**
 
@@ -187,7 +189,7 @@ Global context providers (e.g., NotificationContext).
 
 ### **types/**
 
-TypeScript interfaces: folders, categories, notifications, schools.
+TypeScript interfaces: folders, books, users, categories, notifications.
 
 ### **docs/**
 
