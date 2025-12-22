@@ -11,6 +11,7 @@ import {
   FiPlus,
   FiX,
   FiCheck,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
@@ -19,6 +20,7 @@ import {
   FolderVisibility,
   FolderRoles,
 } from "@/app/types/folder";
+import { motion, AnimatePresence } from "motion/react";
 
 type MockData = Partial<Folder> & {
   collaborators: Invite[];
@@ -29,6 +31,7 @@ export default function EditFolderPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -40,6 +43,8 @@ export default function EditFolderPage() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] =
     useState<Exclude<FolderRoles, "OWNER">>("VIEWER");
+  const [isOwner, setIsOwner] = useState(true); // Mocking ownership
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Mock Fetch Data
   useEffect(() => {
@@ -112,6 +117,20 @@ export default function EditFolderPage() {
   const handleRemoveCollaborator = (id: string) => {
     setCollaborators(collaborators.filter((c) => c.id !== id));
     addNotification("success", "Collaborator removed");
+  };
+
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleteLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    addNotification("success", "Folder deleted successfully");
+    setIsDeleteLoading(false);
+    setShowDeleteModal(false);
+    router.push("/app/folders");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -358,6 +377,23 @@ export default function EditFolderPage() {
               </div>
             </div>
 
+            {isOwner && (
+              <div className="border-t border-gray-100 pt-8">
+                <h3 className="text-red-600 font-bold mb-2">Danger Zone</h3>
+                <p className="text-gray-500 text-sm mb-4">
+                  Deleting this folder will permanently remove it and all its
+                  contents. This action cannot be undone.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="px-6 py-2.5 bg-red-50 text-red-600 font-bold rounded-lg hover:bg-red-100 transition-colors"
+                >
+                  Delete Folder
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center justify-end space-x-4 pt-4 border-t border-gray-100">
               <button
                 type="button"
@@ -384,6 +420,65 @@ export default function EditFolderPage() {
           </form>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showDeleteModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => setShowDeleteModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl p-6 shadow-xl z-50"
+            >
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-xl">
+                  <FiAlertTriangle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Delete Folder?
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-gray-600 text-center mb-8">
+                Are you sure you want to permanently delete{" "}
+                <span className="font-bold text-gray-900">"{name}"</span>?
+              </p>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={isDeleteLoading}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleteLoading ? (
+                    <span>Deleting...</span>
+                  ) : (
+                    <span>Yes, Delete</span>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
