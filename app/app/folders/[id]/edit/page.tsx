@@ -1,25 +1,102 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { FiArrowLeft, FiSave, FiLock, FiGlobe, FiFolder } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiSave,
+  FiLock,
+  FiGlobe,
+  FiFolder,
+  FiUsers,
+  FiPlus,
+  FiX,
+  FiCheck,
+} from "react-icons/fi";
+import { useNotifications } from "@/app/context/NotificationContext";
+import { Invite, Folder } from "@/app/types/folder";
 
 export default function EditFolderPage() {
   const params = useParams();
   const router = useRouter();
+  const { addNotification } = useNotifications();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
 
+  // Collaboration State
+  const [collaborators, setCollaborators] = useState<Invite[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"EDITOR" | "VIEWER">("VIEWER");
+
   // Mock Fetch Data
-  useEffect(() => {    
+  useEffect(() => {
     // Simulating data fetch
     setName("Summer Reading List");
-    setDescription("A collection of books I want to read this summer, focusing on self-improvement and fiction.");
+    setDescription(
+      "A collection of books I want to read this summer, focusing on self-improvement and fiction."
+    );
     setIsPublic(true);
+    setCollaborators([
+      {
+        id: "1",
+        folderId: "folder1",
+        senderId: "user1",
+        email: "seunadegbalu@gmail.com",
+        role: "EDITOR",
+        status: "ACCEPTED",
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: "2",
+        folderId: "folder1",
+        senderId: "user1",
+        email: "mike.ross@gmail.com",
+        role: "VIEWER",
+        status: "PENDING",
+        createdAt: new Date().toISOString(),
+      },
+    ]);
   }, []);
+
+  // Ensure role is EDITOR if public
+  useEffect(() => {
+    if (isPublic && inviteRole === "VIEWER") {
+      setInviteRole("EDITOR");
+    }
+  }, [isPublic, inviteRole]);
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+
+    if (collaborators.some((c) => c.email === inviteEmail)) {
+      addNotification("error", "User is already a collaborator");
+      return;
+    }
+
+    const newCollaborator: Invite = {
+      id: Date.now().toString(),
+      folderId:
+        typeof params.id === "string" ? params.id : params.id?.[0] || "1",
+      senderId: "current-user",
+      email: inviteEmail,
+      role: inviteRole,
+      status: "PENDING",
+      createdAt: new Date().toISOString(),
+    };
+
+    setCollaborators([...collaborators, newCollaborator]);
+    setInviteEmail("");
+    addNotification("success", `Invited ${inviteEmail} as ${inviteRole}`);
+  };
+
+  const handleRemoveCollaborator = (id: string) => {
+    setCollaborators(collaborators.filter((c) => c.id !== id));
+    addNotification("success", "Collaborator removed");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,15 +110,17 @@ export default function EditFolderPage() {
       name,
       description,
       isPublic,
+      collaborators,
     });
 
+    addNotification("success", "Folder updated successfully");
     setIsLoading(false);
-    router.push(`/app/folders/${params.id}`);
+    router.push(`/app/folders/${params.folderId || params.id}`);
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50">
-      <div className="max-w-3xl mx-auto px-6 py-12">
+    <div>
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
         <button
           onClick={() => router.back()}
           className="group group-hover:underline flex items-center space-x-2 text-gray-500 hover:text-gray-900 mb-8 transition-colors"
@@ -50,20 +129,27 @@ export default function EditFolderPage() {
           <span>Back to Folder</span>
         </button>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-8 border-b border-gray-100">
+        <div>
+          <div className="p-6 md:p-8 border-b border-gray-100">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
                 <FiFolder className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Edit Folder</h1>
-                <p className="text-gray-500">Update your folder details and settings</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Edit Folder
+                </h1>
+                <p className="text-gray-500">
+                  Update your folder details and settings
+                </p>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+          <form
+            onSubmit={handleSubmit}
+            className="p-6 md:p-8 space-y-8"
+          >
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">
                 Folder Name
@@ -105,12 +191,27 @@ export default function EditFolderPage() {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className={`mt-1 p-2 rounded-lg ${!isPublic ? "bg-gray-200 text-gray-900" : "bg-gray-100 text-gray-500"}`}>
+                  <div
+                    className={`mt-1 p-2 rounded-lg ${
+                      !isPublic
+                        ? "bg-gray-200 text-gray-900"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
                     <FiLock className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className={`font-bold ${!isPublic ? "text-gray-900" : "text-gray-700"}`}>Private</p>
-                    <p className="text-sm text-gray-500 mt-1">Only you can see this folder. It won&apos;t appear on your public profile.</p>
+                    <p
+                      className={`font-bold ${
+                        !isPublic ? "text-gray-900" : "text-gray-700"
+                      }`}
+                    >
+                      Private
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Only you can see this folder. It won&apos;t appear on your
+                      public profile.
+                    </p>
                   </div>
                 </button>
 
@@ -123,14 +224,114 @@ export default function EditFolderPage() {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className={`mt-1 p-2 rounded-lg ${isPublic ? "bg-emerald-100 text-emerald-600" : "bg-gray-100 text-gray-500"}`}>
+                  <div
+                    className={`mt-1 p-2 rounded-lg ${
+                      isPublic
+                        ? "bg-emerald-100 text-emerald-600"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
                     <FiGlobe className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className={`font-bold ${isPublic ? "text-emerald-900" : "text-gray-700"}`}>Public</p>
-                    <p className="text-sm text-gray-500 mt-1">Anyone can see this folder. It will be visible on your public profile.</p>
+                    <p
+                      className={`font-bold ${
+                        isPublic ? "text-emerald-900" : "text-gray-700"
+                      }`}
+                    >
+                      Public
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Anyone can see this folder. It will be visible on your
+                      public profile.
+                    </p>
                   </div>
                 </button>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 pt-8">
+              <label className="block text-sm font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <FiUsers className="w-4 h-4 text-gray-500" />
+                <span>Collaborators</span>
+              </label>
+
+              <div className="bg-gray-50 rounded-xl p-4 md:p-6 space-y-6">
+                {/* Invite Form */}
+                <div className="flex flex-col md:flex-row gap-4">
+                  <input
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="Enter email address"
+                    className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm"
+                  />
+                  <select
+                    value={inviteRole}
+                    onChange={(e) =>
+                      setInviteRole(e.target.value as "EDITOR" | "VIEWER")
+                    }
+                    className="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white"
+                  >
+                    {!isPublic && <option value="VIEWER">Viewer</option>}
+                    <option value="EDITOR">Editor</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleInvite}
+                    disabled={!inviteEmail}
+                    className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    <FiPlus className="w-4 h-4" />
+                    <span>Invite</span>
+                  </button>
+                </div>
+
+                {/* Collaborators List */}
+                <div className="space-y-3">
+                  {collaborators.map((collaborator) => (
+                    <div
+                      key={collaborator.id}
+                      className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 uppercase">
+                          {collaborator.email[0]}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {collaborator.email}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-500 capitalize">
+                              {collaborator.role.toLowerCase()}
+                            </span>
+                            {collaborator.status === "PENDING" && (
+                              <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide rounded">
+                                Pending
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleRemoveCollaborator(collaborator.id)
+                        }
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remove collaborator"
+                      >
+                        <FiX className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {collaborators.length === 0 && (
+                    <div className="text-center py-4 text-sm text-gray-500 italic">
+                      No collaborators yet. Invite someone to share this folder!
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
