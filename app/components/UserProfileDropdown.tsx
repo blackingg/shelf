@@ -15,12 +15,12 @@ export const UserProfileDropdown: React.FC = () => {
 
   const handleEditProfile = () => {
     setIsOpen(false);
-    router.push(`/app/profile/${userName}`);
+    router.push(`/app/settings/profile`);
   };
 
   const handleSettings = () => {
     setIsOpen(false);
-    router.push("/app/settings");
+    router.push("/app/settings/account");
   };
 
   const handleLogout = () => {
