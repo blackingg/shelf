@@ -16,7 +16,8 @@ export default function FoldersPage() {
   >("private");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  
+
+  // Mock Data
   const [myFolders, setMyFolders] = useState<Folder[]>([
     {
       id: "1",

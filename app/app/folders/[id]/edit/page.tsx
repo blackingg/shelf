@@ -13,7 +13,16 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { Invite, Folder } from "@/app/types/folder";
+import {
+  Invite,
+  Folder,
+  FolderVisibility,
+  FolderRoles,
+} from "@/app/types/folder";
+
+type MockData = Partial<Folder> & {
+  collaborators: Invite[];
+};
 
 export default function EditFolderPage() {
   const params = useParams();
@@ -24,49 +33,56 @@ export default function EditFolderPage() {
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
+  const [visibility, setVisibility] = useState<FolderVisibility>("PUBLIC");
 
   // Collaboration State
   const [collaborators, setCollaborators] = useState<Invite[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"EDITOR" | "VIEWER">("VIEWER");
+  const [inviteRole, setInviteRole] =
+    useState<Exclude<FolderRoles, "OWNER">>("VIEWER");
 
   // Mock Fetch Data
   useEffect(() => {
     // Simulating data fetch
-    setName("Summer Reading List");
-    setDescription(
-      "A collection of books I want to read this summer, focusing on self-improvement and fiction."
-    );
-    setIsPublic(true);
-    setCollaborators([
-      {
-        id: "1",
-        folderId: "folder1",
-        senderId: "user1",
-        email: "seunadegbalu@gmail.com",
-        role: "EDITOR",
-        status: "ACCEPTED",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        folderId: "folder1",
-        senderId: "user1",
-        email: "mike.ross@gmail.com",
-        role: "VIEWER",
-        status: "PENDING",
-        createdAt: new Date().toISOString(),
-      },
-    ]);
+    const mockData: MockData = {
+      name: "Summer Reading List",
+      description:
+        "A collection of books I want to read this summer, focusing on self-improvement and fiction.",
+      visibility: "PUBLIC",
+      collaborators: [
+        {
+          id: "1",
+          folderId: "folder1",
+          senderId: "user1",
+          email: "seunadegbalu@gmail.com",
+          role: "EDITOR",
+          status: "ACCEPTED",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "2",
+          folderId: "folder1",
+          senderId: "user1",
+          email: "mike.ross@gmail.com",
+          role: "VIEWER",
+          status: "PENDING",
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    };
+
+    setName(mockData.name || "");
+    setDescription(mockData.description || "");
+    setVisibility(mockData.visibility || "PRIVATE");
+    setCollaborators(mockData.collaborators);
   }, []);
 
   // Ensure role is EDITOR if public
   useEffect(() => {
-    if (isPublic && inviteRole === "VIEWER") {
+    if (visibility === "PUBLIC" && inviteRole === "VIEWER") {
       setInviteRole("EDITOR");
     }
-  }, [isPublic, inviteRole]);
+  }, [visibility, inviteRole]);
 
   const handleInvite = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +125,7 @@ export default function EditFolderPage() {
       id: params.id,
       name,
       description,
-      isPublic,
+      visibility,
       collaborators,
     });
 
@@ -184,16 +200,16 @@ export default function EditFolderPage() {
               <div className="grid md:grid-cols-2 gap-4">
                 <button
                   type="button"
-                  onClick={() => setIsPublic(false)}
+                  onClick={() => setVisibility("PRIVATE")}
                   className={`flex items-start space-x-4 p-4 rounded-xl border-2 transition-all text-left ${
-                    !isPublic
+                    visibility === "PRIVATE"
                       ? "border-gray-900 bg-gray-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <div
                     className={`mt-1 p-2 rounded-lg ${
-                      !isPublic
+                      visibility === "PRIVATE"
                         ? "bg-gray-200 text-gray-900"
                         : "bg-gray-100 text-gray-500"
                     }`}
@@ -203,7 +219,9 @@ export default function EditFolderPage() {
                   <div>
                     <p
                       className={`font-bold ${
-                        !isPublic ? "text-gray-900" : "text-gray-700"
+                        visibility === "PRIVATE"
+                          ? "text-gray-900"
+                          : "text-gray-700"
                       }`}
                     >
                       Private
@@ -217,16 +235,16 @@ export default function EditFolderPage() {
 
                 <button
                   type="button"
-                  onClick={() => setIsPublic(true)}
+                  onClick={() => setVisibility("PUBLIC")}
                   className={`flex items-start space-x-4 p-4 rounded-xl border-2 transition-all text-left ${
-                    isPublic
+                    visibility === "PUBLIC"
                       ? "border-emerald-600 bg-emerald-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <div
                     className={`mt-1 p-2 rounded-lg ${
-                      isPublic
+                      visibility === "PUBLIC"
                         ? "bg-emerald-100 text-emerald-600"
                         : "bg-gray-100 text-gray-500"
                     }`}
@@ -236,7 +254,9 @@ export default function EditFolderPage() {
                   <div>
                     <p
                       className={`font-bold ${
-                        isPublic ? "text-emerald-900" : "text-gray-700"
+                        visibility === "PUBLIC"
+                          ? "text-emerald-900"
+                          : "text-gray-700"
                       }`}
                     >
                       Public
@@ -251,13 +271,12 @@ export default function EditFolderPage() {
             </div>
 
             <div className="border-t border-gray-100 pt-8">
-              <label className="block text-sm font-bold text-gray-900 mb-4 flex items-center space-x-2">
+              <label className="text-sm font-bold text-gray-900 mb-4 flex items-center space-x-2">
                 <FiUsers className="w-4 h-4 text-gray-500" />
                 <span>Collaborators</span>
               </label>
 
               <div className="bg-gray-50 rounded-xl p-4 md:p-6 space-y-6">
-                {/* Invite Form */}
                 <div className="flex flex-col md:flex-row gap-4">
                   <input
                     type="email"
@@ -269,11 +288,15 @@ export default function EditFolderPage() {
                   <select
                     value={inviteRole}
                     onChange={(e) =>
-                      setInviteRole(e.target.value as "EDITOR" | "VIEWER")
+                      setInviteRole(
+                        e.target.value as Exclude<FolderRoles, "OWNER">
+                      )
                     }
                     className="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white"
                   >
-                    {!isPublic && <option value="VIEWER">Viewer</option>}
+                    {visibility !== "PUBLIC" && (
+                      <option value="VIEWER">Viewer</option>
+                    )}
                     <option value="EDITOR">Editor</option>
                   </select>
                   <button
@@ -287,7 +310,6 @@ export default function EditFolderPage() {
                   </button>
                 </div>
 
-                {/* Collaborators List */}
                 <div className="space-y-3">
                   {collaborators.map((collaborator) => (
                     <div
@@ -328,14 +350,14 @@ export default function EditFolderPage() {
                   ))}
                   {collaborators.length === 0 && (
                     <div className="text-center py-4 text-sm text-gray-500 italic">
-                      No collaborators yet. Invite someone to share this folder!
+                      No collaborators yet. Invite someone to contribute this
+                      folder!
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex items-center justify-end space-x-4 pt-4 border-t border-gray-100">
               <button
                 type="button"

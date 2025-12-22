@@ -28,9 +28,11 @@ export interface AddBookToFolderRequest {
   bookId: string;
 }
 
+export type FolderRoles = "OWNER" | "EDITOR" | "VIEWER";
+
 export interface InviteCollaboratorRequest {
   email: string;
-  role: "EDITOR" | "VIEWER";
+  role: Exclude<FolderRoles, "OWNER">;
 }
 
 export interface Invite {
@@ -38,7 +40,7 @@ export interface Invite {
   folderId: string;
   senderId: string;
   email: string;
-  role: string;
+  role: Exclude<FolderRoles, "OWNER">;
   status: "PENDING" | "ACCEPTED" | "DECLINED";
   createdAt: string;
 }
@@ -47,7 +49,7 @@ export interface Collaborator {
   id: string;
   userId: string;
   folderId: string;
-  role: string;
+  role: Exclude<FolderRoles, "OWNER">;
   permissions: string[];
   user: UserPublic;
 }
