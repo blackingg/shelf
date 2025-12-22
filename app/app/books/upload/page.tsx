@@ -9,21 +9,36 @@ import {
   FiHeart,
   FiInfo,
   FiUser,
+  FiLayers,
+  FiCalendar,
+  FiTag,
+  FiImage,
 } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
 import { useRouter } from "next/navigation";
+import { CreateBookRequest } from "@/app/types/book";
+import { DEPARTMENTS } from "@/app/data/department";
+
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export default function UploadPage() {
   const router = useRouter();
+  const { addNotification } = useNotifications();
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<CreateBookRequest>>({
     title: "",
     author: "",
     description: "",
     category: "",
+    pages: undefined,
+    department: "",
+    publisher: "",
+    publishedYear: undefined,
+    isbn: "",
+    coverImage: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,22 +71,44 @@ export default function UploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title || !formData.author || !formData.pages || !file) {
+      addNotification(
+        "error",
+        "Please fill in all required fields and upload a file."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
+
+    const submitData = new FormData();
+    // ... appending data
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    addNotification(
+      "success",
+      "Book donated successfully! Thank you for your contribution."
+    );
     setIsSubmitting(false);
     router.push("/app/library");
   };
 
   const categories = [
-    { value: "computer-science", label: "Computer Science" },
-    { value: "mathematics", label: "Mathematics" },
-    { value: "literature", label: "Literature" },
-    { value: "history", label: "History" },
-    { value: "physics", label: "Physics" },
-    { value: "economics", label: "Economics" },
-    { value: "psychology", label: "Psychology" },
+    { value: "education", label: "Education" },
+    { value: "medical", label: "Medical" },
+    { value: "business", label: "Business" },
+    { value: "engineering", label: "Engineering" },
+    { value: "science", label: "Science" },
+    { value: "law", label: "Law" },
+    { value: "general", label: "General" },
   ];
+
+  const departmentOptions = DEPARTMENTS.map((dept) => ({
+    value: dept.id,
+    label: dept.name,
+  }));
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -99,7 +136,10 @@ export default function UploadPage() {
               </div>
             </motion.div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-8"
+            >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -109,9 +149,11 @@ export default function UploadPage() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
                     <FiFile className="text-emerald-600" />
-                    <span>Document File</span>
+                    <span>Document File (Required)</span>
                   </h2>
-                  <span className="text-sm text-gray-500">PDF, EPUB, or DOCX</span>
+                  <span className="text-sm text-gray-500">
+                    PDF, EPUB, or DOCX
+                  </span>
                 </div>
 
                 <div
@@ -207,9 +249,9 @@ export default function UploadPage() {
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <FormInput
-                    label="Book Title"
+                    label="Book Title (Required)"
                     name="title"
-                    value={formData.title}
+                    value={formData.title || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
@@ -217,9 +259,9 @@ export default function UploadPage() {
                     icon={<FiBook />}
                   />
                   <FormInput
-                    label="Author(s)"
+                    label="Author(s) (Required)"
                     name="author"
-                    value={formData.author}
+                    value={formData.author || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, author: e.target.value })
                     }
@@ -228,17 +270,109 @@ export default function UploadPage() {
                   />
                 </div>
 
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <Select
-                    options={categories}
-                    placeholder="Select a category..."
-                    onChange={(option: { value: string; label: string } | null) =>
-                      setFormData({ ...formData, category: option?.value || "" })
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Department
+                    </label>
+                    <Select
+                      options={departmentOptions}
+                      placeholder="Select department..."
+                      onChange={(option: any) =>
+                        setFormData({
+                          ...formData,
+                          department: option?.value || "",
+                        })
+                      }
+                      className="text-sm"
+                      isClearable
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category
+                    </label>
+                    <Select
+                      options={categories}
+                      placeholder="Select a category..."
+                      onChange={(
+                        option: { value: string; label: string } | null
+                      ) =>
+                        setFormData({
+                          ...formData,
+                          category: option?.value || "",
+                        })
+                      }
+                      className="text-sm"
+                      isClearable
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <FormInput
+                    label="Publisher"
+                    name="publisher"
+                    value={formData.publisher || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, publisher: e.target.value })
                     }
-                    className="text-sm"
+                    placeholder="e.g. MIT Press"
+                    icon={<FiBook />}
+                  />
+                  <FormInput
+                    label="ISBN"
+                    name="isbn"
+                    value={formData.isbn || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isbn: e.target.value })
+                    }
+                    placeholder="e.g. 978-0262033848"
+                    icon={<FiTag />}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <FormInput
+                    label="Number of Pages (Required)"
+                    name="pages"
+                    type="number"
+                    value={formData.pages?.toString() || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        pages: parseInt(e.target.value) || undefined,
+                      })
+                    }
+                    placeholder="e.g. 1200"
+                    icon={<FiLayers />}
+                  />
+                  <FormInput
+                    label="Published Year"
+                    name="publishedYear"
+                    type="number"
+                    value={formData.publishedYear?.toString() || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        publishedYear: parseInt(e.target.value) || undefined,
+                      })
+                    }
+                    placeholder="e.g. 2022"
+                    icon={<FiCalendar />}
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <FormInput
+                    label="Cover Image URL"
+                    name="coverImage"
+                    value={formData.coverImage || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, coverImage: e.target.value })
+                    }
+                    placeholder="https://example.com/cover.jpg"
+                    icon={<FiImage />}
                   />
                 </div>
 
@@ -250,7 +384,7 @@ export default function UploadPage() {
                     rows={4}
                     className="w-full p-4 text-gray-600 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all duration-200 resize-none"
                     placeholder="Tell us a bit about this book..."
-                    value={formData.description}
+                    value={formData.description || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
@@ -268,7 +402,7 @@ export default function UploadPage() {
                   <Button
                     type="submit"
                     isLoading={isSubmitting}
-                    disabled={!file || !formData.title}
+                    disabled={!file || !formData.title || !formData.pages}
                     icon={<FiHeart className="w-5 h-5" />}
                   >
                     Donate Book

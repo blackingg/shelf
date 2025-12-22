@@ -9,6 +9,7 @@ import {
   FiBriefcase,
   FiTag,
   FiFolder,
+  FiHeart,
 } from "react-icons/fi";
 import { useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
@@ -38,6 +39,7 @@ export const Sidebar: React.FC = () => {
       icon: <FiBriefcase />,
       href: "/app/library/departments",
     },
+    { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
   ];
 
   const bottomItems: SidebarItem[] = [
