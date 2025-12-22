@@ -45,14 +45,21 @@ body {
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(4, 76, 65, 0.1);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(4, 76, 65, 0.4);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(4, 76, 65, 0.6);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

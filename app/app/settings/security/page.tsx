@@ -14,8 +14,8 @@ export default function SecuritySettingsPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 md:p-8 space-y-8">
-          <div>
+        <div className="p-6 md:p-8 space-y-16">
+          {/* <div>
             <div className="flex items-center space-x-3 mb-6">
               <FiKey className="w-5 h-5 text-gray-400" />
               <h3 className="text-lg font-semibold text-gray-900">
@@ -26,12 +26,10 @@ export default function SecuritySettingsPage() {
               Add an extra layer of security to your account by enabling
               two-factor authentication (2FA).
             </p>
-            <Button variant="outline">
-              Enable 2FA
-            </Button>
-          </div>
+            <Button variant="outline">Enable 2FA</Button>
+          </div> */}
 
-          <div className="border-t border-gray-200 pt-8">
+          <div className="border-t border-gray-200">
             <div className="flex items-center space-x-3 mb-6">
               <FiShield className="w-5 h-5 text-gray-400" />
               <h3 className="text-lg font-semibold text-gray-900">
