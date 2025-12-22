@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import Select, { SingleValue } from "react-select";
 import { Button } from "@/app/components/Form/Button";
-import { FiCamera, FiMapPin, FiGlobe } from "react-icons/fi";
+import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
+import { SCHOOLS, getDepartmentsBySchoolId } from "@/app/types/schools";
+
+interface OptionType {
+  value: string;
+  label: string;
+}
 
 export default function SettingsProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,11 +17,25 @@ export default function SettingsProfilePage() {
   const [formData, setFormData] = useState({
     name: "Sarah Chen",
     username: "sarahchen",
-    bio: "Book lover, coffee enthusiast, and aspiring writer. Always looking for the next great story.",
-    location: "San Francisco, CA",
-    website: "sarahchen.com",
+    schoolId: "unilag",
+    university: "University of Lagos",
+    department: "Computer Science",
     email: "sarah@example.com",
   });
+
+  const schoolOptions: OptionType[] = SCHOOLS.map((school) => ({
+    value: school.id,
+    label: school.name,
+  }));
+
+  const departmentOptions: OptionType[] = useMemo(() => {
+    if (!formData.schoolId) return [];
+    const departments = getDepartmentsBySchoolId(formData.schoolId);
+    return departments.map((dept) => ({
+      value: dept,
+      label: dept,
+    }));
+  }, [formData.schoolId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -23,11 +44,49 @@ export default function SettingsProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSchoolChange = (option: SingleValue<OptionType>) => {
+    setFormData((prev) => ({
+      ...prev,
+      schoolId: option?.value || "",
+      university: option?.label || "",
+      department: "", // Reset department when school changes
+    }));
+  };
+
+  const handleDepartmentChange = (option: SingleValue<OptionType>) => {
+    setFormData((prev) => ({
+      ...prev,
+      department: option?.value || "",
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log("Saving profile:", formData);
     setIsLoading(false);
+  };
+
+  const customSelectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      paddingLeft: "2rem", // Make room for the icon
+      borderRadius: "0.75rem",
+      borderColor: state.isFocused ? "#10b981" : "#e5e7eb", // emerald-500 : gray-200
+      boxShadow: state.isFocused ? "0 0 0 1px #10b981" : "none",
+      "&:hover": {
+        borderColor: "#10b981",
+      },
+      minHeight: "42px",
+    }),
+    input: (base: any) => ({
+      ...base,
+      "input:focus": {
+        boxShadow: "none",
+      },
+    }),
   };
 
   return (
@@ -35,13 +94,16 @@ export default function SettingsProfilePage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
         <p className="text-gray-500 mt-1">
-          Update your photo and personal details here.
+          Update your photo and academic details here.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
         <div className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-8"
+          >
             {/* Avatar Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-4">
@@ -99,31 +161,42 @@ export default function SettingsProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Location
+                  University / School
                 </label>
                 <div className="relative">
-                  <FiMapPin className="absolute left-4 top-3 text-gray-400" />
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
+                  <Select
+                    options={schoolOptions}
+                    value={
+                      formData.schoolId
+                        ? schoolOptions.find((opt) => opt.value === formData.schoolId)
+                        : null
+                    }
+                    onChange={handleSchoolChange}
+                    placeholder="Select School"
+                    styles={customSelectStyles}
+                    classNamePrefix="react-select"
                   />
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Website
+                  Department / Major
                 </label>
                 <div className="relative">
-                  <FiGlobe className="absolute left-4 top-3 text-gray-400" />
-                  <input
-                    type="text"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
+                  <Select
+                    options={departmentOptions}
+                    value={
+                      formData.department
+                        ? { value: formData.department, label: formData.department }
+                        : null
+                    }
+                    onChange={handleDepartmentChange}
+                    placeholder="Select Department"
+                    isDisabled={!formData.schoolId}
+                    styles={customSelectStyles}
+                    classNamePrefix="react-select"
                   />
                 </div>
               </div>

@@ -14,7 +14,6 @@ import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
 import { useRouter } from "next/navigation";
-import { Sidebar } from "@/app/components/Sidebar";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -76,7 +75,6 @@ export default function UploadPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <main className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
