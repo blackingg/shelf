@@ -9,8 +9,13 @@ import { RootState } from "../store";
 import { logout, updateAccessToken } from "../authSlice";
 import { TokenResponse } from "../../types/auth";
 
+const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000/api/v1"
+    : process.env.NEXT_PUBLIC_API_BASE_URL!;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api/v1",
+  baseUrl: API_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
     if (token) {
