@@ -8,6 +8,7 @@ export interface User {
   bio: string | null;
   booksCount: number;
   foldersCount: number;
+  onboardingCompleted: boolean;
   createdAt: string;
 }
 

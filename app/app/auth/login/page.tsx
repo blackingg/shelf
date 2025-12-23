@@ -11,6 +11,12 @@ import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { useLoginMutation } from "@/app/store/api/authApi";
+import { useAppDispatch } from "@/app/store/store";
+import { setCredentials } from "@/app/store/authSlice";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleAuthMutation } from "@/app/store/api/authApi";
+import { getErrorMessage } from "@/app/helpers/error";
 
 interface FormData {
   email: string;
@@ -24,8 +30,56 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
+  const dispatch = useAppDispatch();
+
+  const handleGoogleSuccess = async (tokenResponse: any) => {
+    try {
+      const userInfoRes = await fetch(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        }
+      );
+      const userInfo = await userInfoRes.json();
+
+      const result = await googleLogin({
+        googleId: userInfo.sub,
+        email: userInfo.email,
+        fullName: userInfo.name,
+        avatar: userInfo.picture,
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          user: result.user,
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
+          rememberMe: true, // Google login is usually remembered
+        })
+      );
+
+      addNotification("success", "Login successful! Welcome.");
+      if (result.user.onboardingCompleted) {
+        router.push("/app/library");
+      } else {
+        router.push("/app/onboarding");
+      }
+    } catch (error: any) {
+      console.error("Google Auth Error:", error);
+      addNotification(
+        "error",
+        getErrorMessage(error, "Google login failed. Please try again.")
+      );
+    }
+  };
+
+  const handleGoogleAuth = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => addNotification("error", "Google login was unsuccessful"),
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -59,18 +113,35 @@ export default function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const result = await login({
+        email: formData.email,
+        password: formData.password,
+        rememberMe,
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          user: result.user,
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
+          rememberMe,
+        })
+      );
+
       addNotification("success", "Login successful! Welcome back.");
-      console.log("Login successful:", { ...formData, rememberMe });
-      router.push("/app/library");
-    } catch (error) {
+
+      if (result.user.onboardingCompleted) {
+        router.push("/app/library");
+      } else {
+        router.push("/app/onboarding");
+      }
+    } catch (error: any) {
       console.error("Login failed:", error);
-      addNotification("error", "Invalid email or password. Please try again.");
-    } finally {
-      setIsLoading(false);
+      addNotification(
+        "error",
+        getErrorMessage(error, "Invalid email or password. Please try again.")
+      );
     }
   };
 
@@ -82,12 +153,6 @@ export default function LoginPage() {
     if (e.key === "Enter") {
       handleSubmit();
     }
-  };
-
-  const handleGoogleAuth = () => {
-    addNotification("info", "Google sign-in coming soon!");
-    console.log("Google login clicked");
-    // Handle Google OAuth
   };
 
   return (
@@ -172,7 +237,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoading}
+                isLoading={isLoginLoading}
                 icon={<FiArrowRight className="w-4 h-4" />}
               >
                 Log In

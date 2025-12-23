@@ -1,36 +1,27 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select, { SingleValue } from "react-select";
-import {
-  FiHeart,
-  FiUser,
-  FiBook,
-  FiBriefcase,
-  FiMusic,
-  FiFilm,
-  FiCode,
-  FiGlobe,
-} from "react-icons/fi";
-import {
-  FaBrain,
-  FaBookReader,
-  FaRunning,
-  FaPaintBrush,
-  FaLaptopCode,
-  FaCamera,
-  FaGamepad,
-  FaPodcast,
-} from "react-icons/fa";
-import { addToLocalStorage } from "@/app/helpers/localStorage";
-import { USER_DEPARTMENTS } from "@/app/lib/constants";
+import { FiHeart, FiUser, FiBook } from "react-icons/fi";
+import { useNotifications } from "@/app/context/NotificationContext";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
-import { SCHOOLS, getDepartmentsBySchoolId, School } from "@/app/types/schools";
+import {
+  useGetSchoolsQuery,
+  useGetDepartmentsQuery,
+  useGetInterestsQuery,
+  useCompleteOnboardingMutation,
+} from "@/app/store/api/onboardingApi";
+import { useAppDispatch } from "@/app/store/store";
+import { setOnboardingStatus } from "@/app/store/authSlice";
+import { InterestCategory } from "@/app/types/onboarding";
+import * as Icons from "react-icons/fi";
+import * as FaIcons from "react-icons/fa";
+import { getErrorMessage } from "@/app/helpers/error";
 
 interface OptionType {
   value: string;
@@ -39,119 +30,85 @@ interface OptionType {
 
 interface FormData {
   schoolId: string;
-  schoolName: string;
-  department: string;
-  hobbies: string[];
-}
-
-interface Hobby {
-  name: string;
-  icon: React.ReactNode;
-  category: string;
-}
-
-interface GroupedHobbies {
-  [key: string]: Hobby[];
+  departmentId: string;
+  interestIds: string[];
 }
 
 export default function Onboarding() {
   const router = useRouter();
+  const { addNotification } = useNotifications();
+  const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     schoolId: "",
-    schoolName: "",
-    department: "",
-    hobbies: [],
+    departmentId: "",
+    interestIds: [],
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [schoolSearch, setSchoolSearch] = useState("");
+
+  // Restore session data on mount
+  useEffect(() => {
+    const savedStep = sessionStorage.getItem("onboarding_step");
+    const savedData = sessionStorage.getItem("onboarding_data");
+    if (savedStep) setCurrentStep(parseInt(savedStep));
+    if (savedData) setFormData(JSON.parse(savedData));
+  }, []);
+
+  // Save session data on change
+  useEffect(() => {
+    sessionStorage.setItem("onboarding_step", currentStep.toString());
+    sessionStorage.setItem("onboarding_data", JSON.stringify(formData));
+  }, [currentStep, formData]);
 
   const steps = ["School", "Department", "Interests"];
 
-  // Generate school options from SCHOOLS data
-  const schoolOptions: OptionType[] = SCHOOLS.map((school) => ({
+  // API Hooks
+  const { data: schools = [], isLoading: isLoadingSchools } =
+    useGetSchoolsQuery(schoolSearch);
+  const { data: departments = [], isLoading: isLoadingDepartments } =
+    useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+  const { data: interestsResponse, isLoading: isLoadingInterests } =
+    useGetInterestsQuery();
+  const [completeOnboarding, { isLoading: isSubmitting }] =
+    useCompleteOnboardingMutation();
+
+  const schoolOptions: OptionType[] = schools.map((school) => ({
     value: school.id,
     label: school.name,
   }));
 
-  // Generate department options based on selected school
-  const departmentOptions: OptionType[] = useMemo(() => {
-    if (!formData.schoolId) return [];
-    const departments = getDepartmentsBySchoolId(formData.schoolId);
-    return departments.map((dept) => ({
-      value: dept,
-      label: dept,
-    }));
-  }, [formData.schoolId]);
-
-  const hobbies: Hobby[] = [
-    // Academics
-    { name: "Research", icon: <FaBrain />, category: "Academics" },
-    { name: "AI & Machine Learning", icon: <FiCode />, category: "Academics" },
-    { name: "Philosophy", icon: <FiBook />, category: "Academics" },
-    { name: "Science & Tech", icon: <FaLaptopCode />, category: "Academics" },
-    { name: "Literature", icon: <FaBookReader />, category: "Academics" },
-
-    // Career & Skills
-    {
-      name: "Entrepreneurship",
-      icon: <FiBriefcase />,
-      category: "Career & Skills",
-    },
-    {
-      name: "Product Design",
-      icon: <FaPaintBrush />,
-      category: "Career & Skills",
-    },
-    { name: "Marketing", icon: <FiGlobe />, category: "Career & Skills" },
-    { name: "Finance", icon: <FaBrain />, category: "Career & Skills" },
-    { name: "Coding", icon: <FaLaptopCode />, category: "Career & Skills" },
-
-    // Lifestyle
-    { name: "Fitness", icon: <FaRunning />, category: "Lifestyle" },
-    { name: "Cooking", icon: <FiBook />, category: "Lifestyle" },
-    { name: "Travel", icon: <FiGlobe />, category: "Lifestyle" },
-    { name: "Fashion", icon: <FaPaintBrush />, category: "Lifestyle" },
-    { name: "Wellness", icon: <FiHeart />, category: "Lifestyle" },
-
-    // Creativity
-    { name: "Writing", icon: <FaBookReader />, category: "Creativity" },
-    { name: "Photography", icon: <FaCamera />, category: "Creativity" },
-    { name: "Music", icon: <FiMusic />, category: "Creativity" },
-    { name: "Film", icon: <FiFilm />, category: "Creativity" },
-    { name: "Art", icon: <FaPaintBrush />, category: "Creativity" },
-
-    // Entertainment
-    { name: "Movies", icon: <FiFilm />, category: "Entertainment" },
-    { name: "Anime", icon: <FaBrain />, category: "Entertainment" },
-    { name: "Gaming", icon: <FaGamepad />, category: "Entertainment" },
-    { name: "Podcasts", icon: <FaPodcast />, category: "Entertainment" },
-
-    // Reading
-    { name: "Fiction", icon: <FiBook />, category: "Reading" },
-    { name: "Self-Help", icon: <FaBookReader />, category: "Reading" },
-    { name: "Biography", icon: <FiUser />, category: "Reading" },
-    { name: "Poetry", icon: <FaBookReader />, category: "Reading" },
-    { name: "Comics", icon: <FaPaintBrush />, category: "Reading" },
-  ];
-
-  const groupedHobbies: GroupedHobbies = hobbies.reduce((acc, hobby) => {
-    acc[hobby.category] = acc[hobby.category] || [];
-    acc[hobby.category].push(hobby);
-    return acc;
-  }, {} as GroupedHobbies);
+  const departmentOptions: OptionType[] = departments.map((dept) => ({
+    value: dept.id,
+    label: dept.name,
+  }));
 
   const canProceed = (): boolean => {
     if (currentStep === 0) return formData.schoolId !== "";
-    if (currentStep === 1) return formData.department !== "";
-    if (currentStep === 2) return formData.hobbies.length >= 3;
+    if (currentStep === 1) return formData.departmentId !== "";
+    if (currentStep === 2) return formData.interestIds.length >= 3;
     return false;
   };
 
   const handleFinish = async (): Promise<void> => {
-    setIsLoading(true);
-    console.log("Onboarding completed:", formData);
-    await new Promise((res) => setTimeout(res, 1500));
-    router.push("/app/library");
+    try {
+      await completeOnboarding({
+        schoolId: formData.schoolId,
+        departmentId: formData.departmentId,
+        interestIds: formData.interestIds,
+      }).unwrap();
+
+      dispatch(setOnboardingStatus(true));
+      sessionStorage.removeItem("onboarding_step");
+      sessionStorage.removeItem("onboarding_data");
+      addNotification(
+        "success",
+        "Welcome to Shelf! Your profile is now set up."
+      );
+      router.push("/app/library");
+    } catch (error: any) {
+      console.error("Onboarding failed:", error);
+      addNotification("error", getErrorMessage(error, "Failed to complete onboarding. Please try again."));
+    }
   };
 
   const handleNext = () => {
@@ -166,45 +123,21 @@ export default function Onboarding() {
     setCurrentStep((prev) => Math.max(0, prev - 1));
   };
 
-  const handleSchoolChange = (option: SingleValue<OptionType>) => {
-    const school = SCHOOLS.find((s: School) => s.id === option?.value);
-    setFormData({
-      ...formData,
-      schoolId: option?.value || "",
-      schoolName: school?.name || "",
-      department: "",
-    });
-  };
-
-  const toggleHobby = (hobbyName: string) => {
+  const toggleInterest = (interestId: string) => {
     setFormData((prev) => ({
       ...prev,
-      hobbies: prev.hobbies.includes(hobbyName)
-        ? prev.hobbies.filter((h) => h !== hobbyName)
-        : [...prev.hobbies, hobbyName],
+      interestIds: prev.interestIds.includes(interestId)
+        ? prev.interestIds.filter((id) => id !== interestId)
+        : [...prev.interestIds, interestId],
     }));
   };
 
-  const getStepIcon = () => {
-    if (currentStep === 0)
-      return <FiUser className="w-7 h-7 text-emerald-700" />;
-    if (currentStep === 1)
-      return <FiBook className="w-7 h-7 text-emerald-700" />;
-    return <FiHeart className="w-7 h-7 text-emerald-700" />;
-  };
-
-  const getStepTitle = () => {
-    if (currentStep === 0) return "Which school do you attend?";
-    if (currentStep === 1) return "What's your department?";
-    return "What interests you?";
-  };
-
-  const getStepDescription = () => {
-    if (currentStep === 0)
-      return "We'll personalize your content based on your school.";
-    if (currentStep === 1)
-      return "Helps us recommend books and resources for your field.";
-    return "Choose at least 3 to personalize your experience.";
+  const getIconComponent = (iconName: string | undefined) => {
+    if (!iconName) return <FiHeart />;
+    // Simple mapping logic if icons are strings from API
+    const FiIcon = (Icons as any)[iconName];
+    const FaIcon = (FaIcons as any)[iconName];
+    return FiIcon ? <FiIcon /> : FaIcon ? <FaIcon /> : <FiHeart />;
   };
 
   return (
@@ -221,9 +154,29 @@ export default function Onboarding() {
         <div className="max-w-lg w-full">
           <Card>
             <StepHeader
-              icon={getStepIcon()}
-              title={getStepTitle()}
-              description={getStepDescription()}
+              icon={
+                currentStep === 0 ? (
+                  <FiUser className="w-7 h-7 text-emerald-700" />
+                ) : currentStep === 1 ? (
+                  <FiBook className="w-7 h-7 text-emerald-700" />
+                ) : (
+                  <FiHeart className="w-7 h-7 text-emerald-700" />
+                )
+              }
+              title={
+                currentStep === 0
+                  ? "Which school do you attend?"
+                  : currentStep === 1
+                  ? "What's your department?"
+                  : "What interests you?"
+              }
+              description={
+                currentStep === 0
+                  ? "We'll personalize your content based on your school."
+                  : currentStep === 1
+                  ? "Helps us recommend books and resources for your field."
+                  : "Choose at least 3 to personalize your experience."
+              }
             />
 
             {/* Step 1: School */}
@@ -234,15 +187,21 @@ export default function Onboarding() {
                 </label>
                 <Select<OptionType, false>
                   options={schoolOptions}
-                  onChange={handleSchoolChange}
-                  value={
-                    formData.schoolId
-                      ? schoolOptions.find(
-                          (opt) => opt.value === formData.schoolId
-                        )
-                      : null
+                  isLoading={isLoadingSchools}
+                  onInputChange={(val) => setSchoolSearch(val)}
+                  onChange={(opt) =>
+                    setFormData({
+                      ...formData,
+                      schoolId: opt?.value || "",
+                      departmentId: "",
+                    })
                   }
-                  placeholder="Start typing..."
+                  value={
+                    schoolOptions.find(
+                      (opt) => opt.value === formData.schoolId
+                    ) || null
+                  }
+                  placeholder="Start typing school name..."
                   classNamePrefix="react-select"
                   styles={{
                     control: (base) => ({
@@ -275,20 +234,14 @@ export default function Onboarding() {
                 </label>
                 <Select<OptionType, false>
                   options={departmentOptions}
-                  onChange={(option: SingleValue<OptionType>) => {
-                    setFormData({
-                      ...formData,
-                      department: option?.value || "",
-                    });
-                    option?.value &&
-                      addToLocalStorage(USER_DEPARTMENTS, option.value);
-                  }}
+                  isLoading={isLoadingDepartments}
+                  onChange={(opt) =>
+                    setFormData({ ...formData, departmentId: opt?.value || "" })
+                  }
                   value={
-                    formData.department
-                      ? departmentOptions.find(
-                          (opt) => opt.value === formData.department
-                        )
-                      : null
+                    departmentOptions.find(
+                      (opt) => opt.value === formData.departmentId
+                    ) || null
                   }
                   placeholder="Type to search..."
                   classNamePrefix="react-select"
@@ -324,24 +277,33 @@ export default function Onboarding() {
             {/* Step 3: Interests */}
             {currentStep === 2 && (
               <div className="space-y-5 max-h-80 overflow-y-auto">
-                {Object.entries(groupedHobbies).map(([category, list]) => (
-                  <div key={category}>
-                    <h3 className="text-sm font-semibold text-gray-800 mb-2">
-                      {category}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {list.map((hobby) => (
-                        <InterestButton
-                          key={hobby.name}
-                          name={hobby.name}
-                          icon={hobby.icon}
-                          isSelected={formData.hobbies.includes(hobby.name)}
-                          onClick={() => toggleHobby(hobby.name)}
-                        />
-                      ))}
-                    </div>
+                {isLoadingInterests ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
                   </div>
-                ))}
+                ) : (
+                  interestsResponse &&
+                  Object.entries(interestsResponse).map(([category, list]) => (
+                    <div key={category}>
+                      <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                        {category}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {list.map((interest) => (
+                          <InterestButton
+                            key={interest.id}
+                            name={interest.name}
+                            icon={getIconComponent(interest.icon)}
+                            isSelected={formData.interestIds.includes(
+                              interest.id
+                            )}
+                            onClick={() => toggleInterest(interest.id)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 
@@ -351,7 +313,7 @@ export default function Onboarding() {
               canGoBack={currentStep > 0}
               canProceed={canProceed()}
               isLastStep={currentStep === steps.length - 1}
-              isLoading={isLoading}
+              isLoading={isSubmitting}
             />
           </Card>
         </div>

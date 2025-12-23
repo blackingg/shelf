@@ -1,26 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../types/user";
+import { storage } from "../helpers/storage";
 
 interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  rememberMe: boolean;
 }
 
 const initialState: AuthState = {
-  user:
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null,
-  accessToken:
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null,
-  refreshToken:
-    typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null,
-  isAuthenticated:
-    typeof window !== "undefined"
-      ? !!localStorage.getItem("accessToken")
-      : false,
+  user: JSON.parse(storage.find("user") || "null"),
+  accessToken: storage.find("accessToken"),
+  refreshToken: storage.find("refreshToken"),
+  isAuthenticated: !!storage.find("accessToken"),
+  rememberMe: !!storage.get("accessToken", "local"),
 };
 
 const authSlice = createSlice({
@@ -30,40 +25,73 @@ const authSlice = createSlice({
     setCredentials: (
       state,
       {
-        payload: { user, accessToken, refreshToken },
+        payload: { user, accessToken, refreshToken, rememberMe },
       }: PayloadAction<{
         user: User;
         accessToken: string;
         refreshToken: string;
+        rememberMe?: boolean;
       }>
     ) => {
       state.user = user;
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
       state.isAuthenticated = true;
+      state.rememberMe = !!rememberMe;
 
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      const storageType = rememberMe ? "local" : "session";
+
+      // Clean up old storage first
+      storage.removeFromBoth("user");
+      storage.removeFromBoth("accessToken");
+      storage.removeFromBoth("refreshToken");
+
+      storage.set("user", JSON.stringify(user), storageType);
+      storage.set("accessToken", accessToken, storageType);
+      storage.set("refreshToken", refreshToken, storageType);
     },
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
-      localStorage.setItem("accessToken", action.payload);
+      const storageType = state.rememberMe ? "local" : "session";
+      storage.set("accessToken", action.payload, storageType);
+    },
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+      const storageType = state.rememberMe ? "local" : "session";
+      if (action.payload) {
+        storage.set("user", JSON.stringify(action.payload), storageType);
+      } else {
+        storage.removeFromBoth("user");
+      }
+    },
+    setOnboardingStatus: (state, action: PayloadAction<boolean>) => {
+      if (state.user) {
+        state.user.onboardingCompleted = action.payload;
+        const storageType = state.rememberMe ? "local" : "session";
+        storage.set("user", JSON.stringify(state.user), storageType);
+      }
     },
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
+      state.rememberMe = false;
 
-      localStorage.removeItem("user");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      storage.removeFromBoth("user");
+      storage.removeFromBoth("accessToken");
+      storage.removeFromBoth("refreshToken");
     },
   },
 });
 
-export const { setCredentials, updateAccessToken, logout } = authSlice.actions;
+export const {
+  setCredentials,
+  updateAccessToken,
+  setUser,
+  setOnboardingStatus,
+  logout,
+} = authSlice.actions;
 
 export default authSlice.reducer;
 

@@ -1,20 +1,9 @@
+import { storage } from "./storage";
+
 export function addToLocalStorage(key: string, value: string) {
-  try {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(key, value);
-    }
-  } catch (error) {
-    console.error("Error saving to localStorage:", error);
-  }
+  storage.set(key, value, "local");
 }
 
 export function getFromLocalStorage(key: string): string | null {
-  try {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(key);
-    }
-  } catch (error) {
-    console.error("Error reading from localStorage:", error);
-  }
-  return null;
+  return storage.find(key);
 }

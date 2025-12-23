@@ -13,6 +13,14 @@ import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
+import {
+  useRegisterMutation,
+  useGoogleAuthMutation,
+} from "@/app/store/api/authApi";
+import { useAppDispatch } from "@/app/store/store";
+import { setCredentials } from "@/app/store/authSlice";
+import { useGoogleLogin } from "@react-oauth/google";
+import { getErrorMessage } from "@/app/helpers/error";
 
 interface FormData {
   fullName: string;
@@ -30,8 +38,58 @@ export default function SignupPage() {
     password: "",
     confirmPassword: "",
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
+  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
+  const dispatch = useAppDispatch();
+
+  const handleGoogleSuccess = async (tokenResponse: any) => {
+    try {
+      const userInfoRes = await fetch(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        }
+      );
+      const userInfo = await userInfoRes.json();
+
+      const result = await googleLogin({
+        googleId: userInfo.sub,
+        email: userInfo.email,
+        fullName: userInfo.name,
+        avatar: userInfo.picture,
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          user: result.user,
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
+          rememberMe: true,
+        })
+      );
+
+      addNotification(
+        "success",
+        "Account created successfully! Welcome aboard."
+      );
+
+      if (result.user.onboardingCompleted) {
+        router.push("/app/library");
+      } else {
+        router.push("/app/onboarding");
+      }
+    } catch (error: any) {
+      console.error("Google Auth Error:", error);
+      addNotification("error", getErrorMessage(error, "Google registration failed. Please try again."));
+    }
+  };
+
+  const handleGoogleAuth = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () =>
+      addNotification("error", "Google registration was unsuccessful"),
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -95,24 +153,32 @@ export default function SignupPage() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const result = await register({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        agreeToTerms: acceptTerms,
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          user: result.user,
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
+          rememberMe: true,
+        })
+      );
+
       addNotification(
         "success",
         "Account created successfully! Welcome aboard."
       );
-      console.log("Signup successful:", formData);
+
       router.push("/app/onboarding");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup failed:", error);
-      addNotification(
-        "error",
-        "An error occurred during signup. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
+      addNotification("error", getErrorMessage(error, "An error occurred during signup. Please try again."));
     }
   };
 
@@ -120,12 +186,6 @@ export default function SignupPage() {
     if (e.key === "Enter") {
       handleSubmit();
     }
-  };
-
-  const handleGoogleAuth = () => {
-    addNotification("info", "Google sign-up coming soon!");
-    console.log("Google signup clicked");
-    // Handle Google OAuth
   };
 
   return (
@@ -243,7 +303,7 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoading}
+                isLoading={isRegisterLoading}
                 icon={<FiArrowRight className="w-4 h-4" />}
               >
                 Create Account
