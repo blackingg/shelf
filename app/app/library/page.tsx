@@ -5,9 +5,14 @@ import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiChevronRight } from "react-icons/fi";
+import {
+  // FiChevronRight,
+  FiBook,
+} from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
+import { Skeleton } from "@/app/components/Layout/Skeleton";
+import { useGetRecommendationsCombinedQuery } from "@/app/store/api/recommendationsApi";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -16,87 +21,8 @@ type RecommendedItem =
 export default function LibraryPage() {
   const router = useRouter();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
-
-  const recommendedItems: RecommendedItem[] = [
-    {
-      type: "book",
-      id: "b1",
-      donor_id: "morgan",
-      title: "The Psychology of Money",
-      author: "Morgan Housel",
-      pages: 234,
-      description:
-        "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
-      category: "business",
-      cover_image: "/dummycover.png",
-      published_year: 2023,
-    },
-    {
-      type: "folder",
-      id: "f1",
-      slug: "summer-reading-list",
-      name: "Summer Reading List",
-      description: "My list for the summer",
-      booksCount: 12,
-      bookmarksCount: 45,
-      visibility: "PUBLIC",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: "Sarah Chen",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      type: "book",
-      id: "b2",
-      donor_id: "morgan",
-      title: "The Psychology of Money",
-      author: "Morgan Housel",
-      pages: 234,
-      description:
-        "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
-      category: "business",
-      cover_image: "/dummycover.png",
-      published_year: 2023,
-    },
-    {
-      type: "book",
-      id: "b3",
-      donor_id: "morgan",
-      title: "The Psychology of Money",
-      author: "Morgan Housel",
-      pages: 234,
-      description:
-        "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
-      category: "business",
-      cover_image: "/dummycover.png",
-      published_year: 2023,
-    },
-    {
-      type: "folder",
-      id: "f2",
-      slug: "design-inspiration",
-      name: "Design Inspiration",
-      description: "Cool design books",
-      booksCount: 8,
-      bookmarksCount: 32,
-      visibility: "PUBLIC",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: "Alex Morgan",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      type: "book",
-      id: "b4",
-      donor_id: "morgan",
-      title: "The Psychology of Money",
-      author: "Morgan Housel",
-      pages: 234,
-      description:
-        "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance. ",
-      category: "business",
-      cover_image: "/dummycover.png",
-      published_year: 2023,
-    },
-  ];
+  const { data: recommendations, isLoading: isLoadingRecommendations } =
+    useGetRecommendationsCombinedQuery();
 
   const categoryBooks: BookPreview[] = [
     {
@@ -161,6 +87,18 @@ export default function LibraryPage() {
     },
   ];
 
+  // Combine and shuffle items for display
+  const displayItems: RecommendedItem[] = [];
+  if (recommendations) {
+    const { books, folders } = recommendations;
+    const maxLength = Math.max(books.length, folders.length);
+    for (let i = 0; i < maxLength; i++) {
+      if (i < folders.length)
+        displayItems.push({ ...folders[i], type: "folder" });
+      if (i < books.length) displayItems.push({ ...books[i], type: "book" });
+    }
+  }
+
   return (
     <>
       <main className="flex-1 overflow-y-auto w-full">
@@ -170,30 +108,56 @@ export default function LibraryPage() {
               <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                 Recommended
               </h2>
-              <button className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
+              {/* <button className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
                 <span>See All</span>
                 <FiChevronRight className="w-4 h-4" />
-              </button>
+              </button> */}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {recommendedItems.map((item) => {
-                if (item.type === "folder") {
-                  return (
-                    <FolderCard
-                      folder={item}
-                      onClick={() => router.push(`/app/folders/${item.id}`)}
-                    />
-                  );
-                } else {
-                  return (
-                    <BookCard
-                      {...item}
-                      onClick={() => setSelectedBook(item)}
-                    />
-                  );
-                }
-              })}
-            </div>
+            {isLoadingRecommendations ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton
+                    key={i}
+                    className="h-64 w-full rounded-2xl"
+                  />
+                ))}
+              </div>
+            ) : displayItems.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {displayItems.map((item) => {
+                  if (item.type === "folder") {
+                    return (
+                      <FolderCard
+                        key={item.id}
+                        folder={item}
+                        onClick={() => router.push(`/app/folders/${item.id}`)}
+                      />
+                    );
+                  } else {
+                    return (
+                      <BookCard
+                        key={item.id}
+                        {...item}
+                        onClick={() => setSelectedBook(item)}
+                      />
+                    );
+                  }
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 px-6">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center mb-6">
+                  <FiBook className="w-10 h-10 text-emerald-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  No Recommendations Yet
+                </h3>
+                <p className="text-gray-500 text-center text-sm max-w-xs">
+                  Start exploring books and folders to get personalized
+                  suggestions tailored just for you.
+                </p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -204,6 +168,7 @@ export default function LibraryPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-6">
               {categoryBooks.map((book) => (
                 <BookCard
+                  key={book.id}
                   {...book}
                   onClick={() => setSelectedBook(book)}
                 />

@@ -26,7 +26,7 @@ export type BookPreview = Partial<Book> & {
   pages: number;
   category: string;
   description: string;
-  published_year: number;
+  published_year?: number;
 };
 
 export interface BookFilterParams {

@@ -10,7 +10,7 @@ interface FolderCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
-  currentUser: string;
+  currentUser?: string;
 }
 
 export const FolderCard: React.FC<FolderCardProps> = ({
