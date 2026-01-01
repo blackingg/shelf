@@ -8,6 +8,7 @@ import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
+import { Skeleton } from "@/app/components/Layout/Skeleton";
 import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import {
@@ -18,9 +19,6 @@ import {
 } from "@/app/store/api/onboardingApi";
 import { useAppDispatch } from "@/app/store/store";
 import { setOnboardingStatus } from "@/app/store/authSlice";
-import { InterestCategory } from "@/app/types/onboarding";
-import * as Icons from "react-icons/fi";
-import * as FaIcons from "react-icons/fa";
 import { getErrorMessage } from "@/app/helpers/error";
 
 interface OptionType {
@@ -67,8 +65,12 @@ export default function Onboarding() {
     useGetSchoolsQuery(schoolSearch);
   const { data: departments = [], isLoading: isLoadingDepartments } =
     useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
-  const { data: interestsResponse, isLoading: isLoadingInterests } =
-    useGetInterestsQuery();
+  const {
+    data: interestsResponse,
+    isLoading: isLoadingInterests,
+    isError: isInterestError,
+    refetch: refetchInterests,
+  } = useGetInterestsQuery();
   const [completeOnboarding, { isLoading: isSubmitting }] =
     useCompleteOnboardingMutation();
 
@@ -107,7 +109,13 @@ export default function Onboarding() {
       router.push("/app/library");
     } catch (error: any) {
       console.error("Onboarding failed:", error);
-      addNotification("error", getErrorMessage(error, "Failed to complete onboarding. Please try again."));
+      addNotification(
+        "error",
+        getErrorMessage(
+          error,
+          "Failed to complete onboarding. Please try again."
+        )
+      );
     }
   };
 
@@ -132,12 +140,15 @@ export default function Onboarding() {
     }));
   };
 
-  const getIconComponent = (iconName: string | undefined) => {
-    if (!iconName) return <FiHeart />;
-    // Simple mapping logic if icons are strings from API
-    const FiIcon = (Icons as any)[iconName];
-    const FaIcon = (FaIcons as any)[iconName];
-    return FiIcon ? <FiIcon /> : FaIcon ? <FaIcon /> : <FiHeart />;
+  const getIconComponent = (iconName: string) => {
+    return <span className="text-lg">{iconName}</span>;
+  };
+
+  const formatCategory = (category: string) => {
+    return category
+      .split("_")
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(" ");
   };
 
   return (
@@ -278,15 +289,38 @@ export default function Onboarding() {
             {currentStep === 2 && (
               <div className="space-y-5 max-h-80 overflow-y-auto">
                 {isLoadingInterests ? (
-                  <div className="flex justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
+                  <div className="space-y-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i}>
+                        <Skeleton className="h-4 w-32 mb-3" />
+                        <div className="grid grid-cols-2 gap-3">
+                          {[1, 2, 3, 4].map((j) => (
+                            <Skeleton
+                              key={j}
+                              className="h-12 w-full rounded-xl"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : isInterestError || !interestsResponse ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-red-500 mb-3">
+                      Failed to load interests. Please check your connection.
+                    </p>
+                    <button
+                      onClick={() => refetchInterests()}
+                      className="text-sm text-emerald-700 hover:text-emerald-800 font-medium underline"
+                    >
+                      Try Again
+                    </button>
                   </div>
                 ) : (
-                  interestsResponse &&
                   Object.entries(interestsResponse).map(([category, list]) => (
                     <div key={category}>
                       <h3 className="text-sm font-semibold text-gray-800 mb-2">
-                        {category}
+                        {formatCategory(category)}
                       </h3>
                       <div className="grid grid-cols-2 gap-3">
                         {list.map((interest) => (

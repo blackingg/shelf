@@ -9,22 +9,16 @@ export interface Department {
   name: string;
 }
 
-export type InterestCategory =
-  | "ACADEMICS"
-  | "CAREER_SKILLS"
-  | "LIFESTYLE"
-  | "CREATIVITY"
-  | "ENTERTAINMENT"
-  | "READING";
-
 export interface Interest {
   id: string;
   name: string;
-  category: InterestCategory;
-  icon?: string;
+  category: string;
+  icon: string;
 }
 
-export type InterestsResponse = Record<InterestCategory, Interest[]>;
+export interface InterestsResponse {
+  [category: string]: Interest[];
+}
 
 export interface OnboardingCompleteRequest {
   schoolId: string;
