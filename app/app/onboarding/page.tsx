@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Select, { SingleValue } from "react-select";
+import Select from "react-select";
 import { FiHeart, FiUser, FiBook } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
@@ -120,6 +120,25 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
+    if (currentStep === 0 && !formData.schoolId) {
+      addNotification("error", "Please select a school to continue");
+      return;
+    }
+    if (currentStep === 1) {
+      if (!formData.schoolId) {
+        addNotification("error", "Missing school selection. Please go back.");
+        return;
+      }
+      if (!formData.departmentId) {
+        addNotification("error", "Please select a department to continue");
+        return;
+      }
+    }
+    if (currentStep === 2 && formData.interestIds.length < 3) {
+      addNotification("error", "Please select at least 3 interests");
+      return;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
@@ -277,11 +296,6 @@ export default function Onboarding() {
                     }),
                   }}
                 />
-                {!formData.schoolId && (
-                  <p className="text-sm text-gray-500">
-                    Please select a school first
-                  </p>
-                )}
               </div>
             )}
 
@@ -345,7 +359,7 @@ export default function Onboarding() {
               onBack={handleBack}
               onNext={handleNext}
               canGoBack={currentStep > 0}
-              canProceed={canProceed()}
+              canProceed={true}
               isLastStep={currentStep === steps.length - 1}
               isLoading={isSubmitting}
             />
