@@ -12,7 +12,10 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
 
 interface SidebarItem {
   label: string;
@@ -24,10 +27,13 @@ interface SidebarItem {
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
 
   const handleLogout = () => {
-    console.log("Logging out...");
+    dispatch(logout());
+    router.push("/app/auth/login");
   };
 
   const mainItems: SidebarItem[] = [

@@ -4,12 +4,18 @@ import { FiSettings, FiLogOut, FiUser, FiChevronDown } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
+import { selectCurrentUser, logout } from "../store/authSlice";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const userName = "Balogun";
-  const userEmail = "balogun@example.com";
-  const userAvatar = "/avatar.png";
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+
+  const userFullName = user?.fullName || "";
+  const userName = user?.username || "User";
+  const userEmail = user?.email || "";
+  const userAvatar = user?.avatar || null;
 
   const router = useRouter();
 
@@ -24,9 +30,9 @@ export const UserProfileDropdown: React.FC = () => {
   };
 
   const handleLogout = () => {
-    console.log("Logout clicked");
+    dispatch(logout());
     setIsOpen(false);
-    // Implement logout logic here
+    router.push("/app/auth/login");
   };
 
   return (
@@ -35,14 +41,18 @@ export const UserProfileDropdown: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
       >
-        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-200 rounded-full overflow-hidden relative">
-          <Image
-            src={userAvatar}
-            alt="User"
-            width={40}
-            height={40}
-            className="object-cover"
-          />
+        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-300 rounded-full overflow-hidden relative flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+          {userAvatar ? (
+            <Image
+              src={userAvatar}
+              alt="User"
+              width={40}
+              height={40}
+              className="object-cover"
+            />
+          ) : (
+            userName.charAt(0).toUpperCase()
+          )}
         </div>
         <span className=" hidden md:block font-medium text-gray-900">
           {userName}
@@ -69,7 +79,7 @@ export const UserProfileDropdown: React.FC = () => {
             >
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 text-white font-semibold text-lg flex-shrink-0">
                     {userAvatar ? (
                       <Image
                         src={userAvatar}
@@ -84,7 +94,7 @@ export const UserProfileDropdown: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 text-sm truncate">
-                      {userName}
+                      {userFullName}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       {userEmail}

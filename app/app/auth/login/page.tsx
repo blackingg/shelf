@@ -134,6 +134,7 @@ export default function LoginPage() {
       if (result.user.onboardingCompleted) {
         router.push("/app/library");
       } else {
+        addNotification("info", "Please complete the onboarding process.");
         router.push("/app/onboarding");
       }
     } catch (error: any) {
