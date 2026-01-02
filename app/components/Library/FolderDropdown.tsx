@@ -1,34 +1,56 @@
 import { useState } from "react";
-import { FiFolder, FiPlus, FiCheck } from "react-icons/fi";
+import { FiFolder, FiPlus, FiCheck, FiAlertCircle, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 
-import { Folder } from "@/app/types/folder";
+import {
+  useGetMeFoldersQuery,
+  useCreateFolderMutation,
+} from "@/app/store/api/foldersApi";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export const FolderDropdown: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onSaveToFolder: (folderId: string) => void;
   currentBookFolders?: string[];
-  folders: Folder[];
-  onCreateFolder: (folderName: string) => void;
   className?: string;
 }> = ({
   isOpen,
   onClose,
   onSaveToFolder,
   currentBookFolders = [],
-  folders,
-  onCreateFolder,
   className = "bottom-full mb-2 w-full",
 }) => {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const { addNotification } = useNotifications();
 
-  const handleCreateFolder = () => {
-    if (newFolderName.trim()) {
-      onCreateFolder(newFolderName.trim());
-      setNewFolderName("");
-      setIsCreatingNew(false);
+  const {
+    data: folders = [],
+    isLoading,
+    isError,
+  } = useGetMeFoldersQuery(undefined, {
+    skip: !isOpen,
+  });
+
+  const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
+
+  const handleCreateFolder = async () => {
+    if (newFolderName.trim() && !isCreating) {
+      try {
+        await createFolder({ name: newFolderName.trim() }).unwrap();
+        setNewFolderName("");
+        setIsCreatingNew(false);
+        addNotification(
+          "success",
+          `Folder "${newFolderName.trim()}" created successfully`
+        );
+      } catch (error) {
+        addNotification(
+          "error",
+          `Failed to create folder "${newFolderName.trim()}"`
+        );
+      }
     }
   };
 
@@ -57,7 +79,35 @@ export const FolderDropdown: React.FC<{
             </div>
 
             <div className="max-h-64 overflow-y-auto custom-scrollbar">
-              {folders.length === 0 ? (
+              {isLoading ? (
+                <div className="px-4 py-3 space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between animate-pulse"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 bg-gray-200 rounded" />
+                        <div>
+                          <div className="w-24 h-4 bg-gray-200 rounded mb-1" />
+                          <div className="w-16 h-3 bg-gray-100 rounded" />
+                        </div>
+                      </div>
+                      <div className="w-14 h-7 bg-gray-200 rounded-lg" />
+                    </div>
+                  ))}
+                </div>
+              ) : isError ? (
+                <div className="px-4 py-8 text-center">
+                  <FiAlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">
+                    Failed to load folders
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Please try again later
+                  </p>
+                </div>
+              ) : folders.length === 0 ? (
                 <div className="px-4 py-8 text-center">
                   <FiFolder className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-500">No folders yet</p>
@@ -109,7 +159,7 @@ export const FolderDropdown: React.FC<{
 
             <div className="border-t border-gray-200 p-3">
               {isCreatingNew ? (
-                <div className="flex items-center space-x-2">
+                <div className="grid grid-cols-2 items-center space-x-2">
                   <input
                     type="text"
                     value={newFolderName}
@@ -125,22 +175,25 @@ export const FolderDropdown: React.FC<{
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
                     autoFocus
                   />
-                  <button
-                    onClick={handleCreateFolder}
-                    disabled={!newFolderName.trim()}
-                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
-                  >
-                    Create
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsCreatingNew(false);
-                      setNewFolderName("");
-                    }}
-                    className="px-3 py-2 text-gray-600 hover:text-gray-900 text-sm"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex items-center justify-end">
+                    <button
+                      onClick={handleCreateFolder}
+                      disabled={!newFolderName.trim() || isCreating}
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isCreating ? "Creating..." : "Create"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsCreatingNew(false);
+                        setNewFolderName("");
+                      }}
+                      aria-label="Cancel"
+                      className="ml-2 p-2 rounded-lg text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-300 transition-colors"
+                    >
+                      <FiX className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button

@@ -12,7 +12,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { FolderDropdown } from "./FolderDropdown";
 import { BookPreview } from "@/app/types/book";
-import { Folder } from "@/app/types/folder";
+import {
+  useAddBookToFolderMutation,
+  useRemoveBookFromFolderMutation,
+} from "@/app/store/api/foldersApi";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export const BookDetailPanel: React.FC<{
   book: BookPreview;
@@ -20,88 +24,29 @@ export const BookDetailPanel: React.FC<{
   isOpen: boolean;
 }> = ({ book, onClose, isOpen }) => {
   const router = useRouter();
+  const { addNotification } = useNotifications();
+  const [addBookToFolder] = useAddBookToFolderMutation();
+  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [bookFolders, setBookFolders] = useState<string[]>([]);
 
-  const [folders, setFolders] = useState<Folder[]>([
-    {
-      id: "1",
-      slug: "want-to-read",
-      name: "Want to Read",
-      description: "Books I want to read",
-      coverImages: [],
-      visibility: "PRIVATE",
-      booksCount: 12,
-      bookmarksCount: 0,
-      createdBy: "me",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      slug: "favorites",
-      name: "Favorites",
-      description: "My favorite books",
-      coverImages: null,
-      visibility: "PRIVATE",
-      booksCount: 8,
-      bookmarksCount: 0,
-      createdBy: "me",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      slug: "study-materials",
-      name: "Study Materials",
-      description: "Books for my studies",
-      coverImages: null,
-      visibility: "PRIVATE",
-      booksCount: 15,
-      bookmarksCount: 0,
-      createdBy: "me",
-      createdAt: new Date().toISOString(),
-    },
-  ]);
-
-  const handleSaveToFolder = (folderId: string) => {
-    if (bookFolders.includes(folderId)) {
-      setBookFolders(bookFolders.filter((id) => id !== folderId));
-      setFolders(
-        folders.map((folder) =>
-          folder.id === folderId
-            ? { ...folder, booksCount: folder.booksCount - 1 }
-            : folder
-        )
-      );
-      console.log("Removed from folder:", folderId);
-    } else {
-      setBookFolders([...bookFolders, folderId]);
-      setFolders(
-        folders.map((folder) =>
-          folder.id === folderId
-            ? { ...folder, booksCount: folder.booksCount + 1 }
-            : folder
-        )
-      );
-      console.log("Added to folder:", folderId);
+  const handleSaveToFolder = async (folderId: string) => {
+    try {
+      if (bookFolders.includes(folderId)) {
+        await removeBookFromFolder({ id: folderId, bookId: book.id }).unwrap();
+        setBookFolders(bookFolders.filter((id) => id !== folderId));
+        addNotification("success", "Book removed from folder");
+      } else {
+        await addBookToFolder({
+          id: folderId,
+          data: { bookId: book.id },
+        }).unwrap();
+        setBookFolders([...bookFolders, folderId]);
+        addNotification("success", "Book added to folder");
+      }
+    } catch (error) {
+      addNotification("error", "Failed to update folder");
     }
-  };
-
-  const handleCreateFolder = (folderName: string) => {
-    const newFolder: Folder = {
-      id: Date.now().toString(),
-      slug: folderName.toLowerCase().replace(/ /g, "-"),
-      name: folderName,
-      description: null,
-      coverImages: null,
-      visibility: "PRIVATE",
-      booksCount: 1,
-      bookmarksCount: 0,
-      createdBy: "me",
-      createdAt: new Date().toISOString(),
-    };
-    setFolders([...folders, newFolder]);
-    setBookFolders([...bookFolders, newFolder.id]);
-    console.log("Created new folder and added book:", newFolder);
   };
 
   return (
@@ -235,8 +180,6 @@ export const BookDetailPanel: React.FC<{
                   onClose={() => setShowFolderDropdown(false)}
                   onSaveToFolder={handleSaveToFolder}
                   currentBookFolders={bookFolders}
-                  folders={folders}
-                  onCreateFolder={handleCreateFolder}
                 />
               </div>
             </div>

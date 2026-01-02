@@ -11,17 +11,25 @@ import {
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/app/components/Form/Button";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
-import { Folder } from "@/app/types/folder";
+import {
+  useAddBookToFolderMutation,
+  useRemoveBookFromFolderMutation,
+} from "@/app/store/api/foldersApi";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export default function BookDetailsPage() {
   const router = useRouter();
   const params = useParams();
+  const { addNotification } = useNotifications();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [savedFolders, setSavedFolders] = useState<string[]>([]);
 
+  const [addBookToFolder] = useAddBookToFolderMutation();
+  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
+
   // Mock Data
   const book = {
-    id: params.id,
+    id: params.id as string,
     title: "The Psychology of Money",
     author: "Morgan Housel",
     coverImage: "/dummycover.png",
@@ -34,49 +42,23 @@ export default function BookDetailsPage() {
     donor: "Harriman House",
   };
 
-  const [folders, setFolders] = useState<Folder[]>([
-    {
-      id: "1",
-      name: "Favorites",
-      bookCount: 12,
-      type: "folder",
-      isPublic: false,
-    },
-    { id: "2", name: "To Read", bookCount: 5, type: "folder", isPublic: false },
-    {
-      id: "3",
-      name: "Finance & Investing",
-      bookCount: 8,
-      type: "folder",
-      isPublic: true,
-    },
-    {
-      id: "4",
-      name: "Psychology 101",
-      bookCount: 3,
-      type: "folder",
-      isPublic: false,
-    },
-  ]);
-
-  const handleSaveToFolder = (folderId: string) => {
-    if (savedFolders.includes(folderId)) {
-      setSavedFolders(savedFolders.filter((id) => id !== folderId));
-    } else {
-      setSavedFolders([...savedFolders, folderId]);
+  const handleSaveToFolder = async (folderId: string) => {
+    try {
+      if (savedFolders.includes(folderId)) {
+        await removeBookFromFolder({ id: folderId, bookId: book.id }).unwrap();
+        setSavedFolders(savedFolders.filter((id) => id !== folderId));
+        addNotification("success", "Book removed from folder");
+      } else {
+        await addBookToFolder({
+          id: folderId,
+          data: { bookId: book.id },
+        }).unwrap();
+        setSavedFolders([...savedFolders, folderId]);
+        addNotification("success", "Book added to folder");
+      }
+    } catch (error) {
+      addNotification("error", "Failed to update folder");
     }
-  };
-
-  const handleCreateFolder = (folderName: string) => {
-    const newFolder: Folder = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: folderName,
-      bookCount: 0,
-      type: "folder",
-      isPublic: false,
-    };
-    setFolders([...folders, newFolder]);
-    handleSaveToFolder(newFolder.id);
   };
 
   return (
@@ -166,10 +148,8 @@ export default function BookDetailsPage() {
                     <FolderDropdown
                       isOpen={showFolderDropdown}
                       onClose={() => setShowFolderDropdown(false)}
-                      folders={folders}
                       currentBookFolders={savedFolders}
                       onSaveToFolder={handleSaveToFolder}
-                      onCreateFolder={handleCreateFolder}
                       className="top-full mt-2 w-72"
                     />
                   </div>
