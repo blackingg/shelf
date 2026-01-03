@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { NotificationProvider } from "../context/NotificationContext";
+import { useState, useEffect } from "react";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function StoreProvider({
   children,
@@ -11,6 +13,19 @@ export default function StoreProvider({
   children: React.ReactNode;
 }) {
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!mounted) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Provider store={store}>
