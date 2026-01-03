@@ -9,7 +9,12 @@ export interface User {
   booksCount: number;
   foldersCount: number;
   onboardingCompleted: boolean;
+  schoolId: string | null;
+  departmentId: string | null;
+  school: any | null;
+  department: any | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdateUserRequest {
@@ -17,6 +22,9 @@ export interface UpdateUserRequest {
   username?: string;
   bio?: string;
   avatar?: string;
+  schoolId?: string;
+  departmentId?: string;
+  email?: string;
 }
 
 export interface ChangePasswordRequest {

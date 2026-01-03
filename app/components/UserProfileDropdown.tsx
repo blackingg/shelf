@@ -51,7 +51,8 @@ export const UserProfileDropdown: React.FC = () => {
               className="object-cover"
             />
           ) : (
-            userName.charAt(0).toUpperCase()
+            userName.charAt(0).toUpperCase() ||
+            userFullName.charAt(0).toUpperCase()
           )}
         </div>
         <span className=" hidden md:block font-medium text-gray-900">

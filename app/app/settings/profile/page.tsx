@@ -1,10 +1,22 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Select, { SingleValue } from "react-select";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
-import { SCHOOLS, getDepartmentsBySchoolId } from "@/app/types/schools";
+import { useSelector } from "react-redux";
+import { selectCurrentUser, setUser } from "@/app/store/authSlice";
+import { useAppDispatch } from "@/app/store/store";
+import {
+  useUpdateMeMutation,
+  useUploadAvatarMutation,
+} from "@/app/store/api/usersApi";
+import {
+  useGetSchoolsQuery,
+  useGetDepartmentsQuery,
+} from "@/app/store/api/onboardingApi";
+import { useNotifications } from "@/app/context/NotificationContext";
+import { getErrorMessage } from "@/app/helpers/error";
 
 interface OptionType {
   value: string;
@@ -12,33 +24,61 @@ interface OptionType {
 }
 
 export default function SettingsProfilePage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { addNotification } = useNotifications();
+  const user = useSelector(selectCurrentUser);
+  const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
+  const [uploadAvatar, { isLoading: isUploadingAvatar }] =
+    useUploadAvatarMutation();
+
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const { data: schools = [], isLoading: isLoadingSchools } =
+    useGetSchoolsQuery(schoolSearch);
 
   const [formData, setFormData] = useState({
-    name: "Sarah Chen",
-    username: "sarahchen",
-    schoolId: "unilag",
-    university: "University of Lagos",
-    department: "Computer Science",
-    email: "sarah@example.com",
+    name: "",
+    username: "",
+    schoolId: "",
+    departmentId: "",
+    email: "",
+    bio: "",
   });
 
-  const schoolOptions: OptionType[] = SCHOOLS.map((school) => ({
+  const { data: departments = [], isLoading: isLoadingDepartments } =
+    useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user?.fullName || "",
+        username: user?.username || "",
+        schoolId: user?.schoolId || "",
+        departmentId: user?.departmentId || "",
+        email: user?.email || "",
+        bio: user?.bio || "",
+      });
+    }
+  }, [user]);
+
+  const schoolOptions: OptionType[] = schools?.map((school) => ({
     value: school.id,
     label: school.name,
   }));
 
-  const departmentOptions: OptionType[] = useMemo(() => {
-    if (!formData.schoolId) return [];
-    const departments = getDepartmentsBySchoolId(formData.schoolId);
-    return departments.map((dept) => ({
-      value: dept,
-      label: dept,
-    }));
-  }, [formData.schoolId]);
+  const departmentOptions: OptionType[] = departments?.map((dept) => ({
+    value: dept.id,
+    label: dept.name,
+  }));
+
+  const isDirty =
+    formData.name !== (user?.fullName || "") ||
+    formData.username !== (user?.username || "") ||
+    formData.bio !== (user?.bio || "") ||
+    formData.schoolId !== (user?.schoolId || "") ||
+    formData.departmentId !== (user?.departmentId || "");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -48,25 +88,54 @@ export default function SettingsProfilePage() {
     setFormData((prev) => ({
       ...prev,
       schoolId: option?.value || "",
-      university: option?.label || "",
-      department: "", // Reset department when school changes
+      departmentId: "", // Reset department when school changes
     }));
   };
 
   const handleDepartmentChange = (option: SingleValue<OptionType>) => {
     setFormData((prev) => ({
       ...prev,
-      department: option?.value || "",
+      departmentId: option?.value || "",
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Saving profile:", formData);
-    setIsLoading(false);
+    try {
+      const updatedUser = await updateMe({
+        fullName: formData.name,
+        username: formData.username,
+        bio: formData.bio,
+        schoolId: formData.schoolId,
+        departmentId: formData.departmentId,
+      }).unwrap();
+      dispatch(setUser(updatedUser));
+      addNotification("success", "Profile updated successfully!");
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to update profile")
+      );
+    }
+  };
+
+  const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const updatedUser = await uploadAvatar(formData).unwrap();
+      dispatch(setUser(updatedUser));
+      addNotification("success", "Avatar updated successfully!");
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to upload avatar")
+      );
+    }
   };
 
   const customSelectStyles = {
@@ -110,19 +179,45 @@ export default function SettingsProfilePage() {
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
-                <div className="relative w-24 h-24 rounded-full bg-gray-100 overflow-hidden border-2 border-white shadow-md">
-                  {/* Placeholder for now */}
-                  <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400">
-                    {formData.name.charAt(0)}
-                  </div>
+                <div className="relative w-24 h-24 rounded-full bg-emerald-100 overflow-hidden border-2 border-white shadow-md">
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={formData.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 uppercase">
+                      {user?.fullName?.charAt(0) ||
+                        user?.username?.charAt(0) ||
+                        "?"}
+                    </div>
+                  )}
+                  {isUploadingAvatar && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </div>
-                <button
-                  type="button"
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
-                >
-                  <FiCamera className="w-4 h-4" />
-                  <span>Change Photo</span>
-                </button>
+                <div className="relative">
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    disabled={isUploadingAvatar}
+                  />
+                  <label
+                    htmlFor="avatar-upload"
+                    className={`px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 cursor-pointer ${
+                      isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    <FiCamera className="w-4 h-4" />
+                    <span>Change Photo</span>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -165,11 +260,21 @@ export default function SettingsProfilePage() {
                 </label>
                 <div className="relative">
                   <FiBook className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
-                  <Select
+                  <Select<OptionType, false>
                     options={schoolOptions}
+                    isLoading={isLoadingSchools}
+                    onInputChange={(val) => setSchoolSearch(val)}
                     value={
                       formData.schoolId
-                        ? schoolOptions.find((opt) => opt.value === formData.schoolId)
+                        ? schoolOptions.find(
+                            (opt) => opt.value === formData.schoolId
+                          ) ||
+                          (user?.school
+                            ? {
+                                value: user.schoolId as string,
+                                label: user.school.name,
+                              }
+                            : null)
                         : null
                     }
                     onChange={handleSchoolChange}
@@ -185,11 +290,20 @@ export default function SettingsProfilePage() {
                 </label>
                 <div className="relative">
                   <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
-                  <Select
+                  <Select<OptionType, false>
                     options={departmentOptions}
+                    isLoading={isLoadingDepartments}
                     value={
-                      formData.department
-                        ? { value: formData.department, label: formData.department }
+                      formData.departmentId
+                        ? departmentOptions.find(
+                            (opt) => opt.value === formData.departmentId
+                          ) ||
+                          (user?.department
+                            ? {
+                                value: user.departmentId as string,
+                                label: user.department.name,
+                              }
+                            : null)
                         : null
                     }
                     onChange={handleDepartmentChange}
@@ -205,7 +319,8 @@ export default function SettingsProfilePage() {
             <div className="pt-4 border-t border-gray-200 flex justify-end">
               <Button
                 type="submit"
-                isLoading={isLoading}
+                isLoading={isUpdating}
+                disabled={!isDirty}
                 className="w-auto px-8"
               >
                 Save Changes
