@@ -10,8 +10,20 @@ interface AuthState {
   rememberMe: boolean;
 }
 
+const getUserFromStorage = (): User | null => {
+  try {
+    const userStr = storage.find("user");
+    return userStr ? JSON.parse(userStr) : null;
+  } catch (error) {
+    console.error("Failed to parse user from storage:", error);
+    storage.removeFromBoth("user");
+    return null;
+  }
+};
+
 const initialState: AuthState = {
-  user: JSON.parse(storage.find("user") || "null"),
+  // user: JSON.parse(storage.find("user") || "null"),
+  user: getUserFromStorage(),
   accessToken: storage.find("accessToken"),
   refreshToken: storage.find("refreshToken"),
   isAuthenticated: !!storage.find("accessToken"),
