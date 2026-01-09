@@ -57,3 +57,8 @@ export interface Collaborator {
 export interface UpdatePermissionsRequest {
   permissions: string[];
 }
+
+export interface UpdateCollaborationSettingsRequest {
+  allowCollaboration: boolean;
+  requireApproval: boolean;
+}

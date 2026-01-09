@@ -8,6 +8,7 @@ import {
   Invite,
   Collaborator,
   UpdatePermissionsRequest,
+  UpdateCollaborationSettingsRequest,
 } from "../../types/folder";
 
 export const foldersApi = baseApi.injectEndpoints({
@@ -18,6 +19,14 @@ export const foldersApi = baseApi.injectEndpoints({
     }),
     getPublicFolders: builder.query<Folder[], void>({
       query: () => "/folders/public",
+      providesTags: ["Folders"],
+    }),
+    getRecommendedFolders: builder.query<Folder[], void>({
+      query: () => "/folders/recommended",
+      providesTags: ["Folders"],
+    }),
+    getBookmarkedFolders: builder.query<Folder[], void>({
+      query: () => "/folders/bookmarked",
       providesTags: ["Folders"],
     }),
     getFolderById: builder.query<Folder, string>({
@@ -78,6 +87,45 @@ export const foldersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
     }),
+    bookmarkFolder: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/folders/${id}/bookmark`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Folders", id },
+        "Folders",
+      ],
+    }),
+    unbookmarkFolder: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/folders/${id}/bookmark`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Folders", id },
+        "Folders",
+      ],
+    }),
+    uploadFolderCover: builder.mutation<void, { id: string; data: FormData }>({
+      query: ({ id, data }) => ({
+        url: `/folders/${id}/cover`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
+    }),
+    updateCollaborationSettings: builder.mutation<
+      void,
+      { id: string; data: UpdateCollaborationSettingsRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/folders/${id}/collaboration`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
+    }),
     // Collaboration
     inviteCollaborator: builder.mutation<
       void,
@@ -111,6 +159,8 @@ export const foldersApi = baseApi.injectEndpoints({
 export const {
   useGetMeFoldersQuery,
   useGetPublicFoldersQuery,
+  useGetRecommendedFoldersQuery,
+  useGetBookmarkedFoldersQuery,
   useGetFolderByIdQuery,
   useGetFolderBySlugQuery,
   useCreateFolderMutation,
@@ -118,6 +168,10 @@ export const {
   useDeleteFolderMutation,
   useAddBookToFolderMutation,
   useRemoveBookFromFolderMutation,
+  useBookmarkFolderMutation,
+  useUnbookmarkFolderMutation,
+  useUploadFolderCoverMutation,
+  useUpdateCollaborationSettingsMutation,
   useInviteCollaboratorMutation,
   useGetInvitesQuery,
   useGetCollaboratorsQuery,

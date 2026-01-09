@@ -18,7 +18,7 @@ export default function StoreProvider({
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
-    }, 3000);
+    }, 1600);
 
     return () => clearTimeout(timer);
   }, []);
