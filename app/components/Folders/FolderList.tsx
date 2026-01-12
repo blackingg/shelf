@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
 import { Folder, Collaborator } from "@/app/types/folder";
 import {
   FiFolder,
@@ -9,6 +11,7 @@ import {
   FiBook,
   FiUser,
 } from "react-icons/fi";
+import FolderListSkeleton from "@/app/components/Skeletons/FolderListSkeleton";
 
 interface FolderListProps {
   folders: (Folder & { collaborator?: Collaborator })[];
@@ -17,7 +20,8 @@ interface FolderListProps {
   onFolderDelete?: (folder: Folder) => void;
   showActions?: boolean;
   emptyMessage?: string;
-  currentUser?: string;
+  isLoading?: boolean;
+  skeletonCount?: number;
 }
 
 export const FolderList: React.FC<FolderListProps> = ({
@@ -27,9 +31,16 @@ export const FolderList: React.FC<FolderListProps> = ({
   onFolderDelete,
   showActions = false,
   emptyMessage = "No folders yet",
-  currentUser = "You",
+  isLoading = false,
+  skeletonCount = 5,
 }) => {
+  const user = useSelector(selectCurrentUser);
+  const currentUser = user?.username || "Guest";
   const [activeMenuId, setActiveMenuId] = React.useState<string | null>(null);
+
+  if (isLoading) {
+    return <FolderListSkeleton count={skeletonCount} />;
+  }
 
   if (folders.length === 0) {
     return (
@@ -130,7 +141,7 @@ export const FolderList: React.FC<FolderListProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-600">
                       <FiUser className="w-4 h-4 mr-2 text-gray-400" />
-                      {folder.createdBy || "You"}
+                      {folder.createdBy || "Guest"}
                     </div>
                   </td>
                   {showActions && (

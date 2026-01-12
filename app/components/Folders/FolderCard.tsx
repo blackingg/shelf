@@ -2,6 +2,8 @@
 import { FiLock, FiGlobe, FiMoreVertical, FiBook } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
 import { Folder, Collaborator } from "@/app/types/folder";
 
 interface FolderCardProps {
@@ -10,7 +12,6 @@ interface FolderCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
-  currentUser?: string;
 }
 
 export const FolderCard: React.FC<FolderCardProps> = ({
@@ -19,8 +20,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onEdit,
   onDelete,
   showActions = false,
-  currentUser,
 }) => {
+  const user = useSelector(selectCurrentUser);
+  const currentUser = user?.username || "Guest";
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
@@ -163,7 +165,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 </div>
 
                 <span className="text-[10px] sm:text-xs text-white/80 truncate max-w-[100px] sm:max-w-none">
-                  by {folder.createdBy}
+                  by {folder.createdBy || "Guest"}
                 </span>
               </div>
             </div>

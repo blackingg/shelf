@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
+import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,12 +15,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export const metadata: Metadata = {
   icons: {
     icon: "/logo.png",
+    apple: [
+      { url: "/icons/icon-152x152.png", sizes: "152x152", type: "image/png" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
   },
   title: "Shelf",
   description: "Community-driven book collections",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Shelf",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: "Shelf",
     description: "Community-driven book collections",
@@ -58,6 +80,30 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link
+          rel="manifest"
+          href="/manifest.json"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/icons/icon-192x192.png"
+        />
+        <meta
+          name="apple-mobile-web-app-capable"
+          content="yes"
+        />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="default"
+        />
+        <meta
+          name="apple-mobile-web-app-title"
+          content="Shelf"
+        />
+        <meta
+          name="mobile-web-app-capable"
+          content="yes"
+        />
+        <link
           rel="me"
           href="https://x.com/shelfng_"
         />
@@ -70,7 +116,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          {children}
+          <ErrorBoundaryWithNotification>
+            {children}
+          </ErrorBoundaryWithNotification>
         </StoreProvider>
       </body>
       <Analytics />

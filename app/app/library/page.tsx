@@ -11,7 +11,8 @@ import {
 } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
-import { Skeleton } from "@/app/components/Layout/Skeleton";
+import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
+import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 import { useGetRecommendationsCombinedQuery } from "@/app/store/api/recommendationsApi";
 
 type RecommendedItem =
@@ -115,12 +116,8 @@ export default function LibraryPage() {
             </div>
             {isLoadingRecommendations ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <Skeleton
-                    key={i}
-                    className="h-64 w-full rounded-2xl"
-                  />
-                ))}
+                <FolderCardSkeleton count={2} />
+                <BookCardSkeleton count={2} />
               </div>
             ) : displayItems.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

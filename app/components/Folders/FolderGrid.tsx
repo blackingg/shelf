@@ -1,7 +1,7 @@
-"use client";
 import { FolderCard } from "./FolderCard";
 import { FiFolder } from "react-icons/fi";
 import { Folder, Collaborator } from "@/app/types/folder";
+import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
 
 interface FolderGridProps {
   folders: (Folder & { collaborator?: Collaborator })[];
@@ -10,7 +10,8 @@ interface FolderGridProps {
   onFolderDelete?: (folder: Folder) => void;
   showActions?: boolean;
   emptyMessage?: string;
-  currentUser?: string;
+  isLoading?: boolean;
+  skeletonCount?: number;
 }
 
 export const FolderGrid: React.FC<FolderGridProps> = ({
@@ -20,8 +21,17 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
   onFolderDelete,
   showActions = false,
   emptyMessage = "No folders yet",
-  currentUser = "You",
+  isLoading = false,
+  skeletonCount = 8,
 }) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <FolderCardSkeleton count={skeletonCount} />
+      </div>
+    );
+  }
+
   if (folders.length === 0) {
     return (
       <div className="text-center py-16">
@@ -43,7 +53,6 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
           onEdit={() => onFolderEdit?.(folder)}
           onDelete={() => onFolderDelete?.(folder)}
           showActions={showActions}
-          currentUser={currentUser}
         />
       ))}
     </div>

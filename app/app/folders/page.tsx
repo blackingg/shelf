@@ -8,10 +8,18 @@ import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 import { FiGrid, FiList } from "react-icons/fi";
 import { Folder, FolderVisibility } from "@/app/types/folder";
+import {
+  useGetMeFoldersQuery,
+  useGetPublicFoldersQuery,
+  useGetBookmarkedFoldersQuery,
+  useCreateFolderMutation,
+  useDeleteFolderMutation,
+} from "@/app/store/api/foldersApi";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export default function FoldersPage() {
   const router = useRouter();
-  const currentUser = "You"; // Current logged-in user
+  const { addNotification } = useNotifications();
 
   const [searchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<
@@ -22,129 +30,35 @@ export default function FoldersPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
 
-  // Mock Data
-  const [myFolders, setMyFolders] = useState<Folder[]>([
-    {
-      id: "1",
-      slug: "want-to-read",
-      name: "Want to Read",
-      description: "Books I want to read",
-      booksCount: 12,
-      bookmarksCount: 0,
-      visibility: "PRIVATE",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: currentUser,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      slug: "favorites",
-      name: "Favorites",
-      description: "My favorite books",
-      booksCount: 8,
-      bookmarksCount: 0,
-      visibility: "PRIVATE",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: currentUser,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      slug: "study-materials",
-      name: "Study Materials",
-      description: "Books for my studies",
-      booksCount: 15,
-      bookmarksCount: 0,
-      visibility: "PUBLIC",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: currentUser,
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  // API Queries
+  const { data: myFolders, isLoading: isLoadingMyFolders } =
+    useGetMeFoldersQuery(undefined, {
+      skip: activeTab !== "private",
+    });
+  const { data: publicFolders, isLoading: isLoadingPublicFolders } =
+    useGetPublicFoldersQuery(undefined, {
+      skip: activeTab !== "public",
+    });
+  const { data: bookmarkedFolders, isLoading: isLoadingBookmarked } =
+    useGetBookmarkedFoldersQuery(undefined, {
+      skip: activeTab !== "bookmarked",
+    });
 
-  const [publicFolders] = useState<(Folder & { collaborator?: any })[]>([
-    {
-      id: "4",
-      slug: "best-fiction-2024",
-      name: "Best Fiction 2024",
-      description: "Top fiction picks this year",
-      booksCount: 24,
-      bookmarksCount: 150,
-      visibility: "PUBLIC",
-      createdBy: "Sarah Johnson",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "5",
-      slug: "tech-innovation",
-      name: "Tech & Innovation",
-      description: "Future of technology",
-      booksCount: 18,
-      bookmarksCount: 120,
-      visibility: "PUBLIC",
-      createdBy: "Mike Chen",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "6",
-      slug: "classic-literature",
-      name: "Classic Literature",
-      description: "Timeless pieces",
-      booksCount: 32,
-      bookmarksCount: 300,
-      visibility: "PUBLIC",
-      createdBy: "Emily Davis",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdAt: new Date().toISOString(),
-      collaborator: { role: "EDITOR" },
-    },
-  ]);
+  // Mutations
+  const [createFolder] = useCreateFolderMutation();
+  const [deleteFolderMutation] = useDeleteFolderMutation();
 
-  const [bookmarkedFolders] = useState<(Folder & { collaborator?: any })[]>([
-    {
-      id: "7",
-      slug: "must-read-classics",
-      name: "Must Read Classics",
-      description: "Curated by classics lovers",
-      booksCount: 45,
-      bookmarksCount: 500,
-      visibility: "PUBLIC",
-      createdBy: "BookClub Official",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "8",
-      slug: "sci-fi-gems",
-      name: "Sci-Fi Gems",
-      description: "Hidden gems in sci-fi",
-      booksCount: 12,
-      bookmarksCount: 80,
-      visibility: "PUBLIC",
-      createdBy: "Alex Space",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdAt: new Date().toISOString(),
-      collaborator: { role: "EDITOR" },
-    },
-  ]);
-
-  const handleCreateFolder = (name: string, visibility: FolderVisibility) => {
-    const newFolder: Folder = {
-      id: Date.now().toString(),
-      slug: name.toLowerCase().replace(/ /g, "-"),
-      name,
-      description: null,
-      booksCount: 0,
-      bookmarksCount: 0,
-      visibility,
-      coverImages: null,
-      createdBy: currentUser,
-      createdAt: new Date().toISOString(),
-    };
-
-    setMyFolders([newFolder, ...myFolders]);
+  const handleCreateFolder = async (
+    name: string,
+    visibility: FolderVisibility
+  ) => {
+    try {
+      await createFolder({ name, visibility }).unwrap();
+      addNotification("success", "Folder created successfully!");
+      setShowCreateModal(false);
+    } catch (err: any) {
+      addNotification("error", err.data?.message || "Failed to create folder");
+    }
   };
 
   const handleFolderClick = (folder: Folder) => {
@@ -157,13 +71,20 @@ export default function FoldersPage() {
 
   const handleFolderDelete = (folder: Folder) => {
     setFolderToDelete(folder);
-    console.log("Deleting folder:", folder);
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (folderToDelete) {
-      setMyFolders(myFolders.filter((f) => f.id !== folderToDelete.id));
+      try {
+        await deleteFolderMutation(folderToDelete.id).unwrap();
+        addNotification("success", "Folder deleted successfully!");
+      } catch (err: any) {
+        addNotification(
+          "error",
+          err.data?.message || "Failed to delete folder"
+        );
+      }
     }
     setShowDeleteModal(false);
     setFolderToDelete(null);
@@ -171,10 +92,15 @@ export default function FoldersPage() {
 
   const displayedFolders =
     activeTab === "private"
-      ? myFolders
+      ? myFolders || []
       : activeTab === "public"
-      ? publicFolders
-      : bookmarkedFolders;
+      ? publicFolders || []
+      : bookmarkedFolders || [];
+
+  const isLoading =
+    (activeTab === "private" && isLoadingMyFolders) ||
+    (activeTab === "public" && isLoadingPublicFolders) ||
+    (activeTab === "bookmarked" && isLoadingBookmarked);
 
   const filteredFolders = displayedFolders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -232,7 +158,7 @@ export default function FoldersPage() {
               onFolderEdit={handleFolderEdit}
               onFolderDelete={handleFolderDelete}
               showActions={true}
-              currentUser={currentUser}
+              isLoading={isLoading}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
@@ -248,7 +174,7 @@ export default function FoldersPage() {
               onFolderEdit={handleFolderEdit}
               onFolderDelete={handleFolderDelete}
               showActions={true}
-              currentUser={currentUser}
+              isLoading={isLoading}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"

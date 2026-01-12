@@ -13,6 +13,8 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
 import {
   Invite,
   Folder,
@@ -31,10 +33,10 @@ export default function EditFolderPage() {
   const params = useParams();
   const router = useRouter();
   const { addNotification } = useNotifications();
+  const user = useSelector(selectCurrentUser);
+  const currentUser = user?.username || "Guest"; // Use actual user or fallback
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
-
-  const currentUser = "Sarah Chen"; // Mock current user
 
   // Form State
   const [name, setName] = useState("");

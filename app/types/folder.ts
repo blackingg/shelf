@@ -1,4 +1,5 @@
 import { UserPublic } from "./user";
+import { Book } from "./book";
 
 export type FolderVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
 
@@ -13,6 +14,8 @@ export interface Folder {
   bookmarksCount: number;
   createdBy: string;
   createdAt: string;
+  books?: Book[];
+  collaborator?: Collaborator;
 }
 
 export interface CreateFolderRequest {

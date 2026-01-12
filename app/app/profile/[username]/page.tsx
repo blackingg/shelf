@@ -8,120 +8,12 @@ import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
-
-const MOCK_USER = {
-  name: "Sarah Chen",
-  bio: "Book lover, coffee enthusiast, and aspiring writer. Always looking for the next great story.",
-  mod: true,
-  joinDate: "September 2024",
-  stats: {
-    booksRead: 142,
-    booksDonated: 23,
-    publicFolders: 8,
-  },
-};
-
-const MOCK_BOOKS: BookPreview[] = [
-  {
-    id: "1",
-    title: "The Psychology of Money",
-    donor_id: "sarahchen",
-    author: "Morgan Housel",
-    cover_image: "/dummycover.png",
-    description:
-      "Explores the timeless lessons on wealth, greed, and happiness, emphasizing behavior over finance.",
-    pages: 256,
-    category: "business",
-    published_year: 2020,
-  },
-  {
-    id: "2",
-    title: "How Innovation Works",
-    donor_id: "sarahchen",
-    author: "Matt Ridley",
-    cover_image: "/dummycover.png",
-    description:
-      "A fascinating dive into how human creativity and incremental change drive real-world innovation.",
-    pages: 368,
-    category: "science",
-    published_year: 2019,
-  },
-  {
-    id: "3",
-    title: "Company of One",
-    donor_id: "sarahchen",
-    author: "Paul Jarvis",
-    cover_image: "/dummycover.png",
-    description:
-      "Offers a refreshingly original business strategy focused on staying small but thriving with purpose.",
-    pages: 192,
-    category: "business",
-    published_year: 2019,
-  },
-  {
-    id: "4",
-    title: "The Great Gatsby",
-    donor_id: "sarahchen",
-    author: "F. Scott Fitzgerald",
-    cover_image: "/dummycover.png",
-    description:
-      "The quintessential Jazz Age novel that explores themes of love, ambition, and the American dream.",
-    pages: 180,
-    category: "classics",
-    published_year: 1925,
-  },
-  {
-    id: "5",
-    title: "The Bees",
-    donor_id: "sarahchen",
-    author: "Laline Paull",
-    cover_image: "/dummycover.png",
-    description:
-      "A brilliantly imagined dystopian story set in a hive, examining power, survival, and individuality.",
-    pages: 384,
-    category: "fiction",
-    published_year: 2014,
-  },
-];
-
-const MOCK_FOLDERS: Folder[] = [
-  {
-    id: "f1",
-    slug: "summer-reading-list",
-    name: "Summer Reading List",
-    description: "My list for the summer",
-    booksCount: 12,
-    bookmarksCount: 45,
-    visibility: "PUBLIC",
-    coverImages: ["/dummycover.png", "/dummycover.png"],
-    createdBy: "Sarah Chen",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "f2",
-    slug: "design-inspiration",
-    name: "Design Inspiration",
-    description: "Cool design books",
-    booksCount: 8,
-    bookmarksCount: 32,
-    visibility: "PUBLIC",
-    coverImages: ["/dummycover.png", "/dummycover.png"],
-    createdBy: "Sarah Chen",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "f3",
-    slug: "tech-society",
-    name: "Tech & Society",
-    description: "Intersection of tech and people",
-    booksCount: 5,
-    bookmarksCount: 12,
-    visibility: "PUBLIC",
-    coverImages: ["/dummycover.png", "/dummycover.png"],
-    createdBy: "Sarah Chen",
-    createdAt: new Date().toISOString(),
-  },
-];
+import {
+  useGetUserByUsernameQuery,
+  useGetUserBooksQuery,
+} from "@/app/store/api/usersApi";
+import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
+import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -130,18 +22,62 @@ export default function UserProfilePage() {
   const [activeTab, setActiveTab] = useState<"donated" | "folders">("donated");
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
+  const { data: user, isLoading: isLoadingUser } =
+    useGetUserByUsernameQuery(username);
+  const { data: books, isLoading: isLoadingBooks } =
+    useGetUserBooksQuery(username);
+
+
+  const MOCK_FOLDERS: Folder[] = [
+    {
+      id: "f1",
+      slug: "summer-reading-list",
+      name: "Summer Reading List",
+      description: "My list for the summer",
+      booksCount: 12,
+      bookmarksCount: 45,
+      visibility: "PUBLIC",
+      coverImages: ["/dummycover.png", "/dummycover.png"],
+      createdBy: user?.fullName || "User",
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  if (isLoadingUser) {
+    return <ProfileSkeleton />;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          User Not Found
+        </h2>
+        <p className="text-gray-600 mb-6">
+          The user @{username} doesn&apos;t exist or has been removed.
+        </p>
+        <button
+          onClick={() => router.push("/app/library")}
+          className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-semibold transition-all hover:bg-emerald-700 shadow-md"
+        >
+          Back to Library
+        </button>
+      </div>
+    );
+  }
+
   const tabs = [
     {
       id: "donated",
       label: "Donated",
       icon: FiUploadCloud,
-      count: MOCK_USER.stats.booksDonated,
+      count: user.booksCount,
     },
     {
       id: "folders",
       label: "Folders",
       icon: FiFolder,
-      count: MOCK_USER.stats.publicFolders,
+      count: user.foldersCount,
     },
   ];
 
@@ -161,13 +97,9 @@ export default function UserProfilePage() {
             <div className="flex-1 pb-2">
               <div className="flex gap-3 items-center">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                  {MOCK_USER.name}
+                  {user.fullName}
                 </h1>
-                {MOCK_USER.mod && (
-                  <div className="flex items-center gap-2 p-1.5 rounded-md bg-emerald-700 border border-emerald-200 w-fit">
-                    <FiShield className="h-3.5 w-3.5 text-white" />
-                  </div>
-                )}
+                {/* user.mod doesn't exist in UserPublic, so we omit or check another way */}
               </div>
               <p className="text-gray-500 font-medium">@{username}</p>
             </div>
@@ -176,18 +108,22 @@ export default function UserProfilePage() {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FiCalendar className="w-4 h-4" />
-              Joined {MOCK_USER.joinDate}
+              Joined{" "}
+              {new Date(user.createdAt).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
             </div>
             <div className="flex gap-8 items-center justify-start md:justify-end">
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900">
-                  {MOCK_USER.stats.booksDonated}
+                  {user.booksCount}
                 </div>
                 <div className="text-sm text-gray-500">Books Donated</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900">
-                  {MOCK_USER.stats.publicFolders}
+                  {user.foldersCount}
                 </div>
                 <div className="text-sm text-gray-500">Public Folders</div>
               </div>
@@ -235,13 +171,23 @@ export default function UserProfilePage() {
         >
           {activeTab === "donated" && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-              {MOCK_BOOKS.slice(0, 3).map((book) => (
-                <BookCard
-                  key={book.id}
-                  {...book}
-                  onClick={() => setSelectedBook(book)}
-                />
-              ))}
+              {isLoadingBooks ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <BookCardSkeleton key={i} />
+                ))
+              ) : books && books.length > 0 ? (
+                books.map((book) => (
+                  <BookCard
+                    key={book.id}
+                    {...book}
+                    onClick={() => setSelectedBook(book)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center">
+                  <p className="text-gray-500">No books donated yet.</p>
+                </div>
+              )}
             </div>
           )}
 

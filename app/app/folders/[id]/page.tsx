@@ -11,116 +11,21 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
-
-import { Book } from "@/app/types/book";
-import { Folder, Collaborator } from "@/app/types/folder";
-
-type ExtendedFolder = Folder & {
-  books: Book[];
-  collaborator?: Collaborator;
-};
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
+import { useGetFolderByIdQuery } from "@/app/store/api/foldersApi";
+import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 
 export default function FolderDetailsPage() {
   const params = useParams();
+  const folderId = Array.isArray(params.id) ? params.id[0] : params.id || "";
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
 
-  const currentUser = "Sarah Chen"; // Mock current user
-
-  // Mock Data
-  const folder: ExtendedFolder = {
-    id: Array.isArray(params.id) ? params.id[0] : params.id || "1",
-    slug: "summer-reading-list",
-    name: "Summer Reading List",
-    description:
-      "A collection of books I want to read this summer, focusing on self-improvement and fiction.",
-    booksCount: 4,
-    bookmarksCount: 0,
-    visibility: "PUBLIC",
-    createdBy: "Sarah Chen",
-    createdAt: "2024-09-01T10:00:00Z",
-    coverImages: ["/dummycover.png"],
-    collaborator: {
-      id: "collab-1",
-      userId: "user-1",
-      folderId: "1",
-      role: "EDITOR",
-      permissions: ["EDIT_BOOKS"],
-      user: {
-        id: "user-1",
-        uuid: "uuid-1",
-        fullName: "John Doe",
-        username: "johndoe",
-        email: "john@example.com",
-        avatar: null,
-        bio: "Book lover",
-        booksCount: 10,
-        foldersCount: 5,
-        createdAt: new Date().toISOString(),
-      },
-    },
-    books: [
-      {
-        id: "1",
-        title: "The Psychology of Money",
-        author: "Morgan Housel",
-        description:
-          "Explores the timeless lessons on wealth, greed, and happiness...",
-        category: "finance",
-        cover_image: "/dummycover.png",
-        pages: 256,
-        file_url: "https://example.com/file.pdf",
-        file_size: 1024000,
-        file_type: "application/pdf",
-        department: "economics",
-        donor_id: "user_123",
-      },
-      {
-        id: "2",
-        title: "The Great Gatsby",
-        author: "F. Scott Fitzgerald",
-        description: "The quintessential Jazz Age novel...",
-        category: "fiction",
-        cover_image: "/dummycover.png",
-        pages: 180,
-        file_url: "https://example.com/gatsby.pdf",
-        file_size: 2048000,
-        file_type: "application/pdf",
-        department: "literature",
-        donor_id: "user_456",
-      },
-      {
-        id: "3",
-        title: "Company of One",
-        author: "Paul Jarvis",
-        description:
-          "Offers a refreshingly original business strategy focused on staying small...",
-        category: "business",
-        cover_image: "/dummycover.png",
-        pages: 192,
-        file_url: "https://example.com/company.pdf",
-        file_size: 1500000,
-        file_type: "application/pdf",
-        department: "business-admin",
-        donor_id: "user_789",
-      },
-      {
-        id: "5",
-        title: "The Bees",
-        author: "Laline Paull",
-        description: "A brilliantly imagined dystopian story set in a hive...",
-        category: "sci-fi",
-        cover_image: "/dummycover.png",
-        pages: 384,
-        file_url: "https://example.com/bees.pdf",
-        file_size: 3000000,
-        file_type: "application/pdf",
-        department: "literature",
-        donor_id: "user_101",
-      },
-    ],
-  };
+  const { data: folder, isLoading } = useGetFolderByIdQuery(folderId);
+  const user = useSelector(selectCurrentUser);
+  const currentUser = user?.username || "Guest";
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -128,9 +33,34 @@ export default function FolderDetailsPage() {
     setShowMenu(false);
   };
 
+  if (isLoading) {
+    return <FolderDetailSkeleton />;
+  }
+
+  if (!folder) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Folder Not Found
+        </h2>
+        <p className="text-gray-600 mb-6">
+          The folder you are looking for doesn&apos;t exist or has been removed.
+        </p>
+        <button
+          onClick={() => router.push("/app/folders")}
+          className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-semibold transition-all hover:bg-emerald-700 shadow-md"
+        >
+          Back to Folders
+        </button>
+      </div>
+    );
+  }
+
+  const books = folder.books || [];
+
   const isOwner = folder.createdBy === currentUser;
-  const isEditor = folder.collaborator?.role === "EDITOR";
   const isCollaborator = !!folder.collaborator;
+  const isEditor = folder.collaborator?.role === "EDITOR";
 
   const canEdit = isOwner || isEditor;
   const canDelete = isOwner;
@@ -225,7 +155,7 @@ export default function FolderDetailsPage() {
 
           <div>
             <BooksTable
-              books={folder.books}
+              books={books}
               onBookClick={(bookId) => router.push(`/app/books/${bookId}/read`)}
             />
           </div>
