@@ -18,7 +18,7 @@ import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const username = params.username as string;
+  const username = decodeURIComponent(params.username as string);
   const [activeTab, setActiveTab] = useState<"donated" | "folders">("donated");
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
@@ -26,7 +26,6 @@ export default function UserProfilePage() {
     useGetUserByUsernameQuery(username);
   const { data: books, isLoading: isLoadingBooks } =
     useGetUserBooksQuery(username);
-
 
   const MOCK_FOLDERS: Folder[] = [
     {
