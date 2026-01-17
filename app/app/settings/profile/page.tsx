@@ -78,7 +78,7 @@ export default function SettingsProfilePage() {
     formData.departmentId !== (user?.departmentId || "");
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -114,7 +114,7 @@ export default function SettingsProfilePage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to update profile")
+        getErrorMessage(error, "Failed to update profile"),
       );
     }
   };
@@ -133,7 +133,7 @@ export default function SettingsProfilePage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to upload avatar")
+        getErrorMessage(error, "Failed to upload avatar"),
       );
     }
   };
@@ -161,13 +161,15 @@ export default function SettingsProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Profile Settings
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           Update your photo and academic details here.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
         <div className="p-6 md:p-8">
           <form
             onSubmit={handleSubmit}
@@ -175,11 +177,11 @@ export default function SettingsProfilePage() {
           >
             {/* Avatar Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
-                <div className="relative w-24 h-24 rounded-full bg-emerald-100 overflow-hidden border-2 border-white shadow-md">
+                <div className="relative w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/40 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-md">
                   {user?.avatar ? (
                     <img
                       src={user.avatar}
@@ -187,7 +189,7 @@ export default function SettingsProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 uppercase">
+                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
                       {user?.fullName?.charAt(0) ||
                         user?.username?.charAt(0) ||
                         "?"}
@@ -210,7 +212,7 @@ export default function SettingsProfilePage() {
                   />
                   <label
                     htmlFor="avatar-upload"
-                    className={`px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 cursor-pointer ${
+                    className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
                       isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
@@ -223,7 +225,7 @@ export default function SettingsProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Full Name
                 </label>
                 <input
@@ -231,15 +233,15 @@ export default function SettingsProfilePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                 />
               </div>
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Username
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-gray-400">
+                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-gray-500">
                     @
                   </span>
                   <input
@@ -247,7 +249,7 @@ export default function SettingsProfilePage() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -255,11 +257,11 @@ export default function SettingsProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   University / School
                 </label>
                 <div className="relative">
-                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
+                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 dark:text-gray-500 pointer-events-none" />
                   <Select<OptionType, false>
                     options={schoolOptions}
                     isLoading={isLoadingSchools}
@@ -267,7 +269,7 @@ export default function SettingsProfilePage() {
                     value={
                       formData.schoolId
                         ? schoolOptions.find(
-                            (opt) => opt.value === formData.schoolId
+                            (opt) => opt.value === formData.schoolId,
                           ) ||
                           (user?.school
                             ? {
@@ -281,22 +283,23 @@ export default function SettingsProfilePage() {
                     placeholder="Select School"
                     styles={customSelectStyles}
                     classNamePrefix="react-select"
+                    className="text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Department / Major
                 </label>
                 <div className="relative">
-                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 pointer-events-none" />
+                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 dark:text-gray-500 pointer-events-none" />
                   <Select<OptionType, false>
                     options={departmentOptions}
                     isLoading={isLoadingDepartments}
                     value={
                       formData.departmentId
                         ? departmentOptions.find(
-                            (opt) => opt.value === formData.departmentId
+                            (opt) => opt.value === formData.departmentId,
                           ) ||
                           (user?.department
                             ? {
@@ -311,12 +314,13 @@ export default function SettingsProfilePage() {
                     isDisabled={!formData.schoolId}
                     styles={customSelectStyles}
                     classNamePrefix="react-select"
+                    className="text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200 flex justify-end">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
               <Button
                 type="submit"
                 isLoading={isUpdating}

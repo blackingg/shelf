@@ -17,17 +17,17 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200"
+      className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-700/50"
     >
       <div
         className={`w-12 h-12 rounded-lg ${colorClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
       >
         <FaBuilding className="w-6 h-6 text-white" />
       </div>
-      <h3 className="font-semibold text-gray-900 text-sm md:text-lg mb-1">
+      <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm md:text-lg mb-1">
         {department.name}
       </h3>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         {department.booksCount} {department.booksCount === 1 ? "book" : "books"}
       </p>
     </div>

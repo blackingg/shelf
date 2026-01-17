@@ -166,29 +166,29 @@ function SearchContent() {
 
   if (!query) {
     return (
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
         <div className="p-4 md:p-8 pb-0">
           <div className="flex items-center gap-4 mb-2">
             <button
               onClick={() => router.back()}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+              className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-gray-600 dark:text-gray-400"
               title="Go back"
             >
               <FiArrowLeft className="w-6 h-6" />
             </button>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               Search
             </h1>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <FiSearch className="w-12 h-12 text-gray-400" />
+          <div className="w-24 h-24 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-6">
+            <FiSearch className="w-12 h-12 text-gray-400 dark:text-gray-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Search Shelf
           </h2>
-          <p className="text-gray-500 max-w-sm">
+          <p className="text-gray-500 dark:text-gray-400 max-w-sm">
             Enter a search term to find books, authors, and folders on Shelf.
           </p>
         </div>
@@ -198,29 +198,29 @@ function SearchContent() {
 
   if (results.length === 0) {
     return (
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
         <div className="p-4 md:p-8 pb-0">
           <div className="flex items-center gap-4 mb-2">
             <button
               onClick={() => router.back()}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+              className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-gray-600 dark:text-gray-400"
               title="Go back"
             >
               <FiArrowLeft className="w-6 h-6" />
             </button>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               No results found
             </h1>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <FiSearch className="w-12 h-12 text-gray-400" />
+          <div className="w-24 h-24 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-6">
+            <FiSearch className="w-12 h-12 text-gray-400 dark:text-gray-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             No results found
           </h2>
-          <p className="text-gray-500 max-w-sm">
+          <p className="text-gray-500 dark:text-gray-400 max-w-sm">
             We couldn&apos;t find any results for &quot;{query}&quot;. Try
             checking for typos or searching for something else.
           </p>
@@ -231,22 +231,22 @@ function SearchContent() {
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
         <div className="p-4 md:p-8">
           <div className="mb-8">
             <div className="flex items-center gap-4 mb-2">
               <button
                 onClick={() => router.back()}
-                className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+                className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-gray-600 dark:text-gray-400"
                 title="Go back"
               >
                 <FiArrowLeft className="w-6 h-6" />
               </button>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Search Results
               </h1>
             </div>
-            <p className="text-gray-500 ml-10">
+            <p className="text-gray-500 dark:text-gray-400 ml-10">
               Found {results.length}{" "}
               {results.length === 1 ? "result" : "results"} for &quot;{query}
               &quot;
@@ -293,16 +293,16 @@ export default function SearchPage() {
       fallback={
         <main className="flex-1 overflow-y-auto w-full">
           <div className="p-4 md:p-8 animate-pulse">
-            <div className="h-8 w-64 bg-gray-200 rounded mb-8" />
+            <div className="h-8 w-64 bg-gray-200 dark:bg-gray-800 rounded mb-8" />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
               {[...Array(10)].map((_, i) => (
                 <div
                   key={i}
                   className="space-y-3"
                 >
-                  <div className="aspect-[2/3] bg-gray-200 rounded-xl" />
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  <div className="aspect-[2/3] bg-gray-200 dark:bg-gray-800 rounded-xl" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+                  <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
                 </div>
               ))}
             </div>

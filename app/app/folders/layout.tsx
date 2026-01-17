@@ -8,7 +8,7 @@ export default function FolderLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 dark:bg-neutral-900">
       <Sidebar />
       <main className="flex-1 flex flex-col">
         <PageHeader />

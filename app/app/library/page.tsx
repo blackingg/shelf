@@ -106,7 +106,7 @@ export default function LibraryPage() {
         <div className="p-4 md:p-8">
           <div className="mb-10">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Recommended
               </h2>
               {/* <button className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
@@ -143,13 +143,13 @@ export default function LibraryPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 px-6">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center mb-6">
-                  <FiBook className="w-10 h-10 text-emerald-500" />
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 flex items-center justify-center mb-6">
+                  <FiBook className="w-10 h-10 text-emerald-500 dark:text-emerald-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
                   No Recommendations Yet
                 </h3>
-                <p className="text-gray-500 text-center text-sm max-w-xs">
+                <p className="text-gray-500 dark:text-gray-400 text-center text-sm max-w-xs">
                   Start exploring books and folders to get personalized
                   suggestions tailored just for you.
                 </p>
@@ -158,7 +158,7 @@ export default function LibraryPage() {
           </div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Categories
             </h2>
             <CategoryFilter />

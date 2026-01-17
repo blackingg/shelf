@@ -41,7 +41,7 @@ export default function LoginPage() {
         "https://www.googleapis.com/oauth2/v3/userinfo",
         {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        }
+        },
       );
       const userInfo = await userInfoRes.json();
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
           rememberMe: true, // Google login is usually remembered
-        })
+        }),
       );
 
       addNotification("success", "Login successful! Welcome.");
@@ -71,7 +71,7 @@ export default function LoginPage() {
       console.error("Google Auth Error:", error);
       addNotification(
         "error",
-        getErrorMessage(error, "Google login failed. Please try again.")
+        getErrorMessage(error, "Google login failed. Please try again."),
       );
     }
   };
@@ -126,7 +126,7 @@ export default function LoginPage() {
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
           rememberMe,
-        })
+        }),
       );
 
       addNotification("success", "Login successful! Welcome back.");
@@ -141,7 +141,7 @@ export default function LoginPage() {
       console.error("Login failed:", error);
       addNotification(
         "error",
-        getErrorMessage(error, "Invalid email or password. Please try again.")
+        getErrorMessage(error, "Invalid email or password. Please try again."),
       );
     }
   };
@@ -162,7 +162,7 @@ export default function LoginPage() {
         rightContent={
           <button
             onClick={() => router.push("/app/auth/register")}
-            className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors cursor-pointer"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors cursor-pointer"
           >
             Don&apos;t have an account? Sign Up
           </button>
@@ -173,13 +173,15 @@ export default function LoginPage() {
         <div className="max-w-lg w-full">
           <Card>
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center bg-emerald-700 p-3 rounded-lg mb-4">
+              <div className="inline-flex items-center justify-center bg-emerald-700 dark:bg-emerald-600 p-3 rounded-lg mb-4">
                 <FiLock className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Welcome Back
               </h2>
-              <p className="text-gray-600">Log in to access your library</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                Log in to access your library
+              </p>
             </div>
 
             <form
@@ -203,13 +205,13 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-sm text-emerald-700 hover:text-emerald-800 transition-colors"
+                    className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -256,11 +258,11 @@ export default function LoginPage() {
           </Card>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               New to Shelf?{" "}
               <button
                 onClick={() => router.push("/app/auth/register")}
-                className="text-emerald-700 hover:text-emerald-800 font-medium cursor-pointer"
+                className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium cursor-pointer"
               >
                 Create an account
               </button>

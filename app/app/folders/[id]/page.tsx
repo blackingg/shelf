@@ -70,11 +70,11 @@ export default function FolderDetailsPage() {
   const hasMenuActions = canEdit || canDelete || canSeeShare;
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
       <div className="p-4 md:p-8 space-y-6">
         <button
           onClick={() => router.back()}
-          className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 transition-colors"
+          className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <FiArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -83,17 +83,17 @@ export default function FolderDetailsPage() {
         <div className="space-y-6 md:space-y-10">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 rounded-2xl flex-shrink-0 flex items-center justify-center text-emerald-600">
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <FiFolder className="w-10 h-10" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {folder.name}
                 </h1>
-                <p className="text-gray-600 max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
                   {folder.description || "No description provided."}
                 </p>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
                   <span>{folder.booksCount} books</span>
                   <span className="hidden md:inline">•</span>
                   <span>Created by {folder.createdBy}</span>
@@ -109,19 +109,19 @@ export default function FolderDetailsPage() {
               <div className="relative self-end lg:self-start">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
                 >
                   <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
                 </button>
 
                 {showMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 py-1 z-10">
                     {canEdit && (
                       <button
                         onClick={() =>
                           router.push(`/app/folders/${folder.id}/edit`)
                         }
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center space-x-2"
                       >
                         <FiEdit2 className="w-4 h-4" />
                         <span>Edit Folder</span>
@@ -130,7 +130,7 @@ export default function FolderDetailsPage() {
                     {canSeeShare && (
                       <button
                         onClick={handleShare}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center space-x-2"
                       >
                         <FiShare2 className="w-4 h-4" />
                         <span>Share</span>
@@ -139,9 +139,9 @@ export default function FolderDetailsPage() {
                     {canDelete && (
                       <>
                         {(canEdit || canSeeShare) && (
-                          <div className="border-t border-gray-100 my-1" />
+                          <div className="border-t border-gray-100 dark:border-gray-800 my-1" />
                         )}
-                        <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
+                        <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2">
                           <FiTrash2 className="w-4 h-4" />
                           <span>Delete</span>
                         </button>

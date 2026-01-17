@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
+import { ThemeProvider } from "./provider/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -115,11 +116,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider>
-          <ErrorBoundaryWithNotification>
-            {children}
-          </ErrorBoundaryWithNotification>
-        </StoreProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <StoreProvider>
+            <ErrorBoundaryWithNotification>
+              {children}
+            </ErrorBoundaryWithNotification>
+          </StoreProvider>
+        </ThemeProvider>
       </body>
       <Analytics />
     </html>

@@ -37,10 +37,10 @@ export const BookCard: React.FC<{
         </div>
       )}
     </div>
-    <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 mb-1">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-1 mb-1">
       {title}
     </h3>
-    <p className="text-xs text-gray-500 line-clamp-1">{author}</p>
+    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{author}</p>
     {donor_id && (
       <Link
         href={`/app/profile/${donor_id}`}

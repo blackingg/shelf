@@ -49,7 +49,7 @@ export default function SignupPage() {
         "https://www.googleapis.com/oauth2/v3/userinfo",
         {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        }
+        },
       );
       const userInfo = await userInfoRes.json();
 
@@ -66,12 +66,12 @@ export default function SignupPage() {
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
           rememberMe: true,
-        })
+        }),
       );
 
       addNotification(
         "success",
-        "Account created successfully! Welcome aboard."
+        "Account created successfully! Welcome aboard.",
       );
 
       if (result.user.onboardingCompleted) {
@@ -81,7 +81,10 @@ export default function SignupPage() {
       }
     } catch (error: any) {
       console.error("Google Auth Error:", error);
-      addNotification("error", getErrorMessage(error, "Google registration failed. Please try again."));
+      addNotification(
+        "error",
+        getErrorMessage(error, "Google registration failed. Please try again."),
+      );
     }
   };
 
@@ -167,18 +170,24 @@ export default function SignupPage() {
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
           rememberMe: true,
-        })
+        }),
       );
 
       addNotification(
         "success",
-        "Account created successfully! Welcome aboard."
+        "Account created successfully! Welcome aboard.",
       );
 
       router.push("/app/onboarding");
     } catch (error: any) {
       console.error("Signup failed:", error);
-      addNotification("error", getErrorMessage(error, "An error occurred during signup. Please try again."));
+      addNotification(
+        "error",
+        getErrorMessage(
+          error,
+          "An error occurred during signup. Please try again.",
+        ),
+      );
     }
   };
 
@@ -194,7 +203,7 @@ export default function SignupPage() {
         rightContent={
           <button
             onClick={() => router.push("/app/auth/login")}
-            className="text-emerald-700 hover:text-emerald-800 font-medium transition-colors"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
           >
             Already have an account? Sign In
           </button>
@@ -205,13 +214,13 @@ export default function SignupPage() {
         <div className="max-w-lg w-full">
           <Card>
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center bg-emerald-700 p-3 rounded-lg mb-4">
+              <div className="inline-flex items-center justify-center bg-emerald-700 dark:bg-emerald-600 p-3 rounded-lg mb-4">
                 <FiUser className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Create Account
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Join thousands of students discovering great books
               </p>
             </div>
@@ -285,14 +294,14 @@ export default function SignupPage() {
                     I agree to the{" "}
                     <Link
                       href="/docs/terms"
-                      className="text-emerald-700 hover:text-emerald-800 font-medium hover:underline cursor-pointer"
+                      className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium hover:underline cursor-pointer"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/docs/privacy"
-                      className="text-emerald-700 hover:text-emerald-800 font-medium hover:underline cursor-pointer"
+                      className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium hover:underline cursor-pointer"
                     >
                       Privacy Policy
                     </Link>
@@ -321,11 +330,11 @@ export default function SignupPage() {
           </Card>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 href="/app/auth/login"
-                className="text-emerald-700 hover:text-emerald-800 font-medium"
+                className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium"
               >
                 Sign in
               </Link>
