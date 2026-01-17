@@ -89,7 +89,7 @@ export const BookDetailPanel: React.FC<{
             <h2 className="text-2xl font-bold mb-2 text-center leading-tight">
               {book.title}
             </h2>
-            <p className="text-emerald-200 text-center mb-2 font-medium">
+            <p className="text-emerald-600 dark:text-emerald-200 text-center mb-2 font-medium">
               {book.author}
             </p>
             <p className="text-emerald-200/80 text-center mb-6 text-sm">
@@ -154,7 +154,7 @@ export const BookDetailPanel: React.FC<{
             <div className="space-y-3 mt-auto">
               <button
                 onClick={() => router.push(`/app/books/${book.title}`)}
-                className="w-full bg-white text-emerald-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
+                className="w-full bg-white dark:bg-gray-800 text-emerald-900 dark:text-gray-300 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
               >
                 <FiBookOpen className="w-5 h-5" />
                 <span>Read Now</span>
