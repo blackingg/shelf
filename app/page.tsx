@@ -87,12 +87,12 @@ export default function ShelfLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50 overflow-hidden">
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.6, 0.05, 0.01, 0.9] }}
-        className="fixed top-0 w-full bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 z-50"
+        className="fixed top-0 w-full bg-white/70 backdrop-blur-xl border-b border-gray-200/50 z-50"
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-20">
@@ -100,15 +100,13 @@ export default function ShelfLanding() {
               <div className="bg-emerald-700 p-2.5 rounded-xl shadow-lg">
                 <BiLibrary className="w-5 h-5 text-white" />
               </div>
-              <span className="text-2xl font-bold text-black dark:text-white">
-                Shelf
-              </span>
+              <span className="text-2xl font-bold text-black">Shelf</span>
             </div>
 
             <div className="flex items-center space-x-4">
               <motion.button
                 onClick={() => (window.location.href = "/app/auth/login")}
-                className="text-gray-700 dark:text-gray-300 hover:text-emerald-700 dark:hover:text-emerald-400 font-medium transition-colors px-4 py-2"
+                className="text-gray-700 hover:text-emerald-700 font-medium transition-colors px-4 py-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -138,10 +136,10 @@ export default function ShelfLanding() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 px-5 py-2.5 rounded-full mb-8 border border-emerald-200 dark:border-emerald-800"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-100 to-teal-100 px-5 py-2.5 rounded-full mb-8 border border-emerald-200"
             >
-              <FiBook className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
-              <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+              <FiBook className="w-5 h-5 text-emerald-700" />
+              <span className="text-sm font-semibold text-emerald-800">
                 Your Personal E-Library
               </span>
             </motion.div>
@@ -152,19 +150,15 @@ export default function ShelfLanding() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="block text-gray-900 dark:text-white">
-                Knowledge
-              </span>
-              <span className="block text-gray-900 dark:text-white">
-                for Students
-              </span>
-              <span className="block bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-600 dark:from-emerald-400 dark:via-emerald-500 dark:to-teal-400 bg-clip-text text-transparent">
+              <span className="block text-gray-900">Knowledge</span>
+              <span className="block text-gray-900">for Students</span>
+              <span className="block bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-600 bg-clip-text text-transparent">
                 & Readers
               </span>
             </motion.h1>
 
             <motion.p
-              className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-xl"
+              className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed max-w-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
@@ -183,18 +177,14 @@ export default function ShelfLanding() {
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-3 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
+                  className="flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl border border-gray-200 shadow-sm"
                 >
-                  <div className="text-emerald-600 dark:text-emerald-400 text-2xl">
-                    {stat.icon}
-                  </div>
+                  <div className="text-emerald-600 text-2xl">{stat.icon}</div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <div className="text-2xl font-bold text-gray-900">
                       {stat.value}
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
-                      {stat.label}
-                    </div>
+                    <div className="text-xs text-gray-600">{stat.label}</div>
                   </div>
                 </div>
               ))}
@@ -218,7 +208,7 @@ export default function ShelfLanding() {
 
               <motion.button
                 onClick={() => (window.location.href = "/app/auth/login")}
-                className="px-8 py-4 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl font-bold text-lg shadow-lg"
+                className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-900 rounded-2xl font-bold text-lg shadow-lg"
                 whileHover={{ scale: 1.05, y: -2, borderColor: "#059669" }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -344,12 +334,10 @@ export default function ShelfLanding() {
             transition={{ duration: 2, repeat: Infinity }}
             className="flex flex-col items-center space-y-2"
           >
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Scroll to explore
-            </span>
-            <div className="w-6 h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex justify-center">
+            <span className="text-sm text-gray-500">Scroll to explore</span>
+            <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center">
               <motion.div
-                className="w-1.5 h-3 bg-emerald-600 dark:bg-emerald-400 rounded-full mt-2"
+                className="w-1.5 h-3 bg-emerald-600 rounded-full mt-2"
                 animate={{ y: [0, 12, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -358,7 +346,7 @@ export default function ShelfLanding() {
         </motion.div>
       </section>
 
-      <section className="py-32 px-6 bg-white dark:bg-neutral-900">
+      <section className="py-32 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <motion.div
             className="text-center mb-16"
@@ -368,17 +356,17 @@ export default function ShelfLanding() {
             transition={{ duration: 0.8 }}
           >
             <motion.div
-              className="inline-block bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full mb-6"
+              className="inline-block bg-emerald-100 px-4 py-2 rounded-full mb-6"
               whileHover={{ scale: 1.05 }}
             >
-              <span className="text-emerald-700 dark:text-emerald-400 font-semibold text-sm">
+              <span className="text-emerald-700 font-semibold text-sm">
                 WHY CHOOSE SHELF
               </span>
             </motion.div>
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
+            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6">
               Everything You Need
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Build your perfect digital library with powerful features
             </p>
           </motion.div>
@@ -387,7 +375,7 @@ export default function ShelfLanding() {
             {benefits.map((benefit, index) => (
               <motion.div
                 key={index}
-                className="flex items-start space-x-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/10 dark:to-teal-900/10 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-800"
+                className="flex items-start space-x-4 bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-200"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -397,9 +385,7 @@ export default function ShelfLanding() {
                 <div className="bg-emerald-600 rounded-full p-2 mt-1 shadow-lg">
                   <FiCheck className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-lg text-gray-800 dark:text-gray-200 font-medium">
-                  {benefit}
-                </p>
+                <p className="text-lg text-gray-800 font-medium">{benefit}</p>
               </motion.div>
             ))}
           </div>
@@ -419,17 +405,17 @@ export default function ShelfLanding() {
             transition={{ duration: 0.8 }}
           >
             <motion.div
-              className="inline-block bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full mb-6"
+              className="inline-block bg-emerald-100 px-4 py-2 rounded-full mb-6"
               whileHover={{ scale: 1.05 }}
             >
-              <span className="text-emerald-700 dark:text-emerald-400 font-semibold text-sm">
+              <span className="text-emerald-700 font-semibold text-sm">
                 POWERFUL FEATURES
               </span>
             </motion.div>
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
+            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6">
               Built for Students & Readers
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               From textbooks to novels, magazines to comics, organized the way
               you learn and read
             </p>
@@ -446,7 +432,7 @@ export default function ShelfLanding() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <motion.div
-                  className="relative h-full bg-white dark:bg-neutral-800 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg"
+                  className="relative h-full bg-white rounded-3xl p-8 border border-gray-200 overflow-hidden shadow-lg"
                   whileHover={{ scale: 1.05, y: -5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
@@ -455,10 +441,10 @@ export default function ShelfLanding() {
                       {feature.icon}
                     </div>
 
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-emerald-700 transition-colors">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
