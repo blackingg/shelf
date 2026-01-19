@@ -91,7 +91,7 @@ export default function LibraryPage() {
   // Combine and shuffle items for display
   const displayItems: RecommendedItem[] = [];
   if (recommendations) {
-    const { books, folders } = recommendations;
+    const { books = [], folders = [] } = recommendations;
     const maxLength = Math.max(books.length, folders.length);
     for (let i = 0; i < maxLength; i++) {
       if (i < folders.length)
