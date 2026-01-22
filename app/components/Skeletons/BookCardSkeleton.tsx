@@ -13,11 +13,11 @@ function SingleBookCardSkeleton({
 }) {
   if (variant === "list") {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/50 p-4 flex gap-4">
+      <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700/50 p-4 flex gap-4">
         {/* Book Cover */}
-        <div className="w-20 h-28 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0 relative overflow-hidden">
+        <div className="w-20 h-28 bg-gray-200 dark:bg-neutral-700 rounded-lg flex-shrink-0 relative overflow-hidden">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
             animate={{ x: ["-100%", "100%"] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -25,9 +25,9 @@ function SingleBookCardSkeleton({
 
         {/* Content */}
         <div className="flex-1 space-y-3">
-          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4 relative overflow-hidden">
+          <div className="h-5 bg-gray-200 dark:bg-neutral-700 rounded w-3/4 relative overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
               transition={{
                 duration: 1.5,
@@ -37,9 +37,9 @@ function SingleBookCardSkeleton({
               }}
             />
           </div>
-          <div className="h-4 bg-gray-100 dark:bg-gray-700/50 rounded w-1/2 relative overflow-hidden">
+          <div className="h-4 bg-gray-100 dark:bg-neutral-700/50 rounded w-1/2 relative overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
               transition={{
                 duration: 1.5,
@@ -50,9 +50,9 @@ function SingleBookCardSkeleton({
             />
           </div>
           <div className="flex gap-2">
-            <div className="h-6 bg-gray-100 dark:bg-gray-700/50 rounded-full w-16 relative overflow-hidden">
+            <div className="h-6 bg-gray-100 dark:bg-neutral-700/50 rounded-full w-16 relative overflow-hidden">
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{
                   duration: 1.5,
@@ -62,9 +62,9 @@ function SingleBookCardSkeleton({
                 }}
               />
             </div>
-            <div className="h-6 bg-gray-100 dark:bg-gray-700/50 rounded-full w-20 relative overflow-hidden">
+            <div className="h-6 bg-gray-100 dark:bg-neutral-700/50 rounded-full w-20 relative overflow-hidden">
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{
                   duration: 1.5,
@@ -81,11 +81,11 @@ function SingleBookCardSkeleton({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden shadow-sm">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-gray-200 dark:border-neutral-700/50 overflow-hidden shadow-sm">
       {/* Book Cover */}
-      <div className="relative h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+      <div className="relative h-48 bg-gray-200 dark:bg-neutral-700 overflow-hidden">
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+          className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
           animate={{ x: ["-100%", "100%"] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -94,9 +94,9 @@ function SingleBookCardSkeleton({
       {/* Content */}
       <div className="p-4 space-y-3">
         {/* Title */}
-        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-4/5 relative overflow-hidden">
+        <div className="h-5 bg-gray-200 dark:bg-neutral-700 rounded w-4/5 relative overflow-hidden">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
             animate={{ x: ["-100%", "100%"] }}
             transition={{
               duration: 1.5,
@@ -108,9 +108,9 @@ function SingleBookCardSkeleton({
         </div>
 
         {/* Author */}
-        <div className="h-4 bg-gray-100 dark:bg-gray-700/50 rounded w-1/2 relative overflow-hidden">
+        <div className="h-4 bg-gray-100 dark:bg-neutral-700/50 rounded w-1/2 relative overflow-hidden">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
             animate={{ x: ["-100%", "100%"] }}
             transition={{
               duration: 1.5,
@@ -125,7 +125,7 @@ function SingleBookCardSkeleton({
         <div className="flex gap-2 pt-1">
           <div className="h-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full w-14 relative overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
               transition={{
                 duration: 1.5,
@@ -137,7 +137,7 @@ function SingleBookCardSkeleton({
           </div>
           <div className="h-6 bg-blue-50 dark:bg-blue-900/20 rounded-full w-16 relative overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
               transition={{
                 duration: 1.5,

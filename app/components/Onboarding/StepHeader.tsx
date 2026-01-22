@@ -8,6 +8,6 @@ export const StepHeader: React.FC<{
       {icon}
     </div>
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{title}</h2>
-    <p className="text-gray-700 dark:text-gray-400">{description}</p>
+    <p className="text-gray-700 dark:text-neutral-400">{description}</p>
   </div>
 );

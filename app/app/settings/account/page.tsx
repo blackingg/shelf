@@ -102,7 +102,7 @@ export default function AccountSettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Account Settings
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-neutral-400 mt-1">
           Manage your account information and preferences.
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Contact Info
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-4 md:p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingEmail ? (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
@@ -120,21 +120,21 @@ export default function AccountSettingsPage() {
                     <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                       Email Address
                     </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                     />
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingEmail(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -157,7 +157,7 @@ export default function AccountSettingsPage() {
                     <div className="font-medium text-gray-900 dark:text-white">
                       Email Address
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-neutral-400">
                       {user?.email}
                     </div>
                   </div>
@@ -177,7 +177,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Security
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-4 md:p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingPassword ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
@@ -186,7 +186,7 @@ export default function AccountSettingsPage() {
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         Current Password
                       </label>
                       <input
@@ -199,11 +199,11 @@ export default function AccountSettingsPage() {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-gray-600"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         New Password
                       </label>
                       <input
@@ -216,11 +216,11 @@ export default function AccountSettingsPage() {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-gray-600"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         Confirm New Password
                       </label>
                       <input
@@ -233,7 +233,7 @@ export default function AccountSettingsPage() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-gray-600"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export default function AccountSettingsPage() {
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingPassword(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -264,7 +264,7 @@ export default function AccountSettingsPage() {
                     <div className="font-medium text-gray-900 dark:text-white">
                       Password
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-neutral-400">
                       Last changed 3 months ago
                     </div>
                   </div>

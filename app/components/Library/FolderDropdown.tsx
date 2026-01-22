@@ -70,10 +70,10 @@ export const FolderDropdown: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={`absolute left-0 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden z-[70] ${className}`}
+            className={`absolute left-0 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden z-[70] ${className}`}
           >
-            <div className="p-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+            <div className="p-3 border-b border-gray-200 dark:border-neutral-800">
+              <h3 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm">
                 Save to folder
               </h3>
             </div>
@@ -87,31 +87,31 @@ export const FolderDropdown: React.FC<{
                       className="flex items-center justify-between animate-pulse"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+                        <div className="w-4 h-4 bg-gray-200 dark:bg-neutral-700 rounded" />
                         <div>
-                          <div className="w-24 h-4 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-                          <div className="w-16 h-3 bg-gray-100 dark:bg-gray-800 rounded" />
+                          <div className="w-24 h-4 bg-gray-200 dark:bg-neutral-700 rounded mb-1" />
+                          <div className="w-16 h-3 bg-gray-100 dark:bg-neutral-800 rounded" />
                         </div>
                       </div>
-                      <div className="w-14 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                      <div className="w-14 h-7 bg-gray-200 dark:bg-neutral-700 rounded-lg" />
                     </div>
                   ))}
                 </div>
               ) : isError ? (
                 <div className="px-4 py-8 text-center">
                   <FiAlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-gray-500 dark:text-neutral-400">
                     Failed to load folders
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                     Please try again later
                   </p>
                 </div>
               ) : folders.length === 0 ? (
                 <div className="px-4 py-8 text-center">
-                  <FiFolder className="w-8 h-8 text-gray-400 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No folders yet</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  <FiFolder className="w-8 h-8 text-gray-400 dark:text-neutral-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500 dark:text-neutral-400">No folders yet</p>
+                  <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                     Create your first folder below
                   </p>
                 </div>
@@ -121,15 +121,15 @@ export const FolderDropdown: React.FC<{
                   return (
                     <div
                       key={folder.id}
-                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors group"
                     >
                       <div className="flex items-center space-x-3">
-                        <FiFolder className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
+                        <FiFolder className="w-4 h-4 text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
                         <div className="text-left">
-                          <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                          <p className="font-medium text-gray-900 dark:text-neutral-100 text-sm">
                             {folder.name}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500 dark:text-neutral-400">
                             {folder.booksCount} books
                           </p>
                         </div>
@@ -157,7 +157,7 @@ export const FolderDropdown: React.FC<{
               )}
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-800 p-3">
+            <div className="border-t border-gray-200 dark:border-neutral-800 p-3">
               {isCreatingNew ? (
                 <div className="grid grid-cols-2 items-center space-x-2">
                   <input
@@ -172,7 +172,7 @@ export const FolderDropdown: React.FC<{
                       }
                     }}
                     placeholder="Folder name"
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-500"
                     autoFocus
                   />
                   <div className="flex items-center justify-end">
@@ -189,7 +189,7 @@ export const FolderDropdown: React.FC<{
                       setNewFolderName("");
                       }}
                       aria-label="Cancel"
-                      className="ml-2 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                      className="ml-2 p-2 rounded-lg text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-neutral-100 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 transition-colors"
                     >
                       <FiX className="w-4 h-4" />
                     </button>
@@ -198,10 +198,10 @@ export const FolderDropdown: React.FC<{
               ) : (
                 <button
                   onClick={() => setIsCreatingNew(true)}
-                  className="w-full flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors group"
+                  className="w-full flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-lg transition-colors group"
                 >
-                  <FiPlus className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                  <FiPlus className="w-4 h-4 text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                     Create new folder
                   </span>
                 </button>

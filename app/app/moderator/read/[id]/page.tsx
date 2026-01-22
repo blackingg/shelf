@@ -10,25 +10,33 @@ import {
   FiType,
   FiMoon,
   FiSun,
+  FiCheckCircle,
+  FiXCircle,
+  FiMessageSquare,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
+import { useNotifications } from "@/app/context/NotificationContext";
 
-export default function ReaderPage() {
+export default function ModeratorReaderPage() {
   const router = useRouter();
   const params = useParams();
+  const { addNotification } = useNotifications();
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
   const [currentPage, setCurrentPage] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [showReviewPanel, setShowReviewPanel] = useState(false);
+  const [reviewNote, setReviewNote] = useState("");
   const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
-  // Mock content (could be fetched based on params.id)
-  const title = "The Psychology of Money";
-  const author = "Morgan Housel";
-  const chapterTitle = "Chapter 1: No One's Crazy";
+  // Mock content
+  const title = "Introduction to Algorithms";
+  const author = "Thomas H. Cormen";
+  const chapterTitle = "Chapter 1: The Role of Algorithms";
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -40,6 +48,21 @@ export default function ReaderPage() {
         setIsFullScreen(false);
       }
     }
+  };
+
+  const handleApprove = () => {
+    addNotification("success", "Document Verified Successfully");
+    // Simulate API call delay
+    setTimeout(() => {
+      router.push(`/app/moderator/book/${params.id}?verified=true`);
+    }, 1000);
+  };
+
+  const handleReject = () => {
+    addNotification("error", "Document Rejected");
+    setTimeout(() => {
+      router.push(`/app/moderator/book/${params.id}`);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -94,18 +117,21 @@ export default function ReaderPage() {
       text: "text-gray-900",
       ui: "bg-white border-gray-200",
       accent: "text-emerald-700",
+      panel: "bg-gray-50 border-gray-200",
     },
     sepia: {
       bg: "bg-[#f4ecd8]",
       text: "text-[#5b4636]",
       ui: "bg-[#f4ecd8] border-[#e3d7bf]",
       accent: "text-[#8c6b5d]",
+      panel: "bg-[#ebe0c8] border-[#dccfb4]",
     },
     dark: {
       bg: "bg-[#1a1a1a]",
       text: "text-[#d1d5db]",
       ui: "bg-[#262626] border-[#404040]",
       accent: "text-emerald-400",
+      panel: "bg-[#262626] border-[#404040]",
     },
   };
 
@@ -131,15 +157,27 @@ export default function ReaderPage() {
             </button>
             <div className="hidden md:block">
               <h1 className={`font-bold text-lg ${currentTheme.text}`}>
+                <span className="opacity-70 font-normal">Reviewing:</span>{" "}
                 {title}
               </h1>
-              <p className={`text-xs opacity-70 ${currentTheme.text}`}>
-                {author}
-              </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowReviewPanel(!showReviewPanel)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all font-medium ${
+                showReviewPanel
+                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                  : `border ${currentTheme.ui} ${currentTheme.text} hover:bg-black/5`
+              }`}
+            >
+              <FiMessageSquare className="w-5 h-5" />
+              <span className="hidden sm:inline">Review Panel</span>
+            </button>
+
+            <div className="w-px h-6 bg-gray-300 dark:bg-neutral-800 mx-2" />
+
             <div
               className="relative"
               ref={settingsRef}
@@ -174,13 +212,13 @@ export default function ReaderPage() {
                               className={`flex-1 py-2 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
                                 theme === t
                                   ? "ring-2 ring-emerald-500 border-transparent"
-                                  : "border-gray-200 dark:border-neutral-700 hover:border-gray-300"
+                                  : "border-gray-200 hover:border-gray-300"
                               } ${
                                 t === "light"
                                   ? "bg-white text-gray-900"
                                   : t === "sepia"
-                                  ? "bg-[#f4ecd8] text-[#5b4636]"
-                                  : "bg-[#1a1a1a] text-white"
+                                    ? "bg-[#f4ecd8] text-[#5b4636]"
+                                    : "bg-[#1a1a1a] text-white"
                               }`}
                             >
                               {t === "light" && <FiSun className="w-4 h-4" />}
@@ -247,71 +285,150 @@ export default function ReaderPage() {
           </div>
         </div>
       </motion.header>
-      <main
-        className="flex-1 w-full max-w-3xl mx-auto px-6 py-24 md:py-32 cursor-text"
-        onClick={() => setShowControls(!showControls)}
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
-          className={`${currentTheme.text} font-serif`}
-        >
-          <div className="text-center mb-12">
-            <span
-              className={`text-sm font-sans uppercase tracking-widest opacity-60 ${currentTheme.text}`}
-            >
-              {chapterTitle}
-            </span>
-            <h2 className="text-4xl font-bold mt-4 mb-8">
-              No One&apos;s Crazy
-            </h2>
-          </div>
 
-          <p className="mb-6">
-            Let me tell you about a problem. It might make you feel better about
-            what you do with your money, and less judgmental about what other
-            people do with theirs.
-          </p>
-          <p className="mb-6">
-            People do some crazy things with money. But no one is crazy.
-          </p>
-          <p className="mb-6">
-            Here&apos;s the thing: People from different generations, raised by
-            different parents who earned different incomes and held different
-            values, in different parts of the world, born into different
-            economies, experiencing different job markets with different
-            incentives and different degrees of luck, learn very different
-            lessons.
-          </p>
-          <p className="mb-6">
-            Everyone has their own unique experience with how the world works.
-            And what you&apos;ve experienced is more compelling than what you
-            learn second-hand. So all of us—you, me, everyone—go through life
-            anchored to a set of views about how money works that vary wildly
-            from person to person. What seems crazy to you might make sense to
-            me.
-          </p>
-          <p className="mb-6">
-            The person who grew up in poverty thinks about risk and reward in
-            ways the child of a wealthy banker cannot fathom if he tried. The
-            person who grew up when inflation was high experienced something the
-            person who grew up with stable prices never had to. The stock broker
-            who lost everything during the Great Depression experienced
-            something the tech worker basking in the glory of the late 1990s
-            can&apos;t imagine. The Australian who hasn&apos;t seen a recession
-            in 30 years has experienced something the Greek worker hasn&apos;t.
-          </p>
-          <p className="mb-6">
-            On and on. The list of experiences is endless. You know stuff about
-            money that I don&apos;t, and vice versa. You go through life with
-            different beliefs, goals, and forecasts, than I do. That&apos;s not
-            because one of us is smarter than the other, or has better
-            information. It&apos;s because we&apos;ve had different lives.
-          </p>
-        </motion.div>
-      </main>
+      <div className="flex flex-1 relative">
+        <main
+          className={`flex-1 w-full mx-auto px-6 py-24 md:py-32 cursor-text transition-all duration-300 ${showReviewPanel ? "md:pr-[320px]" : ""}`}
+          onClick={() => setShowControls(!showControls)}
+        >
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
+              className={`${currentTheme.text} font-serif`}
+            >
+              <div className="text-center mb-12">
+                <span
+                  className={`text-sm font-sans uppercase tracking-widest opacity-60 ${currentTheme.text}`}
+                >
+                  {chapterTitle}
+                </span>
+                <h2 className="text-4xl font-bold mt-4 mb-8">
+                  The Role of Algorithms in Computing
+                </h2>
+              </div>
+
+              <p className="mb-6">
+                What are algorithms? Why is the study of algorithms worthwhile?
+                What is the role of algorithms relative to other technologies
+                used in computers? In this chapter, we will answer these
+                questions.
+              </p>
+              <p className="mb-6">
+                Informally, an algorithm is any well-defined computational
+                procedure that takes some value, or set of values, as input and
+                produces some value, or set of values, as output. An algorithm
+                is thus a sequence of computational steps that transform the
+                input into the output.
+              </p>
+              <p className="mb-6">
+                We can also view an algorithm as a tool for solving a
+                well-specified computational problem. The statement of the
+                problem specifies in general terms the desired input/output
+                relationship. The algorithm describes a specific computational
+                procedure for achieving that input/output relationship.
+              </p>
+              <p className="mb-6">
+                For example, we might need to sort a sequence of numbers into
+                nondecreasing order. This problem arises frequently in practice
+                and provides fertile ground for introducing many standard design
+                techniques and analysis tools. Here is how we formally define
+                the sorting problem:
+              </p>
+              <ul className="list-disc pl-6 mb-6">
+                <li>
+                  <strong>Input:</strong> A sequence of n numbers (a1, a2, ...,
+                  an).
+                </li>
+                <li>
+                  <strong>Output:</strong> A permutation (reordering) (a'1, a'2,
+                  ..., a'n) of the input sequence such that a'1 ≤ a'2 ≤ ... ≤
+                  a'n.
+                </li>
+              </ul>
+              <p className="mb-6">
+                For example, given the input sequence (31, 41, 59, 26, 41, 58),
+                a sorting algorithm returns as output the sequence (26, 31, 41,
+                41, 58, 59). Such an input sequence is called an instance of the
+                sorting problem. In general, an instance of a problem consists
+                of the input (satisfying whatever constraints are imposed in the
+                problem statement) needed to compute a solution to the problem.
+              </p>
+              <p className="mb-6">
+                An algorithm is said to be correct if, for every input instance,
+                it halts with the correct output. We say that a correct
+                algorithm solves the given computational problem. An incorrect
+                algorithm might not halt at all on some input instances, or it
+                might halt with an incorrect answer. Contrary to what one might
+                expect, incorrect algorithms can sometimes be useful, if their
+                error rate can be controlled.
+              </p>
+            </motion.div>
+          </div>
+        </main>
+
+        {/* Review Panel */}
+        <AnimatePresence>
+          {showReviewPanel && (
+            <motion.div
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", damping: 20 }}
+              className={`fixed right-0 top-16 bottom-0 w-80 shadow-2xl z-40 overflow-y-auto border-l ${currentTheme.panel} ${currentTheme.text}`}
+            >
+              <div className="p-6 h-full flex flex-col">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <FiMessageSquare /> Moderator Review
+                </h3>
+
+                <div className="flex-1 space-y-4">
+                  <div
+                    className={`p-4 rounded-xl border ${currentTheme.bg === "bg-white" ? "bg-white" : "bg-black/10"}`}
+                  >
+                    <label className="text-xs font-bold uppercase block mb-2 opacity-70">
+                      Content Quality
+                    </label>
+                    <p className="text-sm opacity-80">
+                      Does the content match the description and quality
+                      standards?
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase block mb-2 opacity-70">
+                      Notes for Uploader (Optional)
+                    </label>
+                    <textarea
+                      value={reviewNote}
+                      onChange={(e) => setReviewNote(e.target.value)}
+                      placeholder="Add reason for rejection or approval note..."
+                      className={`w-full p-3 rounded-xl border bg-transparent resize-none focus:ring-2 focus:ring-emerald-500 outline-none h-32 text-sm ${currentTheme.ui}`}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={handleApprove}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2"
+                  >
+                    <FiCheckCircle className="w-5 h-5" /> Verify & Approve
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    className="w-full py-3 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/10 dark:hover:bg-red-900/20 dark:text-red-400 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                  >
+                    <FiXCircle className="w-5 h-5" /> Reject
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <motion.footer
         initial={{ y: 100 }}

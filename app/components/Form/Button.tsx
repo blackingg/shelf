@@ -24,12 +24,12 @@ export const Button: React.FC<{
     primary:
       "bg-primary text-white hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 shadow-lg hover:shadow-xl",
     secondary:
-      "bg-gray-200 dark:bg-neutral-800 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-neutral-700",
+      "bg-gray-200 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-300 dark:hover:bg-neutral-700",
     outline: "border-2 border-primary text-primary hover:bg-primary/5",
   };
 
   const disabledStyles =
-    "bg-gray-300 dark:bg-neutral-800 text-gray-500 dark:text-gray-500 cursor-not-allowed";
+    "bg-gray-300 dark:bg-neutral-800 text-gray-500 dark:text-neutral-500 cursor-not-allowed";
 
   return (
     <button

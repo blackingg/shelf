@@ -44,7 +44,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl z-50 p-6 border border-gray-200 dark:border-gray-800"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl z-50 p-6 border border-gray-200 dark:border-neutral-800"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -52,9 +52,9 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
               </h2>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
               >
-                <FiX className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                <FiX className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
               </button>
             </div>
 
@@ -63,7 +63,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
               className="space-y-6"
             >
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-2">
                   Folder Name
                 </label>
                 <input
@@ -71,13 +71,13 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
                   placeholder="e.g., Summer Reading, Favorites..."
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-neutral-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-500"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-3">
                   Visibility
                 </label>
                 <div className="space-y-3">
@@ -86,26 +86,26 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                     onClick={() => setVisibility("PRIVATE")}
                     className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
                       visibility === "PRIVATE"
-                        ? "border-gray-600 dark:border-gray-400 bg-gray-50 dark:bg-gray-800/50"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                        ? "border-gray-600 dark:border-neutral-400 bg-gray-50 dark:bg-neutral-800/50"
+                        : "border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                         visibility === "PRIVATE"
-                          ? "border-gray-600 dark:border-gray-400"
-                          : "border-gray-300 dark:border-gray-600"
+                          ? "border-gray-600 dark:border-neutral-400"
+                          : "border-gray-300 dark:border-neutral-600"
                       }`}
                     >
                       {visibility === "PRIVATE" && (
-                        <div className="w-3 h-3 rounded-full bg-gray-600 dark:bg-gray-400" />
+                        <div className="w-3 h-3 rounded-full bg-gray-600 dark:bg-neutral-400" />
                       )}
                     </div>
                     <FiLock
                       className={`w-5 h-5 ${
                         visibility === "PRIVATE"
-                          ? "text-gray-600 dark:text-gray-400"
-                          : "text-gray-600 dark:text-gray-400"
+                          ? "text-gray-600 dark:text-neutral-400"
+                          : "text-gray-600 dark:text-neutral-400"
                       }`}
                     />
                     <div className="flex-1 text-left">
@@ -113,7 +113,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                         className={`font-semibold ${
                           visibility === "PRIVATE"
                             ? "text-gray-900 dark:text-white"
-                            : "text-gray-900 dark:text-gray-300"
+                            : "text-gray-900 dark:text-neutral-300"
                         }`}
                       >
                         Private
@@ -130,14 +130,14 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                     className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
                       visibility === "PUBLIC"
                         ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/10"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                        : "border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                         visibility === "PUBLIC"
                           ? "border-emerald-600"
-                          : "border-gray-300 dark:border-gray-600"
+                          : "border-gray-300 dark:border-neutral-600"
                       }`}
                     >
                       {visibility === "PUBLIC" && (
@@ -148,7 +148,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                       className={`w-5 h-5 ${
                         visibility === "PUBLIC"
                           ? "text-emerald-600"
-                          : "text-gray-600 dark:text-gray-400"
+                          : "text-gray-600 dark:text-neutral-400"
                       }`}
                     />
                     <div className="flex-1 text-left">
@@ -156,7 +156,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                         className={`font-semibold ${
                           visibility === "PUBLIC"
                             ? "text-emerald-900 dark:text-emerald-400"
-                            : "text-gray-900 dark:text-gray-300"
+                            : "text-gray-900 dark:text-neutral-300"
                         }`}
                       >
                         Public
@@ -173,7 +173,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex-1 px-6 py-3 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                 >
                   Cancel
                 </button>

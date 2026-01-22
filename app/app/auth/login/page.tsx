@@ -179,7 +179,7 @@ export default function LoginPage() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Welcome Back
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-neutral-400">
                 Log in to access your library
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">
                     Password
                   </label>
                   <button
@@ -258,7 +258,7 @@ export default function LoginPage() {
           </Card>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-neutral-400">
               New to Shelf?{" "}
               <button
                 onClick={() => router.push("/app/auth/register")}

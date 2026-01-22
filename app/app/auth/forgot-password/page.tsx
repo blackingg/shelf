@@ -267,7 +267,7 @@ export default function ForgotPassword() {
 
           {currentStep === "email" && (
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Remember your password?{" "}
                 <button
                   onClick={() => router.push("/app/auth/login")}

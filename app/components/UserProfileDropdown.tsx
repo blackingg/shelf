@@ -39,9 +39,9 @@ export const UserProfileDropdown: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
+        className="flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-neutral-800 px-3 py-2 rounded-lg transition-colors"
       >
-        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden relative flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-300 dark:bg-neutral-700 rounded-full overflow-hidden relative flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
           {userAvatar ? (
             <Image
               src={userAvatar}
@@ -55,10 +55,10 @@ export const UserProfileDropdown: React.FC = () => {
             userFullName.charAt(0).toUpperCase()
           )}
         </div>
-        <span className=" hidden md:block font-medium text-gray-900 dark:text-gray-100">
+        <span className=" hidden md:block font-medium text-gray-900 dark:text-neutral-100">
           {userName}
         </span>
-        <FiChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        <FiChevronDown className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
       </button>
 
       <AnimatePresence>
@@ -76,13 +76,13 @@ export const UserProfileDropdown: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full right-0 mt-2 w-56 lg:w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden z-50 text-left"
+              className="absolute top-full right-0 mt-2 w-56 lg:w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden z-50 text-left"
             >
-              <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="p-4 border-b border-gray-200 dark:border-neutral-800">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-700 text-white font-semibold text-lg flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 dark:bg-neutral-700 text-white font-semibold text-lg flex-shrink-0">
                     {userAvatar ? (
-                      <Image
+                      <img
                         src={userAvatar}
                         alt={userName}
                         width={48}
@@ -97,7 +97,7 @@ export const UserProfileDropdown: React.FC = () => {
                     <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                       {userFullName}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">
                       {userEmail}
                     </p>
                   </div>
@@ -106,30 +106,30 @@ export const UserProfileDropdown: React.FC = () => {
               <div className="py-2">
                 <button
                   onClick={handleEditProfile}
-                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
                 >
-                  <FiUser className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <FiUser className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
                     Edit Profile
                   </span>
                 </button>
                 <button
                   onClick={handleSettings}
-                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
                 >
-                  <FiSettings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <FiSettings className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
                     Settings
                   </span>
                 </button>
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-800 py-2">
+              <div className="border-t border-gray-200 dark:border-neutral-800 py-2">
                 <button
                   onClick={handleLogout}
                   className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-left group"
                 >
-                  <FiLogOut className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-600">
+                  <FiLogOut className="w-4 h-4 text-gray-600 dark:text-neutral-400 group-hover:text-red-600" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-red-600">
                     Logout
                   </span>
                 </button>

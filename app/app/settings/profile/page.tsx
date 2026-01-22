@@ -164,12 +164,12 @@ export default function SettingsProfilePage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Profile Settings
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-neutral-400 mt-1">
           Update your photo and academic details here.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800">
         <div className="p-6 md:p-8">
           <form
             onSubmit={handleSubmit}
@@ -177,7 +177,7 @@ export default function SettingsProfilePage() {
           >
             {/* Avatar Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-4">
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
@@ -212,7 +212,7 @@ export default function SettingsProfilePage() {
                   />
                   <label
                     htmlFor="avatar-upload"
-                    className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
+                    className={`px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
                       isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
@@ -225,7 +225,7 @@ export default function SettingsProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
                   Full Name
                 </label>
                 <input
@@ -233,15 +233,15 @@ export default function SettingsProfilePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                 />
               </div>
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
                   Username
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-gray-500">
+                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-neutral-500">
                     @
                   </span>
                   <input
@@ -249,7 +249,7 @@ export default function SettingsProfilePage() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -257,11 +257,11 @@ export default function SettingsProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
                   University / School
                 </label>
                 <div className="relative">
-                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 dark:text-gray-500 pointer-events-none" />
+                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 dark:text-neutral-500 pointer-events-none" />
                   <Select<OptionType, false>
                     options={schoolOptions}
                     isLoading={isLoadingSchools}
@@ -283,16 +283,16 @@ export default function SettingsProfilePage() {
                     placeholder="Select School"
                     styles={customSelectStyles}
                     classNamePrefix="react-select"
-                    className="text-gray-900 dark:text-gray-100"
+                    className="text-gray-900 dark:text-neutral-100"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
                   Department / Major
                 </label>
                 <div className="relative">
-                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 dark:text-gray-500 pointer-events-none" />
+                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 dark:text-neutral-500 pointer-events-none" />
                   <Select<OptionType, false>
                     options={departmentOptions}
                     isLoading={isLoadingDepartments}
@@ -314,13 +314,13 @@ export default function SettingsProfilePage() {
                     isDisabled={!formData.schoolId}
                     styles={customSelectStyles}
                     classNamePrefix="react-select"
-                    className="text-gray-900 dark:text-gray-100"
+                    className="text-gray-900 dark:text-neutral-100"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+            <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
               <Button
                 type="submit"
                 isLoading={isUpdating}

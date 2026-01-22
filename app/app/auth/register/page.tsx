@@ -220,7 +220,7 @@ export default function SignupPage() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Create Account
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-neutral-400">
                 Join thousands of students discovering great books
               </p>
             </div>
@@ -330,7 +330,7 @@ export default function SignupPage() {
           </Card>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-neutral-400">
               Already have an account?{" "}
               <Link
                 href="/app/auth/login"

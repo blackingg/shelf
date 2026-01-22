@@ -82,7 +82,7 @@ export default function UserProfilePage() {
 
   return (
     <>
-      <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-gray-800">
+      <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <div className="relative h-48 bg-gradient-to-br from-emerald-950 via-emerald-900 to-gray-900">
           <div className="absolute inset-0 bg-black/10" />
         </div>
@@ -100,14 +100,14 @@ export default function UserProfilePage() {
                 </h1>
                 {/* user.mod doesn't exist in UserPublic, so we omit or check another way */}
               </div>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">
+              <p className="text-gray-500 dark:text-neutral-400 font-medium">
                 @{username}
               </p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
               <FiCalendar className="w-4 h-4" />
               Joined{" "}
               {new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -135,7 +135,7 @@ export default function UserProfilePage() {
             </div>
           </div>
 
-          <div className="flex border-b border-gray-200 dark:border-gray-800">
+          <div className="flex border-b border-gray-200 dark:border-neutral-800">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -146,7 +146,7 @@ export default function UserProfilePage() {
                   className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors ${
                     isActive
                       ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
-                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-700"
+                      : "border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-neutral-700"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function UserProfilePage() {
                     className={`ml-1.5 px-2 py-0.5 rounded-full text-xs ${
                       isActive
                         ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                        : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400"
+                        : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400"
                     }`}
                   >
                     {tab.count}
@@ -190,7 +190,7 @@ export default function UserProfilePage() {
                 ))
               ) : (
                 <div className="col-span-full py-20 text-center">
-                  <p className="text-gray-500 dark:text-gray-400">
+                   <p className="text-gray-500 dark:text-neutral-400">
                     No books donated yet.
                   </p>
                 </div>

@@ -174,7 +174,7 @@ export default function Onboarding() {
     <>
       <AppHeader
         rightContent={
-          <p className="text-sm text-gray-800 dark:text-gray-200">
+          <p className="text-sm text-gray-800 dark:text-neutral-200">
             Step {currentStep + 1} of {steps.length}
           </p>
         }
@@ -212,7 +212,7 @@ export default function Onboarding() {
             {/* Step 1: School */}
             {currentStep === 0 && (
               <div className="space-y-4">
-                <label className="text-gray-800 dark:text-gray-200 font-medium">
+                <label className="text-gray-800 dark:text-neutral-200 font-medium">
                   Search your school
                 </label>
                 <Select<OptionType, false>
@@ -260,9 +260,9 @@ export default function Onboarding() {
                   }}
                   classNames={{
                     control: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white",
+                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
                     menu: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-gray-700",
+                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
                     option: () =>
                       "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
                     singleValue: () => "text-gray-900 dark:text-white",
@@ -275,7 +275,7 @@ export default function Onboarding() {
             {/* Step 2: Department */}
             {currentStep === 1 && (
               <div className="space-y-4">
-                <label className="text-gray-800 dark:text-gray-200 font-medium">
+                <label className="text-gray-800 dark:text-neutral-200 font-medium">
                   Search your department
                 </label>
                 <Select<OptionType, false>
@@ -319,9 +319,9 @@ export default function Onboarding() {
                   }}
                   classNames={{
                     control: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white",
+                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
                     menu: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-gray-700",
+                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
                     option: () =>
                       "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
                     singleValue: () => "text-gray-900 dark:text-white",
@@ -365,7 +365,7 @@ export default function Onboarding() {
                 ) : (
                   Object.entries(interestsResponse).map(([category, list]) => (
                     <div key={category}>
-                      <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                      <h3 className="text-sm font-semibold text-gray-800 dark:text-neutral-200 mb-2">
                         {formatCategory(category)}
                       </h3>
                       <div className="grid grid-cols-2 gap-3">

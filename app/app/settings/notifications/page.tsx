@@ -20,16 +20,16 @@ export default function NotificationsSettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Notifications
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-neutral-400 mt-1">
           Choose what messages you want to receive.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 overflow-hidden">
         <div className="p-6 md:p-8 space-y-8">
           <div>
             <div className="flex items-center space-x-3 mb-6">
-              <FiBell className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <FiBell className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Library Activity
               </h3>
@@ -40,7 +40,7 @@ export default function NotificationsSettingsPage() {
                   <div className="font-medium text-gray-900 dark:text-white">
                     Folder Updates
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                     Notify me when new documents are added to folders I follow
                   </div>
                 </div>
@@ -51,7 +51,7 @@ export default function NotificationsSettingsPage() {
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
                     preferences.emailUpdates
                       ? "bg-emerald-500"
-                      : "bg-gray-200 dark:bg-gray-700"
+                      : "bg-gray-200 dark:bg-neutral-800"
                   }`}
                 >
                   <span
@@ -69,7 +69,7 @@ export default function NotificationsSettingsPage() {
                   <div className="font-medium text-gray-900 dark:text-white">
                     Folder Invites
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                     Receive notifications when invited to private folders
                   </div>
                 </div>
@@ -80,7 +80,7 @@ export default function NotificationsSettingsPage() {
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
                     preferences.pushMessages
                       ? "bg-emerald-500"
-                      : "bg-gray-200 dark:bg-gray-700"
+                      : "bg-gray-200 dark:bg-neutral-800"
                   }`}
                 >
                   <span
@@ -97,7 +97,7 @@ export default function NotificationsSettingsPage() {
 
           {/* <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
             <div className="flex items-center space-x-3 mb-6">
-              <FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <FiMail className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Email Digests
               </h3>
@@ -106,7 +106,7 @@ export default function NotificationsSettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">Weekly Readings</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                     A weekly summary of trending books in your department
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export default function NotificationsSettingsPage() {
                   aria-checked={preferences.pushReminders}
                   onClick={() => toggle("pushReminders")}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.pushReminders ? "bg-emerald-500" : "bg-gray-200 dark:bg-gray-700"
+                    preferences.pushReminders ? "bg-emerald-500" : "bg-gray-200 dark:bg-neutral-800"
                   }`}
                 >
                   <span
@@ -129,7 +129,7 @@ export default function NotificationsSettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">Department News</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                      Updates and announcements from your university department
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export default function NotificationsSettingsPage() {
                   aria-checked={preferences.emailPromotions}
                   onClick={() => toggle("emailPromotions")}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.emailPromotions ? "bg-emerald-500" : "bg-gray-200 dark:bg-gray-700"
+                    preferences.emailPromotions ? "bg-emerald-500" : "bg-gray-200 dark:bg-neutral-800"
                   }`}
                 >
                   <span

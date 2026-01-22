@@ -10,6 +10,7 @@ import {
   FiTag,
   FiFolder,
   FiHeart,
+  FiCheckCircle,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -46,6 +47,7 @@ export const Sidebar: React.FC = () => {
       href: "/app/library/departments",
     },
     { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
+    { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
   ];
 
   const bottomItems: SidebarItem[] = [
@@ -71,8 +73,8 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      <aside className="hidden lg:flex w-64 bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-gray-800 h-screen sticky top-0 flex-col transition-colors duration-200">
-        <div className="p-2 md:p-6 border-b border-gray-200 dark:border-gray-800">
+      <aside className="hidden lg:flex w-64 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col transition-colors duration-200">
+        <div className="p-2 md:p-6 border-b border-gray-200 dark:border-neutral-800">
           <Link
             href={"/app"}
             className="flex items-center space-x-2"
@@ -100,7 +102,7 @@ export const Sidebar: React.FC = () => {
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive(item.href!)
                   ? "bg-primary text-white shadow-lg"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
               }`}
             >
               <span className="w-5 h-5">{item.icon}</span>
@@ -114,14 +116,14 @@ export const Sidebar: React.FC = () => {
           ))}
         </nav>
 
-        <nav className="px-4 py-6 border-t border-gray-200 dark:border-gray-800 space-y-1">
+        <nav className="px-4 py-6 border-t border-gray-200 dark:border-neutral-800 space-y-1">
           {bottomItems.map((item) => {
             if (item.onClick) {
               return (
                 <button
                   key={item.label}
                   onClick={item.onClick}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-all duration-200 cursor-pointer w-full text-left"
+                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-all duration-200 cursor-pointer w-full text-left"
                 >
                   <span className="w-5 h-5">{item.icon}</span>
                   <span className="font-medium">{item.label}</span>
@@ -133,7 +135,7 @@ export const Sidebar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href!}
-                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer"
+                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-200 cursor-pointer"
               >
                 <span className="w-5 h-5">{item.icon}</span>
                 <span className="font-medium">{item.label}</span>
@@ -145,7 +147,7 @@ export const Sidebar: React.FC = () => {
 
       <button
         onClick={() => setShowSideBar(!showSidebar)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-neutral-900 rounded-lg shadow-md border border-gray-200 dark:border-neutral-800"
         aria-label="Toggle menu"
       >
         <HiMenu className="text-primary text-2xl" />
@@ -159,11 +161,11 @@ export const Sidebar: React.FC = () => {
       )}
 
       <div
-        className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-white dark:bg-[#0a0a0a] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-white dark:bg-neutral-950 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+        <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <div className="bg-primary p-2 rounded-lg">
               <Image
@@ -196,7 +198,7 @@ export const Sidebar: React.FC = () => {
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive(item.href!)
                   ? "bg-primary text-white shadow-lg"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
               }`}
             >
               <span className="w-5 h-5">{item.icon}</span>
@@ -210,7 +212,7 @@ export const Sidebar: React.FC = () => {
           ))}
         </nav>
 
-        <nav className="absolute bottom-0 w-full px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-1 bg-white dark:bg-[#0a0a0a]">
+        <nav className="absolute bottom-0 w-full px-4 py-4 border-t border-gray-200 dark:border-neutral-800 space-y-1 bg-white dark:bg-neutral-950">
           {bottomItems.map((item) => {
             if (item.onClick) {
               return (
@@ -220,7 +222,7 @@ export const Sidebar: React.FC = () => {
                     item.onClick?.();
                     setShowSideBar(false);
                   }}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-all duration-200 cursor-pointer w-full text-left"
+                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-all duration-200 cursor-pointer w-full text-left"
                 >
                   <span className="w-5 h-5">{item.icon}</span>
                   <span className="font-medium">{item.label}</span>
@@ -233,7 +235,7 @@ export const Sidebar: React.FC = () => {
                 key={item.href}
                 href={item.href!}
                 onClick={() => setShowSideBar(false)}
-                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer"
+                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-200 cursor-pointer"
               >
                 <span className="w-5 h-5">{item.icon}</span>
                 <span className="font-medium">{item.label}</span>

@@ -64,7 +64,7 @@ export default function BookDetailsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-neutral-900">
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <div className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-gray-800">
+        <div className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-800">
           <div className="max-w-5xl mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row gap-10">
               <motion.div
@@ -73,7 +73,7 @@ export default function BookDetailsPage() {
                 className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
               >
                 <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl">
-                  <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                  <div className="absolute inset-0 bg-gray-200 dark:bg-neutral-800 animate-pulse" />
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 to-teal-900 flex items-center justify-center text-white text-center p-6">
                     <div>
                       <FiBook className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -105,14 +105,14 @@ export default function BookDetailsPage() {
                 <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                   {book.title}
                 </h1>
-                <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-xl text-gray-600 dark:text-neutral-400 mb-6">
                   by {book.author}
                 </p>
 
-                <div className="flex items-center space-x-6 mb-8 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center space-x-6 mb-8 text-sm text-gray-500 dark:text-neutral-400">
                   <div className="flex items-center">
                     <FiStar className="w-5 h-5 text-yellow-400 fill-current mr-1" />
-                    <span className="font-bold text-gray-900 dark:text-gray-200 mr-1">
+                    <span className="font-bold text-gray-900 dark:text-neutral-200 mr-1">
                       {book.rating}
                     </span>
                   </div>
@@ -140,7 +140,7 @@ export default function BookDetailsPage() {
                       className={`px-6 py-3 border-2 rounded-xl font-medium transition-all flex items-center space-x-2 ${
                         showFolderDropdown
                           ? "border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20"
-                          : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-emerald-500 dark:hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                          : "border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 dark:hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                       }`}
                     >
                       <FiFolderPlus className="w-5 h-5" />
@@ -168,20 +168,20 @@ export default function BookDetailsPage() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                   Description
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+                <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-lg">
                   {book.description}
                 </p>
               </section>
             </div>
 
             <div className="space-y-8">
-              <section className="bg-white dark:bg-neutral-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+              <section className="bg-white dark:bg-neutral-800 p-6 rounded-2xl border border-gray-200 dark:border-neutral-700 shadow-sm">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-4">
                   Book Information
                 </h3>
                 <div className="space-y-4 text-sm">
                   <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-gray-500 dark:text-neutral-400">
                       Donor
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
@@ -189,7 +189,7 @@ export default function BookDetailsPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-gray-500 dark:text-neutral-400">
                       Donated
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
@@ -209,12 +209,12 @@ export default function BookDetailsPage() {
                       key={i}
                       className="flex items-center space-x-3 group cursor-pointer"
                     >
-                      <div className="w-16 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0" />
+                      <div className="w-16 h-24 bg-gray-200 dark:bg-neutral-700 rounded-lg flex-shrink-0" />
                       <div>
-                        <div className="font-bold text-gray-900 dark:text-gray-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                        <div className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                           Atomic Habits
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-neutral-400">
                           James Clear
                         </div>
                       </div>

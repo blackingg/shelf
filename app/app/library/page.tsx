@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard } from "@/app/components/Library/BookCard";
@@ -22,6 +22,7 @@ type RecommendedItem =
 export default function LibraryPage() {
   const router = useRouter();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  // const [isLoadingRecommendations]=useState(true);
   const { data: recommendations, isLoading: isLoadingRecommendations } =
     useGetRecommendationsCombinedQuery();
 
@@ -149,7 +150,7 @@ export default function LibraryPage() {
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
                   No Recommendations Yet
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-center text-sm max-w-xs">
+                <p className="text-gray-500 dark:text-neutral-400 text-center text-sm max-w-xs">
                   Start exploring books and folders to get personalized
                   suggestions tailored just for you.
                 </p>

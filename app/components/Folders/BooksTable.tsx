@@ -10,37 +10,37 @@ interface BooksTableProps {
 
 const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-neutral-800/50 border-b border-gray-200 dark:border-gray-800">
+          <thead className="bg-gray-50 dark:bg-neutral-800/50 border-b border-gray-200 dark:border-neutral-800">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Book List
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Author
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Category
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Department
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Pages
               </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-gray-800">
+          <tbody className="bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-neutral-800">
             {books.map((book) => (
               <tr
                 key={book.id}
                 onClick={() => onBookClick(book.id)}
-                className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors group"
+                className="hover:bg-gray-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors group"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-4">
@@ -51,14 +51,14 @@ const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
                       <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {book.title}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      <div className="text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
                         {book.description || "No description available"}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900 dark:text-gray-300 font-medium">
+                   <div className="text-sm text-gray-900 dark:text-neutral-300 font-medium">
                     {book.author}
                   </div>
                 </td>
@@ -68,12 +68,12 @@ const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+                   <div className="text-sm text-gray-500 dark:text-neutral-400 capitalize">
                     {book.department?.replace(/-/g, " ")}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                   <div className="text-sm text-gray-500 dark:text-neutral-400">
                     {book.pages}
                   </div>
                 </td>
@@ -83,7 +83,7 @@ const BooksTable = ({ books, onBookClick }: BooksTableProps) => {
                       e.stopPropagation();
                       // Handle menu action
                     }}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
                   >
                     <FiMoreVertical className="w-5 h-5" />
                   </button>

@@ -129,7 +129,7 @@ export default function UploadPage() {
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                     Donate to the Library
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-gray-600 dark:text-neutral-400 mt-1">
                     Share your knowledge and help others learn.
                   </p>
                 </div>
@@ -144,14 +144,14 @@ export default function UploadPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-neutral-700"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
                     <FiFile className="text-emerald-600 dark:text-emerald-400" />
                     <span>Document File (Required)</span>
                   </h2>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-sm text-gray-500 dark:text-neutral-400">
                     PDF, EPUB, or DOCX
                   </span>
                 </div>
@@ -160,7 +160,7 @@ export default function UploadPage() {
                   className={`relative border-2 border-dashed rounded-2xl p-10 transition-all duration-200 text-center ${
                     dragActive
                       ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10"
-                      : "border-gray-300 dark:border-gray-600 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-gray-50 dark:hover:bg-neutral-700"
+                      : "border-gray-300 dark:border-neutral-700 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-gray-50 dark:hover:bg-neutral-700"
                   }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
@@ -190,7 +190,7 @@ export default function UploadPage() {
                         <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           {file.name}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                        <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6">
                           {(file.size / (1024 * 1024)).toFixed(2)} MB
                         </p>
                         <div className="flex space-x-3">
@@ -220,12 +220,12 @@ export default function UploadPage() {
                         onClick={() => inputRef.current?.click()}
                       >
                         <div className="bg-gray-100 dark:bg-neutral-700 p-4 rounded-full mb-4 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 transition-colors">
-                          <FiUploadCloud className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
+                          <FiUploadCloud className="w-8 h-8 text-gray-400 dark:text-neutral-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
                         </div>
                         <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           Click to upload or drag and drop
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                        <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-xs mx-auto">
                           Support for PDF, EPUB, and DOCX files up to 50MB
                         </p>
                       </motion.div>
@@ -238,7 +238,7 @@ export default function UploadPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-neutral-700"
               >
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
@@ -272,7 +272,7 @@ export default function UploadPage() {
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                       Department
                     </label>
                     <Select
@@ -289,7 +289,7 @@ export default function UploadPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                       Category
                     </label>
                     <Select
@@ -377,12 +377,12 @@ export default function UploadPage() {
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                     Description
                   </label>
                   <textarea
                     rows={4}
-                    className="w-full p-4 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-800 rounded-xl focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all duration-200 resize-none placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full p-4 text-gray-600 dark:text-neutral-300 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-xl focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all duration-200 resize-none placeholder-gray-400 dark:placeholder-neutral-500"
                     placeholder="Tell us a bit about this book..."
                     value={formData.description || ""}
                     onChange={(e) =>

@@ -40,7 +40,7 @@ export const ConfirmModal = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl z-50"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-xl z-50"
           >
             <div className="flex items-center space-x-4 mb-6">
               {isDanger && (
@@ -53,7 +53,7 @@ export const ConfirmModal = ({
                   {title}
                 </h3>
                 {isDanger && (
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  <p className="text-gray-500 dark:text-neutral-400 text-sm">
                     This action cannot be undone.
                   </p>
                 )}
@@ -61,7 +61,7 @@ export const ConfirmModal = ({
             </div>
 
             <div
-              className={`text-gray-600 dark:text-gray-300 mb-8 ${
+              className={`text-gray-600 dark:text-neutral-300 mb-8 ${
                 typeof message === "string" ? "" : ""
               }`}
             >
@@ -71,7 +71,7 @@ export const ConfirmModal = ({
             <div className="flex space-x-3">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
               >
                 {cancelText}
               </button>

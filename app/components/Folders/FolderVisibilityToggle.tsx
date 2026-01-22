@@ -39,7 +39,7 @@ export const FolderVisibilityToggle: React.FC<FolderVisibilityToggleProps> = ({
   onTabChange,
 }) => {
   return (
-    <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1 transition-colors">
+    <div className="inline-flex bg-gray-100 dark:bg-neutral-800 rounded-xl p-1 transition-colors">
       {tabs.map(({ id, label, icon: Icon, activeClass }) => {
         const isActive = activeTab === id;
 
@@ -56,7 +56,7 @@ export const FolderVisibilityToggle: React.FC<FolderVisibilityToggleProps> = ({
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-gray-800 dark:text-white"
                     }`
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-neutral-200"
               }`}
           >
             <Icon className="w-4 h-4" />
