@@ -58,63 +58,67 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-200 p-8 text-center"
+            className="max-w-md w-full text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6"
+              className="w-24 h-24 rounded-full bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 flex items-center justify-center mx-auto mb-8"
             >
-              <FiAlertTriangle className="w-10 h-10 text-red-500" />
+              <FiAlertTriangle className="w-12 h-12 text-red-500 dark:text-red-400" />
             </motion.div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
               Something went wrong
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-500 dark:text-neutral-400 mb-8 leading-relaxed">
               We encountered an unexpected error. Don&apos;t worry, your data is
               safe. Try refreshing the page or go back home.
             </p>
 
             {process.env.NODE_ENV === "development" && this.state.error && (
-              <div className="mb-6 p-4 bg-gray-100 rounded-xl text-left overflow-auto max-h-40">
-                <p className="text-sm font-mono text-red-600 break-words">
+              <div className="mb-8 p-4 bg-gray-100 dark:bg-neutral-800 rounded-xl text-left overflow-auto max-h-40">
+                <p className="text-sm font-mono text-red-600 dark:text-red-400 break-words">
                   {this.state.error.message}
                 </p>
                 {this.state.errorInfo && (
-                  <pre className="text-xs text-gray-500 mt-2 whitespace-pre-wrap">
+                  <pre className="text-xs text-gray-500 dark:text-neutral-400 mt-2 whitespace-pre-wrap">
                     {this.state.errorInfo.componentStack}
                   </pre>
                 )}
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={this.handleReload}
-                className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-colors"
               >
                 <FiRefreshCw className="w-5 h-5" />
                 Reload Page
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={this.handleGoHome}
-                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold flex items-center justify-center gap-2 border border-gray-200"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-gray-700 dark:text-white font-medium rounded-xl transition-colors"
               >
                 <FiHome className="w-5 h-5" />
                 Go Home
               </motion.button>
             </div>
+
+            <p className="mt-10 text-sm text-gray-400 dark:text-neutral-500">
+              If this issue persists, please contact support.
+            </p>
           </motion.div>
         </div>
       );
@@ -144,7 +148,7 @@ export function ErrorBoundaryWithNotification({
       onError={(error) => {
         addNotification(
           "error",
-          `A rendering error occurred: ${error.message}`
+          `A rendering error occurred: ${error.message}`,
         );
       }}
     >
@@ -166,7 +170,7 @@ export function NotificationErrorHandler({
       onError={(error) => {
         addNotification(
           "error",
-          `An unexpected error occurred: ${error.message}`
+          `An unexpected error occurred: ${error.message}`,
         );
       }}
     >
