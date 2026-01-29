@@ -16,7 +16,7 @@
   <br />
 
   <p>
-    Shelf is a <strong>student-powered digital library<strong/> designed to preserve and share academic resources. 
+    Shelf is a <strong>student-powered digital library</strong> designed to preserve and share academic resources. 
     From lecture notes and past questions to research papers and novels, Shelf provides a centralized hub for knowledge exchange.
   </p>
 
@@ -27,6 +27,9 @@
 </div>
 
 ---
+
+> [!IMPORTANT]
+> **Active Development**: The latest features and codebase are currently on the [`dev`](https://github.com/blackingg/shelf/tree/dev) branch. The `main` branch is temporarily serving as a waitlist/landing page.
 
 ## 🚀 **Overview**
 
@@ -134,6 +137,7 @@ Follow these steps to set up Shelf locally.
 ```bash
 git clone https://github.com/blackingg/shelf.git
 cd shelf
+git checkout dev # Switch to active development branch
 ```
 
 ### **2. Install Dependencies**
@@ -179,7 +183,8 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 We welcome contributions! Please follow these steps:
 
 1.  **Fork** the repository.
-2.  Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
+2.  **Checkout the `dev` branch** (`git checkout dev`).
+3.  Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
 3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
 4.  Push to the branch (`git push origin feature/AmazingFeature`).
 5.  Open a **Pull Request**.
