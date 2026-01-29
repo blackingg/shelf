@@ -1,222 +1,196 @@
-# **Shelf – Frontend (Next.js + Tailwind CSS)**
+# **Shelf**
 
-Shelf is a student-powered digital library for preserving and sharing academic
-notes, past questions, research papers, magazines, novels, comics, and more.
-This repository contains the **Next.js + Tailwind CSS frontend**, responsible
-for user onboarding, document browsing, folder management, uploading, moderation
-UI, and the online reading experience.
+<div align="center">
+  <img src="public/logo.svg" alt="Shelf Logo" width="120" height="120" />
+  <h1>Shelf – Student Resource Hub</h1>
+  <p>
+    <strong>Next.js 16 · Tailwind CSS 4 · PWA · Redux Toolkit</strong>
+  </p>
+  
+  ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+  ![Next.js](https://img.shields.io/badge/Next.js-16.0-black)
+  ![React](https://img.shields.io/badge/React-19-61dafb)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6)
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38bdf8)
+
+  <br />
+
+  <p>
+    Shelf is a <strong>student-powered digital library</strong> designed to preserve and share academic resources. 
+    From lecture notes and past questions to research papers and novels, Shelf provides a centralized hub for knowledge exchange.
+  </p>
+
+[Explore Website](https://www.shelf.ng) ·
+[Report Bug](https://github.com/blackingg/shelf/issues) ·
+[Request Feature](https://github.com/blackingg/shelf/issues)
+
+</div>
 
 ---
 
-## 🚀 **Tech Stack**
+> [!IMPORTANT]
+> **Active Development**: The latest features and codebase are currently on the [`dev`](https://github.com/blackingg/shelf/tree/dev) branch. The `main` branch is temporarily serving as a waitlist/landing page.
 
-- **Next.js 14 (App Router)**
-- **React + TypeScript**
-- **Tailwind CSS**
-- **PNPM** (preferred package manager)
-- **REST API integration** (talks to the backend repo)
-- Reusable component architecture
+## 🚀 **Overview**
+
+Shelf is a modern **Progressive Web Application (PWA)** built for performance
+and accessibility. It allows users to upload, organize, and read documents
+seamlessly across devices.
+
+### **Core Functionality**
+
+- **Digital Library**: Browse academic and leisure content organized by
+  department and category.
+- **Smart Reading**: Built-in online reader for PDFs with a focus on user
+  experience.
+- **Community Driven**: Students actively contribute by uploading and moderating
+  content.
 
 ---
 
-## 📁 **Project Structure**
+## � **Tech Stack**
 
-```
-app/
-  app/
-    auth/
-      login/
-      register/
-      forgot-password/
-    books/
-      upload/
-      [id]/
-        read/
-    folders/
-      [id]/
-        edit/
-      edit/
-    library/
-      categories/
-        [category]/
-      departments/
-        [department]/
-      search/
-    onboarding/
-    profile/
-      [username]/
-      edit/
-      settings/
-  components/
-    Folders/
-    Form/
-    Layout/
-    Library/
-    Notification/
-    Onboarding/
-    profile/
-    PageHeader.tsx
-    SearchBar.tsx
-    Sidebar.tsx
-    UserProfileDropdown.tsx
-  context/
-    NotificationContext.tsx
-  docs/
-    privacy/
-    terms/
-  types/
-    categories.ts
-    folder.ts
-    notification.ts
-    schools.ts
+Shelf is built with the latest web technologies to ensure a fast, responsive, and premium user experience.
 
-public/
-  banner.jpg
-  logo.svg
-
-globals.css
-layout.tsx
-page.tsx
-```
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
+- **Animations**: [Motion](https://motion.dev/) (formerly Framer Motion)
+- **Authentication**: Custom Auth + [Google OAuth](https://react-oauth.vercel.app/)
+- **PWA**: Fully installable via `next-pwa`
+- **Dark Mode**: Native support via `next-themes`
 
 ---
 
 ## 🌟 **Key Features**
 
-### **Authentication & Onboarding**
+### **🔐 Authentication & Onboarding**
 
-- Email + password auth
-- Collects school, department, hobbies
-- Drives personalized recommendations
+- Secure Email/Password and Google Login.
+- Personalized onboarding flow collecting school, department, and interests.
+- Custom profile management with avatars and bio.
 
-### **Document Management**
+### **📚 Document Management**
 
-- View documents by:
+- **Smart Search**: Find resources by keyword, category, or department.
+- **Organization**: Filter by 'School', 'Department', 'Level', and 'Course'.
+- **Interactive Reader**: A distraction-free reading environment.
 
-  - Category
-  - Department
-  - Search
+### **📂 Folders & Collaboration**
 
-- Document details with preview panel
-- Online reader for PDFs
+Create and manage personal or shared collections.
 
-### **Uploading**
+- **Public Folders**: Open to the community.
+- **Private Folders**: Personal archives.
+- **Collaborative Folders**: Invite 'Editors' or 'Viewers' to manage content together.
 
-- Users can upload/donate documents
-- Backend will run SHA-256 hashing to detect duplicates
-- Users see their upload status (pending/approved/rejected)
+### **🛡️ Moderation System**
 
-### **Folders (as groupings, not storage)**
+- Community moderation workflow.
+- Trusted users (Moderators) can review, approve, or reject pending uploads.
+- Dashboard for tracking upload status and history.
 
-- Public folders:
+### **📱 Progressive Web App (PWA)**
 
-  - Creator-only
-  - Anyone can add
-  - Specific profiles can add
+- Install Shelf on your phone or desktop.
+- Native-like experience with offline capabilities (caching).
 
-- Private folders:
+---
 
-  - Creator & invited contributors only
+## 📁 **Project Structure**
 
-- Folder editing, visibility toggle, contributor rules
-
-### **Moderation**
-
-- Moderators see pending uploads
-- Approve or reject documents
-- Mods must be recommended by another mod or added by admin
-
-### **Notifications**
-
-- UI for displaying stacked notifications (success/error/info)
+```bash
+app/
+├── app/                  # Main Application Routes (Authenticated)
+│   ├── auth/             # Login, Register, Forgot Password
+│   ├── books/            # Book Details, Reading Interface, Upload
+│   ├── folders/          # Folder Management & Editing
+│   ├── library/          # Browsing (Dept, Category, Search)
+│   ├── onboarding/       # User Setup Flow
+│   ├── profile/          # User Profiles
+│   └── settings/         # App Settings
+├── components/           # Reusable UI Components
+│   ├── Form/             # Inputs, Buttons, Selects
+│   ├── Layout/           # Sidebar, Navbar, Wrappers
+│   └── ...
+├── context/              # Global Contexts (Notifications, etc.)
+├── store/                # Redux Slices & Services
+├── types/                # TypeScript Definitions
+├── globals.css           # Global Styles & Tailwind Directives
+└── page.tsx              # Landing Page
+```
 
 ---
 
 ## 🧭 **Getting Started**
 
-### **1. Clone repo**
+Follow these steps to set up Shelf locally.
+
+### **Prerequisites**
+
+- **Node.js**: v18 or higher
+- **PNPM**: Preferred package manager
+
+### **1. Clone the Repository**
 
 ```bash
 git clone https://github.com/blackingg/shelf.git
 cd shelf
+git checkout dev # Switch to active development branch
+```
+
+### **2. Install Dependencies**
+
+```bash
 pnpm install
 ```
 
-### **2. Environment Variables**
+### **3. Environment Variables**
 
-Create **.env.local**:
+Create a `.env.local` file in the root directory and add the following:
 
-```
-NEXT_PUBLIC_API_URL=https://your-backend-domain/api
+```env
+NEXT_PUBLIC_API_URL=https://api.shelf.ng/v1
 NEXT_PUBLIC_ENV=development
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+# Add other keys as required
 ```
 
-### **3. Run dev server**
+### **4. Run Development Server**
 
 ```bash
 pnpm dev
 ```
 
----
-
-## 🧪 **Scripts**
-
-```bash
-pnpm dev       # Run development server
-pnpm build     # Production build
-pnpm start     # Start production server
-pnpm lint      # Lint
-```
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ---
 
-## 🗂️ **Folder Breakdown**
+## 🧪 **Available Scripts**
 
-### **app/**
-
-Main application routes using the Next.js App Router.
-
-### **components/**
-
-Reusable UI building blocks: forms, headers, folder cards, library grids,
-onboarding UI, etc.
-
-### **context/**
-
-Global context providers (e.g., NotificationContext).
-
-### **types/**
-
-TypeScript interfaces: folders, categories, notifications, schools.
-
-### **docs/**
-
-Static pages like privacy policy and terms.
-
-### **public/**
-
-Static assets (logo, banners).
+| Script       | Description                                  |
+| :----------- | :------------------------------------------- |
+| `pnpm dev`   | Starts the development server with TurboPack |
+| `pnpm build` | Builds the application for production        |
+| `pnpm start` | Runs the built production application        |
+| `pnpm lint`  | Runs ESLint to check for code quality issues |
 
 ---
 
 ## 🤝 **Contributing**
 
-Shelf uses a simple workflow:
+We welcome contributions! Please follow these steps:
 
-1. Checkout the `dev` branch
-2. Create a feature branch
-3. Follow existing file structure & coding style
-4. Test your changes
-5. Submit a PR and tag a maintainer
+1.  **Fork** the repository.
+2.  **Checkout the `dev` branch** (`git checkout dev`).
+3.  Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a **Pull Request**.
 
 ---
 
 ## 🛡️ **License**
 
-MIT License
-
----
-
-## 📞 Contact
-
-**Website:** [https://www.shelf.ng](https://www.shelf.ng)
+Distributed under the MIT License. See `LICENSE` for more information.
