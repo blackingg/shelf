@@ -14,6 +14,7 @@ import {
   FiZap,
 } from "react-icons/fi";
 import { BiLibrary } from "react-icons/bi";
+import Image from "next/image";
 
 export default function ShelfLanding() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -97,8 +98,14 @@ export default function ShelfLanding() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
-              <div className="bg-emerald-700 p-2.5 rounded-xl shadow-lg">
-                <BiLibrary className="w-5 h-5 text-white" />
+              <div className="rounded-lg">
+                <Image
+                  width={20}
+                  height={20}
+                  src="/logo.png"
+                  alt="Shelf Logo"
+                  className="text-white"
+                />
               </div>
               <span className="text-2xl font-bold text-black">Shelf</span>
             </div>

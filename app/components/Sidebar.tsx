@@ -79,11 +79,11 @@ export const Sidebar: React.FC = () => {
             href={"/app"}
             className="flex items-center space-x-2"
           >
-            <div className="bg-primary p-2 rounded-lg">
+            <div className="rounded-lg">
               <Image
                 width={20}
                 height={20}
-                src="/logo.svg"
+                src="/logo.png"
                 alt="Shelf Logo"
                 className="text-white"
               />
@@ -167,11 +167,11 @@ export const Sidebar: React.FC = () => {
       >
         <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="bg-primary p-2 rounded-lg">
+            <div className="rounded-lg">
               <Image
                 width={20}
                 height={20}
-                src="/logo.svg"
+                src="/logo.png"
                 alt="Shelf Logo"
                 className="text-white"
               />
