@@ -16,23 +16,32 @@
   <br />
 
   <p>
-    Shelf is a **student-powered digital library** designed to preserve and share academic resources. 
+    Shelf is a <strong>student-powered digital library<strong/> designed to preserve and share academic resources. 
     From lecture notes and past questions to research papers and novels, Shelf provides a centralized hub for knowledge exchange.
   </p>
 
-  [Explore Website](https://www.shelf.ng) · [Report Bug](https://github.com/blackingg/shelf/issues) · [Request Feature](https://github.com/blackingg/shelf/issues)
+[Explore Website](https://www.shelf.ng) ·
+[Report Bug](https://github.com/blackingg/shelf/issues) ·
+[Request Feature](https://github.com/blackingg/shelf/issues)
+
 </div>
 
 ---
 
 ## 🚀 **Overview**
 
-Shelf is a modern **Progressive Web Application (PWA)** built for performance and accessibility. It allows users to upload, organize, and read documents seamlessly across devices.
+Shelf is a modern **Progressive Web Application (PWA)** built for performance
+and accessibility. It allows users to upload, organize, and read documents
+seamlessly across devices.
 
 ### **Core Functionality**
-- **Digital Library**: Browse academic and leisure content organized by department and category.
-- **Smart Reading**: Built-in online reader for PDFs with a focus on user experience.
-- **Community Driven**: Students actively contribute by uploading and moderating content.
+
+- **Digital Library**: Browse academic and leisure content organized by
+  department and category.
+- **Smart Reading**: Built-in online reader for PDFs with a focus on user
+  experience.
+- **Community Driven**: Students actively contribute by uploading and moderating
+  content.
 
 ---
 
@@ -54,27 +63,33 @@ Shelf is built with the latest web technologies to ensure a fast, responsive, an
 ## 🌟 **Key Features**
 
 ### **🔐 Authentication & Onboarding**
+
 - Secure Email/Password and Google Login.
 - Personalized onboarding flow collecting school, department, and interests.
 - Custom profile management with avatars and bio.
 
 ### **📚 Document Management**
+
 - **Smart Search**: Find resources by keyword, category, or department.
 - **Organization**: Filter by 'School', 'Department', 'Level', and 'Course'.
 - **Interactive Reader**: A distraction-free reading environment.
 
 ### **📂 Folders & Collaboration**
+
 Create and manage personal or shared collections.
+
 - **Public Folders**: Open to the community.
 - **Private Folders**: Personal archives.
 - **Collaborative Folders**: Invite 'Editors' or 'Viewers' to manage content together.
 
 ### **🛡️ Moderation System**
+
 - Community moderation workflow.
 - Trusted users (Moderators) can review, approve, or reject pending uploads.
 - Dashboard for tracking upload status and history.
 
 ### **📱 Progressive Web App (PWA)**
+
 - Install Shelf on your phone or desktop.
 - Native-like experience with offline capabilities (caching).
 
@@ -110,21 +125,25 @@ app/
 Follow these steps to set up Shelf locally.
 
 ### **Prerequisites**
+
 - **Node.js**: v18 or higher
 - **PNPM**: Preferred package manager
 
 ### **1. Clone the Repository**
+
 ```bash
 git clone https://github.com/blackingg/shelf.git
 cd shelf
 ```
 
 ### **2. Install Dependencies**
+
 ```bash
 pnpm install
 ```
 
 ### **3. Environment Variables**
+
 Create a `.env.local` file in the root directory and add the following:
 
 ```env
@@ -135,21 +154,23 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 ### **4. Run Development Server**
+
 ```bash
 pnpm dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ---
 
 ## 🧪 **Available Scripts**
 
-| Script | Description |
-| :--- | :--- |
-| `pnpm dev` | Starts the development server with TurboPack |
-| `pnpm build` | Builds the application for production |
-| `pnpm start` | Runs the built production application |
-| `pnpm lint` | Runs ESLint to check for code quality issues |
+| Script       | Description                                  |
+| :----------- | :------------------------------------------- |
+| `pnpm dev`   | Starts the development server with TurboPack |
+| `pnpm build` | Builds the application for production        |
+| `pnpm start` | Runs the built production application        |
+| `pnpm lint`  | Runs ESLint to check for code quality issues |
 
 ---
 
