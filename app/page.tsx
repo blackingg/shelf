@@ -174,9 +174,9 @@ export default function ShelfLanding() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
-              <div className="bg-emerald-700 p-2.5 rounded-xl shadow-lg">
+              <div className="rounded-xl shadow-lg">
                 <Image
-                  src="/logo.svg"
+                  src="/logo.png"
                   alt="Shelf Logo"
                   width={20}
                   height={20}
@@ -698,9 +698,13 @@ export default function ShelfLanding() {
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-emerald-700 p-2.5 rounded-xl">
-                  <BiLibrary className="w-6 h-6 text-white" />
-                </div>
+                <Image
+                  src="/logo.png"
+                  alt="Shelf Logo"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5 text-white"
+                />
                 <span className="text-2xl font-bold text-white">Shelf</span>
               </div>
               <p className="text-emerald-200 leading-relaxed">
