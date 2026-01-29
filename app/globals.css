@@ -20,7 +20,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 
-  --color-emerald-50: #f0fdf9;
+  /* --color-emerald-50: #f0fdf9;
   --color-emerald-100: #ccfbf0;
   --color-emerald-200: #99f6e0;
   --color-emerald-300: #5eead2;
@@ -30,7 +30,7 @@
   --color-emerald-700: #044c41;
   --color-emerald-800: #064038;
   --color-emerald-900: #06352f;
-  --color-emerald-950: #021f1b;
+  --color-emerald-950: #021f1b; */
 
   --font-sans: var(--font-inter);
 }

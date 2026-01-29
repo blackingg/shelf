@@ -252,9 +252,13 @@ export default function ShelfLanding() {
 
               <div className="relative z-10">
                 <div className="flex items-center space-x-3 mb-8">
-                  <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                    <BiLibrary className="w-8 h-8 text-white" />
-                  </div>
+                  <Image
+                    width={40}
+                    height={40}
+                    src="/logo.png"
+                    alt="Shelf Logo"
+                    className="text-white rounded-lg"
+                  />
                   <div>
                     <div className="text-white font-bold text-lg">
                       Your Library
