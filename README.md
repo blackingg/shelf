@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="public/logo.png" alt="Shelf Logo" width="120" height="120" />
-  <h1>Shelf – Student Resource Hub</h1>
+  <h1>Shelf</h1>
   <p>
     <strong>Next.js 16 · Tailwind CSS 4 · PWA · Redux Toolkit</strong>
   </p>
@@ -28,8 +28,9 @@
 
 ---
 
-> [!IMPORTANT]
-> **Active Development**: The latest features and codebase are currently on the [`dev`](https://github.com/blackingg/shelf/tree/dev) branch. The `main` branch is temporarily serving as a waitlist/landing page.
+> [!IMPORTANT] **Active Development**: The latest features and codebase are
+> currently on the [`dev`](https://github.com/blackingg/shelf/tree/dev) branch.
+> The `main` branch is temporarily serving as a waitlist/landing page.
 
 ## 🚀 **Overview**
 
@@ -50,14 +51,16 @@ seamlessly across devices.
 
 ## � **Tech Stack**
 
-Shelf is built with the latest web technologies to ensure a fast, responsive, and premium user experience.
+Shelf is built with the latest web technologies to ensure a fast, responsive,
+and premium user experience.
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
 - **Animations**: [Motion](https://motion.dev/) (formerly Framer Motion)
-- **Authentication**: Custom Auth + [Google OAuth](https://react-oauth.vercel.app/)
+- **Authentication**: Custom Auth +
+  [Google OAuth](https://react-oauth.vercel.app/)
 - **PWA**: Fully installable via `next-pwa`
 - **Dark Mode**: Native support via `next-themes`
 
@@ -83,7 +86,8 @@ Create and manage personal or shared collections.
 
 - **Public Folders**: Open to the community.
 - **Private Folders**: Personal archives.
-- **Collaborative Folders**: Invite 'Editors' or 'Viewers' to manage content together.
+- **Collaborative Folders**: Invite 'Editors' or 'Viewers' to manage content
+  together.
 
 ### **🛡️ Moderation System**
 
@@ -185,9 +189,9 @@ We welcome contributions! Please follow these steps:
 1.  **Fork** the repository.
 2.  **Checkout the `dev` branch** (`git checkout dev`).
 3.  Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a **Pull Request**.
+4.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+5.  Push to the branch (`git push origin feature/AmazingFeature`).
+6.  Open a **Pull Request**.
 
 ---
 

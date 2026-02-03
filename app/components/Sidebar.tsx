@@ -76,7 +76,7 @@ export const Sidebar: React.FC = () => {
       <aside className="hidden lg:flex w-64 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col transition-colors duration-200">
         <div className="p-2 md:p-6 border-b border-gray-200 dark:border-neutral-800">
           <Link
-            href={"/app"}
+            href={"/app/library"}
             className="flex items-center space-x-2"
           >
             <div className="rounded-lg">

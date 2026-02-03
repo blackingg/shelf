@@ -9,7 +9,7 @@ export const AppHeader: React.FC<{
     <div className="max-w-6xl mx-auto px-6">
       <div className="flex justify-between items-center h-16">
         <Link
-          href={"/app"}
+          href={"/"}
           className="flex items-center space-x-3"
         >
           <div className="rounded-lg">
