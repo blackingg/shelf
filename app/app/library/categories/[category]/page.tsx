@@ -183,7 +183,7 @@ export default function CategoryPage({
                 <BookCard
                   {...book}
                   onClick={() => setSelectedBook(book)}
-                />
+                key={book.id}/>
               ))}
             </div>
           ) : (

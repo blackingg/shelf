@@ -63,16 +63,16 @@ export default function BookDetailsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col ">
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-5xl mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row gap-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
+                className="w-full md:w-1/3 lg:w-1/4 shrink-0"
               >
-                <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative aspect-2/3 rounded-2xl overflow-hidden shadow-2xl">
                   <div className="absolute inset-0 bg-gray-200 animate-pulse" />
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 to-teal-900 flex items-center justify-center text-white text-center p-6">
                     <div>
@@ -180,7 +180,7 @@ export default function BookDetailsPage() {
                 <div className="space-y-4 text-sm">
                   <div className="flex justify-between py-2 border-b border-gray-100">
                     <span className="text-gray-500">Donor</span>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-gray-900 hover:underline">
                       {book.donor}
                     </span>
                   </div>
@@ -201,7 +201,7 @@ export default function BookDetailsPage() {
                       key={i}
                       className="flex items-center space-x-3 group cursor-pointer"
                     >
-                      <div className="w-16 h-24 bg-gray-200 rounded-lg flex-shrink-0" />
+                      <div className="w-16 h-24 bg-gray-200 rounded-lg shrink-0" />
                       <div>
                         <div className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
                           Atomic Habits

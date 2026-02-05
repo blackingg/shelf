@@ -16,7 +16,7 @@ export default function DepartmentsPage() {
   const userDepartmentId = DEPARTMENTS.find(
     (department) => department.name === userDepartment
   );
-  const [viewDepartments, setViewDepartments] = useState(false);
+  const [viewDepartments, setViewDepartments] = useState(true);
 
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
