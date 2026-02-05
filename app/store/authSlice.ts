@@ -67,6 +67,16 @@ const authSlice = createSlice({
       const storageType = state.rememberMe ? "local" : "session";
       storage.set("accessToken", action.payload, storageType);
     },
+    updateTokens: (
+      state,
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>
+    ) => {
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      const storageType = state.rememberMe ? "local" : "session";
+      storage.set("accessToken", action.payload.accessToken, storageType);
+      storage.set("refreshToken", action.payload.refreshToken, storageType);
+    },
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
       const storageType = state.rememberMe ? "local" : "session";
@@ -100,6 +110,7 @@ const authSlice = createSlice({
 export const {
   setCredentials,
   updateAccessToken,
+  updateTokens,
   setUser,
   setOnboardingStatus,
   logout,

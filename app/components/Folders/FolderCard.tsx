@@ -63,7 +63,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                   setShowMenu(false);
                 }}
               />
-              <div className="absolute right-0 mt-2 w-36 sm:w-40 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20">
+              <div className="absolute right-0 mt-2 w-36 sm:w-40 bg-white dark:bg-neutral-900 rounded-lg shadow-xl border border-gray-200 dark:border-neutral-800 py-2 z-20">
                 {canEdit && (
                   <button
                     onClick={(e) => {
@@ -71,7 +71,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       onEdit?.();
                       setShowMenu(false);
                     }}
-                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-50"
+                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
                   >
                     Edit
                   </button>
@@ -83,7 +83,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       onDelete?.();
                       setShowMenu(false);
                     }}
-                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50"
+                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
                   >
                     Delete
                   </button>

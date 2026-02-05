@@ -1,22 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
+import { ThemeProvider } from "./provider/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#059669",
+  themeColor: "#044c41",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -77,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html>
       <head>
         <link
           rel="manifest"
@@ -112,14 +108,19 @@ export default function RootLayout({
           href="https://www.instagram.com/shelf_ng"
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <StoreProvider>
-          <ErrorBoundaryWithNotification>
-            {children}
-          </ErrorBoundaryWithNotification>
-        </StoreProvider>
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <StoreProvider>
+            <ErrorBoundaryWithNotification>
+              {children}
+            </ErrorBoundaryWithNotification>
+          </StoreProvider>
+        </ThemeProvider>
       </body>
       <Analytics />
     </html>

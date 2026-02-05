@@ -139,7 +139,9 @@ export default function ForgotPassword() {
           {currentStep === "email" && (
             <>
               <StepHeader
-                icon={<FiMail className="w-6 h-6 text-emerald-700" />}
+                icon={
+                  <FiMail className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
+                }
                 title="Forgot Password?"
                 description="Enter your email address and we'll send you a code to reset your password"
               />
@@ -162,12 +164,14 @@ export default function ForgotPassword() {
           {currentStep === "sent" && (
             <>
               <StepHeader
-                icon={<FiCheckCircle className="w-6 h-6 text-emerald-700" />}
+                icon={
+                  <FiCheckCircle className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
+                }
                 title="Check Your Email"
                 description={`We've sent a 6-digit verification code to ${email}`}
               />
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-emerald-800 text-center">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-4 mb-6">
+                <p className="text-sm text-emerald-800 dark:text-emerald-300 text-center">
                   Didn&apos;t receive the code? Check your spam folder or click
                   continue to enter the code
                 </p>
@@ -178,7 +182,9 @@ export default function ForgotPassword() {
           {currentStep === "otp" && (
             <>
               <StepHeader
-                icon={<FiKey className="w-6 h-6 text-emerald-700" />}
+                icon={
+                  <FiKey className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
+                }
                 title="Enter Verification Code"
                 description="Enter the 6-digit code we sent to your email"
               />
@@ -201,7 +207,7 @@ export default function ForgotPassword() {
               <button
                 onClick={handleResendCode}
                 disabled={isLoading}
-                className="text-sm text-emerald-700 hover:text-emerald-800 font-medium mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Resend code
               </button>
@@ -211,7 +217,9 @@ export default function ForgotPassword() {
           {currentStep === "newPassword" && (
             <>
               <StepHeader
-                icon={<FiLock className="w-6 h-6 text-emerald-700" />}
+                icon={
+                  <FiLock className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
+                }
                 title="Create New Password"
                 description="Choose a strong password for your account"
               />
@@ -259,11 +267,11 @@ export default function ForgotPassword() {
 
           {currentStep === "email" && (
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Remember your password?{" "}
                 <button
                   onClick={() => router.push("/app/auth/login")}
-                  className="text-emerald-700 hover:text-emerald-800 font-medium"
+                  className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium"
                 >
                   Sign in
                 </button>

@@ -11,7 +11,7 @@ export default function CategoriesPage() {
       <div className="p-8">
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-2">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-white">
               Available Categories
             </h1>
           </div>

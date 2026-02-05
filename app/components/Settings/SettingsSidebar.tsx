@@ -16,12 +16,12 @@ const settingsNavItems = [
     icon: <FiSettings className="w-5 h-5" />,
     description: "Manage your account settings",
   },
-  // {
-  //   label: "Appearance",
-  //   href: "/app/settings/appearance",
-  //   icon: <FiMonitor className="w-5 h-5" />,
-  //   description: "Customize the look and feel",
-  // },
+  {
+    label: "Appearance",
+    href: "/app/settings/appearance",
+    icon: <FiMonitor className="w-5 h-5" />,
+    description: "Customize the look and feel",
+  },
   {
     label: "Notifications",
     href: "/app/settings/notifications",
@@ -40,11 +40,13 @@ export const SettingsSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full md:w-64 lg:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex-shrink-0 sticky top-0 z-10 md:static">
+    <aside className="w-full md:w-64 lg:w-72 bg-white dark:bg-neutral-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-neutral-800 flex-shrink-0 sticky top-0 z-10 md:static">
       <div className="p-4 md:p-6">
         <div className="mb-4 md:mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">Settings</h2>
-          <p className="text-sm text-gray-500 hidden md:block">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+            Settings
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-neutral-400 hidden md:block">
             Manage your app preferences
           </p>
         </div>
@@ -57,8 +59,8 @@ export const SettingsSidebar = () => {
                 href={item.href}
                 className={`flex items-center space-x-3 px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                   isActive
-                    ? "bg-primary text-white shadow-md md:shadow-lg"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-primary text-white shadow-md md:shadow-lg dark:shadow-none"
+                    : "text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-neutral-200"
                 }`}
               >
                 <span className="w-5 h-5">{item.icon}</span>

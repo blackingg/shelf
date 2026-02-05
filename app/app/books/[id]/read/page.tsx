@@ -174,7 +174,7 @@ export default function ReaderPage() {
                               className={`flex-1 py-2 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
                                 theme === t
                                   ? "ring-2 ring-emerald-500 border-transparent"
-                                  : "border-gray-200 hover:border-gray-300"
+                                  : "border-gray-200 dark:border-neutral-700 hover:border-gray-300"
                               } ${
                                 t === "light"
                                   ? "bg-white text-gray-900"

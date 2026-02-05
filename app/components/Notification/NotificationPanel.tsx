@@ -110,9 +110,9 @@ export const NotificationPanel: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        className="relative p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
       >
-        <FiBell className="lg:w-6 lg:h-6 text-gray-600" />
+        <FiBell className="lg:w-6 lg:h-6 text-gray-600 dark:text-neutral-300" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         )}
@@ -133,15 +133,15 @@ export const NotificationPanel: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full -right-20 mt-2 w-64 md:w-80 lg:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
+              className="absolute top-full -right-20 mt-2 w-64 md:w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden z-50"
             >
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-base">
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
                     Notifications
                   </h3>
                   {unreadCount > 0 && (
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
                       {unreadCount} unread
                     </p>
                   )}
@@ -149,7 +149,7 @@ export const NotificationPanel: React.FC = () => {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
                   >
                     Mark all as read
                   </button>
@@ -159,11 +159,11 @@ export const NotificationPanel: React.FC = () => {
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-12 text-center">
-                    <FiBell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500 font-medium">
+                    <FiBell className="w-12 h-12 text-gray-300 dark:text-neutral-600 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
                       No notifications yet
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                       We&apos;ll notify you about important updates
                     </p>
                   </div>
@@ -171,8 +171,8 @@ export const NotificationPanel: React.FC = () => {
                   notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${
-                        !notification.read ? "bg-emerald-50/30" : ""
+                      className={`px-4 py-3 border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
+                        !notification.read ? "bg-emerald-50/30 dark:bg-emerald-900/10" : ""
                       }`}
                       onClick={() => handleMarkAsRead(notification.id)}
                     >
@@ -185,8 +185,8 @@ export const NotificationPanel: React.FC = () => {
                             <p
                               className={`text-sm font-medium ${
                                 !notification.read
-                                  ? "text-gray-900"
-                                  : "text-gray-700"
+                                  ? "text-gray-900 dark:text-white"
+                                  : "text-gray-700 dark:text-neutral-300"
                               }`}
                             >
                               {notification.title}
@@ -195,10 +195,10 @@ export const NotificationPanel: React.FC = () => {
                               <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0 mt-1.5 ml-2"></span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                          <p className="text-xs text-gray-600 dark:text-neutral-400 mt-1 line-clamp-2">
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-400 mt-1.5">
+                          <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1.5">
                             {formatTimestamp(notification.timestamp)}
                           </p>
                         </div>

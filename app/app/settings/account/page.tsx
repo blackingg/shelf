@@ -50,7 +50,7 @@ export default function AccountSettingsPage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to update email")
+        getErrorMessage(error, "Failed to update email"),
       );
     }
   };
@@ -75,7 +75,7 @@ export default function AccountSettingsPage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to change password")
+        getErrorMessage(error, "Failed to change password"),
       );
     }
   };
@@ -89,7 +89,7 @@ export default function AccountSettingsPage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to delete account")
+        getErrorMessage(error, "Failed to delete account"),
       );
     } finally {
       setIsDeleteModalOpen(false);
@@ -99,40 +99,42 @@ export default function AccountSettingsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Account Settings
+        </h1>
+        <p className="text-gray-500 dark:text-neutral-400 mt-1">
           Manage your account information and preferences.
         </p>
       </div>
 
       <div className="space-y-8">
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Contact Info
           </h3>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingEmail ? (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 rounded-full">
-                    <FiMail className="w-5 h-5 text-emerald-600" />
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
+                    <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                       Email Address
                     </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
                     />
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingEmail(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -148,19 +150,21 @@ export default function AccountSettingsPage() {
             ) : (
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 rounded-full">
-                    <FiMail className="w-5 h-5 text-emerald-600" />
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
+                    <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-gray-900 dark:text-white">
                       Email Address
                     </div>
-                    <div className="text-sm text-gray-500">{user?.email}</div>
+                    <div className="text-sm text-gray-500 dark:text-neutral-400">
+                      {user?.email}
+                    </div>
                   </div>
                 </div>
                 <button
                   onClick={handleStartEditingEmail}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
                 >
                   Edit
                 </button>
@@ -170,17 +174,19 @@ export default function AccountSettingsPage() {
         </section>
 
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Security</h3>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Security
+          </h3>
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingPassword ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-emerald-50 rounded-full mt-1">
-                    <FiLock className="w-5 h-5 text-emerald-600" />
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full mt-1">
+                    <FiLock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         Current Password
                       </label>
                       <input
@@ -193,11 +199,11 @@ export default function AccountSettingsPage() {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         New Password
                       </label>
                       <input
@@ -210,11 +216,11 @@ export default function AccountSettingsPage() {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
                         Confirm New Password
                       </label>
                       <input
@@ -227,7 +233,7 @@ export default function AccountSettingsPage() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                   </div>
@@ -235,7 +241,7 @@ export default function AccountSettingsPage() {
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingPassword(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -251,19 +257,21 @@ export default function AccountSettingsPage() {
             ) : (
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 rounded-full">
-                    <FiLock className="w-5 h-5 text-emerald-600" />
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
+                    <FiLock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">Password</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      Password
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-neutral-400">
                       Last changed 3 months ago
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsEditingPassword(true)}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
                 >
                   Change
                 </button>
@@ -273,20 +281,22 @@ export default function AccountSettingsPage() {
         </section>
 
         <section>
-          <h3 className="text-lg font-semibold text-red-600 mb-4">
+          <h3 className="text-lg font-semibold text-red-600 dark:text-red-500 mb-4">
             Danger Zone
           </h3>
-          <div className="bg-red-50 rounded-2xl border border-red-100 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/20 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="font-medium text-red-900">Delete Account</div>
-              <div className="text-sm text-red-600/80 mt-1">
+              <div className="font-medium text-red-900 dark:text-red-400">
+                Delete Account
+              </div>
+              <div className="text-sm text-red-600/80 dark:text-red-400/70 mt-1">
                 Permanently remove your account and all associated data.
               </div>
             </div>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
               disabled={isDeletingAccount}
-              className="px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 font-medium transition-all shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
+              className="px-5 py-2.5 bg-white dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-all shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
             >
               {isDeletingAccount ? "Deleting..." : "Delete Account"}
             </button>

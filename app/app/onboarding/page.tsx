@@ -104,7 +104,7 @@ export default function Onboarding() {
       sessionStorage.removeItem("onboarding_data");
       addNotification(
         "success",
-        "Welcome to Shelf! Your profile is now set up."
+        "Welcome to Shelf! Your profile is now set up.",
       );
       router.push("/app/library");
     } catch (error: any) {
@@ -113,8 +113,8 @@ export default function Onboarding() {
         "error",
         getErrorMessage(
           error,
-          "Failed to complete onboarding. Please try again."
-        )
+          "Failed to complete onboarding. Please try again.",
+        ),
       );
     }
   };
@@ -174,7 +174,7 @@ export default function Onboarding() {
     <>
       <AppHeader
         rightContent={
-          <p className="text-sm text-gray-800">
+          <p className="text-sm text-gray-800 dark:text-neutral-200">
             Step {currentStep + 1} of {steps.length}
           </p>
         }
@@ -186,33 +186,33 @@ export default function Onboarding() {
             <StepHeader
               icon={
                 currentStep === 0 ? (
-                  <FiUser className="w-7 h-7 text-emerald-700" />
+                  <FiUser className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
                 ) : currentStep === 1 ? (
-                  <FiBook className="w-7 h-7 text-emerald-700" />
+                  <FiBook className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
                 ) : (
-                  <FiHeart className="w-7 h-7 text-emerald-700" />
+                  <FiHeart className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
                 )
               }
               title={
                 currentStep === 0
                   ? "Which school do you attend?"
                   : currentStep === 1
-                  ? "What's your department?"
-                  : "What interests you?"
+                    ? "What's your department?"
+                    : "What interests you?"
               }
               description={
                 currentStep === 0
                   ? "We'll personalize your content based on your school."
                   : currentStep === 1
-                  ? "Helps us recommend books and resources for your field."
-                  : "Choose at least 3 to personalize your experience."
+                    ? "Helps us recommend books and resources for your field."
+                    : "Choose at least 3 to personalize your experience."
               }
             />
 
             {/* Step 1: School */}
             {currentStep === 0 && (
               <div className="space-y-4">
-                <label className="text-gray-800 font-medium">
+                <label className="text-gray-800 dark:text-neutral-200 font-medium">
                   Search your school
                 </label>
                 <Select<OptionType, false>
@@ -228,7 +228,7 @@ export default function Onboarding() {
                   }
                   value={
                     schoolOptions.find(
-                      (opt) => opt.value === formData.schoolId
+                      (opt) => opt.value === formData.schoolId,
                     ) || null
                   }
                   placeholder="Start typing school name..."
@@ -238,6 +238,7 @@ export default function Onboarding() {
                       ...base,
                       borderRadius: "0.75rem",
                       borderColor: "#d1d5db",
+                      backgroundColor: "transparent",
                       padding: "2px",
                       boxShadow: "none",
                       "&:hover": { borderColor: "#059669" },
@@ -247,10 +248,25 @@ export default function Onboarding() {
                       backgroundColor: state.isSelected
                         ? "#d1fae5"
                         : state.isFocused
-                        ? "#ecfdf5"
-                        : "white",
+                          ? "#ecfdf5"
+                          : "transparent",
                       color: "#111827",
                     }),
+                    menu: (base) => ({
+                      ...base,
+                      backgroundColor: "var(--background)",
+                      zIndex: 100,
+                    }),
+                  }}
+                  classNames={{
+                    control: () =>
+                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
+                    menu: () =>
+                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
+                    option: () =>
+                      "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
+                    singleValue: () => "text-gray-900 dark:text-white",
+                    input: () => "text-gray-900 dark:text-white",
                   }}
                 />
               </div>
@@ -259,7 +275,7 @@ export default function Onboarding() {
             {/* Step 2: Department */}
             {currentStep === 1 && (
               <div className="space-y-4">
-                <label className="text-gray-800 font-medium">
+                <label className="text-gray-800 dark:text-neutral-200 font-medium">
                   Search your department
                 </label>
                 <Select<OptionType, false>
@@ -270,7 +286,7 @@ export default function Onboarding() {
                   }
                   value={
                     departmentOptions.find(
-                      (opt) => opt.value === formData.departmentId
+                      (opt) => opt.value === formData.departmentId,
                     ) || null
                   }
                   placeholder="Type to search..."
@@ -281,6 +297,7 @@ export default function Onboarding() {
                       ...base,
                       borderRadius: "0.75rem",
                       borderColor: "#d1d5db",
+                      backgroundColor: "transparent",
                       padding: "2px",
                       boxShadow: "none",
                       "&:hover": { borderColor: "#059669" },
@@ -290,10 +307,25 @@ export default function Onboarding() {
                       backgroundColor: state.isSelected
                         ? "#d1fae5"
                         : state.isFocused
-                        ? "#ecfdf5"
-                        : "white",
+                          ? "#ecfdf5"
+                          : "transparent",
                       color: "#111827",
                     }),
+                    menu: (base) => ({
+                      ...base,
+                      backgroundColor: "var(--background)",
+                      zIndex: 100,
+                    }),
+                  }}
+                  classNames={{
+                    control: () =>
+                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
+                    menu: () =>
+                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
+                    option: () =>
+                      "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
+                    singleValue: () => "text-gray-900 dark:text-white",
+                    input: () => "text-gray-900 dark:text-white",
                   }}
                 />
               </div>
@@ -325,7 +357,7 @@ export default function Onboarding() {
                     </p>
                     <button
                       onClick={() => refetchInterests()}
-                      className="text-sm text-emerald-700 hover:text-emerald-800 font-medium underline"
+                      className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 font-medium underline"
                     >
                       Try Again
                     </button>
@@ -333,7 +365,7 @@ export default function Onboarding() {
                 ) : (
                   Object.entries(interestsResponse).map(([category, list]) => (
                     <div key={category}>
-                      <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                      <h3 className="text-sm font-semibold text-gray-800 dark:text-neutral-200 mb-2">
                         {formatCategory(category)}
                       </h3>
                       <div className="grid grid-cols-2 gap-3">
@@ -343,7 +375,7 @@ export default function Onboarding() {
                             name={interest.name}
                             icon={getIconComponent(interest.icon)}
                             isSelected={formData.interestIds.includes(
-                              interest.id
+                              interest.id,
                             )}
                             onClick={() => toggleInterest(interest.id)}
                           />

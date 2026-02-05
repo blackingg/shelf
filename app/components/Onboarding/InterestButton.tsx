@@ -11,7 +11,7 @@ export const InterestButton: React.FC<{
     className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 text-sm transition-all cursor-pointer ${
       isSelected
         ? "border-primary bg-primary/5 text-primary"
-        : "border-gray-200 text-gray-800 hover:border-gray-300"
+        : "border-gray-200 dark:border-neutral-700 text-gray-800 dark:text-neutral-200 hover:border-gray-300 dark:hover:border-neutral-600"
     }`}
   >
     <span className="flex items-center space-x-2">

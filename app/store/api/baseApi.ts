@@ -6,7 +6,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
-import { logout, updateAccessToken } from "../authSlice";
+import { logout, updateTokens } from "../authSlice";
 import { TokenResponse } from "../../types/auth";
 
 const API_BASE_URL =
@@ -43,14 +43,18 @@ const baseQueryWithReauth: BaseQueryFn<
           body: { refreshToken },
         },
         api,
-        extraOptions
+        extraOptions,
       );
 
       if (refreshResult.data) {
         const tokenResponse = refreshResult.data as TokenResponse;
-        api.dispatch(updateAccessToken(tokenResponse.accessToken));
+        api.dispatch(
+          updateTokens({
+            accessToken: tokenResponse.accessToken,
+            refreshToken: tokenResponse.refreshToken,
+          }),
+        );
 
-        // retry the initial query
         result = await baseQuery(args, api, extraOptions);
       } else {
         api.dispatch(logout());
