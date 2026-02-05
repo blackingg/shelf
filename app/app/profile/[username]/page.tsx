@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Folder } from "@/app/types/folder";
-import { FiFolder, FiUploadCloud, FiCalendar, FiShield } from "react-icons/fi";
+import { FiFolder, FiUploadCloud, FiCalendar } from "react-icons/fi";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
@@ -11,9 +10,11 @@ import { BookPreview } from "@/app/types/book";
 import {
   useGetUserByUsernameQuery,
   useGetUserBooksQuery,
+  useGetUserFoldersQuery,
 } from "@/app/store/api/usersApi";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
+import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -26,21 +27,8 @@ export default function UserProfilePage() {
     useGetUserByUsernameQuery(username);
   const { data: books, isLoading: isLoadingBooks } =
     useGetUserBooksQuery(username);
-
-  const MOCK_FOLDERS: Folder[] = [
-    {
-      id: "f1",
-      slug: "summer-reading-list",
-      name: "Summer Reading List",
-      description: "My list for the summer",
-      booksCount: 12,
-      bookmarksCount: 45,
-      visibility: "PUBLIC",
-      coverImages: ["/dummycover.png", "/dummycover.png"],
-      createdBy: user?.fullName || "User",
-      createdAt: new Date().toISOString(),
-    },
-  ];
+  const { data: folders, isLoading: isLoadingFolders } =
+    useGetUserFoldersQuery(username);
 
   if (isLoadingUser) {
     return <ProfileSkeleton />;
@@ -98,7 +86,6 @@ export default function UserProfilePage() {
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                   {user.fullName}
                 </h1>
-                {/* user.mod doesn't exist in UserPublic, so we omit or check another way */}
               </div>
               <p className="text-gray-500 dark:text-neutral-400 font-medium">
                 @{username}
@@ -190,7 +177,7 @@ export default function UserProfilePage() {
                 ))
               ) : (
                 <div className="col-span-full py-20 text-center">
-                   <p className="text-gray-500 dark:text-neutral-400">
+                  <p className="text-gray-500 dark:text-neutral-400">
                     No books donated yet.
                   </p>
                 </div>
@@ -200,13 +187,25 @@ export default function UserProfilePage() {
 
           {activeTab === "folders" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {MOCK_FOLDERS.map((folder) => (
-                <FolderCard
-                  key={folder.id}
-                  folder={folder}
-                  onClick={() => router.push(`/app/folders/${folder.id}`)}
-                />
-              ))}
+              {isLoadingFolders ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <FolderCardSkeleton key={i} />
+                ))
+              ) : folders && folders.length > 0 ? (
+                folders.map((folder) => (
+                  <FolderCard
+                    key={folder.id}
+                    folder={folder}
+                    onClick={() => router.push(`/app/folders/${folder.id}`)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center">
+                  <p className="text-gray-500 dark:text-neutral-400">
+                    No public folders yet.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </motion.div>

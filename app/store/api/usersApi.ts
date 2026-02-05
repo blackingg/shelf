@@ -6,6 +6,7 @@ import {
   UserPublic,
 } from "../../types/user";
 import { Book } from "../../types/book";
+import { Folder } from "../../types/folder";
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -48,6 +49,10 @@ export const usersApi = baseApi.injectEndpoints({
     getUserBooks: builder.query<Book[], string>({
       query: (username) => `/users/${username}/books`,
     }),
+    getUserFolders: builder.query<Folder[], string>({
+      query: (username) => `/users/${username}/folders`,
+      providesTags: ["Folders"],
+    }),
   }),
 });
 
@@ -59,4 +64,5 @@ export const {
   useDeleteMeMutation,
   useGetUserByUsernameQuery,
   useGetUserBooksQuery,
+  useGetUserFoldersQuery,
 } = usersApi;
