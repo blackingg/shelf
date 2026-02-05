@@ -34,7 +34,7 @@ export default function DepartmentsPage() {
               <FiX className="w-8 h-8 text-emerald-600" />
             )}
 
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold dark:text-white text-gray-900">
               View All Departments
             </h1>
           </div>

@@ -103,7 +103,7 @@ export default function ModeratorBookDetailsPage() {
                   <div className="w-48">
                     <Button
                       onClick={() =>
-                        router.push(`/app/moderator/book/${book.id}/read`)
+                        router.push(`/app/moderator/read/${book.id}`)
                       }
                       icon={<FiPlay className="w-5 h-5 fill-current" />}
                       variant={book.status === "approved" ? "outline" : "primary"}
@@ -145,7 +145,10 @@ export default function ModeratorBookDetailsPage() {
                    <span>Cover image is high quality</span>
                 </li>
                  <li className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-neutral-600 flex items-center justify-center">
+                   <div className={`w-5 h-5 rounded-full border-2 text-emerald-500 ${ verified? 
+                    "border-emerald-500"
+                    :"border-neutral-600"} flex items-center justify-center`}>
+                     {verified ? <FiCheckCircle className="w-3 h-3"/> : null}
                    </div>
                    <span>Content matches description (Pending verification)</span>
                 </li>

@@ -72,7 +72,7 @@ export default function DepartmentPage({
 
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl capitalize font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl capitalize font-bold mb-2 dark:text-white font-gray-900">
                   {departmentName}
                 </h1>
                 <p className="text-gray-600">

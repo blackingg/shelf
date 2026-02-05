@@ -69,7 +69,7 @@ export const BookDetailPanel: React.FC<{
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50"
+            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-linear-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50"
           >
             <button
               onClick={onClose}
@@ -78,7 +78,7 @@ export const BookDetailPanel: React.FC<{
             >
               <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
             </button>
-            <div className="relative aspect-[2/3] w-38 md:w-48 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-6 ring-4 ring-emerald-700/30">
+            <div className="relative aspect-2/3 w-38 md:w-48 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-6 ring-4 ring-emerald-700/30">
               <Image
                 src={book.cover_image}
                 alt={book.title}
@@ -115,25 +115,25 @@ export const BookDetailPanel: React.FC<{
               ))}
               <span className="ml-2 font-bold text-lg">{book.rating || 0}</span>
             </div> */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white">
+            <div className="grid grid-cols-5 gap-2 mb-6 items-center">
+              <div className="text-center col-span-1 bg-emerald-800/40 rounded-xl py-3 px-2">
+                <p className="text-lg font-bold text-white">
                   {book.pages || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Pages
                 </p>
               </div>
-              <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white">
+              <div className="text-center col-span-2 bg-emerald-800/40 rounded-xl py-3 px-2">
+                <p className="text-lg font-bold text-white">
                   {book.published_year || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">
                   Published
                 </p>
               </div>
-              <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                <p className="text-2xl font-bold text-white capitalize">
+              <div className="text-center col-span-2 bg-emerald-800/40 rounded-xl py-3 px-2">
+                <p className="text-lg font-bold text-white capitalize">
                   {book.category || "-"}
                 </p>
                 <p className="text-xs text-emerald-200 font-medium mt-1">

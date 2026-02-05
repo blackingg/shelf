@@ -141,7 +141,7 @@ export default function CategoryPage({
           <div className="mb-8">
             <button
               onClick={() => router.back()}
-              className="group group-hover:underline flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
+              className="group group-hover:underline flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:dark:text-gray-300 mb-4 transition-colors group cursor-pointer"
             >
               <FiArrowLeft className="w-5 h-5" />
               <span className="font-medium group-hover:underline">
@@ -151,7 +151,7 @@ export default function CategoryPage({
 
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {categoryName}
                 </h1>
                 <p className="text-gray-600">
