@@ -32,11 +32,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
 
-  // Ensure we have at least 2 images for the stack effect if possible
-  const displayImages =
-    folder.coverImages && folder.coverImages.length > 0
-      ? folder.coverImages.slice(0, 2)
-      : [];
+  const coverImage = folder.coverImage;
 
   return (
     <div
@@ -95,31 +91,27 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       )}
 
       <div className="relative pt-6 sm:pt-8 pb-3 sm:pb-4">
-        {/* Stacked Images Effect */}
-        {displayImages.length > 0 && (
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[85%]">
-            {/* Second Image (back) */}
-            {displayImages.length > 1 && (
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[90%] h-24 sm:h-28 md:h-32 rounded-t-lg shadow-md overflow-hidden border-2 border-white/80 opacity-60 translate-y-[-8px] rotate-[-2deg]">
+        {coverImage &&
+          (coverImage.startsWith("/") ||
+            coverImage.startsWith("http://") ||
+            coverImage.startsWith("https://")) && (
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[85%]">
+              <div className="relative top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-full h-24 sm:h-28 md:h-32 rounded-t-lg shadow-lg overflow-hidden border-2 border-white z-10">
                 <Image
-                  src={displayImages[1]}
-                  alt="Book cover back"
+                  src={
+                    coverImage.startsWith("/") ||
+                    coverImage.startsWith("http://") ||
+                    coverImage.startsWith("https://")
+                      ? coverImage
+                      : "/dummycover.png"
+                  }
+                  alt="Folder cover"
                   fill
                   className="object-cover"
                 />
               </div>
-            )}
-            {/* First Image (front) */}
-            <div className="relative top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-full h-24 sm:h-28 md:h-32 rounded-t-lg shadow-lg overflow-hidden border-2 border-white z-10">
-              <Image
-                src={displayImages[0]}
-                alt="Book cover front"
-                fill
-                className="object-cover"
-              />
             </div>
-          </div>
-        )}
+          )}
 
         <div
           className={`absolute top-0 left-4 sm:left-8 w-20 sm:w-24 h-6 sm:h-8 rounded-t-xl transition-all duration-300 ${
@@ -139,7 +131,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
               : "bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700"
           }`}
           style={{
-            minHeight: displayImages.length > 0 ? "180px" : "140px",
+            minHeight: coverImage ? "180px" : "140px",
           }}
         >
           <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-end h-full">
@@ -165,7 +157,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 </div>
 
                 <span className="text-[10px] sm:text-xs text-white/80 truncate max-w-[100px] sm:max-w-none">
-                  by {folder.createdBy || "Guest"}
+                  by {folder.user?.username || "Guest"}
                 </span>
               </div>
             </div>

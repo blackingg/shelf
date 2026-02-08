@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
 
 const inter = Inter({
@@ -117,7 +118,7 @@ export default function RootLayout({
         >
           <StoreProvider>
             <ErrorBoundaryWithNotification>
-              {children}
+              <ProtectedRoute>{children}</ProtectedRoute>
             </ErrorBoundaryWithNotification>
           </StoreProvider>
         </ThemeProvider>

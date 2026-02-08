@@ -22,6 +22,7 @@ interface FolderListProps {
   emptyMessage?: string;
   isLoading?: boolean;
   skeletonCount?: number;
+  className?: string;
 }
 
 export const FolderList: React.FC<FolderListProps> = ({
@@ -33,6 +34,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   emptyMessage = "No folders yet",
   isLoading = false,
   skeletonCount = 5,
+  className = "",
 }) => {
   const user = useSelector(selectCurrentUser);
   const currentUser = user?.username || "Guest";
@@ -48,13 +50,17 @@ export const FolderList: React.FC<FolderListProps> = ({
         <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
           <FiFolder className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
         </div>
-        <p className="text-gray-500 dark:text-neutral-400 text-lg">{emptyMessage}</p>
+        <p className="text-gray-500 dark:text-neutral-400 text-lg">
+          {emptyMessage}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden shadow-sm">
+    <div
+      className={`bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden shadow-sm ${className}`}
+    >
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50/50 dark:bg-neutral-800/50 border-b border-gray-100 dark:border-neutral-800">
@@ -107,12 +113,11 @@ export const FolderList: React.FC<FolderListProps> = ({
                         <div className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           {folder.name}
                         </div>
-                        {folder.coverImages &&
-                          folder.coverImages.length > 0 && (
-                            <div className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
-                              Includes recent additions
-                            </div>
-                          )}
+                        {folder.coverImage && (
+                          <div className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                            Includes recent additions
+                          </div>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -141,7 +146,7 @@ export const FolderList: React.FC<FolderListProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <FiUser className="w-4 h-4 mr-2 text-gray-400 dark:text-neutral-500" />
-                      {folder.createdBy || "Guest"}
+                      {folder.user?.username || "Guest"}
                     </div>
                   </td>
                   {showActions && (
@@ -152,7 +157,7 @@ export const FolderList: React.FC<FolderListProps> = ({
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveMenuId(
-                                activeMenuId === folder.id ? null : folder.id
+                                activeMenuId === folder.id ? null : folder.id,
                               );
                             }}
                             className="p-2 hover:bg-gray-200 dark:hover:bg-neutral-700/50 rounded-lg transition-colors text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-300"

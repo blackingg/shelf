@@ -13,6 +13,7 @@ export const FormInput: React.FC<{
   placeholder?: string;
   autoComplete?: string;
   showPasswordToggle?: boolean;
+  required?: boolean;
 }> = ({
   label,
   name,
@@ -25,6 +26,7 @@ export const FormInput: React.FC<{
   placeholder,
   autoComplete,
   showPasswordToggle = false,
+  required = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType = showPasswordToggle
@@ -59,6 +61,7 @@ export const FormInput: React.FC<{
           }`}
           placeholder={placeholder}
           autoComplete={autoComplete}
+          required={required}
         />
         {showPasswordToggle && (
           <button
