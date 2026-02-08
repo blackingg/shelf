@@ -9,10 +9,7 @@ import { RootState } from "../store";
 import { logout, updateTokens } from "../authSlice";
 import { TokenResponse } from "../../types/auth";
 
-const API_BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8000/api/v1"
-    : process.env.NEXT_PUBLIC_API_BASE_URL!;
+const API_BASE_URL =process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,

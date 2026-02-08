@@ -16,7 +16,7 @@ export const onboardingApi = baseApi.injectEndpoints({
         params: { q: search },
       }),
     }),
-    getDepartments: builder.query<Department[], string>({
+    getOnboardingDepartments: builder.query<Department[], string>({
       query: (schoolId) => `/onboarding/departments/${schoolId}`,
     }),
     getInterests: builder.query<InterestsResponse, void>({
@@ -49,7 +49,7 @@ export const onboardingApi = baseApi.injectEndpoints({
 export const {
   useGetSchoolsQuery,
   useLazyGetSchoolsQuery,
-  useGetDepartmentsQuery,
+  useGetOnboardingDepartmentsQuery,
   useGetInterestsQuery,
   useCompleteOnboardingMutation,
   useGetMyInterestsQuery,

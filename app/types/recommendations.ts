@@ -8,3 +8,12 @@ export interface RecommendationsCombinedResponse {
   totalBooks: number;
   totalFolders: number;
 }
+
+export interface DiscoveryFeedResponse {
+  items: ({ type: "book"; data: Book } | { type: "folder"; data: Folder })[];
+  page: number;
+  pageSize: number;
+  total: number;
+  hasMore: boolean;
+  personalized: boolean;
+}

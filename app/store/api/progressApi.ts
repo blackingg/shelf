@@ -9,6 +9,21 @@ export const progressApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      async onQueryStarted({ bookId, currentPage, totalPages }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          progressApi.util.updateQueryData("getBookProgress", bookId, (draft) => {
+            draft.currentPage = currentPage;
+            draft.totalPages = totalPages;
+            draft.percentage = Math.round((currentPage / totalPages) * 100);
+            draft.lastRead = new Date().toISOString();
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
       invalidatesTags: (result, error, { bookId }) => [
         { type: "Progress", id: bookId },
       ],

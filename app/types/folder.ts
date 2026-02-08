@@ -1,5 +1,11 @@
-import { UserPublic } from "./user";
+import { UserMinimal } from "./user";
 import { Book } from "./book";
+import { FolderSortBy, SortOrder, PaginationParams } from "./common";
+
+export interface FolderFilterParams extends PaginationParams {
+  sort_by?: FolderSortBy;
+  order?: SortOrder;
+}
 
 export type FolderVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
 
@@ -8,21 +14,33 @@ export interface Folder {
   slug: string;
   name: string;
   description: string | null;
-  coverImages: string[] | null;
+  coverImage: string | null;
   visibility: FolderVisibility;
   booksCount: number;
   bookmarksCount: number;
+  allowCollaboration: boolean;
+  requireApproval: boolean;
   createdBy: string;
   createdAt: string;
-  books?: Book[];
-  collaborator?: Collaborator;
+  updatedAt: string;
+  user?: UserMinimal;
+  items?: FolderItem[];
+  collaborators?: Collaborator[];
+}
+
+export interface FolderItem {
+  id: string;
+  order: number;
+  addedAt: string;
+  book: Book;
 }
 
 export interface CreateFolderRequest {
   name: string;
   description?: string;
-  coverImages?: string[];
+  coverImage?: string;
   visibility?: FolderVisibility;
+  allowCollaboration?: boolean;
 }
 
 export interface UpdateFolderRequest extends Partial<CreateFolderRequest> {}
@@ -34,34 +52,59 @@ export interface AddBookToFolderRequest {
 export type FolderRoles = "OWNER" | "EDITOR" | "VIEWER";
 
 export interface InviteCollaboratorRequest {
-  email: string;
-  role: Exclude<FolderRoles, "OWNER">;
+  userId: string;
+  role?: FolderRoles;
+  permissions?: string[];
+  message?: string;
 }
 
 export interface Invite {
   id: string;
   folderId: string;
-  senderId: string;
-  email: string;
-  role: Exclude<FolderRoles, "OWNER">;
-  status: "PENDING" | "ACCEPTED" | "DECLINED";
+  userId: string;
+  invitedBy: string;
+  role: string;
+  permissions: string[];
+  message: string | null;
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
+  expiresAt: string;
+  respondedAt: string | null;
   createdAt: string;
+  updatedAt: string;
+  folder?: Partial<Folder>;
+  user?: UserMinimal;
 }
 
 export interface Collaborator {
   id: string;
-  userId: string;
-  folderId: string;
-  role: Exclude<FolderRoles, "OWNER">;
+  role: string;
   permissions: string[];
-  user: UserPublic;
+  user: UserMinimal;
+  invitedAt: string;
+  acceptedAt: string | null;
 }
 
 export interface UpdatePermissionsRequest {
-  permissions: string[];
+  role?: string;
+  permissions?: string[];
 }
 
 export interface UpdateCollaborationSettingsRequest {
   allowCollaboration: boolean;
   requireApproval: boolean;
+}
+
+export interface FolderActivity {
+  id: string;
+  folderId: string;
+  userId: string;
+  action: string;
+  details: any;
+  createdAt: string;
+  user: UserMinimal;
+}
+export interface RecommendedFoldersResponse {
+  items: Folder[];
+  total: number;
+  personalized: boolean;
 }

@@ -1,40 +1,62 @@
+import {
+  PaginatedResponse,
+  BookSortBy,
+  SortOrder,
+  PaginationParams,
+} from "./common";
+
 export interface Book {
   id: string;
-  donor_id: string;
+  slug: string;
   title: string;
   author: string;
-  description: string;
+  coverImage: string;
   category: string;
-  cover_image: string;
+  rating: number;
+  ratingsCount: number;
   pages: number;
-  file_url: string;
-  file_size: number;
-  file_type: string;
-  department: string;
-  isbn?: string;
-  publisher?: string;
-  published_year?: number;
+  featured: boolean;
+  description: string;
+  fileUrl?: string | null;
+  fileSize?: number | null;
+  fileType?: string | null;
+  department?: string;
+  isbn?: string | null;
+  publisher?: string | null;
+  publishedYear?: number | null;
   tags?: string[];
+  donor?: {
+    id: string;
+    username: string;
+    fullName: string;
+    avatar: string | null;
+  };
 }
 
 export type BookPreview = Partial<Book> & {
   id: string;
   title: string;
-  donor_id: string;
   author: string;
-  cover_image: string;
+  coverImage: string;
   pages: number;
   category: string;
   description: string;
-  published_year?: number;
+  donor?: { id: string; username: string } | null;
 };
 
-export interface BookFilterParams {
-  search?: string;
+export interface BookFilterParams extends PaginationParams {
+  q?: string;
   category?: string;
   department?: string;
-  page?: number;
-  limit?: number;
+  featured?: boolean;
+  sort_by?: BookSortBy;
+  order?: SortOrder;
+}
+
+export interface RecommendedBooksResponse {
+  items: Book[];
+  total: number;
+  personalized: boolean;
 }
 
 export interface CreateBookRequest {
@@ -56,8 +78,15 @@ export interface CreateBookRequest {
 
 export interface UpdateBookRequest extends Partial<CreateBookRequest> {}
 
-export interface UploadResponse {
-  url: string;
-  fileSize: number;
-  fileType: string;
+export interface UploadResponse extends Book {}
+
+export interface BookmarkResponse {
+  id: string;
+  userId: string;
+  bookId: string;
+  createdAt: string;
+}
+
+export interface BookmarkedStatus {
+  bookmarked: boolean;
 }

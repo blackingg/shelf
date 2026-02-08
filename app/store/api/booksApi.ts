@@ -5,19 +5,27 @@ import {
   UpdateBookRequest,
   BookFilterParams,
   UploadResponse,
+  RecommendedBooksResponse,
 } from "../../types/book";
+import { PaginatedResponse } from "../../types/common";
 
 export const booksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBooks: builder.query<Book[], BookFilterParams>({
+    getBooks: builder.query<PaginatedResponse<Book>, BookFilterParams>({
       query: (params) => ({
         url: "/books",
         params,
       }),
       providesTags: ["Books"],
     }),
-    getRecommendedBooks: builder.query<Book[], void>({
-      query: () => "/books/recommended",
+    getRecommendedBooks: builder.query<
+      RecommendedBooksResponse,
+      { limit?: number } | void
+    >({
+      query: (params) => ({
+        url: "/books/recommended",
+        params: params || undefined,
+      }),
       providesTags: ["Books"],
     }),
     getBookById: builder.query<Book, string>({
@@ -44,6 +52,13 @@ export const booksApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Books"],
     }),
+    uploadRawFile: builder.mutation<any, FormData>({
+      query: (data) => ({
+        url: "/books/upload",
+        method: "POST",
+        body: data,
+      }),
+    }),
     updateBook: builder.mutation<void, { id: string; data: UpdateBookRequest }>(
       {
         query: ({ id, data }) => ({
@@ -55,8 +70,38 @@ export const booksApi = baseApi.injectEndpoints({
           "Books",
           { type: "Books", id },
         ],
-      }
+      },
     ),
+    updateBookCover: builder.mutation<Book, { id: string; file: File }>({
+      query: ({ id, file }) => {
+        const formData = new FormData();
+        formData.append("cover_image", file);
+        return {
+          url: `/books/${id}/cover`,
+          method: "PATCH",
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        "Books",
+        { type: "Books", id },
+      ],
+    }),
+    updateBookFile: builder.mutation<Book, { id: string; file: File }>({
+      query: ({ id, file }) => {
+        const formData = new FormData();
+        formData.append("book_file", file);
+        return {
+          url: `/books/${id}/file`,
+          method: "PATCH",
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        "Books",
+        { type: "Books", id },
+      ],
+    }),
     deleteBook: builder.mutation<void, string>({
       query: (id) => ({
         url: `/books/${id}`,
@@ -74,6 +119,9 @@ export const {
   useGetBookBySlugQuery,
   useCreateBookMutation,
   useUploadBookMutation,
+  useUploadRawFileMutation,
   useUpdateBookMutation,
+  useUpdateBookCoverMutation,
+  useUpdateBookFileMutation,
   useDeleteBookMutation,
 } = booksApi;

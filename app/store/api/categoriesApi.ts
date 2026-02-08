@@ -1,6 +1,7 @@
 import { baseApi } from "./baseApi";
-import { Category } from "../../types/categories";
+import { Category, CategoryBooksParams } from "../../types/categories";
 import { Book } from "../../types/book";
+import { PaginatedResponse } from "../../types/common";
 
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,8 +13,14 @@ export const categoriesApi = baseApi.injectEndpoints({
       query: (slug) => `/categories/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Categories", id: slug }],
     }),
-    getBooksByCategory: builder.query<Book[], string>({
-      query: (slug) => `/categories/${slug}/books`,
+    getBooksByCategory: builder.query<
+      PaginatedResponse<Book>,
+      CategoryBooksParams
+    >({
+      query: ({ slug, ...params }) => ({
+        url: `/categories/${slug}/books`,
+        params,
+      }),
       providesTags: ["Books"],
     }),
   }),

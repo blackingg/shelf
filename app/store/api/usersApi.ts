@@ -7,6 +7,7 @@ import {
 } from "../../types/user";
 import { Book } from "../../types/book";
 import { Folder } from "../../types/folder";
+import { PaginatedResponse } from "../../types/common";
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -46,8 +47,14 @@ export const usersApi = baseApi.injectEndpoints({
     getUserByUsername: builder.query<UserPublic, string>({
       query: (username) => `/users/${username}`,
     }),
-    getUserBooks: builder.query<Book[], string>({
-      query: (username) => `/users/${username}/books`,
+    getUserBooks: builder.query<
+      PaginatedResponse<Book>,
+      { username: string; page?: number; pageSize?: number }
+    >({
+      query: ({ username, ...params }) => ({
+        url: `/users/${username}/books`,
+        params,
+      }),
     }),
     getUserFolders: builder.query<Folder[], string>({
       query: (username) => `/users/${username}/folders`,
