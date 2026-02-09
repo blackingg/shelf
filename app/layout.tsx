@@ -5,6 +5,7 @@ import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
 import { ThemeProvider } from "./provider/ThemeProvider";
+import { BufferProvider } from "./context/FileBufferContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -116,10 +117,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StoreProvider>
+            <BufferProvider>
             <ErrorBoundaryWithNotification>
               {children}
             </ErrorBoundaryWithNotification>
+          </BufferProvider>
           </StoreProvider>
+
         </ThemeProvider>
       </body>
       <Analytics />
