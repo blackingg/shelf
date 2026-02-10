@@ -9,11 +9,16 @@ import {
   FiTrash2,
   FiShare2,
   FiArrowLeft,
+  FiCamera,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { getErrorMessage } from "@/app/helpers/error";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useGetFolderByIdQuery } from "@/app/store/api/foldersApi";
+import {
+  useGetFolderByIdQuery,
+  useUploadFolderCoverMutation,
+} from "@/app/store/api/foldersApi";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 
 export default function FolderDetailsPage() {
@@ -22,6 +27,8 @@ export default function FolderDetailsPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
+  const [uploadFolderCover, { isLoading: isUploadingCover }] =
+    useUploadFolderCoverMutation();
 
   const { data: folder, isLoading } = useGetFolderByIdQuery(folderId);
   const user = useSelector(selectCurrentUser);
@@ -31,6 +38,24 @@ export default function FolderDetailsPage() {
     navigator.clipboard.writeText(window.location.href);
     addNotification("success", "Folder link copied to clipboard!");
     setShowMenu(false);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("coverImage", file);
+
+    try {
+      await uploadFolderCover({ id: folderId, data: formData }).unwrap();
+      addNotification("success", "Folder cover updated successfully");
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to update folder cover"),
+      );
+    }
   };
 
   if (isLoading) {
@@ -56,11 +81,16 @@ export default function FolderDetailsPage() {
     );
   }
 
-  const books = folder.books || [];
+  const books = folder.items?.map((item) => item.book) || [];
 
   const isOwner = folder.createdBy === currentUser;
-  const isCollaborator = !!folder.collaborator;
-  const isEditor = folder.collaborator?.role === "EDITOR";
+  const isCollaborator = !!folder.collaborators?.some(
+    (c) => c.user.username === currentUser,
+  );
+  const userCollaborator = folder.collaborators?.find(
+    (c) => c.user.username === currentUser,
+  );
+  const isEditor = userCollaborator?.role === "EDITOR";
 
   const canEdit = isOwner || isEditor;
   const canDelete = isOwner;
@@ -83,8 +113,34 @@ export default function FolderDetailsPage() {
         <div className="space-y-6 md:space-y-10">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                <FiFolder className="w-10 h-10" />
+              <div className="relative group/cover">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400 overflow-hidden">
+                  {folder.coverImage ? (
+                    <img
+                      src={folder.coverImage}
+                      alt={folder.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <FiFolder className="w-10 h-10" />
+                  )}
+                </div>
+                {canEdit && (
+                  <label className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer text-white">
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleCoverUpload}
+                      disabled={isUploadingCover}
+                    />
+                    {isUploadingCover ? (
+                      <div className="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <FiCamera className="w-6 h-6" />
+                    )}
+                  </label>
+                )}
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -156,7 +212,10 @@ export default function FolderDetailsPage() {
           <div>
             <BooksTable
               books={books}
-              onBookClick={(bookId) => router.push(`/app/books/${bookId}/read`)}
+              onBookClick={(bookId) => {
+                const book = books.find((b) => b.id === bookId);
+                router.push(`/app/books/${book?.slug || bookId}/read`);
+              }}
             />
           </div>
         </div>
