@@ -44,6 +44,17 @@ export type BookPreview = Partial<Book> & {
   donor?: { id: string; username: string } | null;
 };
 
+export interface BookCardProps {
+  id?: string;
+  title: string;
+  author: string;
+  coverImage: string;
+  rating?: number;
+  donor?: { id: string; username: string };
+  onClick?: () => void;
+  className?: string;
+}
+
 export interface BookFilterParams extends PaginationParams {
   q?: string;
   category?: string;

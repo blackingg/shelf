@@ -1,8 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "motion/react";
-import { FiFolder, FiUploadCloud, FiCalendar } from "react-icons/fi";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  FiFolder,
+  FiUploadCloud,
+  FiCalendar,
+  FiArrowLeft,
+  FiHome,
+  FiLayers,
+} from "react-icons/fi";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
@@ -15,6 +22,7 @@ import {
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
+import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -22,13 +30,23 @@ export default function UserProfilePage() {
   const username = decodeURIComponent(params.username as string);
   const [activeTab, setActiveTab] = useState<"donated" | "folders">("donated");
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
 
   const { data: user, isLoading: isLoadingUser } =
     useGetUserByUsernameQuery(username);
-  const { data: books, isLoading: isLoadingBooks } =
-    useGetUserBooksQuery(username);
+
+  const {
+    data: booksResponse,
+    isLoading: isLoadingBooks,
+    isFetching: isFetchingBooks,
+  } = useGetUserBooksQuery({ username, page, pageSize });
+
   const { data: folders, isLoading: isLoadingFolders } =
     useGetUserFoldersQuery(username);
+
+  const books = booksResponse?.items || [];
+  const totalPages = booksResponse?.totalPages || 1;
 
   if (isLoadingUser) {
     return <ProfileSkeleton />;
@@ -37,16 +55,17 @@ export default function UserProfilePage() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           User Not Found
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 dark:text-neutral-400 mb-6">
           The user @{username} doesn&apos;t exist or has been removed.
         </p>
         <button
           onClick={() => router.push("/app/library")}
-          className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-semibold transition-all hover:bg-emerald-700 shadow-md"
+          className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-semibold transition-all hover:bg-emerald-700 shadow-md flex items-center gap-2"
         >
+          <FiArrowLeft className="w-5 h-5" />
           Back to Library
         </button>
       </div>
@@ -94,29 +113,58 @@ export default function UserProfilePage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
-              <FiCalendar className="w-4 h-4" />
-              Joined{" "}
-              {new Date(user.createdAt).toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
+                <FiCalendar className="w-4 h-4 text-emerald-600" />
+                <span className="font-medium">
+                  Joined{" "}
+                  {new Date(user.createdAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+
+              <div className="flex gap-6 items-center whitespace-nowrap">
+                {user.school && (
+                  <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
+                    <FiHome className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="font-medium">
+                      {user.school.name}
+                      {user.school.shortName && (
+                        <span className="ml-1 text-gray-400">
+                          ({user.school.shortName})
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {user.department && (
+                  <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
+                    <FiLayers className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="font-medium">{user.department.name}</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex gap-8 items-center justify-start md:justify-end">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+
+            <div className="flex gap-8 items-center justify-start md:justify-end md:col-span-2">
+              <div className="text-center group">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
                   {user.booksCount}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Books Donated
+                <div className="text-xs uppercase tracking-widest font-bold text-gray-400">
+                  Books
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="w-px h-8 bg-gray-200 dark:bg-neutral-800" />
+              <div className="text-center group">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
                   {user.foldersCount}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Public Folders
+                <div className="text-xs uppercase tracking-widest font-bold text-gray-400">
+                  Folders
                 </div>
               </div>
             </div>
@@ -162,25 +210,36 @@ export default function UserProfilePage() {
           transition={{ duration: 0.2 }}
         >
           {activeTab === "donated" && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-              {isLoadingBooks ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <BookCardSkeleton key={i} />
-                ))
-              ) : books && books.length > 0 ? (
-                books.map((book) => (
-                  <BookCard
-                    key={book.id}
-                    {...book}
-                    onClick={() => setSelectedBook(book)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full py-20 text-center">
-                  <p className="text-gray-500 dark:text-neutral-400">
-                    No books donated yet.
-                  </p>
-                </div>
+            <div className="space-y-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                {isLoadingBooks || isFetchingBooks ? (
+                  Array.from({ length: pageSize }).map((_, i) => (
+                    <BookCardSkeleton key={i} />
+                  ))
+                ) : books.length > 0 ? (
+                  books.map((book: any) => (
+                    <BookCard
+                      key={book.id}
+                      {...book}
+                      onClick={() => setSelectedBook(book)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-20 text-center">
+                    <p className="text-gray-500 dark:text-neutral-400">
+                      No books donated yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {books.length > 0 && (
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  isLoading={isFetchingBooks}
+                />
               )}
             </div>
           )}
@@ -192,7 +251,7 @@ export default function UserProfilePage() {
                   <FolderCardSkeleton key={i} />
                 ))
               ) : folders && folders.length > 0 ? (
-                folders.map((folder) => (
+                folders.map((folder: any) => (
                   <FolderCard
                     key={folder.id}
                     folder={folder}

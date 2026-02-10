@@ -11,6 +11,7 @@ import {
   FiFolder,
   FiHeart,
   FiCheckCircle,
+  FiBookmark,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -39,6 +40,7 @@ export const Sidebar: React.FC = () => {
 
   const mainItems: SidebarItem[] = [
     { label: "My Library", icon: <FiBook />, href: "/app/library" },
+    { label: "Bookmarks", icon: <FiBookmark />, href: "/app/bookmarks" },
     { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
     { label: "Categories", icon: <FiTag />, href: "/app/library/categories" },
     {

@@ -1,13 +1,8 @@
-
 import { FiBookOpen } from "react-icons/fi";
+import { Category } from "@/app/types/categories";
 
 interface CategoryCardProps {
-  category: {
-    id: string;
-    name: string;
-    // bookCount: number;
-    color: string;
-  };
+  category: Category;
   onClick: () => void;
 }
 
@@ -20,7 +15,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     className=" flex flex-col items-center md:block group cursor-pointer bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-neutral-800 hover:border-emerald-200 dark:hover:border-emerald-700/50"
   >
     <div
-      className={`w-12 h-12 rounded-lg ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+      className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
     >
       <FiBookOpen className="w-6 h-6 text-white" />
     </div>

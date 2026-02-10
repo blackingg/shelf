@@ -43,12 +43,12 @@ export const FolderDropdown: React.FC<{
         setIsCreatingNew(false);
         addNotification(
           "success",
-          `Folder "${newFolderName.trim()}" created successfully`
+          `Folder "${newFolderName.trim()}" created successfully`,
         );
       } catch (error) {
         addNotification(
           "error",
-          `Failed to create folder "${newFolderName.trim()}"`
+          `Failed to create folder "${newFolderName.trim()}"`,
         );
       }
     }
@@ -81,7 +81,7 @@ export const FolderDropdown: React.FC<{
             <div className="max-h-64 overflow-y-auto custom-scrollbar">
               {isLoading ? (
                 <div className="px-4 py-3 space-y-3">
-                  {[1, 2, 3].map((i) => (
+                  {[1].map((i) => (
                     <div
                       key={i}
                       className="flex items-center justify-between animate-pulse"
@@ -110,7 +110,9 @@ export const FolderDropdown: React.FC<{
               ) : folders.length === 0 ? (
                 <div className="px-4 py-8 text-center">
                   <FiFolder className="w-8 h-8 text-gray-400 dark:text-neutral-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 dark:text-neutral-400">No folders yet</p>
+                  <p className="text-sm text-gray-500 dark:text-neutral-400">
+                    No folders yet
+                  </p>
                   <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                     Create your first folder below
                   </p>
@@ -185,8 +187,8 @@ export const FolderDropdown: React.FC<{
                     </button>
                     <button
                       onClick={() => {
-                      setIsCreatingNew(false);
-                      setNewFolderName("");
+                        setIsCreatingNew(false);
+                        setNewFolderName("");
                       }}
                       aria-label="Cancel"
                       className="ml-2 p-2 rounded-lg text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-neutral-100 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 transition-colors"

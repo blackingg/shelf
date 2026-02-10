@@ -13,10 +13,11 @@ import {
 } from "@/app/store/api/usersApi";
 import {
   useGetSchoolsQuery,
-  useGetDepartmentsQuery,
+  useGetOnboardingDepartmentsQuery,
 } from "@/app/store/api/onboardingApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
+import { Department } from "@/app/types/departments";
 
 interface OptionType {
   value: string;
@@ -45,7 +46,7 @@ export default function SettingsProfilePage() {
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+    useGetOnboardingDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
 
   useEffect(() => {
     if (user) {
@@ -65,7 +66,7 @@ export default function SettingsProfilePage() {
     label: school.name,
   }));
 
-  const departmentOptions: OptionType[] = departments?.map((dept) => ({
+  const departmentOptions: OptionType[] = (departments as Department[])?.map((dept) => ({
     value: dept.id,
     label: dept.name,
   }));

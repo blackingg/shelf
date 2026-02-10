@@ -2,22 +2,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiList, FiX } from "react-icons/fi";
-import { USER_DEPARTMENTS } from "@/app/lib/constants";
-import { getFromLocalStorage } from "@/app/helpers/localStorage";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
-import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks"
-import { Department } from "@/app/types/departments";
-import { DEPARTMENTS } from "@/app/data/department";
-
-const userDepartment = getFromLocalStorage(USER_DEPARTMENTS);
+import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
+import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-  const userDepartmentId = DEPARTMENTS.find(
-    (department) => department.name === userDepartment
-  );
-  const [viewDepartments, setViewDepartments] = useState(false);
 
+  const user = useSelector(selectCurrentUser);
+  const userDepartment = user?.department?.name || null;
+  const userDepartmentSlug = user?.department?.slug;
+  const { data: allDepartments, isLoading } = useGetDepartmentsQuery();
+  const [viewDepartments, setViewDepartments] = useState(false);
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (
@@ -45,7 +44,7 @@ export default function DepartmentsPage() {
 
         {viewDepartments && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {DEPARTMENTS.map((department) => (
+            {allDepartments?.map((department) => (
               <DepartmentCard
                 key={department.id}
                 department={department}
@@ -58,9 +57,7 @@ export default function DepartmentsPage() {
         )}
 
         {userDepartment !== null && (
-          <UserDepartmentBooks
-            params={{ department: userDepartmentId?.id ?? "all" }}
-          />
+          <UserDepartmentBooks departmentSlug={userDepartmentSlug} />
         )}
       </div>
     </main>

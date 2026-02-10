@@ -1,108 +1,16 @@
 "use client";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BookCard } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiArrowLeft, FiFilter } from "react-icons/fi";
-import { getCategoryName } from "@/app/types/categories";
+import { FiArrowLeft, FiFilter, FiSearch, FiLayers } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
-
-const ALL_BOOKS: BookPreview[] = [
-  {
-    id: "1",
-    donor_id: "randoRandal",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    description:
-      "Explores the timeless lessons on wealth, greed, and happiness.",
-    category: "business",
-    cover_image: "/dummycover.png",
-    pages: 256,
-    published_year: 2020,
-  },
-  {
-    id: "2",
-    donor_id: "randoRandal",
-    title: "The Bees",
-    author: "Laline Paull",
-    description: "A brilliantly imagined dystopian story set in a hive.",
-    category: "scifi",
-    cover_image: "/dummycover.png",
-    pages: 384,
-    published_year: 2014,
-  },
-  {
-    id: "3",
-    donor_id: "randoRandal",
-    title: "Batman: Year One",
-    author: "Frank Miller",
-    description: "An iconic comic series detailing Batman's early days.",
-    category: "comics",
-    cover_image: "/dummycover.png",
-    pages: 200,
-    published_year: 1987,
-  },
-  {
-    id: "4",
-    donor_id: "randoRandal",
-    title: "OAU Data Structures and Algorithms 2021/2022",
-    author: "Department of Computer Science, OAU",
-    description:
-      "Comprehensive course material covering data structures and algorithm design.",
-    category: "education",
-    cover_image: "/dummycover.png",
-    pages: 320,
-    published_year: 2022,
-  },
-  {
-    id: "5",
-    donor_id: "randoRandal",
-    title: "Clean Code",
-    author: "Robert C. Martin",
-    description:
-      "A handbook of agile software craftsmanship with practical advice on writing clean, maintainable code.",
-    category: "education",
-    cover_image: "/dummycover.png",
-    pages: 464,
-    published_year: 2008,
-  },
-  {
-    id: "6",
-    donor_id: "randoRandal",
-    title: "Sapiens",
-    author: "Yuval Noah Harari",
-    description:
-      "A brief history of humankind from the Stone Age to the modern age.",
-    category: "history",
-    cover_image: "/dummycover.png",
-    pages: 443,
-    published_year: 2011,
-  },
-  {
-    id: "7",
-    donor_id: "randoRandal",
-    title: "The Lean Startup",
-    author: "Eric Ries",
-    description:
-      "How today's entrepreneurs use continuous innovation to create radically successful businesses.",
-    category: "business",
-    cover_image: "/dummycover.png",
-    pages: 336,
-    published_year: 2011,
-  },
-  {
-    id: "8",
-    donor_id: "randoRandal",
-    title: "1984",
-    author: "George Orwell",
-    description:
-      "A dystopian social science fiction novel and cautionary tale about totalitarianism.",
-    category: "scifi",
-    cover_image: "/dummycover.png",
-    pages: 328,
-    published_year: 1949,
-  },
-];
+import {
+  useGetCategoryBySlugQuery,
+  useGetBooksByCategoryQuery,
+} from "@/app/store/api/categoriesApi";
+import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
+import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function CategoryPage({
   params,
@@ -110,97 +18,161 @@ export default function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const resolvedParams = use(params);
-  const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
-  const [sortBy, setSortBy] = useState<"title" | "author" | "year">("title");
+  const slug = resolvedParams.category;
   const router = useRouter();
 
-  const categoryName = getCategoryName(resolvedParams.category);
+  const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState("rating");
+  const pageSize = 15;
 
-  const categoryBooks =
-    resolvedParams.category.toLowerCase() === "all"
-      ? ALL_BOOKS
-      : ALL_BOOKS.filter((book) => book.category === resolvedParams.category);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  const sortedBooks = [...categoryBooks].sort((a, b) => {
-    switch (sortBy) {
-      case "title":
-        return a.title.localeCompare(b.title);
-      case "author":
-        return a.author.localeCompare(b.author);
-      case "year":
-        return (b.published_year || 0) - (a.published_year || 0);
-      default:
-        return 0;
-    }
+  const { data: category, isLoading: isLoadingCategory } =
+    useGetCategoryBySlugQuery(slug);
+  const {
+    data: booksResponse,
+    isLoading: isLoadingBooks,
+    isFetching: isFetchingBooks,
+  } = useGetBooksByCategoryQuery({
+    q: debouncedSearch,
+    slug,
+    page,
+    pageSize,
+    sort_by: sortBy,
+    order: "desc",
   });
 
+  const showSkeleton = isLoadingBooks || isFetchingBooks;
+
+  const books = booksResponse?.items || [];
+  const totalPages = booksResponse?.totalPages || 1;
+
+  if (isLoadingCategory) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-neutral-900 min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-8">
-          <div className="mb-8">
+    <div className="flex-1 flex flex-col min-h-screen bg-gray-50 dark:bg-neutral-900 overflow-y-auto">
+      <main className="p-6 md:p-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
             <button
-              onClick={() => router.back()}
-              className="group group-hover:underline flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
+              onClick={() => router.push("/app/library/categories")}
+              className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white mb-6 transition-all group"
             >
-              <FiArrowLeft className="w-5 h-5" />
-              <span className="font-medium group-hover:underline">
-                Back to Categories
+              <FiArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-bold uppercase tracking-widest text-xs">
+                All Categories
               </span>
             </button>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {categoryName}
+                <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
+                  {category?.name || "Category"}
                 </h1>
-                <p className="text-gray-600">
-                  {sortedBooks.length}{" "}
-                  {sortedBooks.length === 1 ? "book" : "books"} available
+                <p className="text-gray-500 dark:text-neutral-400 text-lg max-w-2xl">
+                  {category?.description ||
+                    `Explore our extensive collection of ${category?.name || "resources"} curated by the community.`}
                 </p>
               </div>
 
-              <div className="flex items-center space-x-3">
-                <FiFilter className="w-5 h-5 text-gray-600" />
-                <select
-                  value={sortBy}
-                  onChange={(e) =>
-                    setSortBy(e.target.value as "title" | "author" | "year")
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-black"
-                >
-                  <option value="title">Title (A-Z)</option>
-                  <option value="author">Author (A-Z)</option>
-                  <option value="year">Newest First</option>
-                </select>
+              <div className="bg-white dark:bg-neutral-800 p-6 rounded-[2.5rem] border border-gray-100 dark:border-neutral-700 shadow-sm flex items-center gap-4 min-w-[200px]">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 flex items-center justify-center">
+                  <FiLayers className="text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <span className="block text-2xl font-black text-gray-900 dark:text-white">
+                    {booksResponse?.total || 0}
+                  </span>
+                  <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest leading-none">
+                    Total Resources
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {sortedBooks.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-              {sortedBooks.map((book) => (
-                <BookCard
-                  {...book}
-                  onClick={() => setSelectedBook(book)}
-                />
-              ))}
+          <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
+            <div className="relative w-full md:w-96">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search in this category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 bg-white dark:bg-neutral-800 border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white"
+              />
             </div>
+
+            <div className="flex items-center gap-3 bg-white dark:bg-neutral-800 px-4 py-4 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-700">
+              <FiFilter className="text-emerald-600" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-700 dark:text-neutral-200 cursor-pointer"
+              >
+                <option value="createdAt">Recently Added</option>
+                <option value="rating">Top Rated</option>
+                <option value="title">Title (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          {showSkeleton ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
+              <BookCardSkeleton count={pageSize} />
+            </div>
+          ) : books.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8 transition-all duration-300">
+                {books.map((book) => (
+                  <BookCard
+                    key={book.id}
+                    {...book}
+                    onClick={() => setSelectedBook(book as BookPreview)}
+                    className="hover:-translate-y-2 transition-transform duration-300"
+                  />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                isLoading={isLoadingBooks}
+                className="mt-12"
+              />
+            </>
           ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-500 text-lg">
-                No books found in this category
+            <div className="text-center py-24 bg-white dark:bg-neutral-800 rounded-[3rem] border border-gray-100 dark:border-neutral-700">
+              <FiSearch className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-neutral-400 text-lg">
+                No resources found in this category.
               </p>
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       <BookDetailPanel
         book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />
-    </>
+    </div>
   );
 }

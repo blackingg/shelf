@@ -11,11 +11,13 @@ import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
   useGetMeFoldersQuery,
   useGetPublicFoldersQuery,
-  useGetBookmarkedFoldersQuery,
   useCreateFolderMutation,
   useDeleteFolderMutation,
 } from "@/app/store/api/foldersApi";
+import { useGetBookmarkedFoldersQuery } from "@/app/store/api/bookmarksApi";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { Pagination } from "@/app/components/Library/Pagination";
+import { getErrorMessage } from "@/app/helpers/error";
 
 export default function FoldersPage() {
   const router = useRouter();
@@ -29,35 +31,42 @@ export default function FoldersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
 
   // API Queries
   const { data: myFolders, isLoading: isLoadingMyFolders } =
     useGetMeFoldersQuery(undefined, {
       skip: activeTab !== "private",
     });
-  const { data: publicFolders, isLoading: isLoadingPublicFolders } =
-    useGetPublicFoldersQuery(undefined, {
+  const {
+    data: publicFoldersResponse,
+    isLoading: isLoadingPublicFolders,
+    isFetching: isFetchingPublic,
+  } = useGetPublicFoldersQuery(
+    { page, pageSize },
+    {
       skip: activeTab !== "public",
-    });
+    },
+  );
   const { data: bookmarkedFolders, isLoading: isLoadingBookmarked } =
     useGetBookmarkedFoldersQuery(undefined, {
       skip: activeTab !== "bookmarked",
     });
 
-  // Mutations
   const [createFolder] = useCreateFolderMutation();
   const [deleteFolderMutation] = useDeleteFolderMutation();
 
   const handleCreateFolder = async (
     name: string,
-    visibility: FolderVisibility
+    visibility: FolderVisibility,
   ) => {
     try {
       await createFolder({ name, visibility }).unwrap();
       addNotification("success", "Folder created successfully!");
       setShowCreateModal(false);
     } catch (err: any) {
-      addNotification("error", err.data?.message || "Failed to create folder");
+      addNotification("error", getErrorMessage(err, "Failed to create folder"));
     }
   };
 
@@ -82,7 +91,7 @@ export default function FoldersPage() {
       } catch (err: any) {
         addNotification(
           "error",
-          err.data?.message || "Failed to delete folder"
+          getErrorMessage(err, "Failed to delete folder"),
         );
       }
     }
@@ -90,12 +99,12 @@ export default function FoldersPage() {
     setFolderToDelete(null);
   };
 
-  const displayedFolders =
+  const displayedFolders: Folder[] =
     activeTab === "private"
       ? myFolders || []
       : activeTab === "public"
-      ? publicFolders || []
-      : bookmarkedFolders || [];
+        ? publicFoldersResponse?.items || []
+        : bookmarkedFolders || [];
 
   const isLoading =
     (activeTab === "private" && isLoadingMyFolders) ||
@@ -103,7 +112,7 @@ export default function FoldersPage() {
     (activeTab === "bookmarked" && isLoadingBookmarked);
 
   const filteredFolders = displayedFolders.filter((folder) =>
-    folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    folder.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -163,8 +172,11 @@ export default function FoldersPage() {
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
                   : activeTab === "bookmarked"
-                  ? "No bookmarked folders yet."
-                  : "No public folders available to explore."
+                    ? "No bookmarked folders yet."
+                    : "No public folders available to explore."
+              }
+              className={
+                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
               }
             />
           ) : (
@@ -179,11 +191,26 @@ export default function FoldersPage() {
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
                   : activeTab === "bookmarked"
-                  ? "No bookmarked folders yet."
-                  : "No public folders available to explore."
+                    ? "No bookmarked folders yet."
+                    : "No public folders available to explore."
+              }
+              className={
+                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
               }
             />
           )}
+
+          {activeTab === "public" &&
+            publicFoldersResponse &&
+            publicFoldersResponse.totalPages > 1 && (
+              <Pagination
+                currentPage={page}
+                totalPages={publicFoldersResponse.totalPages}
+                onPageChange={setPage}
+                isLoading={isFetchingPublic}
+                className="mt-8"
+              />
+            )}
         </div>
       </main>
 
