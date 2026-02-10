@@ -24,7 +24,7 @@ import {
 } from "@/app/types/folder";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 
-type MockData = Partial<Folder> & {
+type MockData = Omit<Partial<Folder>, "collaborators"> & {
   collaborators: Invite[];
   collaborator?: Collaborator;
 };
@@ -46,7 +46,7 @@ export default function EditFolderPage() {
 
   // Collaboration State
   const [collaborators, setCollaborators] = useState<Invite[]>([]);
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteUsername, setInviteUsername] = useState("");
   const [inviteRole, setInviteRole] =
     useState<Exclude<FolderRoles, "OWNER">>("VIEWER");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -67,41 +67,57 @@ export default function EditFolderPage() {
       createdBy: "Sarah Chen",
       collaborator: {
         id: "collab1",
-        userId: "user1",
-        folderId: "folder1",
         role: "EDITOR",
         permissions: ["ALL"],
+        invitedAt: new Date().toISOString(),
+        acceptedAt: new Date().toISOString(),
         user: {
           id: "user1",
           fullName: "Sarah Chen",
           username: "sarahc",
-          email: "sarah@example.com",
           avatar: null,
-          bio: null,
-          booksCount: 0,
-          foldersCount: 0,
-          createdAt: new Date().toISOString(),
-          uuid: "uuid1",
         },
       },
       collaborators: [
         {
           id: "1",
           folderId: "folder1",
-          senderId: "user1",
-          email: "seunadegbalu@gmail.com",
+          userId: "user2",
+          invitedBy: "sarahc",
           role: "EDITOR",
           status: "ACCEPTED",
+          permissions: ["ADD_BOOKS"],
+          message: null,
+          expiresAt: new Date().toISOString(),
+          respondedAt: new Date().toISOString(),
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          user: {
+            id: "user2",
+            fullName: "Seun Ade",
+            username: "seunade",
+            avatar: null,
+          },
         },
         {
           id: "2",
           folderId: "folder1",
-          senderId: "user1",
-          email: "mike.ross@gmail.com",
+          userId: "user3",
+          invitedBy: "sarahc",
           role: "VIEWER",
           status: "PENDING",
+          permissions: [],
+          message: "Hey, join my folder!",
+          expiresAt: new Date().toISOString(),
+          respondedAt: null,
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          user: {
+            id: "user3",
+            fullName: "Mike Ross",
+            username: "mikeross",
+            avatar: null,
+          },
         },
       ],
     };
@@ -141,9 +157,9 @@ export default function EditFolderPage() {
 
   const handleInvite = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteEmail.trim()) return;
+    if (!inviteUsername.trim()) return;
 
-    if (collaborators.some((c) => c.email === inviteEmail)) {
+    if (collaborators.some((c) => c.user?.username === inviteUsername)) {
       addNotification("error", "User is already a collaborator");
       return;
     }
@@ -152,16 +168,27 @@ export default function EditFolderPage() {
       id: Date.now().toString(),
       folderId:
         typeof params.id === "string" ? params.id : params.id?.[0] || "1",
-      senderId: "current-user",
-      email: inviteEmail,
+      userId: "new-user-id",
+      invitedBy: currentUser,
       role: inviteRole,
       status: "PENDING",
+      permissions: [],
+      message: null,
+      expiresAt: new Date().toISOString(),
+      respondedAt: null,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      user: {
+        id: "new-user-id",
+        fullName: inviteUsername,
+        username: inviteUsername,
+        avatar: null,
+      },
     };
 
     setCollaborators([...collaborators, newCollaborator]);
-    setInviteEmail("");
-    addNotification("success", `Invited ${inviteEmail} as ${inviteRole}`);
+    setInviteUsername("");
+    addNotification("success", `Invited @${inviteUsername} as ${inviteRole}`);
   };
 
   const handleRemoveCollaborator = (id: string) => {
@@ -349,17 +376,17 @@ export default function EditFolderPage() {
                 <div className="bg-gray-50 rounded-xl p-4 md:p-6 space-y-6">
                   <div className="flex flex-col md:flex-row gap-4">
                     <input
-                      type="email"
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                      placeholder="Enter email address"
+                      type="text"
+                      value={inviteUsername}
+                      onChange={(e) => setInviteUsername(e.target.value)}
+                      placeholder="Enter username"
                       className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm"
                     />
                     <select
                       value={inviteRole}
                       onChange={(e) =>
                         setInviteRole(
-                          e.target.value as Exclude<FolderRoles, "OWNER">
+                          e.target.value as Exclude<FolderRoles, "OWNER">,
                         )
                       }
                       className="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white"
@@ -372,7 +399,7 @@ export default function EditFolderPage() {
                     <button
                       type="button"
                       onClick={handleInvite}
-                      disabled={!inviteEmail}
+                      disabled={!inviteUsername}
                       className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
                       <FiPlus className="w-4 h-4" />
@@ -388,11 +415,11 @@ export default function EditFolderPage() {
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 uppercase">
-                            {collaborator.email[0]}
+                            {collaborator.user?.username?.[0] || "?"}
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              {collaborator.email}
+                              @{collaborator.user?.username || "Unknown User"}
                             </p>
                             <div className="flex items-center space-x-2">
                               <span className="text-xs text-xs text-gray-500 capitalize">
