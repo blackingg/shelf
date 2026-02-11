@@ -44,81 +44,81 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl z-50 p-6 border border-gray-200 dark:border-neutral-800"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-lg z-50 p-8 border border-gray-200 dark:border-neutral-800"
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Create New Folder
               </h2>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
               >
-                <FiX className="w-6 h-6 text-gray-600 dark:text-neutral-400" />
+                <FiX className="w-6 h-6 text-gray-400 dark:text-neutral-500" />
               </button>
             </div>
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-6"
+              className="space-y-8"
             >
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-2">
+                <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-neutral-500 mb-2">
                   Folder Name
                 </label>
                 <input
                   type="text"
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
-                  placeholder="e.g., Summer Reading, Favorites..."
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-500"
+                  placeholder="e.g., Summer Reading, Favorites"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 rounded-md focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-600 transition-colors"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-3">
+                <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-neutral-500 mb-3">
                   Visibility
                 </label>
                 <div className="space-y-3">
                   <button
                     type="button"
                     onClick={() => setVisibility("PRIVATE")}
-                    className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
+                    className={`w-full flex items-center space-x-4 p-4 rounded-md border transition-colors ${
                       visibility === "PRIVATE"
-                        ? "border-gray-600 dark:border-neutral-400 bg-gray-50 dark:bg-neutral-800/50"
-                        : "border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"
+                        ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10"
+                        : "border-gray-100 dark:border-neutral-800 hover:border-gray-200 dark:hover:border-neutral-700 bg-gray-50/50 dark:bg-neutral-800/20"
                     }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                         visibility === "PRIVATE"
-                          ? "border-gray-600 dark:border-neutral-400"
-                          : "border-gray-300 dark:border-neutral-600"
+                          ? "border-emerald-500"
+                          : "border-gray-300 dark:border-neutral-700"
                       }`}
                     >
                       {visibility === "PRIVATE" && (
-                        <div className="w-3 h-3 rounded-full bg-gray-600 dark:bg-neutral-400" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       )}
                     </div>
                     <FiLock
                       className={`w-5 h-5 ${
                         visibility === "PRIVATE"
-                          ? "text-gray-600 dark:text-neutral-400"
-                          : "text-gray-600 dark:text-neutral-400"
+                          ? "text-emerald-500"
+                          : "text-gray-400 dark:text-neutral-500"
                       }`}
                     />
                     <div className="flex-1 text-left">
                       <p
-                        className={`font-semibold ${
+                        className={`font-semibold text-sm ${
                           visibility === "PRIVATE"
                             ? "text-gray-900 dark:text-white"
-                            : "text-gray-900 dark:text-neutral-300"
+                            : "text-gray-700 dark:text-neutral-400"
                         }`}
                       >
                         Private
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
                         Only you can see this folder
                       </p>
                     </div>
@@ -127,41 +127,41 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setVisibility("PUBLIC")}
-                    className={`w-full flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
+                    className={`w-full flex items-center space-x-4 p-4 rounded-md border transition-colors ${
                       visibility === "PUBLIC"
-                        ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/10"
-                        : "border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"
+                        ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10"
+                        : "border-gray-100 dark:border-neutral-800 hover:border-gray-200 dark:hover:border-neutral-700 bg-gray-50/50 dark:bg-neutral-800/20"
                     }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                         visibility === "PUBLIC"
-                          ? "border-emerald-600"
-                          : "border-gray-300 dark:border-neutral-600"
+                          ? "border-emerald-500"
+                          : "border-gray-300 dark:border-neutral-700"
                       }`}
                     >
                       {visibility === "PUBLIC" && (
-                        <div className="w-3 h-3 rounded-full bg-emerald-600" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       )}
                     </div>
                     <FiGlobe
                       className={`w-5 h-5 ${
                         visibility === "PUBLIC"
-                          ? "text-emerald-600"
-                          : "text-gray-600 dark:text-neutral-400"
+                          ? "text-emerald-500"
+                          : "text-gray-400 dark:text-neutral-500"
                       }`}
                     />
                     <div className="flex-1 text-left">
                       <p
-                        className={`font-semibold ${
+                        className={`font-semibold text-sm ${
                           visibility === "PUBLIC"
-                            ? "text-emerald-900 dark:text-emerald-400"
-                            : "text-gray-900 dark:text-neutral-300"
+                            ? "text-gray-900 dark:text-white"
+                            : "text-gray-700 dark:text-neutral-400"
                         }`}
                       >
                         Public
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
                         Anyone can discover and view
                       </p>
                     </div>
@@ -169,18 +169,18 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-6 py-3 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 px-6 py-3 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-neutral-400 rounded-md font-bold text-sm uppercase tracking-wider hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!folderName.trim()}
-                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-md font-bold text-sm uppercase tracking-wider hover:bg-emerald-700 transition-colors disabled:opacity-50"
                 >
                   Create Folder
                 </button>
