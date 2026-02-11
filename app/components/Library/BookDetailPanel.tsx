@@ -274,14 +274,14 @@ export const BookDetailPanel: React.FC<{
               </div>
             </div>
 
-            <div className="space-y-4 mt-auto pt-8 border-t border-gray-100 dark:border-neutral-900 bg-white dark:bg-neutral-950">
+            <div className="space-y-4 mt-auto pt-8">
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push(`/app/books/${book?.slug}`)}
-                  className="flex-1 h-14 bg-gray-900 dark:bg-white text-white dark:text-neutral-950 font-black text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex-1 h-14 bg-white text-neutral-950 font-black text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <FiBookOpen className="w-4 h-4" />
-                  <span>Read Resource</span>
+                  <span>Read Now</span>
                 </button>
 
                 <button
@@ -302,11 +302,11 @@ export const BookDetailPanel: React.FC<{
               <div className="relative">
                 <button
                   onClick={() => setShowFolderDropdown(!showFolderDropdown)}
-                  className="w-full h-12 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-400 font-bold text-[10px] uppercase tracking-widest px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-gray-100 dark:border-neutral-800 active:scale-[0.99]"
+                  className="w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
                 >
                   <div className="flex items-center gap-3">
                     <FiBookmark className="w-4 h-4" />
-                    <span>Organize into Folder</span>
+                    <span>Add to Folder</span>
                   </div>
                   <FiChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${
