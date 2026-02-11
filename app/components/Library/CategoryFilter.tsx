@@ -16,42 +16,27 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   const { data: categories = [], isLoading } = useGetCategoriesQuery();
 
   return (
-    <div className="flex items-center space-x-3 overflow-x-auto pb-4 no-scrollbar">
-      <button
-        onClick={() => onCategoryChange("all")}
-        className={`px-5 py-2 flex items-center justify-center rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 ${
-          activeCategory === "all"
-            ? "bg-emerald-600 text-white shadow-lg"
-            : "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700"
-        }`}
-      >
-        All Resources
-      </button>
-
+    <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar">
       {isLoading
         ? Array.from({ length: 6 }).map((_, i) => (
             <Skeleton
               key={i}
-              className="h-10 w-24 rounded-2xl"
+              className="h-10 w-24 rounded-md"
             />
           ))
         : categories.map((category) => (
             <button
               key={category.id}
               onClick={() => onCategoryChange(category.slug)}
-              className={`px-5 py-2 flex items-center justify-center rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200 ${
+              className={`px-6 py-2.5 flex items-center justify-center rounded-md text-[11px] font-black uppercase tracking-widest transition-all duration-200 border ${
                 activeCategory === category.slug
-                  ? "bg-emerald-600 text-white shadow-lg"
-                  : "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700"
+                  ? "bg-emerald-600 border-emerald-600 text-white"
+                  : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:border-gray-200 dark:hover:border-neutral-700"
               }`}
             >
               {category.name}
             </button>
           ))}
-
-      <button className="flex items-center justify-center p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all duration-200">
-        <FiGrid className="w-5 h-5" />
-      </button>
     </div>
   );
 };

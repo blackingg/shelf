@@ -11,24 +11,24 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   department,
   onClick,
 }) => {
-  // Get color dynamically based on slug
   const colorClass = getDepartmentColor(department.slug);
 
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-neutral-800 hover:border-emerald-200 dark:hover:border-emerald-700/50"
+      className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-md p-5 border border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700 transition-colors duration-150"
     >
       <div
-        className={`w-12 h-12 rounded-lg ${colorClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+        className={`w-9 h-9 rounded-md ${colorClass} flex items-center justify-center mb-3`}
       >
-        <FaBuilding className="w-6 h-6 text-white" />
+        <FaBuilding className="w-4 h-4 text-white" />
       </div>
-      <h3 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm md:text-lg mb-1">
+      <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm mb-0.5">
         {department.name}
       </h3>
-      <p className="text-sm text-gray-500 dark:text-neutral-400">
-        {department.booksCount} {department.booksCount === 1 ? "book" : "books"}
+      <p className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+        {department.booksCount}{" "}
+        {department.booksCount === 1 ? "resource" : "resources"}
       </p>
     </div>
   );

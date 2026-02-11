@@ -25,7 +25,7 @@ export default function NotificationsSettingsPage() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 overflow-hidden">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 overflow-hidden">
         <div className="p-6 md:p-8 space-y-8">
           <div>
             <div className="flex items-center space-x-3 mb-6">

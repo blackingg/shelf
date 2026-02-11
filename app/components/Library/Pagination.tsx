@@ -53,7 +53,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
-        className="p-2 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed hover:border-emerald-500 hover:text-emerald-500 transition-all duration-200"
+        className="p-2 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-500 dark:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed hover:border-emerald-500 hover:text-emerald-600 transition-colors duration-200"
         aria-label="Previous page"
       >
         <FiChevronLeft className="w-5 h-5" />
@@ -64,41 +64,43 @@ export const Pagination: React.FC<PaginationProps> = ({
           <>
             <button
               onClick={() => onPageChange(1)}
-              className="w-10 h-10 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-500 transition-all duration-200 font-medium"
+              className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600 transition-colors duration-200 text-sm font-medium"
             >
               1
             </button>
             {pages[0] > 2 && (
-              <span className="text-gray-400 dark:text-neutral-600">...</span>
+              <span className="text-gray-400 dark:text-neutral-600 px-1">
+                ...
+              </span>
             )}
           </>
         )}
 
         {pages.map((page) => (
-          <motion.button
+          <button
             key={page}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => onPageChange(page)}
             disabled={isLoading}
-            className={`w-10 h-10 rounded-lg font-bold transition-all duration-200 ${
+            className={`w-10 h-10 rounded-md text-sm font-medium transition-colors duration-200 border ${
               currentPage === page
-                ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/20"
-                : "border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-500"
+                ? "bg-emerald-600 text-white border-emerald-600"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600"
             }`}
           >
             {page}
-          </motion.button>
+          </button>
         ))}
 
         {pages[pages.length - 1] < totalPages && (
           <>
             {pages[pages.length - 1] < totalPages - 1 && (
-              <span className="text-gray-400 dark:text-neutral-600">...</span>
+              <span className="text-gray-400 dark:text-neutral-600 px-1">
+                ...
+              </span>
             )}
             <button
               onClick={() => onPageChange(totalPages)}
-              className="w-10 h-10 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-500 transition-all duration-200 font-medium"
+              className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600 transition-colors duration-200 text-sm font-medium"
             >
               {totalPages}
             </button>
@@ -109,7 +111,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || isLoading}
-        className="p-2 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed hover:border-emerald-500 hover:text-emerald-500 transition-all duration-200"
+        className="p-2 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-500 dark:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed hover:border-emerald-500 hover:text-emerald-600 transition-colors duration-200"
         aria-label="Next page"
       >
         <FiChevronRight className="w-5 h-5" />

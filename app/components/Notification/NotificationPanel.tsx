@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { FiBell } from "react-icons/fi";
+import {
+  FiBell,
+  FiBook,
+  FiFolder,
+  FiClock,
+  FiCheckSquare,
+} from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 
 interface UserNotification {
@@ -71,7 +77,7 @@ export const NotificationPanel: React.FC = () => {
 
   const handleMarkAsRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   };
 
@@ -82,13 +88,21 @@ export const NotificationPanel: React.FC = () => {
   const getNotificationIcon = (type: UserNotification["type"]) => {
     switch (type) {
       case "book_saved":
-        return "📚";
+        return (
+          <FiBook className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+        );
       case "folder_created":
-        return "📁";
+        return (
+          <FiFolder className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        );
       case "reminder":
-        return "⏰";
+        return (
+          <FiClock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+        );
       default:
-        return "ℹ️";
+        return (
+          <FiCheckSquare className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        );
     }
   };
 
@@ -99,10 +113,10 @@ export const NotificationPanel: React.FC = () => {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
+    if (minutes < 1) return "JUST NOW";
+    if (minutes < 60) return `${minutes}M AGO`;
+    if (hours < 24) return `${hours}H AGO`;
+    if (days < 7) return `${days}D AGO`;
     return date.toLocaleDateString();
   };
 
@@ -110,11 +124,11 @@ export const NotificationPanel: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+        className="relative p-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors group"
       >
-        <FiBell className="lg:w-6 lg:h-6 text-gray-600 dark:text-neutral-300" />
+        <FiBell className="w-5 h-5 text-gray-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white dark:border-neutral-900"></span>
         )}
       </button>
 
@@ -129,76 +143,92 @@ export const NotificationPanel: React.FC = () => {
               onClick={() => setIsOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-full -right-20 mt-2 w-64 md:w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden z-50"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="absolute top-full -right-20 mt-3 w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 shadow-sm"
             >
-              <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+              <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between bg-gray-50/50 dark:bg-neutral-800/20">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest leading-none">
                     Notifications
                   </h3>
                   {unreadCount > 0 && (
-                    <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
-                      {unreadCount} unread
-                    </p>
+                    <span className="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold rounded-sm">
+                      {unreadCount}
+                    </span>
                   )}
                 </div>
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
+                    className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-emerald-600 uppercase tracking-widest transition-colors"
                   >
-                    Mark all as read
+                    Clear All
                   </button>
                 )}
               </div>
 
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-12 text-center">
-                    <FiBell className="w-12 h-12 text-gray-300 dark:text-neutral-600 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
-                      No notifications yet
+                  <div className="px-8 py-16 text-center">
+                    <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-neutral-800">
+                      <FiBell className="w-5 h-5 text-gray-300 dark:text-neutral-600" />
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-1">
+                      Clear Sky
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
-                      We&apos;ll notify you about important updates
+                    <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-medium">
+                      Nothing new to report right now.
                     </p>
                   </div>
                 ) : (
                   notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`px-4 py-3 border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
-                        !notification.read ? "bg-emerald-50/30 dark:bg-emerald-900/10" : ""
+                      className={`px-5 py-4 border-b border-gray-50 dark:border-neutral-800/50 hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-colors cursor-pointer group ${
+                        !notification.read
+                          ? "bg-emerald-50/10 dark:bg-emerald-900/5"
+                          : ""
                       }`}
                       onClick={() => handleMarkAsRead(notification.id)}
                     >
-                      <div className="flex items-start space-x-3">
-                        <span className="text-2xl flex-shrink-0">
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 border transition-colors ${
+                            !notification.read
+                              ? "bg-white dark:bg-neutral-800 border-emerald-100 dark:border-emerald-800/50 shadow-sm"
+                              : "bg-gray-50 dark:bg-neutral-800/50 border-gray-100 dark:border-neutral-800"
+                          }`}
+                        >
                           {getNotificationIcon(notification.type)}
-                        </span>
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
+                          <div className="flex items-start justify-between mb-1">
                             <p
-                              className={`text-sm font-medium ${
+                              className={`text-xs font-bold ${
                                 !notification.read
                                   ? "text-gray-900 dark:text-white"
-                                  : "text-gray-700 dark:text-neutral-300"
+                                  : "text-gray-600 dark:text-neutral-400"
                               }`}
                             >
                               {notification.title}
                             </p>
                             {!notification.read && (
-                              <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0 mt-1.5 ml-2"></span>
+                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0 mt-1"></span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600 dark:text-neutral-400 mt-1 line-clamp-2">
+                          <p
+                            className={`text-[11px] leading-relaxed mb-2 ${
+                              !notification.read
+                                ? "text-gray-600 dark:text-neutral-300"
+                                : "text-gray-400 dark:text-neutral-500"
+                            }`}
+                          >
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-400 dark:text-neutral-500 mt-1.5">
+                          <p className="text-[9px] font-bold text-gray-400 dark:text-neutral-600 tracking-widest uppercase">
                             {formatTimestamp(notification.timestamp)}
                           </p>
                         </div>

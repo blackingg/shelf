@@ -25,7 +25,6 @@ import {
   useUnbookmarkBookMutation,
   useGetIsBookBookmarkedQuery,
 } from "@/app/store/api/bookmarksApi";
-import { useGetMeQuery } from "@/app/store/api/usersApi";
 import {
   useUpdateBookCoverMutation,
   useUpdateBookFileMutation,
@@ -46,32 +45,21 @@ export const BookDetailPanel: React.FC<{
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [addBookToFolder] = useAddBookToFolderMutation();
-  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [bookFolders, setBookFolders] = useState<string[]>([]);
-
   const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(book?.id || "", {
+    skip: !book?.id,
+  });
+  const { data: myRatingData } = useGetMyRatingQuery(book?.id || "", {
     skip: !book?.id,
   });
   const [bookmarkBook] = useBookmarkBookMutation();
   const [unbookmarkBook] = useUnbookmarkBookMutation();
-
-  const { data: userData } = useGetMeQuery();
   const [updateCover] = useUpdateBookCoverMutation();
   const [updateFile] = useUpdateBookFileMutation();
-
-  const { data: myRatingData } = useGetMyRatingQuery(book?.id || "", {
-    skip: !book?.id,
-  });
   const [rateBook] = useRateBookMutation();
-
-  const coverInputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const isBookmarked = bookmarkStatus?.bookmarked;
-  const isOwner =
-    userData?.id && book?.donor?.id ? userData.id === book.donor.id : false;
-
+  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
   const userRating = myRatingData?.rating || 0;
 
   const handleRate = async (newRating: number) => {

@@ -10,8 +10,11 @@ import {
   FiHome,
   FiLayers,
 } from "react-icons/fi";
-import { BookCard } from "@/app/components/Library/BookCard";
-import { FolderCard } from "@/app/components/Folders/FolderCard";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
+import {
+  FolderCard,
+  FolderCardSkeleton,
+} from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import {
@@ -20,8 +23,6 @@ import {
   useGetUserFoldersQuery,
 } from "@/app/store/api/usersApi";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
-import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
-import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
 import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function UserProfilePage() {
@@ -93,30 +94,40 @@ export default function UserProfilePage() {
         <div className="relative h-48 bg-gradient-to-br from-emerald-950 via-emerald-900 to-gray-900">
           <div className="absolute inset-0 bg-black/10" />
         </div>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-5 pb-8">
-          <div className="relative -mt-16 mb-6 flex flex-col md:flex-row items-start md:items-end gap-6">
-            <div className="w-32 h-32 rounded-2xl bg-white dark:bg-neutral-800 p-1 shadow-xl">
-              <div className="w-full h-full rounded-xl bg-gray-100 dark:bg-neutral-900 flex items-center justify-center text-4xl font-bold text-emerald-700 dark:text-emerald-500">
-                {username.charAt(0).toUpperCase()}
+        <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
+          <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
+            <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
+              <div className="w-full h-full rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-emerald-600 dark:text-emerald-400 overflow-hidden relative border border-gray-100 dark:border-neutral-700/50">
+                {user.avatar &&
+                (user.avatar.startsWith("/") ||
+                  user.avatar.startsWith("http")) ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.fullName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  username.charAt(0).toUpperCase()
+                )}
               </div>
             </div>
             <div className="flex-1 pb-2">
-              <div className="flex gap-3 items-center">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
                   {user.fullName}
                 </h1>
+                <p className="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                  @{username}
+                </p>
               </div>
-              <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                @{username}
-              </p>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
-                <FiCalendar className="w-4 h-4 text-emerald-600" />
-                <span className="font-medium">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-gray-500 dark:text-neutral-500">
+                <FiCalendar className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+                <span className="text-xs font-bold uppercase tracking-widest">
                   Joined{" "}
                   {new Date(user.createdAt).toLocaleDateString("en-US", {
                     month: "long",
@@ -125,15 +136,17 @@ export default function UserProfilePage() {
                 </span>
               </div>
 
-              <div className="flex gap-6 items-center whitespace-nowrap">
+              <div className="space-y-3">
                 {user.school && (
-                  <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
-                    <FiHome className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span className="font-medium">
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
+                    <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
+                      <FiHome className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
+                    </div>
+                    <span className="text-sm font-medium">
                       {user.school.name}
                       {user.school.shortName && (
-                        <span className="ml-1 text-gray-400">
-                          ({user.school.shortName})
+                        <span className="ml-2 px-1.5 py-0.5 bg-gray-100 dark:bg-neutral-800 rounded text-[10px] font-bold text-gray-400">
+                          {user.school.shortName}
                         </span>
                       )}
                     </span>
@@ -141,36 +154,39 @@ export default function UserProfilePage() {
                 )}
 
                 {user.department && (
-                  <div className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 text-sm">
-                    <FiLayers className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span className="font-medium">{user.department.name}</span>
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
+                    <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
+                      <FiLayers className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
+                    </div>
+                    <span className="text-sm font-medium leading-tight">
+                      {user.department.name}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-8 items-center justify-start md:justify-end md:col-span-2">
-              <div className="text-center group">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
+            <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
+              <div className="text-center">
+                <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
                   {user.booksCount}
-                </div>
-                <div className="text-xs uppercase tracking-widest font-bold text-gray-400">
-                  Books
-                </div>
+                </p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                  Donations
+                </p>
               </div>
-              <div className="w-px h-8 bg-gray-200 dark:bg-neutral-800" />
-              <div className="text-center group">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
+              <div className="text-center">
+                <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
                   {user.foldersCount}
-                </div>
-                <div className="text-xs uppercase tracking-widest font-bold text-gray-400">
+                </p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                   Folders
-                </div>
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="flex border-b border-gray-200 dark:border-neutral-800">
+          <div className="flex gap-8 border-b border-gray-100 dark:border-neutral-800">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -178,23 +194,20 @@ export default function UserProfilePage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as "donated" | "folders")}
-                  className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors ${
+                  className={`flex items-center gap-3 pb-4 text-[11px] font-bold uppercase tracking-widest transition-all relative ${
                     isActive
-                      ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
-                      : "border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-neutral-700"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
                   {tab.label}
-                  <span
-                    className={`ml-1.5 px-2 py-0.5 rounded-full text-xs ${
-                      isActive
-                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                        : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400"
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-500"
+                    />
+                  )}
                 </button>
               );
             })}

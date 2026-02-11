@@ -12,18 +12,17 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => (
   <div
     onClick={onClick}
-    className=" flex flex-col items-center md:block group cursor-pointer bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-neutral-800 hover:border-emerald-200 dark:hover:border-emerald-700/50"
+    className="flex flex-col items-center md:items-start group cursor-pointer bg-white dark:bg-neutral-900 rounded-md p-5 border border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700 transition-colors duration-150"
   >
-    <div
-      className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
-    >
-      <FiBookOpen className="w-6 h-6 text-white" />
+    <div className="w-9 h-9 rounded-md bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-3">
+      <FiBookOpen className="w-4 h-4 text-gray-500 dark:text-neutral-400" />
     </div>
-    <h3 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm md:text-lg mb-1">
+    <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm mb-0.5">
       {category.name}
     </h3>
-    {/* <p className="text-sm text-gray-500">
-      {category.bookCount} {category.bookCount === 1 ? "book" : "books"}
-    </p> */}
+    <p className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+      {category.booksCount}{" "}
+      {category.booksCount === 1 ? "resource" : "resources"}
+    </p>
   </div>
 );
