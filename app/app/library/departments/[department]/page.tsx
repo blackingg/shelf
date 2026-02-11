@@ -1,7 +1,8 @@
 "use client";
 import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BookCard } from "@/app/components/Library/BookCard";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
+import DepartmentSkeleton from "@/app/components/Skeletons/DepartmentSkeleton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiArrowLeft, FiFilter, FiSearch } from "react-icons/fi";
 import {
@@ -9,7 +10,6 @@ import {
   useGetBooksByDepartmentQuery,
 } from "@/app/store/api/departmentsApi";
 import { BookPreview } from "@/app/types/book";
-import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function DepartmentPage({
@@ -29,6 +29,7 @@ export default function DepartmentPage({
   );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
+  const pageSize = 15;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,9 +59,7 @@ export default function DepartmentPage({
 
   if (isLoadingDept) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-neutral-900 min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
+     <DepartmentSkeleton/>
     );
   }
 
@@ -81,49 +80,49 @@ export default function DepartmentPage({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-gray-50 dark:bg-neutral-900 overflow-y-auto">
+    <div className="flex-1 flex flex-col">
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
             <button
               onClick={() => router.push("/app/library/departments")}
-              className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white mb-6 transition-all group"
+              className="flex items-center gap-2 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-500 mb-10 transition-all group"
             >
-              <FiArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="font-bold uppercase tracking-widest text-xs">
+              <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">
                 All Departments
               </span>
             </button>
 
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div>
-                <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-widest mb-2 block">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+              <div className="max-w-3xl">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
                   {department.faculty || "General Faculty"}
                 </span>
-                <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+                <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight">
                   {department.name}
                 </h1>
-                <p className="text-gray-500 dark:text-neutral-400 text-lg max-w-2xl">
+                <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
                   {department.description ||
                     `Browse through our curated collection of resources for ${department.name}.`}
                 </p>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="bg-white dark:bg-neutral-800 p-4 rounded-3xl border border-gray-100 dark:border-neutral-700 shadow-sm text-center min-w-32">
-                  <span className="block text-2xl font-black text-emerald-600">
+                <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
+                  <span className="block text-3xl font-black text-emerald-600 dark:text-emerald-500 tracking-tighter">
                     {booksResponse?.total || 0}
                   </span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                     Resources
                   </span>
                 </div>
                 {department.school && (
-                  <div className="bg-white dark:bg-neutral-800 p-4 rounded-3xl border border-gray-100 dark:border-neutral-700 shadow-sm text-center min-w-32">
-                    <span className="block text-xl font-black text-gray-900 dark:text-white">
+                  <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
+                    <span className="block text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
                       {department.school.shortName || "Uni"}
                     </span>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                       Institution
                     </span>
                   </div>
@@ -132,71 +131,65 @@ export default function DepartmentPage({
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-            <div className="relative w-full md:w-96">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
+            <div className="relative w-full md:w-96 group">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Search within department..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white dark:bg-neutral-800 border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
               />
             </div>
 
             <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="flex items-center space-x-3 bg-white dark:bg-neutral-800 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-700">
-                <FiFilter className="w-5 h-5 text-emerald-600 ml-2" />
+              <div className="flex items-center gap-3 bg-gray-50/50 dark:bg-neutral-900/40 px-4 py-3 rounded-md border border-gray-100 dark:border-neutral-800 transition-colors">
+                <FiFilter className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-700 dark:text-neutral-200 pr-8"
+                  className="bg-transparent border-none focus:ring-0 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-neutral-500 cursor-pointer outline-none"
                 >
                   <option value="createdAt">Recently Added</option>
                   <option value="rating">Top Rated</option>
-                  <option value="title">Title (A-Z)</option>
+                  <option value="title">Alphabetical</option>
                 </select>
               </div>
 
               <button
                 onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                className="p-4 bg-white dark:bg-neutral-800 rounded-2xl border border-gray-100 dark:border-neutral-700 shadow-sm text-gray-600 dark:text-neutral-400 hover:text-emerald-600 transition-colors"
+                className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+                title={order === "asc" ? "Ascending" : "Descending"}
               >
-                {order === "asc" ? "↑" : "↓"}
+                <span className="text-sm font-black">
+                  {order === "asc" ? "↑" : "↓"}
+                </span>
               </button>
             </div>
           </div>
 
           {showSkeleton ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              <BookCardSkeleton count={10} />
+              <BookCardSkeleton count={pageSize || 10} />
             </div>
           ) : books.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
               {books.map((book) => (
                 <BookCard
                   key={book.id}
-                  id={book.id}
-                  title={book.title}
-                  author={book.author}
-                  coverImage={book.coverImage}
-                  rating={book.rating}
-                  donor={book.donor}
+                  {...book}
                   onClick={() => setSelectedBook(book as BookPreview)}
-                  className="transform hover:-translate-y-2 transition-transform duration-300"
                 />
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 bg-white dark:bg-neutral-800 rounded-[3rem] border border-gray-100 dark:border-neutral-700">
-              <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <FiSearch className="w-10 h-10 text-emerald-500" />
+            <div className="text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
+              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
+                <FiSearch className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                No results found
-              </h3>
-              <p className="text-gray-500 dark:text-neutral-400">
-                Try adjusting your filters or search query.
+              <p className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                No resources found in this department.
               </p>
             </div>
           )}
@@ -206,7 +199,7 @@ export default function DepartmentPage({
             totalPages={booksResponse?.totalPages || 1}
             onPageChange={setPage}
             isLoading={isLoadingBooks}
-            className="mt-16"
+            className="mt-20"
           />
         </div>
       </main>
