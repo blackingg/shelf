@@ -4,16 +4,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { FiBook, FiFolder, FiBookmark } from "react-icons/fi";
-import { BookCard } from "@/app/components/Library/BookCard";
-import { FolderCard } from "@/app/components/Folders/FolderCard";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
+import {
+  FolderCard,
+  FolderCardSkeleton,
+} from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
-import { 
-  useGetBookmarkedBooksQuery, 
-  useGetBookmarkedFoldersQuery 
+import {
+  useGetBookmarkedBooksQuery,
+  useGetBookmarkedFoldersQuery,
 } from "@/app/store/api/bookmarksApi";
-import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
-import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
 import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function BookmarksPage() {
@@ -23,12 +24,13 @@ export default function BookmarksPage() {
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
-  const { 
-    data: booksResponse, 
+  const {
+    data: booksResponse,
     isLoading: isLoadingBooks,
-    isFetching: isFetchingBooks
+    isFetching: isFetchingBooks,
   } = useGetBookmarkedBooksQuery({ page, pageSize });
-  const { data: folders, isLoading: isLoadingFolders } = useGetBookmarkedFoldersQuery();
+  const { data: folders, isLoading: isLoadingFolders } =
+    useGetBookmarkedFoldersQuery();
 
   const showBooksSkeleton = isLoadingBooks || isFetchingBooks;
 
@@ -54,8 +56,8 @@ export default function BookmarksPage() {
     <>
       <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-8 pb-4">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800/50">
               <FiBookmark className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
@@ -71,7 +73,7 @@ export default function BookmarksPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as "books" | "folders")}
-                  className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors duration-200 ${
                     isActive
                       ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
                       : "border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-neutral-700"
@@ -80,10 +82,10 @@ export default function BookmarksPage() {
                   <Icon className="w-4 h-4" />
                   {tab.label}
                   <span
-                    className={`ml-1.5 px-2 py-0.5 rounded-full text-xs ${
+                    className={`ml-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                       isActive
-                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                        : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400"
+                        ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                        : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
                     }`}
                   >
                     {tab.count}
@@ -96,12 +98,7 @@ export default function BookmarksPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div key={activeTab}>
           {activeTab === "books" && (
             <div className="space-y-8">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
@@ -118,20 +115,22 @@ export default function BookmarksPage() {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full py-20 text-center flex flex-col items-center">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-4">
-                      <FiBookmark className="w-8 h-8 text-gray-400" />
+                  <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                      <FiBookmark className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No bookmarked books</h3>
-                    <p className="text-gray-500 dark:text-neutral-400">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                      No bookmarked books
+                    </h3>
+                    <p className="text-gray-500 dark:text-neutral-400 font-medium">
                       Books you bookmark will appear here.
                     </p>
                   </div>
                 )}
               </div>
-              
+
               {books.length > 0 && (
-                <Pagination 
+                <Pagination
                   currentPage={page}
                   totalPages={booksResponse?.totalPages || 1}
                   onPageChange={setPage}
@@ -156,19 +155,21 @@ export default function BookmarksPage() {
                   />
                 ))
               ) : (
-                <div className="col-span-full py-20 text-center flex flex-col items-center">
-                  <div className="w-16 h-16 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-4">
-                    <FiFolder className="w-8 h-8 text-gray-400" />
+                <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
+                  <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                    <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No bookmarked folders</h3>
-                  <p className="text-gray-500 dark:text-neutral-400">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                    No bookmarked folders
+                  </h3>
+                  <p className="text-gray-500 dark:text-neutral-400 font-medium">
                     Folders you bookmark will appear here.
                   </p>
                 </div>
               )}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       <BookDetailPanel

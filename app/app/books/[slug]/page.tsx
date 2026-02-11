@@ -99,17 +99,17 @@ export default function BookDetailsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-neutral-900 overflow-y-auto">
+    <div className="flex min-h-screen bg-white dark:bg-neutral-900 overflow-y-auto">
       <div className="flex-1 flex flex-col">
-        <div className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-800 flex-shrink-0">
-          <div className="max-w-6xl mx-auto px-6 py-12 md:py-20">
-            <div className="flex flex-col md:flex-row gap-12">
+        <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
+          <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
               >
-                <div className="relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl bg-emerald-900 border-8 border-white dark:border-neutral-700">
+                <div className="relative aspect-[2/3] rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
                   <NextImage
                     src={
                       book.coverImage && (book.coverImage.startsWith("/") || book.coverImage.startsWith("http"))
@@ -126,86 +126,68 @@ export default function BookDetailsPage() {
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex-1"
+                className="flex-1 space-y-8"
               >
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
-                    {book.category}
-                  </span>
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md text-[10px] font-bold uppercase tracking-widest border border-emerald-100 dark:border-emerald-800/50">
+                      {book.category}
+                    </span>
+                  </div>
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                    {book.title}
+                  </h1>
+                  <p className="text-xl text-gray-500 dark:text-neutral-400 font-medium">
+                    {book.author}
+                  </p>
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-                  {book.title}
-                </h1>
-                <p className="text-2xl text-gray-600 dark:text-neutral-400 mb-8 font-serif italic">
-                  by {book.author}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-8 mb-10">
+                <div className="flex flex-wrap items-center gap-10 border-y border-gray-100 dark:border-neutral-800 py-8">
                   <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 mb-1">
-                      Rating
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-neutral-500 mb-2">
+                      Resource Rating
                     </span>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-3">
                       <StarRating
                         rating={book.rating || 0}
-                        size={24}
-                        className="mr-3"
+                        size={20}
                       />
                       <span className="text-xl font-bold text-gray-900 dark:text-white">
                         {book.rating?.toFixed(1) || "5.0"}
                       </span>
-                      <span className="ml-2 text-sm text-gray-500">
-                        ({book.ratingsCount || 0} reviews)
-                      </span>
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 mb-1">
-                      Details
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-neutral-500 mb-2">
+                      Total Pages
                     </span>
-                    <div className="flex items-center text-gray-700 dark:text-neutral-200">
+                    <div className="flex items-center text-gray-900 dark:text-neutral-200">
                       <FiFileText className="w-5 h-5 mr-2 text-emerald-500" />
-                      <span className="text-lg font-semibold">
-                        {book.pages} Pages
+                      <span className="text-lg font-bold">
+                        {book.pages}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mb-10 y-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">
-                      Drop your rating
-                    </p>
-                    <StarRating
-                      rating={myRatingData?.rating || 0}
-                      interactive
-                      onRate={handleRate}
-                      size={32}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-4">  
+                <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">  
                   <div className="w-full sm:w-48">
-                    <Button
+                    <button
                       onClick={() => router.push(`/app/books/${book.slug}/read`)}
-                      icon={<FiPlay className="w-5 h-5 fill-current" />}
-                      className="w-full py-4 rounded-2xl shadow-lg hover:shadow-emerald-500/20"
+                      className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-3"
                     >
-                      Read Now
-                    </Button>
+                      <FiPlay className="w-5 h-5 fill-current" />
+                      <span>Read Now</span>
+                    </button>
                   </div>
 
                   <div className="relative w-full sm:w-auto">
                     <button
                       onClick={() => setShowFolderDropdown(!showFolderDropdown)}
-                      className={`w-full sm:w-auto px-8 py-4 border-2 rounded-2xl font-bold transition-all flex items-center justify-center space-x-3 ${
+                      className={`w-full sm:w-auto px-8 py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-3 ${
                         showFolderDropdown
-                          ? "border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20"
-                          : "border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 dark:hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 shadow-sm"
+                          ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
+                          : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
                       }`}
                     >
                       <FiFolderPlus className="w-5 h-5" />
@@ -217,7 +199,7 @@ export default function BookDetailsPage() {
                       onClose={() => setShowFolderDropdown(false)}
                       currentBookFolders={savedFolders}
                       onSaveToFolder={handleSaveToFolder}
-                      className="top-full mt-3 w-80 shadow-2xl"
+                      className="top-full mt-3 w-80"
                     />
                   </div>
                 </div>
@@ -226,95 +208,97 @@ export default function BookDetailsPage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="max-w-6xl mx-auto px-6 py-16 w-full">
           <div className="grid lg:grid-cols-3 gap-16">
             <div className="lg:col-span-2 space-y-16">
               <section>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-4">
+                <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-6">
                   Overview
-                </h2>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-base">
-                    {book.description}
-                  </p>
-                </div>
+                </h3>
+                <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-lg font-medium">
+                  {book.description}
+                </p>
               </section>
 
-              <section className="bg-white dark:bg-neutral-800 p-8 md:p-12 rounded-[2.5rem] border border-gray-200 dark:border-neutral-700 shadow-xl">
+              <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-8 md:p-12 rounded-lg border border-gray-100 dark:border-neutral-800">
                 <div className="mb-10">
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Reviews & Community
-                  </h2>
-                  <p className="text-gray-500 dark:text-neutral-400">
-                    Join the conversation about this resource.
+                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-2">
+                    Community
                   </p>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    Reviews & Discussion
+                  </h2>
                 </div>
                 <BookReviews bookId={actualBookId} />
               </section>
             </div>
 
-            <div className="space-y-10">
-              <section className="bg-white dark:bg-neutral-800 p-8 rounded-xl border border-gray-200 dark:border-neutral-700">
-                <h3 className="font-black text-gray-900 dark:text-white mb-6 uppercase text-[10px] tracking-[0.2em] text-emerald-600">
-                  Metadata
+            <div className="space-y-12">
+              <section className="bg-white dark:bg-neutral-900 p-8 rounded-lg border border-gray-100 dark:border-neutral-800">
+                <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-8">
+                  Resource Stats
                 </h3>
-                <div className="space-y-6 text-sm">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-gray-400 font-bold uppercase text-[9px]">
+                <div className="space-y-8">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                       Contributor
                     </span>
                     <Link
                       href={`/app/profile/${book.donor?.username}`}
-                      className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 flex items-center gap-2 group"
+                      className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 transition-colors flex items-center gap-3 transition-colors"
                     >
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-[10px]">
+                      <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold">
                         {book.donor?.username?.charAt(0).toUpperCase()}
                       </div>
                       @{book.donor?.username || "user"}
                     </Link>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-gray-400 font-bold uppercase text-[9px]">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                       Published
                     </span>
                     <span className="font-bold text-gray-900 dark:text-white">
                       {book.publishedYear || "Unknown Date"}
                     </span>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-gray-400 font-bold uppercase text-[9px]">
-                      Visibility
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                      Your Rating
                     </span>
-                    <span className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                      Public Resource
-                    </span>
+                    <div className="pt-1">
+                      <StarRating
+                        rating={myRatingData?.rating || 0}
+                        interactive
+                        onRate={handleRate}
+                        size={24}
+                      />
+                    </div>
                   </div>
                 </div>
               </section>
 
               <section>
-                <h3 className="font-black text-gray-900 dark:text-white mb-6 uppercase text-[10px] tracking-[0.2em] text-emerald-600">
+                <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-8">
                   Similar Resources
                 </h3>
                 <div className="space-y-4">
                   {[1, 2, 3].map((_, i) => (
                     <div
                       key={i}
-                      className="flex items-center space-x-4 group cursor-pointer p-3 hover:bg-white dark:hover:bg-neutral-800 rounded-2xl transition-all hover:shadow-md"
+                      className="flex items-center space-x-4 group cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors"
                     >
-                      <div className="w-14 h-20 bg-gray-200 dark:bg-neutral-700 rounded-xl flex-shrink-0 overflow-hidden shadow-sm">
-                        <div className="w-full h-full bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 flex items-center justify-center font-bold text-emerald-500/20 text-xs">
+                      <div className="w-14 h-20 bg-gray-100 dark:bg-neutral-800 rounded-md shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
+                        <div className="w-full h-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center font-bold text-emerald-500/10 text-[10px]">
                           SHELF
                         </div>
                       </div>
                       <div className="min-w-0">
-                        <div className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors truncate">
+                        <p className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-emerald-600 transition-colors truncate text-sm">
                           Explore More Assets
-                        </div>
-                        <div className="text-[10px] font-black uppercase text-gray-400 mt-1 tracking-tighter">
+                        </p>
+                        <a href={`/app/library/categories/${book.category}`} className="text-[10px] font-bold uppercase text-gray-400 mt-1 tracking-wider opacity-60">
                           {book.category}
-                        </div>
+                        </a>
                       </div>
                     </div>
                   ))}

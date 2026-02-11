@@ -8,7 +8,7 @@ export default function LibraryLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-white dark:bg-neutral-950 overflow-hidden">
       <Sidebar />
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <PageHeader />

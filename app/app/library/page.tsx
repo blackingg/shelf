@@ -2,14 +2,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
-import { BookCard } from "@/app/components/Library/BookCard";
-import { FolderCard } from "@/app/components/Folders/FolderCard";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
+import {
+  FolderCard,
+  FolderCardSkeleton,
+} from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiBook, FiArrowRight } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
-import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
-import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
 import { useGetBooksQuery } from "@/app/store/api/booksApi";
 
@@ -56,23 +57,23 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-neutral-900 overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-950 overflow-y-auto">
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Recommended
+          <div className="mb-20">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Discover
               </h2>
             </div>
 
             {isLoadingRecommendations ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 <FolderCardSkeleton count={2} />
                 <BookCardSkeleton count={2} />
               </div>
             ) : displayItems.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
                 {displayItems.map((item, idx) => {
                   if (item.type === "folder") {
                     return (
@@ -94,14 +95,14 @@ export default function LibraryPage() {
                 })}
               </div>
             ) : (
-              <div className="bg-white dark:bg-neutral-800 p-12 rounded-[3rem] border border-gray-100 dark:border-neutral-700 text-center">
-                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FiBook className="w-8 h-8 text-emerald-500" />
+              <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
+                <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
+                  <FiBook className="w-6 h-6 text-emerald-500" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   No Recommendations Yet
                 </h3>
-                <p className="text-gray-500 dark:text-neutral-400 mb-6">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
                   Start exploring to get personalized suggestions.
                 </p>
               </div>
@@ -109,9 +110,11 @@ export default function LibraryPage() {
           </div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Categories
-            </h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Categories
+              </h2>
+            </div>
 
             <CategoryFilter
               activeCategory={activeCategory}
@@ -119,23 +122,22 @@ export default function LibraryPage() {
             />
 
             {isCategoryLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12">
                 <BookCardSkeleton count={5} />
               </div>
             ) : categoryBooks.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-12">
                 {categoryBooks.map((book) => (
                   <BookCard
                     key={book.id}
                     {...book}
                     onClick={() => setSelectedBook(book as BookPreview)}
-                    className="hover:-translate-y-2 transition-transform duration-300"
                   />
                 ))}
               </div>
             ) : (
-              <div className="bg-white dark:bg-neutral-800 p-20 rounded-[3rem] text-center border border-gray-100 dark:border-neutral-700 mt-10">
-                <p className="text-gray-500 dark:text-neutral-400 font-medium">
+              <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
                   No resources found in this category.
                 </p>
               </div>
@@ -145,7 +147,7 @@ export default function LibraryPage() {
       </main>
 
       <BookDetailPanel
-        book={selectedBook}
+        book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />
