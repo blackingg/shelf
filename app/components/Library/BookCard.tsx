@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiStar, FiBookmark } from "react-icons/fi";
@@ -8,7 +9,8 @@ import {
   useUnbookmarkBookMutation,
   useGetIsBookBookmarkedQuery,
 } from "@/app/store/api/bookmarksApi";
-import { Book, BookCardProps } from "@/app/types/book";
+import { BookCardProps } from "@/app/types/book";
+import { motion } from "motion/react";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -41,9 +43,9 @@ export const BookCard: React.FC<BookCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`group cursor-pointer transition-all duration-300 hover:scale-105 ${className}`}
+      className={`group cursor-pointer transition-colors duration-200 ${className}`}
     >
-      <div className="relative h-65 rounded-xl overflow-hidden shadow-lg mb-3">
+      <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <Image
           src={
             coverImage &&
@@ -57,22 +59,25 @@ export const BookCard: React.FC<BookCardProps> = ({
           fill
           className="object-cover"
         />
-        <div className="absolute top-2 right-2 flex flex-col gap-2">
-          {rating && (
-            <div className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center space-x-1">
+
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+
+        {rating && (
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1">
               <FiStar className="w-3 h-3 text-yellow-400 fill-yellow-400" />
               <span className="text-xs text-white font-medium">{rating}</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {id && (
           <button
             onClick={handleBookmark}
-            className={`absolute top-2 left-2 p-1.5 rounded-lg backdrop-blur-sm transition-colors ${
+            className={`absolute top-2 left-2 p-1.5 rounded-md transition-all duration-200 ${
               isBookmarked
-                ? "bg-emerald-500 text-white"
-                : "bg-black/40 text-white hover:bg-emerald-500"
+                ? "bg-emerald-600 text-white opacity-100"
+                : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-emerald-600"
             }`}
           >
             <FiBookmark
@@ -81,22 +86,71 @@ export const BookCard: React.FC<BookCardProps> = ({
           </button>
         )}
       </div>
-      <h3 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm line-clamp-1 mb-1">
+      <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm line-clamp-1 mb-0.5">
         {title}
       </h3>
-      <p className="text-xs text-gray-500 dark:text-neutral-400 line-clamp-1">
+      <p className="text-[10px] text-gray-500 dark:text-neutral-400 line-clamp-1 font-medium uppercase tracking-wider">
         {author}
       </p>
       {donor?.username && (
         <Link
           href={`/app/profile/${donor.username}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-[10px] text-emerald-600 hover:text-emerald-700 group mt-0.5 block truncate"
+          className="text-[10px] text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 mt-0.5 block truncate transition-colors"
         >
-          Donated by{" "}
-          <span className=" group-hover:underline"> {donor.username}</span>
+          Donated by <span className="hover:underline">{donor.username}</span>
         </Link>
       )}
     </div>
   );
 };
+
+export function SingleBookCardSkeleton() {
+  return (
+    <div className="w-full">
+      <div className="relative h-64 md:h-72 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 overflow-hidden mb-3">
+        <motion.div
+          className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
+          animate={{ x: ["-100%", "100%"] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded-md w-4/5 relative overflow-hidden">
+          <motion.div
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.1,
+            }}
+          />
+        </div>
+        <div className="h-3 bg-gray-50 dark:bg-neutral-800/50 rounded-md w-2/5 relative overflow-hidden">
+          <motion.div
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.2,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BookCardSkeleton({ count = 1 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <SingleBookCardSkeleton key={i} />
+      ))}
+    </>
+  );
+}

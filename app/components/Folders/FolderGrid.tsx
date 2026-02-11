@@ -1,7 +1,6 @@
-import { FolderCard } from "./FolderCard";
+import { FolderCard, FolderCardSkeleton } from "./FolderCard";
 import { FiFolder } from "react-icons/fi";
 import { Folder, Collaborator } from "@/app/types/folder";
-import FolderCardSkeleton from "@/app/components/Skeletons/FolderCardSkeleton";
 
 interface FolderGridProps {
   folders: (Folder & { collaborator?: Collaborator })[];

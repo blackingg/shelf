@@ -167,19 +167,19 @@ export const BookDetailPanel: React.FC<{
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8 flex flex-col shadow-2xl z-50"
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-emerald-950 text-white p-6 md:p-8 flex flex-col border-l border-emerald-800 z-50"
           >
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-lg transition-all duration-200 group"
+              className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-md transition-colors duration-200 group"
               aria-label="Close"
             >
               <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
             </button>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
-              <div className="relative aspect-2/3 w-48 md:w-56 mx-auto rounded-2xl overflow-hidden shadow-2xl mb-8 ring-4 ring-emerald-700/30 group">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-12">
+              <div className="relative aspect-2/3 w-48 md:w-56 mx-auto rounded-lg overflow-hidden border border-emerald-700/50 mb-8 group">
                 <Image
                   src={
                     book?.coverImage &&
@@ -194,100 +194,115 @@ export const BookDetailPanel: React.FC<{
                 />
               </div>
 
-              <div className="text-center mb-8">
-                <div className="flex justify-center items-center gap-2 mb-2">
-                  <h2 className="text-2xl font-bold leading-tight">
-                    {book?.title}
-                  </h2>
-                </div>
-                <p className="text-emerald-300 font-medium mb-2">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl font-bold leading-tight mb-2">
+                  {book?.title}
+                </h2>
+                <p className="text-emerald-400 font-medium mb-2">
                   {book?.author}
                 </p>
                 {book?.donor?.username && (
                   <Link
                     href={`/app/profile/${book.donor.username}`}
-                    className="text-emerald-100/60 text-sm hover:text-emerald-200 transition-colors group block"
+                    className="text-emerald-100/60 text-sm hover:text-emerald-200 transition-colors group inline-block"
                     onClick={() => onClose()}
                   >
                     Donated by{" "}
-                    <span className="text-white font-semibold group-hover:underline">
+                    <span className="text-white font-semibold hover:underline">
                       {book.donor.username}
                     </span>
                   </Link>
                 )}
 
-                <div className="mt-4 flex flex-col items-center">
-                  <p className="text-xs text-emerald-200/50 uppercase tracking-wider mb-2 font-bold">
+                <div className="mt-6 flex flex-col items-center">
+                  <p className="text-[10px] text-emerald-300/50 uppercase tracking-widest mb-3 font-bold">
                     Your Rating
                   </p>
                   <StarRating
                     rating={userRating}
                     interactive
                     onRate={handleRate}
-                    size={24}
+                    size={20}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mb-8">
-                <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                  <p className="text-xl font-bold text-white">
+              <div className="grid grid-cols-3 gap-3 mb-10">
+                <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
+                  <p className="text-lg font-bold text-white leading-none mb-1">
                     {book?.pages || "-"}
                   </p>
-                  <p className="text-xs text-emerald-200 font-medium mt-1">
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
                     Pages
                   </p>
                 </div>
-                <div className="text-center bg-emerald-800/40 rounded-xl py-3 px-2">
-                  <p className="text-xl font-bold text-white">
+                <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
+                  <p className="text-lg font-bold text-white leading-none mb-1">
                     {book?.publishedYear || "-"}
                   </p>
-                  <p className="text-xs text-emerald-200 font-medium mt-1">
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
                     Year
                   </p>
                 </div>
-                <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl py-3 px-2 border border-white/5">
-                  <p className="text-xl font-bold text-white capitalize truncate">
+                <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
+                  <p className="text-lg font-bold text-white leading-none mb-1 capitalize truncate">
                     {book?.category || "-"}
                   </p>
-                  <p className="text-xs text-emerald-20 font-medium mt-1">
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
                     Category
                   </p>
                 </div>
               </div>
 
-              <div className="mb-8 flex-1 flex-col min-h-0">
-                <h3 className="text-sm font-semibold text-emerald-200 mb-2 uppercase tracking-wider">
-                  About this book
+              <div className="mb-12">
+                <h3 className="text-[10px] font-black text-gray-400 dark:text-neutral-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <div className="w-4 h-[1px] bg-current opacity-30" />
+                  About this resource
                 </h3>
-                <div className="custom-scrollbar overflow-y-auto flex-1 pr-2">
-                  <p className="text-sm text-emerald-100 leading-relaxed">
-                    {book?.description}
-                  </p>
-                </div>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed font-medium">
+                  {book?.description}
+                </p>
               </div>
 
-              <div className="border-t border-white/10 pt-8 mt-8">
-                <h3 className="text-xs font-bold text-emerald-200/50 uppercase tracking-wider mb-6">
-                  Reviews & Discussion
-                </h3>
-                <BookReviews bookId={book?.id || ""} />
+              <div className="border-t border-gray-100 dark:border-neutral-900 pt-8 mb-8">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-[10px] font-black text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+                    Reviews & Discussion
+                  </h3>
+                  <Link
+                    href={`/app/books/${book?.slug}`}
+                    onClick={() => onClose()}
+                    className="text-[10px] font-black text-emerald-600 hover:text-emerald-500 uppercase tracking-widest transition-colors flex items-center gap-1"
+                  >
+                    Expand Thread
+                    <FiChevronDown className="-rotate-90 w-3 h-3" />
+                  </Link>
+                </div>
+                <BookReviews
+                  bookId={book?.id || ""}
+                  limit={3}
+                  hideForm
+                />
               </div>
             </div>
 
-            <div className="space-y-3 mt-auto">
+            <div className="space-y-4 mt-auto pt-8 border-t border-gray-100 dark:border-neutral-900 bg-white dark:bg-neutral-950">
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push(`/app/books/${book?.slug}`)}
-                  className="flex-1 bg-white dark:bg-neutral-800 text-emerald-900 dark:text-neutral-300 font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-emerald-50 transform hover:scale-[1.02]"
+                  className="flex-1 h-14 bg-gray-900 dark:bg-white text-white dark:text-neutral-950 font-black text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <FiBookOpen className="w-5 h-5" />
-                  <span>Read Now</span>
+                  <FiBookOpen className="w-4 h-4" />
+                  <span>Read Resource</span>
                 </button>
 
                 <button
                   onClick={handleBookmark}
-                  className={`bg-emerald-800/40 hover:bg-emerald-700/60 p-4 rounded-xl flex items-center justify-center transition-all duration-200 border border-emerald-500/30 ${isBookmarked ? "text-emerald-300 bg-emerald-800/70" : "text-emerald-100"}`}
+                  className={`w-14 h-14 rounded-md flex items-center justify-center transition-all duration-200 border ${
+                    isBookmarked
+                      ? "bg-emerald-600 border-emerald-600 text-white"
+                      : "bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 hover:border-emerald-500 hover:text-emerald-600"
+                  }`}
                   title={isBookmarked ? "Remove Bookmark" : "Bookmark"}
                 >
                   <FiBookmark
@@ -299,14 +314,14 @@ export const BookDetailPanel: React.FC<{
               <div className="relative">
                 <button
                   onClick={() => setShowFolderDropdown(!showFolderDropdown)}
-                  className="w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
+                  className="w-full h-12 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-400 font-bold text-[10px] uppercase tracking-widest px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-gray-100 dark:border-neutral-800 active:scale-[0.99]"
                 >
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-3">
                     <FiBookmark className="w-4 h-4" />
-                    <span>Add to Folder</span>
+                    <span>Organize into Folder</span>
                   </div>
                   <FiChevronDown
-                    className={`w-4 h-4 transition-transform ${
+                    className={`w-4 h-4 transition-transform duration-300 ${
                       showFolderDropdown ? "rotate-180" : ""
                     }`}
                   />

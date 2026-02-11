@@ -50,24 +50,22 @@ export const SettingsSidebar = () => {
             Manage your app preferences
           </p>
         </div>
-        <nav className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-1 overflow-x-auto md:overflow-visible pb-3 md:pb-0 px-3 md:px-0 no-scrollbar">
+        <nav className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-0.5 overflow-x-auto md:overflow-visible pb-3 md:pb-0 px-3 md:px-0 no-scrollbar">
           {settingsNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-3 px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
+                className={`flex items-center space-x-3 px-3 py-2 md:py-2.5 rounded-md transition-colors duration-150 whitespace-nowrap flex-shrink-0 ${
                   isActive
-                    ? "bg-primary text-white shadow-md md:shadow-lg dark:shadow-none"
-                    : "text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-neutral-200"
+                    ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white font-medium shadow-none"
+                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                <span className="w-5 h-5">{item.icon}</span>
+                <span className="w-4 h-4">{item.icon}</span>
 
-                <span className="font-medium text-sm md:text-base">
-                  {item.label}
-                </span>
+                <span className="text-sm">{item.label}</span>
               </Link>
             );
           })}

@@ -14,6 +14,31 @@ interface FolderCardProps {
   showActions?: boolean;
 }
 
+export function FolderCardSkeleton({ count = 1 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="animate-pulse"
+        >
+          <div className="relative">
+            <div className="relative z-10">
+              <div className="w-full aspect-[278/194] bg-gray-200 dark:bg-neutral-700 rounded-md overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent animate-[shimmer_1.5s_ease-in-out_infinite]" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-2 px-1 space-y-1.5">
+            <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-3/4" />
+            <div className="h-3 bg-gray-100 dark:bg-neutral-700/50 rounded w-1/2" />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
 export const FolderCard: React.FC<FolderCardProps> = ({
   folder,
   onClick,
@@ -33,6 +58,11 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const hasActions = canEdit || canDelete;
 
   const coverImage = folder.coverImage;
+  const hasCover =
+    coverImage &&
+    (coverImage.startsWith("/") ||
+      coverImage.startsWith("http://") ||
+      coverImage.startsWith("https://"));
 
   return (
     <div
@@ -40,15 +70,15 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       className="group cursor-pointer relative"
     >
       {showActions && hasActions && (
-        <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-20">
+        <div className="absolute top-1 right-1 z-20">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded-lg transition-colors shadow-sm"
+            className="p-1.5 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors opacity-0 group-hover:opacity-100"
           >
-            <FiMoreVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+            <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
           </button>
           {showMenu && (
             <>
@@ -59,7 +89,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                   setShowMenu(false);
                 }}
               />
-              <div className="absolute right-0 mt-2 w-36 sm:w-40 bg-white dark:bg-neutral-900 rounded-lg shadow-xl border border-gray-200 dark:border-neutral-800 py-2 z-20">
+              <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20">
                 {canEdit && (
                   <button
                     onClick={(e) => {
@@ -67,7 +97,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       onEdit?.();
                       setShowMenu(false);
                     }}
-                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                    className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
                   >
                     Edit
                   </button>
@@ -79,7 +109,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       onDelete?.();
                       setShowMenu(false);
                     }}
-                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
                   >
                     Delete
                   </button>
@@ -90,88 +120,59 @@ export const FolderCard: React.FC<FolderCardProps> = ({
         </div>
       )}
 
-      <div className="relative pt-6 sm:pt-8 pb-3 sm:pb-4">
-        {coverImage &&
-          (coverImage.startsWith("/") ||
-            coverImage.startsWith("http://") ||
-            coverImage.startsWith("https://")) && (
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[85%]">
-              <div className="relative top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-full h-24 sm:h-28 md:h-32 rounded-t-lg shadow-lg overflow-hidden border-2 border-white z-10">
-                <Image
-                  src={
-                    coverImage.startsWith("/") ||
-                    coverImage.startsWith("http://") ||
-                    coverImage.startsWith("https://")
-                      ? coverImage
-                      : "/dummycover.png"
-                  }
-                  alt="Folder cover"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          )}
-
-        <div
-          className={`absolute top-0 left-4 sm:left-8 w-20 sm:w-24 h-6 sm:h-8 rounded-t-xl transition-all duration-300 ${
-            isPublic
-              ? "bg-emerald-500 group-hover:from-emerald-500 group-hover:to-emerald-600"
-              : "bg-gradient-to-b from-gray-400 to-gray-500 group-hover:from-gray-500 group-hover:to-gray-600"
-          }`}
-          style={{
-            clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-
-        <div
-          className={`relative rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1 ${
-            isPublic
-              ? "bg-emerald-600 to-emerald-700"
-              : "bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700"
-          }`}
-          style={{
-            minHeight: coverImage ? "180px" : "140px",
-          }}
-        >
-          <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-end h-full">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
-              <div className="flex items-start justify-between mb-1.5 sm:mb-2">
-                <h3 className="font-bold text-white text-sm sm:text-base md:text-lg leading-tight pr-2">
-                  {folder.name}
-                </h3>
-                {isPublic ? (
-                  <FiGlobe className="w-4 h-4 sm:w-5 sm:h-5 text-white/90 flex-shrink-0" />
-                ) : (
-                  <FiLock className="w-4 h-4 sm:w-5 sm:h-5 text-white/90 flex-shrink-0" />
-                )}
-              </div>
-
-              <div className="flex py-3 md:py-0 space-y-3 md:space-y-0 flex-col md:flex-row md:items-center justify-between text-white/90">
-                <div className="flex items-center space-x-1.5 sm:space-x-2">
-                  <FiBook className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm font-medium">
-                    {folder.booksCount}{" "}
-                    {folder.booksCount === 1 ? "book" : "books"}
-                  </span>
-                </div>
-
-                <span className="text-[10px] sm:text-xs text-white/80 truncate max-w-[100px] sm:max-w-none">
-                  by {folder.user?.username || "Guest"}
-                </span>
-              </div>
+      <div className="relative">
+        {hasCover && (
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70%] z-0">
+            <div className="relative w-full h-16 sm:h-20 -top-2 rounded-t-md overflow-hidden border border-gray-100 dark:border-white/10">
+              <Image
+                src={coverImage}
+                alt="Folder cover"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
-
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent rounded-xl sm:rounded-2xl pointer-events-none" />
-        </div>
+        )}
 
         <div
-          className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[95%] h-2 sm:h-3 rounded-b-xl -z-10 ${
-            isPublic ? "bg-emerald-800/30" : "bg-gray-800/30"
+          className={`relative z-10 transition-opacity duration-200 ${
+            hasCover ? "mt-4" : ""
           }`}
-          style={{ filter: "blur(8px)" }}
-        />
+        >
+          <Image
+            src="/folder.svg"
+            alt="Folder"
+            width={278}
+            height={194}
+            className="w-full h-auto"
+          />
+        </div>
+      </div>
+
+      {/* Folder Metadata */}
+      <div className="mt-2 px-1">
+        <div className="flex items-center justify-between mb-0.5">
+          <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm leading-tight truncate pr-2">
+            {folder.name}
+          </h3>
+          {isPublic ? (
+            <FiGlobe className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 flex-shrink-0" />
+          ) : (
+            <FiLock className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 flex-shrink-0" />
+          )}
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+          <div className="flex items-center space-x-1">
+            <FiBook className="w-3 h-3" />
+            <span>
+              {folder.booksCount} {folder.booksCount === 1 ? "book" : "books"}
+            </span>
+          </div>
+          <span className="truncate max-w-[100px]">
+            {folder.user?.username || "User"}
+          </span>
+        </div>
       </div>
     </div>
   );
