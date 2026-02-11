@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "@/app/store/authSlice";
+import { useGetMeQuery } from "@/app/store/api/usersApi";
 import { LoadingScreen } from "@/app/components/LoadingScreen";
 
 const PUBLIC_PATHS = ["/"];
@@ -17,6 +18,8 @@ export default function ProtectedRoute({
   const pathname = usePathname();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isChecking, setIsChecking] = useState(true);
+
+  useGetMeQuery(undefined, { skip: !isAuthenticated });
 
   useEffect(() => {
     if (!pathname) return;
