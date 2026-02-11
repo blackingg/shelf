@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent, useContext } from "react";
+import { FileBufferContext } from "@/app/context/FileBufferContext";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FiArrowLeft,
@@ -12,23 +13,23 @@ import {
   FiSun,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
+import { RenderEPub } from "@/app/app/upload-and-read/page";
 
 export default function ReaderPage() {
   const router = useRouter();
   const params = useParams();
+  const {id} = params
+  const {buffer, updateBuffer} = useContext(FileBufferContext)
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
-  const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light")
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Mock content (could be fetched based on params.id)
-  const title = "The Psychology of Money";
-  const author = "Morgan Housel";
-  const chapterTitle = "Chapter 1: No One's Crazy";
+  
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -42,6 +43,15 @@ export default function ReaderPage() {
     }
   };
 
+async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
+    const files: FileList | null = e.target.files;
+    const file = files ? files[0] : null;
+    if (file) {
+      const buffer = await file.arrayBuffer();
+      updateBuffer(buffer)
+    }
+  }
+/*
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
@@ -54,6 +64,7 @@ export default function ReaderPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+*/
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,7 +84,7 @@ export default function ReaderPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSettings]);
-
+/*
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -87,6 +98,7 @@ export default function ReaderPage() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+*/
 
   const themes = {
     light: {
@@ -129,12 +141,12 @@ export default function ReaderPage() {
             >
               <FiArrowLeft className="w-6 h-6" />
             </button>
-            <div className="hidden md:block">
+            <div className="block">
               <h1 className={`font-bold text-lg ${currentTheme.text}`}>
-                {title}
+                {id}
               </h1>
               <p className={`text-xs opacity-70 ${currentTheme.text}`}>
-                {author}
+                Author Name
               </p>
             </div>
           </div>
@@ -157,7 +169,7 @@ export default function ReaderPage() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-[70] ${currentTheme.ui}`}
+                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-70 ${currentTheme.ui}`}
                   >
                     <div className="space-y-4">
                       <div>
@@ -247,9 +259,10 @@ export default function ReaderPage() {
           </div>
         </div>
       </motion.header>
+
+  
       <main
-        className="flex-1 w-full max-w-3xl mx-auto px-6 py-24 md:py-32 cursor-text"
-        onClick={() => setShowControls(!showControls)}
+        className="grid w-full justify-center md:my-4 px-6 py-6 md:py-12 cursor-text"
       >
         <motion.div
           initial={{ opacity: 0 }}
@@ -258,61 +271,30 @@ export default function ReaderPage() {
           style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
           className={`${currentTheme.text} font-serif`}
         >
-          <div className="text-center mb-12">
-            <span
-              className={`text-sm font-sans uppercase tracking-widest opacity-60 ${currentTheme.text}`}
-            >
-              {chapterTitle}
-            </span>
-            <h2 className="text-4xl font-bold mt-4 mb-8">
-              No One&apos;s Crazy
-            </h2>
-          </div>
 
-          <p className="mb-6">
-            Let me tell you about a problem. It might make you feel better about
-            what you do with your money, and less judgmental about what other
-            people do with theirs.
-          </p>
-          <p className="mb-6">
-            People do some crazy things with money. But no one is crazy.
-          </p>
-          <p className="mb-6">
-            Here&apos;s the thing: People from different generations, raised by
-            different parents who earned different incomes and held different
-            values, in different parts of the world, born into different
-            economies, experiencing different job markets with different
-            incentives and different degrees of luck, learn very different
-            lessons.
-          </p>
-          <p className="mb-6">
-            Everyone has their own unique experience with how the world works.
-            And what you&apos;ve experienced is more compelling than what you
-            learn second-hand. So all of us—you, me, everyone—go through life
-            anchored to a set of views about how money works that vary wildly
-            from person to person. What seems crazy to you might make sense to
-            me.
-          </p>
-          <p className="mb-6">
-            The person who grew up in poverty thinks about risk and reward in
-            ways the child of a wealthy banker cannot fathom if he tried. The
-            person who grew up when inflation was high experienced something the
-            person who grew up with stable prices never had to. The stock broker
-            who lost everything during the Great Depression experienced
-            something the tech worker basking in the glory of the late 1990s
-            can&apos;t imagine. The Australian who hasn&apos;t seen a recession
-            in 30 years has experienced something the Greek worker hasn&apos;t.
-          </p>
-          <p className="mb-6">
-            On and on. The list of experiences is endless. You know stuff about
-            money that I don&apos;t, and vice versa. You go through life with
-            different beliefs, goals, and forecasts, than I do. That&apos;s not
-            because one of us is smarter than the other, or has better
-            information. It&apos;s because we&apos;ve had different lives.
-          </p>
+              <label
+              htmlFor="file"
+              className="p-2 rounded-lg text-white h-12  bg-emerald-500 grid col-span-2 items-center justify-center "
+            >
+              <span className="text-center w-full">Upload Book Here</span>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                accept=".epub"
+                style={{
+                  visibility: "hidden",
+                  height: 0,
+                }}
+                onChange={handleFileUpload}
+              />
+            </label>  
+          <RenderEPub buffer={buffer} theme={theme} />
+          
         </motion.div>
       </main>
 
+      {/*
       <motion.footer
         initial={{ y: 100 }}
         animate={{ y: showControls ? 0 : 100 }}
@@ -358,7 +340,7 @@ export default function ReaderPage() {
             <FiChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </motion.footer>
+      </motion.footer> */}
     </div>
   );
 }

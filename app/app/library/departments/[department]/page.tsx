@@ -62,7 +62,7 @@ export default function DepartmentPage({
           <div className="mb-8">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors group cursor-pointer"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 hover:dark:text-gray-300  mb-4 transition-colors group cursor-pointer"
             >
               <FiArrowLeft className="w-5 h-5" />
               <span className="font-medium group-hover:underline">
@@ -102,7 +102,7 @@ export default function DepartmentPage({
           {sortedBooks.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {sortedBooks.map((book) => (
-                <BookCard
+                <BookCard key={book.id}
                   {...book}
                   onClick={() => setSelectedBook(book)}
                 />

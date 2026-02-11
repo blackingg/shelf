@@ -1,30 +1,36 @@
 "use client"
-import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import Epub, { Rendition } from "epubjs";
-import { FileBufferContext } from "@/app/context/FileBufferContext";
-import { error } from "console";
-import next from "next";
+import { useEffect, useRef } from "react";
+import Epub, { Rendition} from "epubjs"
 
-export default function UploadAndReadPage() {
-  const [name, updateName] = useState("");
-  const [size, updateSize] = useState(0);
-  const {buffer, updateBuffer}= useContext(FileBufferContext)
+type BookThemes = 'light' | "dark" | "sepia"
 
+const themes = {
+light: {
+  body: {
+    background : '#ffffff',
+    color: '#000000'
+  }, 
+}, 
+  dark: {
+    body: {
+      background: "#1a1a1a",
+      color: "#eaeaea",
+    },
+  },
+  sepia: {
+    body: {
+      background: "#f4ecd8",
+      color: "#5b4636",
+    },
+  },
+}
 
-  async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
-    const files: FileList | null = e.target.files;
-    const file = files ? files[0] : null;
-    if (file) {
-      const { name, size } = file;
-      updateName(name);
-      updateSize(size);
-      const buffer = await file.arrayBuffer();
-      updateBuffer(buffer)
-    }
-  }
+interface EpubProps extends React.ComponentPropsWithRef<'div'>{
+  buffer: ArrayBuffer, 
+  theme?: BookThemes
+}
 
-  function RenderEPub(props: {buffer: ArrayBuffer}){
-    
+export function RenderEPub(props: EpubProps){
     const viewRef = useRef(null)
     const renditionRef = useRef<Rendition | null>(null)
 
@@ -33,13 +39,21 @@ export default function UploadAndReadPage() {
     if (!viewRef.current ) return ; 
     const rendition = book.renderTo(viewRef.current, {
       width: '100%', 
-      height: "90%"
+      height: "100%"
     })
     renditionRef.current = rendition;
+    rendition.themes.register("light", themes.light);
+    rendition.themes.register("dark", themes.dark);
+    rendition.themes.register("sepia", themes.sepia);
+
+    rendition.themes.select(props.theme ? props.theme : 'light')
+
+
 
     book.ready.then(
       () => {
         rendition.display();
+        
       }
     )
     
@@ -47,7 +61,7 @@ export default function UploadAndReadPage() {
       renditionRef.current?.destroy();
       book?.destroy();
     }
-  }, [props.buffer])
+  }, [props.buffer, props.theme])
 
   const nextPage = () => {
     renditionRef.current?.next()
@@ -57,47 +71,25 @@ export default function UploadAndReadPage() {
     renditionRef.current?.prev()
   }
 
+ 
+
     return(
       <>
-      <div className="p-2" ref={viewRef} style={{
-        height: '80vh', width: '100%'
+      { props.buffer.byteLength > 0 ? 
+      <div className="p-4 my-4 grid col-span-10" >
+      <div ref={viewRef} style={{
+        height: '80vh', width: '70vw'
       }}>
-
       </div>
-      <button onClick={() => prevPage()}>Prev</button>
-      <button onClick={() => nextPage()}>Next</button>
+
+      <div className="grid grid-cols-2 w-4/5 justify-self-center">
+      <button onClick={() => prevPage()} className="grid justify-self-start">Prev</button>
+      <button onClick={() => nextPage()} className="grid justify-self-end">Next</button>
+    </div>
+    </div> : null}
     </>
     )
 }
-  return (
-      <div className="p-2 mx-auto my-2 w-full">
-        <p>Upload and Read Page!</p>
-        <div className="grid grid-cols-5 gap-x-3 items-center p-2 my-1">
-          <div className="col-span-1 text-center">
-            <label
-              htmlFor="file"
-              className="p-2 rounded-lg text-white bg-emerald-500 grid items-center justify-center "
-            >
-              <span className="text-center w-full">Upload Book Here</span>
-              <input
-                type="file"
-                name="file"
-                id="file"
-                accept=".epub"
-                style={{
-                  visibility: "hidden",
-                  height: 0,
-                }}
-                onChange={handleFileUpload}
-              />
-            </label>
-          </div>
-          <div className="col-span-4">
-            <p>{name}</p>
-            <p> {(size / 1048576).toFixed(2)} MB</p>
-            <RenderEPub buffer={buffer} />
-          </div>
-        </div>
-      </div>
-  );
-}
+
+
+

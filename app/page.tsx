@@ -235,11 +235,11 @@ export default function ShelfLanding() {
             }}
           >
             <motion.div
-              className="relative bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-[2rem] p-12 shadow-2xl border border-emerald-500/20"
+              className="relative bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-4xl p-12 shadow-2xl border border-emerald-500/20"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent rounded-[2rem]" />
+              <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent rounded-4xl" />
 
               <motion.div
                 className="absolute top-6 right-6 w-24 h-24 bg-emerald-400/20 rounded-full blur-2xl"
