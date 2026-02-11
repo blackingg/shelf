@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { BookCard } from "@/app/components/Library/BookCard";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { FiFilter, FiBookOpen } from "react-icons/fi";
 import { useGetBooksByDepartmentQuery } from "@/app/store/api/departmentsApi";
-import BookCardSkeleton from "@/app/components/Skeletons/BookCardSkeleton";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
@@ -36,19 +35,19 @@ export default function UserDepartmentBooks({
 
   return (
     <div className="py-2">
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <div className="flex items-center justify-between mb-10 flex-wrap gap-6">
         <div>
-          <p className="text-gray-500 dark:text-neutral-400 text-sm">
-            Quick access to your major's resources.
+          <p className="text-[11px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+            Quick access to your Course's resources
           </p>
         </div>
 
-        <div className="flex items-center space-x-3 bg-white dark:bg-neutral-800 px-4 py-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-700">
-          <FiFilter className="w-4 h-4 text-emerald-600" />
+        <div className="flex items-center gap-3 bg-gray-50/50 dark:bg-neutral-900/40 px-4 py-2 rounded-md border border-gray-100 dark:border-neutral-800 transition-colors">
+          <FiFilter className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-700 dark:text-neutral-200 outline-none"
+            className="bg-transparent border-none focus:ring-0 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-neutral-500 cursor-pointer outline-none"
           >
             <option value="createdAt">New Arrivals</option>
             <option value="rating">Top Rated</option>
@@ -68,14 +67,15 @@ export default function UserDepartmentBooks({
               key={book.id}
               {...book}
               onClick={() => setSelectedBook(book as BookPreview)}
-              className="hover:scale-[1.02] transition-transform"
             />
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-neutral-800 p-16 rounded-[3rem] text-center border border-gray-100 dark:border-neutral-700">
-          <FiBookOpen className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-neutral-400">
+        <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-20 rounded-md text-center border border-gray-100 dark:border-neutral-800/50">
+          <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
+            <FiBookOpen className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
             No books added to your department yet.
           </p>
         </div>
