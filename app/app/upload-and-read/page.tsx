@@ -26,8 +26,7 @@ light: {
 }
 
 interface EpubProps extends React.ComponentPropsWithRef<'div'>{
-  buffer: ArrayBuffer, 
-  theme?: BookThemes
+  buffer: ArrayBuffer,
 }
 
 export function RenderEPub(props: EpubProps){
@@ -39,16 +38,15 @@ export function RenderEPub(props: EpubProps){
     if (!viewRef.current ) return ; 
     const rendition = book.renderTo(viewRef.current, {
       width: '100%', 
-      height: "100%"
+      height: '100%', 
+      allowScriptedContent: true,
     })
     renditionRef.current = rendition;
     rendition.themes.register("light", themes.light);
     rendition.themes.register("dark", themes.dark);
     rendition.themes.register("sepia", themes.sepia);
 
-    rendition.themes.select(props.theme ? props.theme : 'light')
-
-
+    rendition.themes.select('light')
 
     book.ready.then(
       () => {
@@ -56,12 +54,14 @@ export function RenderEPub(props: EpubProps){
         
       }
     )
-    
+
+
     return () => {
       renditionRef.current?.destroy();
       book?.destroy();
     }
-  }, [props.buffer, props.theme])
+  }, [props.buffer])
+
 
   const nextPage = () => {
     renditionRef.current?.next()
@@ -71,20 +71,22 @@ export function RenderEPub(props: EpubProps){
     renditionRef.current?.prev()
   }
 
- 
 
     return(
       <>
-      { props.buffer.byteLength > 0 ? 
-      <div className="p-4 my-4 grid col-span-10" >
+      { props.buffer && props.buffer.byteLength > 0 ? 
+      <div className="p-2 my-4 grid col-span-10 transition-all duration-150" >
       <div ref={viewRef} style={{
-        height: '80vh', width: '70vw'
+        height: '78vh', width: '80vw', 
       }}>
       </div>
 
-      <div className="grid grid-cols-2 w-4/5 justify-self-center">
-      <button onClick={() => prevPage()} className="grid justify-self-start">Prev</button>
-      <button onClick={() => nextPage()} className="grid justify-self-end">Next</button>
+      <div className="grid grid-cols-2 w-4/5 justify-self-center font-sans">
+      <button onClick={() => prevPage()} className="grid justify-self-start">&lt; Prev</button>
+      <button onClick={() => renditionRef.current?.themes.select('light')}>L</button>
+      <button onClick={() => renditionRef.current?.themes.select('sepia')}>S</button>
+      <button onClick={() => renditionRef.current?.themes.select('dark')}>D</button>
+      <button onClick={() => nextPage()} className="grid justify-self-end">Next &gt;</button>
     </div>
     </div> : null}
     </>

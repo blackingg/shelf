@@ -25,7 +25,6 @@ export default function ReaderPage() {
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light")
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Mock content (could be fetched based on params.id)
@@ -149,6 +148,23 @@ async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
                 Author Name
               </p>
             </div>
+             <label
+              htmlFor="file"
+              className="p-2 rounded-lg text-white h-12  bg-emerald-500 grid col-span-2 items-center justify-center "
+            >
+              <span className="text-center w-full">Upload Book Here</span>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                accept=".epub"
+                style={{
+                  visibility: "hidden",
+                  height: 0,
+                }}
+                onChange={handleFileUpload}
+              />
+            </label>  
           </div>
 
           <div className="flex items-center space-x-2">
@@ -272,24 +288,7 @@ async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
           className={`${currentTheme.text} font-serif`}
         >
 
-              <label
-              htmlFor="file"
-              className="p-2 rounded-lg text-white h-12  bg-emerald-500 grid col-span-2 items-center justify-center "
-            >
-              <span className="text-center w-full">Upload Book Here</span>
-              <input
-                type="file"
-                name="file"
-                id="file"
-                accept=".epub"
-                style={{
-                  visibility: "hidden",
-                  height: 0,
-                }}
-                onChange={handleFileUpload}
-              />
-            </label>  
-          <RenderEPub buffer={buffer} theme={theme} />
+          <RenderEPub buffer={buffer} />
           
         </motion.div>
       </main>
