@@ -62,63 +62,66 @@ class ErrorBoundary extends Component<Props, State> {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-md w-full text-center"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="max-w-xl w-full text-center"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-24 h-24 rounded-full bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 flex items-center justify-center mx-auto mb-8"
-            >
-              <FiAlertTriangle className="w-12 h-12 text-red-500 dark:text-red-400" />
-            </motion.div>
+            <div className="flex justify-center mb-10">
+              <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 flex items-center justify-center">
+                <FiAlertTriangle className="w-8 h-8 text-red-500" />
+              </div>
+            </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Something went wrong
+            <span className="inline-block text-[11px] font-black uppercase tracking-[0.4em] text-red-600 dark:text-red-500 mb-6 px-4 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-100 dark:border-red-800/30">
+              System Error
+            </span>
+
+            <h1 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tighter leading-none">
+              Something went <span className="text-red-600">wrong</span>.
             </h1>
-            <p className="text-gray-500 dark:text-neutral-400 mb-8 leading-relaxed">
+
+            <p className="text-gray-500 dark:text-neutral-500 mb-12 text-lg font-medium max-w-md mx-auto leading-relaxed">
               We encountered an unexpected error. Don&apos;t worry, your data is
               safe. Try refreshing the page or go back home.
             </p>
 
             {process.env.NODE_ENV === "development" && this.state.error && (
-              <div className="mb-8 p-4 bg-gray-100 dark:bg-neutral-800 rounded-xl text-left overflow-auto max-h-40">
-                <p className="text-sm font-mono text-red-600 dark:text-red-400 break-words">
+              <div className="mb-10 p-5 bg-red-50/50 dark:bg-red-950/20 border border-red-100/50 dark:border-red-900/30 rounded-md text-left overflow-auto max-h-48 custom-scrollbar">
+                <p className="text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400 mb-2">
+                  Developer Stack Trace
+                </p>
+                <p className="text-sm font-mono text-gray-900 dark:text-white break-words mb-3">
                   {this.state.error.message}
                 </p>
                 {this.state.errorInfo && (
-                  <pre className="text-xs text-gray-500 dark:text-neutral-400 mt-2 whitespace-pre-wrap">
+                  <pre className="text-[10px] text-gray-500 dark:text-neutral-500 whitespace-pre-wrap leading-normal">
                     {this.state.errorInfo.componentStack}
                   </pre>
                 )}
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
                 onClick={this.handleReload}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 h-14 bg-gray-900 dark:bg-white text-white dark:text-neutral-950 text-[11px] font-black uppercase tracking-widest rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-black/5 dark:shadow-white/5"
               >
-                <FiRefreshCw className="w-5 h-5" />
+                <FiRefreshCw className="w-4 h-4" />
                 Reload Page
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              </button>
+              <button
                 onClick={this.handleGoHome}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-gray-700 dark:text-white font-medium rounded-xl transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 h-14 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white transition-all"
               >
-                <FiHome className="w-5 h-5" />
-                Go Home
-              </motion.button>
+                <FiHome className="w-4 h-4" />
+                Go Back Home
+              </button>
             </div>
 
-            <p className="mt-10 text-sm text-gray-400 dark:text-neutral-500">
-              If this issue persists, please contact support.
-            </p>
+            <div className="mt-16 pt-8 border-t border-dashed border-gray-100 dark:border-neutral-800/50">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-600">
+                If this persists, please reach out to our support team.
+              </p>
+            </div>
           </motion.div>
         </div>
       );
