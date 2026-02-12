@@ -6,19 +6,23 @@ import { SearchListItem } from "./SearchListItem";
 interface SearchListProps {
   items: SearchResultItem[];
   onBookClick: (item: SearchResultItem) => void;
-  onFolderClick: (folderId: string) => void;
+  onFolderClick: (slug: string) => void;
+  onUserClick?: (username: string) => void;
 }
 
 export const SearchList: React.FC<SearchListProps> = ({
   items,
   onBookClick,
   onFolderClick,
+  onUserClick,
 }) => {
   const handleClick = (item: SearchResultItem) => {
     if (item.type === "book") {
       onBookClick(item);
     } else if (item.type === "folder") {
-      onFolderClick(item.data.id);
+      onFolderClick(item.data.slug);
+    } else if (item.type === "user" && onUserClick) {
+      onUserClick(item.data.username);
     }
   };
 

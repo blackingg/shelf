@@ -86,7 +86,7 @@ export const FolderList: React.FC<FolderListProps> = ({
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-neutral-800">
             {folders.map((folder) => {
-              const isOwner = folder.createdBy === currentUser;
+              const isOwner = folder.user?.username === currentUser;
               const isEditor = folder.collaborator?.role === "EDITOR";
               const canEdit = isOwner || isEditor;
               const canDelete = isOwner;

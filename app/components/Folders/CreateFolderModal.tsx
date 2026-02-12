@@ -47,7 +47,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
             className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-lg z-50 p-8 border border-gray-200 dark:border-neutral-800"
           >
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-medium text-gray-900 dark:text-white">
                 Create New Folder
               </h2>
               <button
@@ -63,7 +63,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
               className="space-y-8"
             >
               <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-neutral-500 mb-2">
+                <label className="block text-[10px] uppercase tracking-widest font-medium text-gray-400 dark:text-neutral-500 mb-2">
                   Folder Name
                 </label>
                 <input
@@ -77,7 +77,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-neutral-500 mb-3">
+                <label className="block text-[10px] uppercase tracking-widest font-medium text-gray-400 dark:text-neutral-500 mb-3">
                   Visibility
                 </label>
                 <div className="space-y-3">
@@ -110,7 +110,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                     />
                     <div className="flex-1 text-left">
                       <p
-                        className={`font-semibold text-sm ${
+                        className={`font-medium text-sm ${
                           visibility === "PRIVATE"
                             ? "text-gray-900 dark:text-white"
                             : "text-gray-700 dark:text-neutral-400"
@@ -153,7 +153,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                     />
                     <div className="flex-1 text-left">
                       <p
-                        className={`font-semibold text-sm ${
+                        className={`font-medium text-sm ${
                           visibility === "PUBLIC"
                             ? "text-gray-900 dark:text-white"
                             : "text-gray-700 dark:text-neutral-400"
@@ -173,14 +173,14 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-6 py-3 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-neutral-400 rounded-md font-bold text-sm uppercase tracking-wider hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 px-6 py-3 border border-gray-200 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 rounded-md font-medium text-sm hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!folderName.trim()}
-                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-md font-bold text-sm uppercase tracking-wider hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-md font-medium text-sm hover:bg-emerald-700 transition-colors disabled:opacity-50"
                 >
                   Create Folder
                 </button>

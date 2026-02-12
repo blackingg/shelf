@@ -51,7 +51,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
-  const isOwner = folder.createdBy === currentUser;
+  const isOwner = folder.user?.username === currentUser;
   const isEditor = folder.collaborator?.role === "EDITOR";
   const canEdit = isOwner || isEditor;
   const canDelete = isOwner;
