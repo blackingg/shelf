@@ -37,13 +37,17 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
 
   if (folders.length === 0) {
     return (
-      <div className={`text-center py-16 ${className}`}>
-        <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
-          <FiFolder className="w-10 h-10 text-gray-400 dark:text-neutral-500" />
+      <div
+        className={`min-h-[50vh] flex items-center justify-center ${className}`}
+      >
+        <div className="text-center py-16">
+          <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiFolder className="w-10 h-10 text-gray-400 dark:text-neutral-500" />
+          </div>
+          <p className="text-gray-500 dark:text-neutral-400 text-lg">
+            {emptyMessage}
+          </p>
         </div>
-        <p className="text-gray-500 dark:text-neutral-400 text-lg">
-          {emptyMessage}
-        </p>
       </div>
     );
   }

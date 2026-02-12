@@ -122,16 +122,18 @@ export default function BookmarksPage() {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                      <FiBookmark className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                  <div className="col-span-full min-h-[50vh] flex items-center justify-center">
+                    <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full">
+                      <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                        <FiBookmark className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                        No bookmarked books
+                      </h3>
+                      <p className="text-gray-500 dark:text-neutral-400 font-medium">
+                        Books you bookmark will appear here.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                      No bookmarked books
-                    </h3>
-                    <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                      Books you bookmark will appear here.
-                    </p>
                   </div>
                 )}
               </div>
@@ -167,16 +169,18 @@ export default function BookmarksPage() {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                      <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                  <div className="col-span-full min-h-[50vh] flex items-center justify-center">
+                    <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full">
+                      <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                        <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                        No bookmarked folders
+                      </h3>
+                      <p className="text-gray-500 dark:text-neutral-400 font-medium">
+                        Folders you bookmark will appear here.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                      No bookmarked folders
-                    </h3>
-                    <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                      Folders you bookmark will appear here.
-                    </p>
                   </div>
                 )}
               </div>
