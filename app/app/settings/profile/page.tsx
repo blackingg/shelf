@@ -6,7 +6,6 @@ import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useAppDispatch } from "@/app/store/store";
 import {
   useUpdateMeMutation,
   useUploadAvatarMutation,
@@ -25,7 +24,6 @@ interface OptionType {
 }
 
 export default function SettingsProfilePage() {
-  const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
   const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
@@ -55,8 +53,8 @@ export default function SettingsProfilePage() {
       setFormData({
         name: user?.fullName || "",
         username: user?.username || "",
-        schoolId: user?.schoolId || "",
-        departmentId: user?.departmentId || "",
+        schoolId: user?.school?.id || "",
+        departmentId: user?.department?.id || "",
         email: user?.email || "",
         bio: user?.bio || "",
       });
@@ -79,8 +77,8 @@ export default function SettingsProfilePage() {
     formData.name !== (user?.fullName || "") ||
     formData.username !== (user?.username || "") ||
     formData.bio !== (user?.bio || "") ||
-    formData.schoolId !== (user?.schoolId || "") ||
-    formData.departmentId !== (user?.departmentId || "");
+    formData.schoolId !== (user?.school?.id || "") ||
+    formData.departmentId !== (user?.department?.id || "");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -275,7 +273,7 @@ export default function SettingsProfilePage() {
                           ) ||
                           (user?.school
                             ? {
-                                value: user.schoolId as string,
+                                value: user.school.id as string,
                                 label: user.school.name,
                               }
                             : null)
@@ -305,7 +303,7 @@ export default function SettingsProfilePage() {
                           ) ||
                           (user?.department
                             ? {
-                                value: user.departmentId as string,
+                                value: user.department.id as string,
                                 label: user.department.name,
                               }
                             : null)
