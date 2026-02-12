@@ -16,7 +16,7 @@ export const bookmarksApi = baseApi.injectEndpoints({
             "getIsBookBookmarked",
             id,
             (draft) => {
-              draft.bookmarked = true;
+              if (draft) draft.bookmarked = true;
             },
           ),
         );
@@ -39,7 +39,7 @@ export const bookmarksApi = baseApi.injectEndpoints({
             "getIsBookBookmarked",
             id,
             (draft) => {
-              draft.bookmarked = false;
+              if (draft) draft.bookmarked = false;
             },
           ),
         );
@@ -74,12 +74,9 @@ export const bookmarksApi = baseApi.injectEndpoints({
         url: `/folders/${id}/bookmark`,
         method: "POST",
       }),
-      // Optimistic bookmark - immediately add to bookmarked list
       async onQueryStarted(id, { dispatch, getState, queryFulfilled }) {
-        // Find the folder from public or recommended folders to add to bookmarks
         const state = getState() as { api: ReturnType<typeof baseApi.reducer> };
 
-        // Try to find folder from various caches
         let folderToBookmark: Folder | undefined;
 
         const publicFolders = (
@@ -99,38 +96,88 @@ export const bookmarksApi = baseApi.injectEndpoints({
 
         const patchResults = [];
 
-        // Update bookmark count in folder detail
-        if ((baseApi.endpoints as any).getFolderById) {
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getIsFolderBookmarked",
+              id,
+              (draft) => {
+                if (draft) draft.bookmarked = true;
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getMeFolders" as any,
+              undefined,
+              (draft: any) => {
+                if (!draft) return;
+                const folder = draft.find((f: any) => f.id === id);
+                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getPublicFolders" as any,
+              undefined,
+              (draft: any) => {
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
+                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getRecommendedFolders" as any,
+              undefined,
+              (draft: any) => {
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
+                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getFolderById" as any,
+              id,
+              (draft: any) => {
+                if (draft) draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
+              },
+            ),
+          ),
+        );
+
+        const folderSlug = folderById?.data?.slug;
+        if (folderSlug) {
           patchResults.push(
             dispatch(
-              (baseApi.util as any).updateQueryData(
-                "getFolderById",
-                id,
+              bookmarksApi.util.updateQueryData(
+                "getFolderBySlug" as any,
+                folderSlug,
                 (draft: any) => {
-                  draft.bookmarksCount += 1;
+                  if (draft) draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
                 },
               ),
             ),
           );
         }
 
-        // Update bookmark count in public folders list
-        if ((baseApi.endpoints as any).getPublicFolders) {
-          patchResults.push(
-            dispatch(
-              (baseApi.util as any).updateQueryData(
-                "getPublicFolders",
-                undefined,
-                (draft: any) => {
-                  const folder = draft.items.find((f: Folder) => f.id === id);
-                  if (folder) folder.bookmarksCount += 1;
-                },
-              ),
-            ),
-          );
-        }
 
-        // Add to bookmarked folders list
         if (folderToBookmark) {
           patchResults.push(
             dispatch(
@@ -138,7 +185,6 @@ export const bookmarksApi = baseApi.injectEndpoints({
                 "getBookmarkedFolders",
                 undefined,
                 (draft) => {
-                  // Avoid duplicates
                   if (!draft.some((f) => f.id === id)) {
                     draft.unshift({
                       ...folderToBookmark!,
@@ -155,7 +201,6 @@ export const bookmarksApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
         } catch {
-          // Rollback all patches on error
           patchResults.forEach((patch) => patch.undo());
         }
       },
@@ -170,35 +215,116 @@ export const bookmarksApi = baseApi.injectEndpoints({
         url: `/folders/${id}/bookmark`,
         method: "DELETE",
       }),
-      // Optimistic unbookmark - immediately remove from bookmarked list
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        const patchResults = [
-          // Update bookmark count in folder detail
+      async onQueryStarted(id, { dispatch, getState, queryFulfilled }) {
+        const state = getState() as { api: ReturnType<typeof baseApi.reducer> };
+        const folderById = (baseApi.endpoints as any).getFolderById?.select(id)(
+          state as never,
+        );
+        const folderSlug = folderById?.data?.slug;
+
+        const patchResults = [];
+
+        patchResults.push(
           dispatch(
-            (baseApi.util as any).updateQueryData(
-              "getFolderById",
+            bookmarksApi.util.updateQueryData(
+              "getIsFolderBookmarked",
               id,
-              (draft: any) => {
-                draft.bookmarksCount = Math.max(0, draft.bookmarksCount - 1);
+              (draft) => {
+                if (draft) draft.bookmarked = false;
               },
             ),
           ),
-          // Update bookmark count in public folders list
+        );
+
+        patchResults.push(
           dispatch(
-            (baseApi.util as any).updateQueryData(
-              "getPublicFolders",
+            bookmarksApi.util.updateQueryData(
+              "getMeFolders" as any,
               undefined,
               (draft: any) => {
-                const folder = draft.items.find((f: Folder) => f.id === id);
+                if (!draft) return;
+                const folder = draft.find((f: any) => f.id === id);
                 if (folder)
                   folder.bookmarksCount = Math.max(
                     0,
-                    folder.bookmarksCount - 1,
+                    (folder.bookmarksCount || 0) - 1,
                   );
               },
             ),
           ),
-          // Remove from bookmarked folders list
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getPublicFolders" as any,
+              undefined,
+              (draft: any) => {
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
+                if (folder)
+                  folder.bookmarksCount = Math.max(
+                    0,
+                    (folder.bookmarksCount || 0) - 1,
+                  );
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getRecommendedFolders" as any,
+              undefined,
+              (draft: any) => {
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
+                if (folder)
+                  folder.bookmarksCount = Math.max(
+                    0,
+                    (folder.bookmarksCount || 0) - 1,
+                  );
+              },
+            ),
+          ),
+        );
+
+        patchResults.push(
+          dispatch(
+            bookmarksApi.util.updateQueryData(
+              "getFolderById" as any,
+              id,
+              (draft: any) => {
+                if (draft)
+                  draft.bookmarksCount = Math.max(
+                    0,
+                    (draft.bookmarksCount || 0) - 1,
+                  );
+              },
+            ),
+          ),
+        );
+
+        if (folderSlug) {
+          patchResults.push(
+            dispatch(
+              bookmarksApi.util.updateQueryData(
+                "getFolderBySlug" as any,
+                folderSlug,
+                (draft: any) => {
+                  if (draft)
+                    draft.bookmarksCount = Math.max(
+                      0,
+                      (draft.bookmarksCount || 0) - 1,
+                    );
+                },
+              ),
+            ),
+          );
+        }
+
+        patchResults.push(
           dispatch(
             bookmarksApi.util.updateQueryData(
               "getBookmarkedFolders",
@@ -209,12 +335,11 @@ export const bookmarksApi = baseApi.injectEndpoints({
               },
             ),
           ),
-        ];
+        );
 
         try {
           await queryFulfilled;
         } catch {
-          // Rollback all patches on error
           patchResults.forEach((patch) => patch.undo());
         }
       },
@@ -223,6 +348,10 @@ export const bookmarksApi = baseApi.injectEndpoints({
         "Folders",
         "Bookmarks",
       ],
+    }),
+    getIsFolderBookmarked: builder.query<{ bookmarked: boolean }, string>({
+      query: (id) => `/folders/${id}/bookmarked`,
+      providesTags: (result, error, id) => ["Bookmarks"],
     }),
   }),
   overrideExisting: true,
@@ -236,4 +365,5 @@ export const {
   useGetBookmarkedFoldersQuery,
   useBookmarkFolderMutation,
   useUnbookmarkFolderMutation,
+  useGetIsFolderBookmarkedQuery,
 } = bookmarksApi;
