@@ -97,8 +97,8 @@ export const UserProfileDropdown: React.FC = () => {
                     <p className="font-bold text-gray-900 dark:text-white text-sm truncate leading-tight mb-1">
                       {userFullName}
                     </p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 truncate opacity-60">
-                      Member Scholar
+                    <p className="text-[10px] font-bold tracking-widest text-emerald-600 dark:text-emerald-400 truncate opacity-60">
+                      {userEmail}
                     </p>
                   </div>
                 </div>
