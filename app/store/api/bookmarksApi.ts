@@ -65,8 +65,14 @@ export const bookmarksApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Bookmarks"],
     }),
-    getBookmarkedFolders: builder.query<Folder[], void>({
-      query: () => "/folders/bookmarked",
+    getBookmarkedFolders: builder.query<
+      PaginatedResponse<Folder>,
+      { page?: number; pageSize?: number } | void
+    >({
+      query: (params) => ({
+        url: "/folders/bookmarked",
+        params: params || undefined,
+      }),
       providesTags: ["Bookmarks"],
     }),
     bookmarkFolder: builder.mutation<void, string>({
@@ -114,8 +120,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               "getMeFolders" as any,
               undefined,
               (draft: any) => {
-                if (!draft) return;
-                const folder = draft.find((f: any) => f.id === id);
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
                 if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
               },
             ),
@@ -185,12 +191,13 @@ export const bookmarksApi = baseApi.injectEndpoints({
                 "getBookmarkedFolders",
                 undefined,
                 (draft) => {
-                  if (!draft.some((f) => f.id === id)) {
-                    draft.unshift({
+                  if (!draft.items.some((f) => f.id === id)) {
+                    draft.items.unshift({
                       ...folderToBookmark!,
                       bookmarksCount:
                         (folderToBookmark!.bookmarksCount || 0) + 1,
                     });
+                    draft.total += 1;
                   }
                 },
               ),
@@ -242,8 +249,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               "getMeFolders" as any,
               undefined,
               (draft: any) => {
-                if (!draft) return;
-                const folder = draft.find((f: any) => f.id === id);
+                if (!draft?.items) return;
+                const folder = draft.items.find((f: any) => f.id === id);
                 if (folder)
                   folder.bookmarksCount = Math.max(
                     0,
@@ -330,8 +337,11 @@ export const bookmarksApi = baseApi.injectEndpoints({
               "getBookmarkedFolders",
               undefined,
               (draft) => {
-                const index = draft.findIndex((f) => f.id === id);
-                if (index !== -1) draft.splice(index, 1);
+                const index = draft.items.findIndex((f) => f.id === id);
+                if (index !== -1) {
+                  draft.items.splice(index, 1);
+                  draft.total = Math.max(0, draft.total - 1);
+                }
               },
             ),
           ),

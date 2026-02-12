@@ -22,20 +22,27 @@ export default function BookmarksPage() {
   const [activeTab, setActiveTab] = useState<"books" | "folders">("books");
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
-  const pageSize = 15;
+  const [folderPage, setFolderPage] = useState(1);
+  const pageSize = 8;
 
   const {
     data: booksResponse,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
   } = useGetBookmarkedBooksQuery({ page, pageSize });
-  const { data: folders, isLoading: isLoadingFolders } =
-    useGetBookmarkedFoldersQuery();
-
-  const showBooksSkeleton = isLoadingBooks || isFetchingBooks;
+  const {
+    data: foldersResponse,
+    isLoading: isLoadingFolders,
+    isFetching: isFetchingFolders,
+  } = useGetBookmarkedFoldersQuery({ page: folderPage, pageSize });
 
   const books = booksResponse?.items || [];
   const totalBooksCount = booksResponse?.total || 0;
+  const folders = foldersResponse?.items || [];
+  const totalFoldersCount = foldersResponse?.total || 0;
+
+  const showBooksSkeleton = isLoadingBooks || isFetchingBooks;
+  const showFoldersSkeleton = isLoadingFolders || isFetchingFolders;
 
   const tabs = [
     {
@@ -48,7 +55,7 @@ export default function BookmarksPage() {
       id: "folders",
       label: "Folders",
       icon: FiFolder,
-      count: folders?.length || 0,
+      count: totalFoldersCount,
     },
   ];
 
@@ -141,32 +148,49 @@ export default function BookmarksPage() {
           )}
 
           {activeTab === "folders" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {isLoadingFolders ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <FolderCardSkeleton key={i} />
-                ))
-              ) : folders && folders.length > 0 ? (
-                folders.map((folder) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
-                  <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                    <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+            <div className="space-y-8">
+              <div
+                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 ${
+                  showFoldersSkeleton ? "opacity-50" : ""
+                }`}
+              >
+                {isLoadingFolders ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <FolderCardSkeleton key={i} />
+                  ))
+                ) : folders && folders.length > 0 ? (
+                  folders.map((folder) => (
+                    <FolderCard
+                      key={folder.id}
+                      folder={folder}
+                      onClick={() => router.push(`/app/folders/${folder.slug}`)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg">
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                      <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                      No bookmarked folders
+                    </h3>
+                    <p className="text-gray-500 dark:text-neutral-400 font-medium">
+                      Folders you bookmark will appear here.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                    No bookmarked folders
-                  </h3>
-                  <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                    Folders you bookmark will appear here.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
+
+              {folders.length > 0 &&
+                foldersResponse &&
+                foldersResponse.totalPages > 1 && (
+                  <Pagination
+                    currentPage={folderPage}
+                    totalPages={foldersResponse.totalPages}
+                    onPageChange={setFolderPage}
+                    isLoading={showFoldersSkeleton}
+                  />
+                )}
             </div>
           )}
         </div>

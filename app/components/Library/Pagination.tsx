@@ -2,7 +2,6 @@
 
 import React from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { motion } from "framer-motion";
 
 interface PaginationProps {
   currentPage: number;

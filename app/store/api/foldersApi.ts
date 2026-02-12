@@ -18,8 +18,12 @@ import { PaginatedResponse } from "../../types/common";
 export const foldersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMeFolders: builder.query<
-      Folder[],
-      { include_collaborated?: boolean } | void
+      PaginatedResponse<Folder>,
+      {
+        include_collaborated?: boolean;
+        page?: number;
+        pageSize?: number;
+      } | void
     >({
       query: (params) => ({
         url: "/folders/me",
@@ -86,7 +90,7 @@ export const foldersApi = baseApi.injectEndpoints({
               "getMeFolders",
               undefined,
               (draft) => {
-                const folder = draft.find((f) => f.id === id);
+                const folder = draft.items.find((f) => f.id === id);
                 if (folder) Object.assign(folder, data);
               },
             ),
@@ -116,8 +120,11 @@ export const foldersApi = baseApi.injectEndpoints({
             "getMeFolders",
             undefined,
             (draft) => {
-              const index = draft.findIndex((f) => f.id === id);
-              if (index !== -1) draft.splice(index, 1);
+              const index = draft.items.findIndex((f) => f.id === id);
+              if (index !== -1) {
+                draft.items.splice(index, 1);
+                draft.total = Math.max(0, draft.total - 1);
+              }
             },
           ),
         );
@@ -151,7 +158,7 @@ export const foldersApi = baseApi.injectEndpoints({
               "getMeFolders",
               undefined,
               (draft) => {
-                const folder = draft.find((f) => f.id === id);
+                const folder = draft.items.find((f) => f.id === id);
                 if (folder) folder.booksCount += 1;
               },
             ),
@@ -186,7 +193,7 @@ export const foldersApi = baseApi.injectEndpoints({
               "getMeFolders",
               undefined,
               (draft) => {
-                const folder = draft.find((f) => f.id === id);
+                const folder = draft.items.find((f) => f.id === id);
                 if (folder)
                   folder.booksCount = Math.max(0, folder.booksCount - 1);
               },

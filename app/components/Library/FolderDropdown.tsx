@@ -26,12 +26,14 @@ export const FolderDropdown: React.FC<{
   const { addNotification } = useNotifications();
 
   const {
-    data: folders = [],
+    data: foldersData,
     isLoading,
     isError,
   } = useGetMeFoldersQuery(undefined, {
     skip: !isOpen,
   });
+
+  const folders = foldersData?.items || [];
 
   const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
 
