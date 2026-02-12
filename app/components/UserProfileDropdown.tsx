@@ -25,7 +25,7 @@ export const UserProfileDropdown: React.FC = () => {
 
   const handleSettings = () => {
     setIsOpen(false);
-    router.push("/app/settings/account");
+    router.push("/app/settings/profile");
   };
 
   const handleLogout = () => {

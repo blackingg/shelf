@@ -227,9 +227,9 @@ export default function FoldersPage() {
         title="Delete Folder?"
         message={
           folderToDelete && (
-            <p className="text-gray-600 text-center">
+            <p className="text-gray-600 text-left">
               Are you sure you want to delete{" "}
-              <span className="font-bold text-gray-900">
+              <span className="font-bold text-gray-600 dark:text-gray-300">
                 "{folderToDelete.name}"
               </span>
               ?
