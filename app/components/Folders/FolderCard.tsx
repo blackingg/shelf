@@ -98,7 +98,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       onClick={onClick}
       className="group cursor-pointer relative"
     >
-      <div className="absolute top-1.5 right-1.5 z-30 flex items-center space-x-1.5">
+      <div className="absolute top-1.5 right-1.5 z-20 flex items-center space-x-1.5">
         <button
           onClick={handleBookmark}
           className={`p-1.5 rounded-md transition-all duration-200 ${

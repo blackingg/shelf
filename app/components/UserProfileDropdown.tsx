@@ -68,7 +68,7 @@ export const UserProfileDropdown: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-50"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
@@ -80,7 +80,7 @@ export const UserProfileDropdown: React.FC = () => {
             >
               <div className="p-5 border-b border-gray-100 dark:border-neutral-800">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-md flex items-center justify-center bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-white font-bold text-lg flex-shrink-0 overflow-hidden border border-gray-100 dark:border-neutral-700/50">
+                  <div className="w-11 h-11 rounded-md flex items-center justify-center bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-white font-bold text-lg shrink-0 overflow-hidden border border-gray-100 dark:border-neutral-700/50">
                     {userAvatar &&
                     (userAvatar.startsWith("/") ||
                       userAvatar.startsWith("http")) ? (
