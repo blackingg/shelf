@@ -80,7 +80,7 @@ export default function LibraryPage() {
                       <FolderCard
                         key={`rec-folder-${item.id}-${idx}`}
                         folder={item}
-                        onClick={() => router.push(`/app/folders/${item.id}`)}
+                        onClick={() => router.push(`/app/folders/${item.slug}`)}
                       />
                     );
                   } else {

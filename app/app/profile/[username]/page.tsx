@@ -268,7 +268,7 @@ export default function UserProfilePage() {
                   <FolderCard
                     key={folder.id}
                     folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.id}`)}
+                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
                   />
                 ))
               ) : (

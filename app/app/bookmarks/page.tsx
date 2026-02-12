@@ -151,7 +151,7 @@ export default function BookmarksPage() {
                   <FolderCard
                     key={folder.id}
                     folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.id}`)}
+                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
                   />
                 ))
               ) : (

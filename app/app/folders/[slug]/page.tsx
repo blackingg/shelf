@@ -16,21 +16,21 @@ import { getErrorMessage } from "@/app/helpers/error";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import {
-  useGetFolderByIdQuery,
+  useGetFolderBySlugQuery,
   useUploadFolderCoverMutation,
 } from "@/app/store/api/foldersApi";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 
 export default function FolderDetailsPage() {
   const params = useParams();
-  const folderId = Array.isArray(params.id) ? params.id[0] : params.id || "";
+  const slug = params.slug as string;
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
   const [uploadFolderCover, { isLoading: isUploadingCover }] =
     useUploadFolderCoverMutation();
 
-  const { data: folder, isLoading } = useGetFolderByIdQuery(folderId);
+  const { data: folder, isLoading } = useGetFolderBySlugQuery(slug);
   const user = useSelector(selectCurrentUser);
   const currentUser = user?.username || "Guest";
 
@@ -42,13 +42,13 @@ export default function FolderDetailsPage() {
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !folder) return;
 
     const formData = new FormData();
     formData.append("coverImage", file);
 
     try {
-      await uploadFolderCover({ id: folderId, data: formData }).unwrap();
+      await uploadFolderCover({ id: folder.id, data: formData }).unwrap();
       addNotification("success", "Folder cover updated successfully");
     } catch (error) {
       addNotification(
@@ -65,15 +65,16 @@ export default function FolderDetailsPage() {
   if (!folder) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
           Folder Not Found
         </h2>
-        <p className="text-gray-600 mb-6">
-          The folder you are looking for doesn&apos;t exist or has been removed.
+        <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 max-w-sm">
+          The folder you are looking for doesn&apos;t exist or has been removed
+          from our system.
         </p>
         <button
           onClick={() => router.push("/app/folders")}
-          className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-semibold transition-all hover:bg-emerald-700 shadow-md"
+          className="px-6 py-2 bg-emerald-600 text-white rounded-md font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
         >
           Back to Folders
         </button>
@@ -83,7 +84,7 @@ export default function FolderDetailsPage() {
 
   const books = folder.items?.map((item) => item.book) || [];
 
-  const isOwner = folder.createdBy === currentUser;
+  const isOwner = folder.user?.username === currentUser;
   const isCollaborator = !!folder.collaborators?.some(
     (c) => c.user.username === currentUser,
   );
@@ -114,7 +115,7 @@ export default function FolderDetailsPage() {
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
               <div className="relative group/cover">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400 overflow-hidden">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-50 dark:bg-emerald-900/10 rounded-md flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400 overflow-hidden border border-gray-100 dark:border-white/5">
                   {folder.coverImage ? (
                     <img
                       src={folder.coverImage}
@@ -126,7 +127,7 @@ export default function FolderDetailsPage() {
                   )}
                 </div>
                 {canEdit && (
-                  <label className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer text-white">
+                  <label className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-md opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer text-white">
                     <input
                       type="file"
                       className="hidden"
@@ -143,16 +144,19 @@ export default function FolderDetailsPage() {
                 )}
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">
                   {folder.name}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300 max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
+                <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
                   {folder.description || "No description provided."}
                 </p>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-neutral-400">
-                  <span>{folder.booksCount} books</span>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400 dark:text-neutral-500">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span>{folder.booksCount} books</span>
+                  </div>
                   <span className="hidden md:inline">•</span>
-                  <span>Created by {folder.createdBy}</span>
+                  <span>Created by {folder.user?.username || "Unknown"}</span>
                   <span className="hidden md:inline">•</span>
                   <span className="capitalize">
                     {folder.visibility.toLowerCase()}
@@ -171,13 +175,13 @@ export default function FolderDetailsPage() {
                 </button>
 
                 {showMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-gray-100 dark:border-neutral-800 py-1 z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 py-1 z-10">
                     {canEdit && (
                       <button
                         onClick={() =>
-                          router.push(`/app/folders/${folder.id}/edit`)
+                          router.push(`/app/folders/${folder.slug}/edit`)
                         }
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
                       >
                         <FiEdit2 className="w-4 h-4" />
                         <span>Edit Folder</span>
@@ -186,7 +190,7 @@ export default function FolderDetailsPage() {
                     {canSeeShare && (
                       <button
                         onClick={handleShare}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
                       >
                         <FiShare2 className="w-4 h-4" />
                         <span>Share</span>
@@ -195,7 +199,7 @@ export default function FolderDetailsPage() {
                     {canDelete && (
                       <>
                         {(canEdit || canSeeShare) && (
-                          <div className="border-t border-gray-100 dark:border-gray-800 my-1" />
+                          <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                         )}
                         <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2">
                           <FiTrash2 className="w-4 h-4" />

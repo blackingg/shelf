@@ -71,11 +71,11 @@ export default function FoldersPage() {
   };
 
   const handleFolderClick = (folder: Folder) => {
-    router.push(`/app/folders/${folder.id}`);
+    router.push(`/app/folders/${folder.slug}`);
   };
 
   const handleFolderEdit = (folder: Folder) => {
-    router.push(`/app/folders/${folder.id}/edit`);
+    router.push(`/app/folders/${folder.slug}/edit`);
   };
 
   const handleFolderDelete = (folder: Folder) => {
