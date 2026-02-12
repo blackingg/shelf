@@ -9,24 +9,42 @@ import {
   Collaborator,
   UpdatePermissionsRequest,
   UpdateCollaborationSettingsRequest,
+  FolderActivity,
+  RecommendedFoldersResponse,
+  FolderFilterParams,
 } from "../../types/folder";
+import { PaginatedResponse } from "../../types/common";
 
 export const foldersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getMeFolders: builder.query<Folder[], void>({
-      query: () => "/folders/me",
+    getMeFolders: builder.query<
+      Folder[],
+      { include_collaborated?: boolean } | void
+    >({
+      query: (params) => ({
+        url: "/folders/me",
+        params: params || { include_collaborated: true },
+      }),
       providesTags: ["Folders"],
     }),
-    getPublicFolders: builder.query<Folder[], void>({
-      query: () => "/folders/public",
+    getPublicFolders: builder.query<
+      PaginatedResponse<Folder>,
+      FolderFilterParams | void
+    >({
+      query: (params) => ({
+        url: "/folders/public",
+        params: params || undefined,
+      }),
       providesTags: ["Folders"],
     }),
-    getRecommendedFolders: builder.query<Folder[], void>({
-      query: () => "/folders/recommended",
-      providesTags: ["Folders"],
-    }),
-    getBookmarkedFolders: builder.query<Folder[], void>({
-      query: () => "/folders/bookmarked",
+    getRecommendedFolders: builder.query<
+      RecommendedFoldersResponse,
+      { limit?: number } | void
+    >({
+      query: (params) => ({
+        url: "/folders/recommended",
+        params: params || undefined,
+      }),
       providesTags: ["Folders"],
     }),
     getFolderById: builder.query<Folder, string>({
@@ -61,7 +79,7 @@ export const foldersApi = baseApi.injectEndpoints({
           dispatch(
             foldersApi.util.updateQueryData("getFolderById", id, (draft) => {
               Object.assign(draft, data);
-            })
+            }),
           ),
           dispatch(
             foldersApi.util.updateQueryData(
@@ -70,8 +88,8 @@ export const foldersApi = baseApi.injectEndpoints({
               (draft) => {
                 const folder = draft.find((f) => f.id === id);
                 if (folder) Object.assign(folder, data);
-              }
-            )
+              },
+            ),
           ),
         ];
         try {
@@ -100,8 +118,8 @@ export const foldersApi = baseApi.injectEndpoints({
             (draft) => {
               const index = draft.findIndex((f) => f.id === id);
               if (index !== -1) draft.splice(index, 1);
-            }
-          )
+            },
+          ),
         );
         try {
           await queryFulfilled;
@@ -126,7 +144,7 @@ export const foldersApi = baseApi.injectEndpoints({
           dispatch(
             foldersApi.util.updateQueryData("getFolderById", id, (draft) => {
               draft.booksCount += 1;
-            })
+            }),
           ),
           dispatch(
             foldersApi.util.updateQueryData(
@@ -135,8 +153,8 @@ export const foldersApi = baseApi.injectEndpoints({
               (draft) => {
                 const folder = draft.find((f) => f.id === id);
                 if (folder) folder.booksCount += 1;
-              }
-            )
+              },
+            ),
           ),
         ];
         try {
@@ -161,7 +179,7 @@ export const foldersApi = baseApi.injectEndpoints({
           dispatch(
             foldersApi.util.updateQueryData("getFolderById", id, (draft) => {
               draft.booksCount = Math.max(0, draft.booksCount - 1);
-            })
+            }),
           ),
           dispatch(
             foldersApi.util.updateQueryData(
@@ -171,8 +189,8 @@ export const foldersApi = baseApi.injectEndpoints({
                 const folder = draft.find((f) => f.id === id);
                 if (folder)
                   folder.booksCount = Math.max(0, folder.booksCount - 1);
-              }
-            )
+              },
+            ),
           ),
         ];
         try {
@@ -183,149 +201,10 @@ export const foldersApi = baseApi.injectEndpoints({
       },
       invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
     }),
-    bookmarkFolder: builder.mutation<void, string>({
-      query: (id) => ({
-        url: `/folders/${id}/bookmark`,
-        method: "POST",
-      }),
-      // Optimistic bookmark - immediately add to bookmarked list
-      async onQueryStarted(id, { dispatch, getState, queryFulfilled }) {
-        // Find the folder from public or recommended folders to add to bookmarks
-        const state = getState() as { api: ReturnType<typeof baseApi.reducer> };
-
-        // Try to find folder from various caches
-        let folderToBookmark: Folder | undefined;
-
-        const publicFolders = foldersApi.endpoints.getPublicFolders.select()(
-          state as never
-        );
-        const recommendedFolders =
-          foldersApi.endpoints.getRecommendedFolders.select()(state as never);
-        const folderById = foldersApi.endpoints.getFolderById.select(id)(
-          state as never
-        );
-
-        folderToBookmark =
-          folderById.data ||
-          publicFolders.data?.find((f) => f.id === id) ||
-          recommendedFolders.data?.find((f) => f.id === id);
-
-        const patchResults = [];
-
-        // Update bookmark count in folder detail
-        patchResults.push(
-          dispatch(
-            foldersApi.util.updateQueryData("getFolderById", id, (draft) => {
-              draft.bookmarksCount += 1;
-            })
-          )
-        );
-
-        // Update bookmark count in public folders list
-        patchResults.push(
-          dispatch(
-            foldersApi.util.updateQueryData(
-              "getPublicFolders",
-              undefined,
-              (draft) => {
-                const folder = draft.find((f) => f.id === id);
-                if (folder) folder.bookmarksCount += 1;
-              }
-            )
-          )
-        );
-
-        // Add to bookmarked folders list
-        if (folderToBookmark) {
-          patchResults.push(
-            dispatch(
-              foldersApi.util.updateQueryData(
-                "getBookmarkedFolders",
-                undefined,
-                (draft) => {
-                  // Avoid duplicates
-                  if (!draft.some((f) => f.id === id)) {
-                    draft.unshift({
-                      ...folderToBookmark!,
-                      bookmarksCount: folderToBookmark!.bookmarksCount + 1,
-                    });
-                  }
-                }
-              )
-            )
-          );
-        }
-
-        try {
-          await queryFulfilled;
-        } catch {
-          // Rollback all patches on error
-          patchResults.forEach((patch) => patch.undo());
-        }
-      },
-      invalidatesTags: (result, error, id) => [
-        { type: "Folders", id },
-        "Folders",
-      ],
-    }),
-    unbookmarkFolder: builder.mutation<void, string>({
-      query: (id) => ({
-        url: `/folders/${id}/bookmark`,
-        method: "DELETE",
-      }),
-      // Optimistic unbookmark - immediately remove from bookmarked list
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        const patchResults = [
-          // Update bookmark count in folder detail
-          dispatch(
-            foldersApi.util.updateQueryData("getFolderById", id, (draft) => {
-              draft.bookmarksCount = Math.max(0, draft.bookmarksCount - 1);
-            })
-          ),
-          // Update bookmark count in public folders list
-          dispatch(
-            foldersApi.util.updateQueryData(
-              "getPublicFolders",
-              undefined,
-              (draft) => {
-                const folder = draft.find((f) => f.id === id);
-                if (folder)
-                  folder.bookmarksCount = Math.max(
-                    0,
-                    folder.bookmarksCount - 1
-                  );
-              }
-            )
-          ),
-          // Remove from bookmarked folders list
-          dispatch(
-            foldersApi.util.updateQueryData(
-              "getBookmarkedFolders",
-              undefined,
-              (draft) => {
-                const index = draft.findIndex((f) => f.id === id);
-                if (index !== -1) draft.splice(index, 1);
-              }
-            )
-          ),
-        ];
-
-        try {
-          await queryFulfilled;
-        } catch {
-          // Rollback all patches on error
-          patchResults.forEach((patch) => patch.undo());
-        }
-      },
-      invalidatesTags: (result, error, id) => [
-        { type: "Folders", id },
-        "Folders",
-      ],
-    }),
     uploadFolderCover: builder.mutation<void, { id: string; data: FormData }>({
       query: ({ id, data }) => ({
         url: `/folders/${id}/cover`,
-        method: "POST",
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
@@ -367,6 +246,46 @@ export const foldersApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Folders", id }],
+    }),
+    respondToInvite: builder.mutation<
+      Invite,
+      { inviteId: string; accept: boolean }
+    >({
+      query: ({ inviteId, accept }) => ({
+        url: `/collaboration/invites/${inviteId}/respond`,
+        method: "POST",
+        body: { accept },
+      }),
+      invalidatesTags: ["Folders"],
+    }),
+    removeCollaborator: builder.mutation<
+      void,
+      { folderId: string; collaboratorId: string }
+    >({
+      query: ({ folderId, collaboratorId }) => ({
+        url: `/collaboration/folders/${folderId}/collaborators/${collaboratorId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { folderId }) => [
+        { type: "Folders", id: folderId },
+      ],
+    }),
+    getFolderActivity: builder.query<
+      FolderActivity[],
+      { folderId: string; limit?: number }
+    >({
+      query: ({ folderId, limit = 50 }) => ({
+        url: `/collaboration/folders/${folderId}/activity`,
+        params: { limit },
+      }),
+    }),
+    checkPermission: builder.query<
+      { hasPermission: boolean },
+      { folderId: string; permission: string }
+    >({
+      query: ({ folderId, permission }) =>
+        `/collaboration/folders/${folderId}/check-permission/${permission}`,
     }),
   }),
 });
@@ -375,7 +294,6 @@ export const {
   useGetMeFoldersQuery,
   useGetPublicFoldersQuery,
   useGetRecommendedFoldersQuery,
-  useGetBookmarkedFoldersQuery,
   useGetFolderByIdQuery,
   useGetFolderBySlugQuery,
   useCreateFolderMutation,
@@ -383,12 +301,14 @@ export const {
   useDeleteFolderMutation,
   useAddBookToFolderMutation,
   useRemoveBookFromFolderMutation,
-  useBookmarkFolderMutation,
-  useUnbookmarkFolderMutation,
   useUploadFolderCoverMutation,
   useUpdateCollaborationSettingsMutation,
   useInviteCollaboratorMutation,
   useGetInvitesQuery,
   useGetCollaboratorsQuery,
   useUpdateCollaboratorPermissionsMutation,
+  useRespondToInviteMutation,
+  useRemoveCollaboratorMutation,
+  useGetFolderActivityQuery,
+  useCheckPermissionQuery,
 } = foldersApi;

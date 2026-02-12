@@ -6,42 +6,47 @@ import { BookCard } from "@/app/components/Library/BookCard";
 const pendingDocs = [
   {
     id: "doc-1",
+    slug: "introduction-to-algorithms",
     title: "Introduction to Algorithms",
     author: "Thomas H. Cormen",
     submitter: "John Doe",
-    cover_image: "/dummycover.png",
+    coverImage: "/dummycover.png",
     status: "Pending",
   },
   {
     id: "doc-2",
+    slug: "clean-code",
     title: "Clean Code",
     author: "Robert C. Martin",
     submitter: "Jane Smith",
-    cover_image: "/dummycover.png",
+    coverImage: "/dummycover.png",
     status: "Pending",
   },
   {
     id: "doc-3",
+    slug: "design-patterns",
     title: "Design Patterns",
     author: "Erich Gamma",
     submitter: "Alice Johnson",
-    cover_image: "/dummycover.png",
+    coverImage: "/dummycover.png",
     status: "Pending",
   },
   {
     id: "doc-4",
+    slug: "you-dont-know-js",
     title: "You Don't Know JS",
     author: "Kyle Simpson",
     submitter: "Bob Williams",
-    cover_image: "/dummycover.png",
+    coverImage: "/dummycover.png",
     status: "Pending",
   },
   {
     id: "doc-5",
+    slug: "refactoring",
     title: "Refactoring",
     author: "Martin Fowler",
     submitter: "Charlie Brown",
-    cover_image: "/dummycover.png",
+    coverImage: "/dummycover.png",
     status: "Pending",
   },
 ];
@@ -88,9 +93,9 @@ export default function DepartmentModerationPage() {
             <BookCard
               title={doc.title}
               author={doc.author}
-              cover_image={doc.cover_image}
-              donor_id={doc.submitter}
-              onClick={() => router.push(`/app/moderator/book/${doc.id}`)}
+              coverImage={doc.coverImage}
+              donor={{ id: doc.submitter, username: doc.submitter }}
+              onClick={() => router.push(`/app/moderator/book/${doc.slug}`)}
               className="h-full"
             />
           </div>

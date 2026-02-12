@@ -20,6 +20,7 @@ import { useNotifications } from "@/app/context/NotificationContext";
 export default function ModeratorReaderPage() {
   const router = useRouter();
   const params = useParams();
+  const bookSlug = params.slug as string;
   const { addNotification } = useNotifications();
 
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -54,14 +55,14 @@ export default function ModeratorReaderPage() {
     addNotification("success", "Document Verified Successfully");
     // Simulate API call delay
     setTimeout(() => {
-      router.push(`/app/moderator/book/${params.id}?verified=true`);
+      router.push(`/app/moderator/book/${bookSlug}?verified=true`);
     }, 1000);
   };
 
   const handleReject = () => {
     addNotification("error", "Document Rejected");
     setTimeout(() => {
-      router.push(`/app/moderator/book/${params.id}`);
+      router.push(`/app/moderator/book/${bookSlug}`);
     }, 1000);
   };
 

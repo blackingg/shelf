@@ -13,6 +13,7 @@ export const FormInput: React.FC<{
   placeholder?: string;
   autoComplete?: string;
   showPasswordToggle?: boolean;
+  required?: boolean;
 }> = ({
   label,
   name,
@@ -25,6 +26,7 @@ export const FormInput: React.FC<{
   placeholder,
   autoComplete,
   showPasswordToggle = false,
+  required = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType = showPasswordToggle
@@ -52,13 +54,14 @@ export const FormInput: React.FC<{
           onKeyPress={onKeyPress}
           className={`w-full ${icon ? "pl-10" : "pl-4"} ${
             showPasswordToggle ? "pr-12" : "pr-4"
-          } py-3 text-gray-600 dark:text-gray-200 bg-white dark:bg-neutral-800 border rounded-xl focus:ring-2 outline-none transition-all duration-200 ${
+          } py-3 text-gray-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 border rounded-md focus:ring-0 outline-none transition-all duration-200 ${
             error
-              ? "border-red-300 dark:border-red-900/50 focus:border-red-500 focus:ring-red-100 dark:focus:ring-red-900/20"
-              : "border-gray-300 dark:border-neutral-700 focus:border-emerald-500 focus:ring-emerald-100 dark:focus:ring-emerald-900/20"
+              ? "border-red-300 dark:border-red-900/50 focus:border-red-500"
+              : "border-gray-200 dark:border-neutral-700 focus:border-emerald-500"
           }`}
           placeholder={placeholder}
           autoComplete={autoComplete}
+          required={required}
         />
         {showPasswordToggle && (
           <button

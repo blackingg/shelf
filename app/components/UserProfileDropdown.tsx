@@ -3,7 +3,6 @@ import { useState } from "react";
 import { FiSettings, FiLogOut, FiUser, FiChevronDown } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCurrentUser, logout } from "../store/authSlice";
 
@@ -19,9 +18,9 @@ export const UserProfileDropdown: React.FC = () => {
 
   const router = useRouter();
 
-  const handleEditProfile = () => {
+  const handleViewProfile = () => {
     setIsOpen(false);
-    router.push(`/app/settings/profile`);
+    router.push(`/app/profile/${userName}`);
   };
 
   const handleSettings = () => {
@@ -39,26 +38,27 @@ export const UserProfileDropdown: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-neutral-800 px-3 py-2 rounded-lg transition-colors"
+        className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 px-3 py-2 rounded-md transition-colors border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
       >
-        <div className="w-6 lg:w-10 h-6 lg:h-10 bg-gray-300 dark:bg-neutral-700 rounded-full overflow-hidden relative flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
-          {userAvatar ? (
-            <Image
+        <div className="w-8 h-8 md:w-9 md:h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm font-bold border border-emerald-100 dark:border-emerald-800/50">
+          {userAvatar &&
+          (userAvatar.startsWith("/") || userAvatar.startsWith("http")) ? (
+            <img
               src={userAvatar}
               alt="User"
-              width={40}
-              height={40}
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
           ) : (
             userName.charAt(0).toUpperCase() ||
             userFullName.charAt(0).toUpperCase()
           )}
         </div>
-        <span className=" hidden md:block font-medium text-gray-900 dark:text-neutral-100">
-          {userName}
+        <span className="hidden md:block text-sm font-bold text-gray-900 dark:text-neutral-100">
+          @{userName}
         </span>
-        <FiChevronDown className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+        <FiChevronDown
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       <AnimatePresence>
@@ -72,64 +72,66 @@ export const UserProfileDropdown: React.FC = () => {
               onClick={() => setIsOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-full right-0 mt-2 w-56 lg:w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden z-50 text-left"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="absolute top-full right-0 mt-3 w-64 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 text-left"
             >
-              <div className="p-4 border-b border-gray-200 dark:border-neutral-800">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 dark:bg-neutral-700 text-white font-semibold text-lg flex-shrink-0">
-                    {userAvatar ? (
+              <div className="p-5 border-b border-gray-100 dark:border-neutral-800">
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-md flex items-center justify-center bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-white font-bold text-lg flex-shrink-0 overflow-hidden border border-gray-100 dark:border-neutral-700/50">
+                    {userAvatar &&
+                    (userAvatar.startsWith("/") ||
+                      userAvatar.startsWith("http")) ? (
                       <img
                         src={userAvatar}
                         alt={userName}
-                        width={48}
-                        height={48}
-                        className="w-full h-full rounded-full object-cover"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       userName.charAt(0).toUpperCase()
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
+                    <p className="font-bold text-gray-900 dark:text-white text-sm truncate leading-tight mb-1">
                       {userFullName}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">
+                    <p className="text-[10px] font-bold tracking-widest text-emerald-600 dark:text-emerald-400 truncate opacity-60">
                       {userEmail}
                     </p>
                   </div>
                 </div>
               </div>
+
               <div className="py-2">
                 <button
-                  onClick={handleEditProfile}
-                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
+                  onClick={handleViewProfile}
+                  className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                 >
-                  <FiUser className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
-                    Edit Profile
+                  <FiUser className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                    View Profile
                   </span>
                 </button>
                 <button
                   onClick={handleSettings}
-                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
+                  className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                 >
-                  <FiSettings className="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                  <FiSettings className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                     Settings
                   </span>
                 </button>
               </div>
-              <div className="border-t border-gray-200 dark:border-neutral-800 py-2">
+
+              <div className="border-t border-gray-100 dark:border-neutral-800 py-2">
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-2.5 flex items-center space-x-3 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-left group"
+                  className="w-full px-5 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left group"
                 >
-                  <FiLogOut className="w-4 h-4 text-gray-600 dark:text-neutral-400 group-hover:text-red-600" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-red-600">
+                  <FiLogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-red-600">
                     Logout
                   </span>
                 </button>

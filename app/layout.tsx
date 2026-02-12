@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
 import { BufferProvider } from "./context/FileBufferContext";
 
@@ -119,7 +120,7 @@ export default function RootLayout({
           <StoreProvider>
             <BufferProvider>
             <ErrorBoundaryWithNotification>
-              {children}
+              <ProtectedRoute>{children}</ProtectedRoute>
             </ErrorBoundaryWithNotification>
           </BufferProvider>
           </StoreProvider>

@@ -1,121 +1,92 @@
 "use client";
+import React from "react";
 import { motion } from "motion/react";
+
+const SkeletonPulse = ({ className }: { className?: string }) => (
+  <div
+    className={`relative overflow-hidden bg-gray-200 dark:bg-neutral-800 rounded ${className}`}
+  >
+    <motion.div
+      className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
+      animate={{ x: ["-100%", "100%"] }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+    />
+  </div>
+);
 
 export default function ProfileSkeleton() {
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <div className="flex items-start gap-6">
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-gray-200 flex-shrink-0 relative overflow-hidden">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
+    <div className="bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800">
+      <SkeletonPulse className="h-48 rounded-none bg-gray-100 dark:bg-neutral-800 opacity-50" />
+
+      <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
+        <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6">
+          <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
+            <SkeletonPulse className="w-full h-full rounded-md" />
           </div>
-
-          {/* Info */}
-          <div className="flex-1 space-y-3">
-            <div className="h-8 bg-gray-200 rounded-lg w-48 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.1,
-                }}
-              />
-            </div>
-            <div className="h-4 bg-gray-100 rounded w-32 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.2,
-                }}
-              />
-            </div>
-            <div className="h-4 bg-gray-100 rounded w-64 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.3,
-                }}
-              />
-            </div>
-
-            {/* Stats */}
-            <div className="flex gap-6 pt-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="text-center"
-                >
-                  <div className="h-6 bg-gray-200 rounded w-12 mx-auto mb-1 relative overflow-hidden">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                      animate={{ x: ["-100%", "100%"] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.3 + i * 0.1,
-                      }}
-                    />
-                  </div>
-                  <div className="h-3 bg-gray-100 rounded w-16 relative overflow-hidden">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                      animate={{ x: ["-100%", "100%"] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.4 + i * 0.1,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+          <div className="flex-1 pb-2 space-y-3">
+            <div className="flex flex-col gap-2 items-center md:items-start">
+              <SkeletonPulse className="h-8 w-64 rounded-md" />
+              <SkeletonPulse className="h-4 w-32 rounded-md" />
             </div>
           </div>
         </div>
+
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <SkeletonPulse className="w-4 h-4 rounded-md shrink-0" />
+              <SkeletonPulse className="h-3 w-40 rounded-md" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <SkeletonPulse className="w-6 h-6 rounded-md shrink-0" />
+                <SkeletonPulse className="h-4 w-48 rounded-md" />
+              </div>
+              <div className="flex items-center gap-3">
+                <SkeletonPulse className="w-6 h-6 rounded-md shrink-0" />
+                <SkeletonPulse className="h-4 w-56 rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
+            <div className="text-center space-y-2">
+              <SkeletonPulse className="h-8 w-12 mx-auto rounded-md" />
+              <SkeletonPulse className="h-3 w-20 mx-auto rounded-md" />
+            </div>
+            <div className="text-center space-y-2">
+              <SkeletonPulse className="h-8 w-12 mx-auto rounded-md" />
+              <SkeletonPulse className="h-3 w-20 mx-auto rounded-md" />
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs Skeleton */}
+        <div className="flex border-b border-gray-100 dark:border-neutral-800 gap-8">
+          <div className="h-12 w-32 relative">
+            <SkeletonPulse className="absolute inset-x-0 top-0 bottom-4 rounded-md" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500/30" />
+          </div>
+          <SkeletonPulse className="h-8 w-32 rounded-md" />
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200 pb-2">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-8 bg-gray-100 rounded-lg w-24 relative overflow-hidden"
-          >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 0.1,
-              }}
-            />
-          </div>
-        ))}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="space-y-4"
+            >
+              <SkeletonPulse className="aspect-[2/3] rounded-md" />
+              <div className="space-y-2">
+                <SkeletonPulse className="h-4 w-full rounded-md" />
+                <SkeletonPulse className="h-3 w-2/3 rounded-md" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

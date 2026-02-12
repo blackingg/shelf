@@ -43,7 +43,7 @@ const authSlice = createSlice({
         accessToken: string;
         refreshToken: string;
         rememberMe?: boolean;
-      }>
+      }>,
     ) => {
       state.user = user;
       state.accessToken = accessToken;
@@ -69,7 +69,7 @@ const authSlice = createSlice({
     },
     updateTokens: (
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
     ) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
@@ -104,6 +104,20 @@ const authSlice = createSlice({
       storage.removeFromBoth("accessToken");
       storage.removeFromBoth("refreshToken");
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      (action) =>
+        action.type.endsWith("/fulfilled") &&
+        ["getMe", "updateMe", "uploadAvatar"].includes(
+          action.meta?.arg?.endpointName,
+        ),
+      (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
+        const storageType = state.rememberMe ? "local" : "session";
+        storage.set("user", JSON.stringify(action.payload), storageType);
+      },
+    );
   },
 });
 

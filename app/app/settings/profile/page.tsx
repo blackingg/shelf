@@ -5,7 +5,7 @@ import Select, { SingleValue } from "react-select";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, setUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store/authSlice";
 import { useAppDispatch } from "@/app/store/store";
 import {
   useUpdateMeMutation,
@@ -13,10 +13,11 @@ import {
 } from "@/app/store/api/usersApi";
 import {
   useGetSchoolsQuery,
-  useGetDepartmentsQuery,
+  useGetOnboardingDepartmentsQuery,
 } from "@/app/store/api/onboardingApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
+import { Department } from "@/app/types/departments";
 
 interface OptionType {
   value: string;
@@ -45,7 +46,9 @@ export default function SettingsProfilePage() {
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+    useGetOnboardingDepartmentsQuery(formData.schoolId, {
+      skip: !formData.schoolId,
+    });
 
   useEffect(() => {
     if (user) {
@@ -65,10 +68,12 @@ export default function SettingsProfilePage() {
     label: school.name,
   }));
 
-  const departmentOptions: OptionType[] = departments?.map((dept) => ({
-    value: dept.id,
-    label: dept.name,
-  }));
+  const departmentOptions: OptionType[] = (departments as Department[])?.map(
+    (dept) => ({
+      value: dept.id,
+      label: dept.name,
+    }),
+  );
 
   const isDirty =
     formData.name !== (user?.fullName || "") ||
@@ -109,7 +114,6 @@ export default function SettingsProfilePage() {
         schoolId: formData.schoolId,
         departmentId: formData.departmentId,
       }).unwrap();
-      dispatch(setUser(updatedUser));
       addNotification("success", "Profile updated successfully!");
     } catch (error) {
       addNotification(
@@ -127,8 +131,7 @@ export default function SettingsProfilePage() {
     formData.append("file", file);
 
     try {
-      const updatedUser = await uploadAvatar(formData).unwrap();
-      dispatch(setUser(updatedUser));
+      await uploadAvatar(formData).unwrap();
       addNotification("success", "Avatar updated successfully!");
     } catch (error) {
       addNotification(
@@ -141,8 +144,8 @@ export default function SettingsProfilePage() {
   const customSelectStyles = {
     control: (base: any, state: any) => ({
       ...base,
-      paddingLeft: "2rem", // Make room for the icon
-      borderRadius: "0.75rem",
+      paddingLeft: "2rem",
+      borderRadius: "0.375rem",
       borderColor: state.isFocused ? "#10b981" : "#e5e7eb", // emerald-500 : gray-200
       boxShadow: state.isFocused ? "0 0 0 1px #10b981" : "none",
       "&:hover": {
@@ -169,19 +172,18 @@ export default function SettingsProfilePage() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
         <div className="p-6 md:p-8">
           <form
             onSubmit={handleSubmit}
             className="space-y-8"
           >
-            {/* Avatar Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-4">
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
-                <div className="relative w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/40 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-md">
+                <div className="relative w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
                   {user?.avatar ? (
                     <img
                       src={user.avatar}
@@ -189,7 +191,7 @@ export default function SettingsProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                    <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
                       {user?.fullName?.charAt(0) ||
                         user?.username?.charAt(0) ||
                         "?"}
@@ -197,7 +199,7 @@ export default function SettingsProfilePage() {
                   )}
                   {isUploadingAvatar && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
                 </div>
@@ -212,7 +214,7 @@ export default function SettingsProfilePage() {
                   />
                   <label
                     htmlFor="avatar-upload"
-                    className={`px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
+                    className={`px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
                       isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
@@ -233,7 +235,7 @@ export default function SettingsProfilePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                  className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
                 />
               </div>
               <div className="space-y-1">
@@ -241,7 +243,7 @@ export default function SettingsProfilePage() {
                   Username
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-neutral-500">
+                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-neutral-500 text-sm">
                     @
                   </span>
                   <input
@@ -249,7 +251,7 @@ export default function SettingsProfilePage() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
                   />
                 </div>
               </div>

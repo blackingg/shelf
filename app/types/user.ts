@@ -42,5 +42,15 @@ export interface UserPublic {
   bio: string | null;
   booksCount: number;
   foldersCount: number;
+  school?: { id: string; name: string; shortName: string | null } | null;
+  department?: { id: string; name: string } | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserMinimal {
+  id: string;
+  username: string;
+  fullName: string;
+  avatar: string | null;
 }

@@ -11,14 +11,16 @@ export default function UserLayout({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 dark:bg-neutral-900">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
       <Sidebar />
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <PageHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {children}
+        </div>
       </main>
     </div>
   );

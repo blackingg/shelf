@@ -15,7 +15,7 @@ export default function SecuritySettingsPage() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 overflow-hidden">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 overflow-hidden">
         <div className="p-6 md:p-8 space-y-16">
           {/* <div>
             <div className="flex items-center space-x-3 mb-6">
@@ -31,7 +31,7 @@ export default function SecuritySettingsPage() {
             <Button variant="outline">Enable 2FA</Button>
           </div> */}
 
-          <div className="border-t border-gray-200 dark:border-neutral-800">
+          <div className="border-t border-gray-200 dark:border-neutral-800 pt-8">
             <div className="flex items-center space-x-3 mb-6">
               <FiShield className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -39,7 +39,7 @@ export default function SecuritySettingsPage() {
               </h3>
             </div>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-neutral-700 rounded-xl bg-gray-50 dark:bg-neutral-800">
+              <div className="flex items-center justify-between p-4 border border-gray-100 dark:border-neutral-800 rounded-md bg-gray-50 dark:bg-neutral-800/50">
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
                     Windows PC - Chrome
@@ -48,11 +48,11 @@ export default function SecuritySettingsPage() {
                     San Francisco, CA • Active now
                   </div>
                 </div>
-                <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs px-2 py-1 rounded-full font-medium">
+                <span className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs px-2 py-1 rounded-md border border-emerald-100 dark:border-emerald-800/50 font-medium">
                   Current
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-neutral-700 rounded-xl dark:bg-neutral-800/50">
+              <div className="flex items-center justify-between p-4 border border-gray-100 dark:border-neutral-800 rounded-md dark:bg-neutral-800/30">
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
                     iPhone 13 - Safari
@@ -61,7 +61,7 @@ export default function SecuritySettingsPage() {
                     San Francisco, CA • 2 hours ago
                   </div>
                 </div>
-                <button className="text-red-600 dark:text-red-400 text-sm font-medium hover:text-red-700 dark:hover:text-red-300">
+                <button className="text-red-600 dark:text-red-400 text-sm font-medium hover:underline">
                   Revoke
                 </button>
               </div>

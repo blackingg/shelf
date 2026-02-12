@@ -40,55 +40,47 @@ export const ConfirmModal = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-xl z-50"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-lg p-8 border border-gray-200 dark:border-neutral-800 z-50"
           >
-            <div className="flex items-center space-x-4 mb-6">
+            <div className="flex items-center space-x-4 mb-8">
               {isDanger && (
-                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-xl shrink-0">
+                <div className="w-12 h-12 bg-red-50 dark:bg-red-900/30 rounded-md flex items-center justify-center text-red-600 dark:text-red-400 font-bold shrink-0 border border-red-100 dark:border-red-900/50">
                   <FiAlertTriangle className="w-6 h-6" />
                 </div>
               )}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                   {title}
                 </h3>
-                {isDanger && (
-                  <p className="text-gray-500 dark:text-neutral-400 text-sm">
-                    This action cannot be undone.
-                  </p>
-                )}
               </div>
             </div>
 
-            <div
-              className={`text-gray-600 dark:text-neutral-300 mb-8 ${
-                typeof message === "string" ? "" : ""
-              }`}
-            >
+            <div className="text-gray-600 dark:text-neutral-400 mb-10 text-sm leading-relaxed">
               {message}
+              {isDanger && (
+                <p className="mt-2 text-red-500 dark:text-red-400/80 font-medium">
+                  This action cannot be undone.
+                </p>
+              )}
             </div>
 
             <div className="flex space-x-3">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
+                className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 font-medium text-sm rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700"
               >
                 {cancelText}
               </button>
               <button
                 onClick={onConfirm}
                 disabled={isLoading}
-                className={`flex-1 px-4 py-2.5 text-white font-bold rounded-xl transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex-1 px-4 py-3 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isDanger
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-emerald-600 hover:bg-emerald-700"
                 }`}
               >
-                {isLoading ? (
-                  <span>Loading...</span>
-                ) : (
-                  <span>{confirmText}</span>
-                )}
+                {isLoading ? <span>Wait...</span> : <span>{confirmText}</span>}
               </button>
             </div>
           </motion.div>

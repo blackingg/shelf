@@ -16,12 +16,13 @@ import { Button } from "@/app/components/Form/Button";
 export default function ModeratorBookDetailsPage() {
   const router = useRouter();
   const params = useParams();
+  const bookSlug = params.slug as string;
   const searchParams = useSearchParams();
   const verified = searchParams.get("verified") === "true";
 
   // Mock Data (matches the pending list style)
   const book = {
-    id: params.id as string,
+    id: bookSlug,
     title: "Introduction to Algorithms",
     author: "Thomas H. Cormen",
     description:
@@ -76,7 +77,7 @@ export default function ModeratorBookDetailsPage() {
                     </span>
                   ) : (
                     <span className="px-3 py-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-full text-sm font-bold flex items-center gap-2">
-                       <FiAlertCircle className="w-4 h-4" /> Pending Review
+                      <FiAlertCircle className="w-4 h-4" /> Pending Review
                     </span>
                   )}
                 </div>
@@ -103,12 +104,16 @@ export default function ModeratorBookDetailsPage() {
                   <div className="w-48">
                     <Button
                       onClick={() =>
-                        router.push(`/app/moderator/read/${book.id}`)
+                        router.push(`/app/moderator/book/${bookSlug}/read`)
                       }
                       icon={<FiPlay className="w-5 h-5 fill-current" />}
-                      variant={book.status === "approved" ? "outline" : "primary"}
+                      variant={
+                        book.status === "approved" ? "outline" : "primary"
+                      }
                     >
-                      {book.status === "approved" ? "Read Content" : "Start Review"}
+                      {book.status === "approved"
+                        ? "Read Content"
+                        : "Start Review"}
                     </Button>
                   </div>
                 </div>
@@ -128,31 +133,27 @@ export default function ModeratorBookDetailsPage() {
           </section>
 
           <section className="mt-12 pt-12 border-t border-gray-200 dark:border-neutral-800">
-             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Submission Guidelines check
-             </h3>
-             <ul className="space-y-3 text-gray-600 dark:text-neutral-400">
-                <li className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-500">
-                      <FiCheckCircle className="w-3 h-3" />
-                   </div>
-                   <span>File format is PDF/EPUB</span>
-                </li>
-                 <li className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-500">
-                      <FiCheckCircle className="w-3 h-3" />
-                   </div>
-                   <span>Cover image is high quality</span>
-                </li>
-                 <li className="flex items-center gap-3">
-                   <div className={`w-5 h-5 rounded-full border-2 text-emerald-500 ${ verified? 
-                    "border-emerald-500"
-                    :"border-neutral-600"} flex items-center justify-center`}>
-                     {verified ? <FiCheckCircle className="w-3 h-3"/> : null}
-                   </div>
-                   <span>Content matches description (Pending verification)</span>
-                </li>
-             </ul>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+              Submission Guidelines check
+            </h3>
+            <ul className="space-y-3 text-gray-600 dark:text-neutral-400">
+              <li className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-500">
+                  <FiCheckCircle className="w-3 h-3" />
+                </div>
+                <span>File format is PDF/EPUB</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-500">
+                  <FiCheckCircle className="w-3 h-3" />
+                </div>
+                <span>Cover image is high quality</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-neutral-600 flex items-center justify-center"></div>
+                <span>Content matches description (Pending verification)</span>
+              </li>
+            </ul>
           </section>
         </div>
       </div>

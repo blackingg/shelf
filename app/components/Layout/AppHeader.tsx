@@ -16,7 +16,11 @@ export const AppHeader: React.FC<{
             <Image
               width={20}
               height={20}
-              src={logo}
+              src={
+                logo && (logo.startsWith("/") || logo.startsWith("http"))
+                  ? logo
+                  : "/logo.png"
+              }
               alt="Shelf Logo"
               className="text-white"
             />

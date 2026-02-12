@@ -11,11 +11,13 @@ import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
   useGetMeFoldersQuery,
   useGetPublicFoldersQuery,
-  useGetBookmarkedFoldersQuery,
   useCreateFolderMutation,
   useDeleteFolderMutation,
 } from "@/app/store/api/foldersApi";
+import { useGetBookmarkedFoldersQuery } from "@/app/store/api/bookmarksApi";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { Pagination } from "@/app/components/Library/Pagination";
+import { getErrorMessage } from "@/app/helpers/error";
 
 export default function FoldersPage() {
   const router = useRouter();
@@ -29,44 +31,51 @@ export default function FoldersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
 
   // API Queries
   const { data: myFolders, isLoading: isLoadingMyFolders } =
     useGetMeFoldersQuery(undefined, {
       skip: activeTab !== "private",
     });
-  const { data: publicFolders, isLoading: isLoadingPublicFolders } =
-    useGetPublicFoldersQuery(undefined, {
+  const {
+    data: publicFoldersResponse,
+    isLoading: isLoadingPublicFolders,
+    isFetching: isFetchingPublic,
+  } = useGetPublicFoldersQuery(
+    { page, pageSize },
+    {
       skip: activeTab !== "public",
-    });
+    },
+  );
   const { data: bookmarkedFolders, isLoading: isLoadingBookmarked } =
     useGetBookmarkedFoldersQuery(undefined, {
       skip: activeTab !== "bookmarked",
     });
 
-  // Mutations
   const [createFolder] = useCreateFolderMutation();
   const [deleteFolderMutation] = useDeleteFolderMutation();
 
   const handleCreateFolder = async (
     name: string,
-    visibility: FolderVisibility
+    visibility: FolderVisibility,
   ) => {
     try {
       await createFolder({ name, visibility }).unwrap();
       addNotification("success", "Folder created successfully!");
       setShowCreateModal(false);
     } catch (err: any) {
-      addNotification("error", err.data?.message || "Failed to create folder");
+      addNotification("error", getErrorMessage(err, "Failed to create folder"));
     }
   };
 
   const handleFolderClick = (folder: Folder) => {
-    router.push(`/app/folders/${folder.id}`);
+    router.push(`/app/folders/${folder.slug}`);
   };
 
   const handleFolderEdit = (folder: Folder) => {
-    router.push(`/app/folders/${folder.id}/edit`);
+    router.push(`/app/folders/${folder.slug}/edit`);
   };
 
   const handleFolderDelete = (folder: Folder) => {
@@ -82,7 +91,7 @@ export default function FoldersPage() {
       } catch (err: any) {
         addNotification(
           "error",
-          err.data?.message || "Failed to delete folder"
+          getErrorMessage(err, "Failed to delete folder"),
         );
       }
     }
@@ -90,12 +99,12 @@ export default function FoldersPage() {
     setFolderToDelete(null);
   };
 
-  const displayedFolders =
+  const displayedFolders: Folder[] =
     activeTab === "private"
       ? myFolders || []
       : activeTab === "public"
-      ? publicFolders || []
-      : bookmarkedFolders || [];
+        ? publicFoldersResponse?.items || []
+        : bookmarkedFolders || [];
 
   const isLoading =
     (activeTab === "private" && isLoadingMyFolders) ||
@@ -103,7 +112,7 @@ export default function FoldersPage() {
     (activeTab === "bookmarked" && isLoadingBookmarked);
 
   const filteredFolders = displayedFolders.filter((folder) =>
-    folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    folder.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -117,34 +126,34 @@ export default function FoldersPage() {
             />
 
             <div className="flex w-full lg:w-fit items-start justify-between gap-3">
-              <div className="flex bg-gray-100 p-1 rounded-lg">
+              <div className="flex bg-gray-100 dark:bg-neutral-800 p-0.5 rounded-md">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-all ${
+                  className={`p-1.5 rounded-sm transition-colors ${
                     viewMode === "grid"
-                      ? "bg-white text-emerald-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-white dark:bg-neutral-700 text-gray-900 dark:text-white"
+                      : "text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-200"
                   }`}
                   title="Grid View"
                 >
-                  <FiGrid className="w-5 h-5" />
+                  <FiGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-all ${
+                  className={`p-1.5 rounded-sm transition-colors ${
                     viewMode === "list"
-                      ? "bg-white text-emerald-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-white dark:bg-neutral-700 text-gray-900 dark:text-white"
+                      : "text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-200"
                   }`}
                   title="List View"
                 >
-                  <FiList className="w-5 h-5" />
+                  <FiList className="w-4 h-4" />
                 </button>
               </div>
 
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center text-sm md:text-base space-x-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
               >
                 <span>Create Folder</span>
               </button>
@@ -163,8 +172,11 @@ export default function FoldersPage() {
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
                   : activeTab === "bookmarked"
-                  ? "No bookmarked folders yet."
-                  : "No public folders available to explore."
+                    ? "No bookmarked folders yet."
+                    : "No public folders available to explore."
+              }
+              className={
+                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
               }
             />
           ) : (
@@ -179,11 +191,26 @@ export default function FoldersPage() {
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
                   : activeTab === "bookmarked"
-                  ? "No bookmarked folders yet."
-                  : "No public folders available to explore."
+                    ? "No bookmarked folders yet."
+                    : "No public folders available to explore."
+              }
+              className={
+                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
               }
             />
           )}
+
+          {activeTab === "public" &&
+            publicFoldersResponse &&
+            publicFoldersResponse.totalPages > 1 && (
+              <Pagination
+                currentPage={page}
+                totalPages={publicFoldersResponse.totalPages}
+                onPageChange={setPage}
+                isLoading={isFetchingPublic}
+                className="mt-8"
+              />
+            )}
         </div>
       </main>
 

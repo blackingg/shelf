@@ -12,7 +12,7 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useRouter } from "next/navigation";
-import { selectCurrentUser, logout, setUser } from "@/app/store/authSlice";
+import { selectCurrentUser, logout } from "@/app/store/authSlice";
 import { useAppDispatch } from "@/app/store/store";
 
 export default function AccountSettingsPage() {
@@ -43,8 +43,7 @@ export default function AccountSettingsPage() {
 
   const handleSaveEmail = async () => {
     try {
-      const updatedUser = await updateMe({ email }).unwrap();
-      dispatch(setUser(updatedUser));
+      await updateMe({ email }).unwrap();
       addNotification("success", "Email updated successfully!");
       setIsEditingEmail(false);
     } catch (error) {
@@ -112,7 +111,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Contact Info
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingEmail ? (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
@@ -127,7 +126,7 @@ export default function AccountSettingsPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all"
+                      className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -164,7 +163,7 @@ export default function AccountSettingsPage() {
                 </div>
                 <button
                   onClick={handleStartEditingEmail}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-md transition-colors"
                 >
                   Edit
                 </button>
@@ -177,7 +176,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Security
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
             {isEditingPassword ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
@@ -199,7 +198,7 @@ export default function AccountSettingsPage() {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -216,7 +215,7 @@ export default function AccountSettingsPage() {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -233,7 +232,7 @@ export default function AccountSettingsPage() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/40 outline-none transition-all placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                   </div>
@@ -271,7 +270,7 @@ export default function AccountSettingsPage() {
                 </div>
                 <button
                   onClick={() => setIsEditingPassword(true)}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-md transition-colors"
                 >
                   Change
                 </button>
@@ -284,7 +283,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-semibold text-red-600 dark:text-red-500 mb-4">
             Danger Zone
           </h3>
-          <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/20 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/20 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="font-medium text-red-900 dark:text-red-400">
                 Delete Account
@@ -296,7 +295,7 @@ export default function AccountSettingsPage() {
             <button
               onClick={() => setIsDeleteModalOpen(true)}
               disabled={isDeletingAccount}
-              className="px-5 py-2.5 bg-white dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-all shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
+              className="px-5 py-2.5 bg-white dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
             >
               {isDeletingAccount ? "Deleting..." : "Delete Account"}
             </button>

@@ -1,14 +1,21 @@
+import { UserMinimal } from "./user";
+
 export interface RateBookRequest {
   bookId: string;
   rating: number; // 0.5 increments [1, 5]
 }
 
-export interface Rating {
+export interface RatingResponse {
   id: string;
   userId: string;
   bookId: string;
   rating: number;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface MyRatingResponse {
+  rating: number | null;
 }
 
 export interface CreateReviewRequest {
@@ -20,7 +27,7 @@ export interface UpdateReviewRequest {
   content: string;
 }
 
-export interface Review {
+export interface ReviewResponse {
   id: string;
   userId: string;
   bookId: string;
@@ -28,4 +35,5 @@ export interface Review {
   helpful: number;
   createdAt: string;
   updatedAt: string;
+  user: UserMinimal;
 }

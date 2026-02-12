@@ -35,24 +35,30 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     if (stackIndex === 0) {
       const timer = setTimeout(
         () => handleClose(),
-        notification.duration || 5000
+        notification.duration || 5000,
       );
       return () => clearTimeout(timer);
     }
   }, [stackIndex, notification.duration, handleClose]);
 
   const icons = {
-    success: <FiCheckCircle className="w-5 h-5" />,
-    error: <FiXCircle className="w-5 h-5" />,
-    warning: <FiAlertTriangle className="w-5 h-5" />,
-    info: <FiInfo className="w-5 h-5" />,
+    success: (
+      <FiCheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+    ),
+    error: <FiXCircle className="w-5 h-5 text-red-600 dark:text-red-400" />,
+    warning: (
+      <FiAlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+    ),
+    info: <FiInfo className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
   };
 
   const colors = {
-    success: "bg-green-100 border-green-300 text-green-800",
-    error: "bg-red-100 border-red-300 text-red-800",
-    warning: "bg-amber-100 border-amber-300 text-amber-800",
-    info: "bg-blue-100 border-blue-300 text-blue-800",
+    success:
+      "bg-white dark:bg-neutral-900 border-emerald-100 dark:border-emerald-900/50",
+    error: "bg-white dark:bg-neutral-900 border-red-100 dark:border-red-900/50",
+    warning:
+      "bg-white dark:bg-neutral-900 border-amber-100 dark:border-amber-900/50",
+    info: "bg-white dark:bg-neutral-900 border-blue-100 dark:border-blue-900/50",
   };
 
   // Apply scale/opacity/offset to stack notifications
@@ -65,18 +71,18 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       };
     if (stackIndex === 1)
       return {
-        transform: "translateY(-8px) scale(0.96)",
-        opacity: 0.7,
+        transform: "translateY(-12px) scale(0.96)",
+        opacity: 0.8,
         zIndex: totalCount - 1,
       };
     if (stackIndex === 2)
       return {
-        transform: "translateY(-16px) scale(0.92)",
-        opacity: 0.4,
+        transform: "translateY(-24px) scale(0.92)",
+        opacity: 0.5,
         zIndex: totalCount - 2,
       };
     return {
-      transform: "translateY(-24px) scale(0.88)",
+      transform: "translateY(-36px) scale(0.88)",
       opacity: 0.2,
       zIndex: totalCount - 3,
     };
@@ -86,7 +92,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
   return (
     <div
-      className={`absolute top-0 left-0 right-0 px-4 transition-all duration-300 ${
+      className={`absolute top-0 left-0 right-0 px-4 transition-all duration-500 ease-in-out ${
         stackIndex === 0 && !isClosing
           ? "animate-[slideInRight_0.4s_ease-out]"
           : ""
@@ -101,14 +107,22 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       <div
         className={`${
           colors[notification.type]
-        } border rounded-xl p-4 shadow-lg flex items-start space-x-3 backdrop-blur-sm`}
+        } border rounded-md p-4 shadow-sm flex items-start gap-4 backdrop-blur-md`}
       >
-        <span className="flex-shrink-0 mt-0.5">{icons[notification.type]}</span>
-        <p className="flex-1 text-sm font-medium">{notification.message}</p>
+        <div
+          className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 bg-gray-50/50 dark:bg-neutral-800/50 border border-inherit`}
+        >
+          {icons[notification.type]}
+        </div>
+        <div className="flex-1 pt-1.5">
+          <p className="text-xs font-bold text-gray-900 dark:text-white leading-tight uppercase tracking-wider">
+            {notification.message}
+          </p>
+        </div>
         {stackIndex === 0 && (
           <button
             onClick={handleClose}
-            className="flex-shrink-0 hover:opacity-70 transition-opacity"
+            className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-400 dark:text-neutral-500 transition-colors"
           >
             <FiX className="w-4 h-4" />
           </button>

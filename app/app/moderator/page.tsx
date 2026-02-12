@@ -62,36 +62,34 @@ export default function ModeratorPage() {
                   router.push(`/app/moderator/${dept.slug}`);
                 }
               }}
-              className={`relative overflow-hidden rounded-2xl p-6 border transition-all duration-300 ${
+              className={`relative overflow-hidden rounded-md p-6 border transition-colors duration-150 ${
                 isUserDept
-                  ? "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 cursor-pointer hover:shadow-lg hover:border-emerald-500/50 dark:hover:border-emerald-500/50 group"
-                  : "bg-gray-50 dark:bg-neutral-900/50 border-gray-200 dark:border-neutral-800 opacity-60 cursor-not-allowed grayscale-[0.5]"
+                  ? "bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 cursor-pointer hover:border-gray-300 dark:hover:border-neutral-700"
+                  : "bg-gray-50 dark:bg-neutral-900/50 border-gray-100 dark:border-neutral-800 opacity-60 cursor-not-allowed"
               }`}
             >
               <div className="flex items-start justify-between mb-6">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md ${dept.color}`}
+                  className={`w-10 h-10 rounded-md flex items-center justify-center text-white ${dept.color}`}
                 >
-                  <FiBriefcase className="w-6 h-6" />
+                  <FiBriefcase className="w-5 h-5" />
                 </div>
                 {dept.pendingCount > 0 && (
-                  <span className="px-3 py-1 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold rounded-full">
+                  <span className="px-2.5 py-0.5 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-medium rounded-md border border-red-200 dark:border-red-900/50">
                     {dept.pendingCount} Pending
                   </span>
                 )}
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
                 {dept.name}
               </h3>
 
-              <div className="flex items-center text-sm font-medium text-gray-500 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mt-4">
+              <div className="flex items-center text-sm text-gray-500 dark:text-neutral-400 mt-4">
                 <span>
                   {isUserDept ? "View Submission" : "Access Restricted"}
                 </span>
-                {isUserDept && (
-                  <FiArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                )}
+                {isUserDept && <FiArrowRight className="w-4 h-4 ml-2" />}
               </div>
             </div>
           );

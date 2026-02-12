@@ -13,7 +13,7 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import {
   useGetSchoolsQuery,
-  useGetDepartmentsQuery,
+  useGetOnboardingDepartmentsQuery,
   useGetInterestsQuery,
   useCompleteOnboardingMutation,
 } from "@/app/store/api/onboardingApi";
@@ -64,7 +64,7 @@ export default function Onboarding() {
   const { data: schools = [], isLoading: isLoadingSchools } =
     useGetSchoolsQuery(schoolSearch);
   const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+    useGetOnboardingDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
   const {
     data: interestsResponse,
     isLoading: isLoadingInterests,

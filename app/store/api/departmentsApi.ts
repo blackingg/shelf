@@ -1,11 +1,19 @@
 import { baseApi } from "./baseApi";
-import { Department, School } from "../../types/departments";
+import {
+  Department,
+  DepartmentFilterParams,
+  DepartmentBooksParams,
+} from "../../types/departments";
 import { Book } from "../../types/book";
+import { PaginatedResponse } from "../../types/common";
 
 export const departmentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getDepartments: builder.query<Department[], void>({
-      query: () => "/departments",
+    getDepartments: builder.query<Department[], DepartmentFilterParams | void>({
+      query: (params) => ({
+        url: "/departments",
+        params: params || {},
+      }),
       providesTags: ["Departments"],
     }),
     getDepartmentBySlug: builder.query<Department, string>({
@@ -14,15 +22,17 @@ export const departmentsApi = baseApi.injectEndpoints({
         { type: "Departments", id: slug },
       ],
     }),
-    getBooksByDepartment: builder.query<Book[], string>({
-      query: (slug) => `/departments/${slug}/books`,
-      providesTags: ["Books"],
-    }),
-    getOnboardingSchools: builder.query<School[], void>({
-      query: () => "/onboarding/schools",
-    }),
-    getOnboardingDepartments: builder.query<Department[], string>({
-      query: (schoolId) => `/onboarding/departments/${schoolId}`,
+    getBooksByDepartment: builder.query<
+      PaginatedResponse<Book>,
+      DepartmentBooksParams
+    >({
+      query: ({ slug, ...params }) => ({
+        url: `/departments/${slug}/books`,
+        params,
+      }),
+      providesTags: (result, error, { slug }) => [
+        { type: "Books", id: `dept-${slug}` },
+      ],
     }),
   }),
 });
@@ -31,6 +41,4 @@ export const {
   useGetDepartmentsQuery,
   useGetDepartmentBySlugQuery,
   useGetBooksByDepartmentQuery,
-  useGetOnboardingSchoolsQuery,
-  useGetOnboardingDepartmentsQuery,
 } = departmentsApi;
