@@ -77,7 +77,7 @@ export function RenderEPub(props: EpubProps){
       { props.buffer && props.buffer.byteLength > 0 ? 
       <div className="p-2 my-4 grid col-span-10 transition-all duration-150" >
       <div ref={viewRef} style={{
-        height: '78vh', width: '80vw', 
+        height: '78vh', width: '90vw', 
       }}>
       </div>
 
