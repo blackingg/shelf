@@ -6,6 +6,7 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
+  expiresAt: number | null;
   isAuthenticated: boolean;
   rememberMe: boolean;
 }
@@ -21,11 +22,17 @@ const getUserFromStorage = (): User | null => {
   }
 };
 
+const getExpiresAtFromStorage = (): number | null => {
+  const expiresAt = storage.find("expiresAt");
+  return expiresAt ? parseInt(expiresAt) : null;
+};
+
 const initialState: AuthState = {
   // user: JSON.parse(storage.find("user") || "null"),
   user: getUserFromStorage(),
   accessToken: storage.find("accessToken"),
   refreshToken: storage.find("refreshToken"),
+  expiresAt: getExpiresAtFromStorage(),
   isAuthenticated: !!storage.find("accessToken"),
   rememberMe: !!storage.get("accessToken", "local"),
 };
@@ -37,17 +44,19 @@ const authSlice = createSlice({
     setCredentials: (
       state,
       {
-        payload: { user, accessToken, refreshToken, rememberMe },
+        payload: { user, accessToken, refreshToken, rememberMe, expiresIn },
       }: PayloadAction<{
         user: User;
         accessToken: string;
         refreshToken: string;
+        expiresIn: number;
         rememberMe?: boolean;
       }>,
     ) => {
       state.user = user;
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
+      state.expiresAt = Date.now() + expiresIn * 1000;
       state.isAuthenticated = true;
       state.rememberMe = !!rememberMe;
 
@@ -57,10 +66,12 @@ const authSlice = createSlice({
       storage.removeFromBoth("user");
       storage.removeFromBoth("accessToken");
       storage.removeFromBoth("refreshToken");
+      storage.removeFromBoth("expiresAt");
 
       storage.set("user", JSON.stringify(user), storageType);
       storage.set("accessToken", accessToken, storageType);
       storage.set("refreshToken", refreshToken, storageType);
+      storage.set("expiresAt", state.expiresAt.toString(), storageType);
     },
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
@@ -69,13 +80,19 @@ const authSlice = createSlice({
     },
     updateTokens: (
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
+      action: PayloadAction<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+      }>,
     ) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+      state.expiresAt = Date.now() + action.payload.expiresIn * 1000;
       const storageType = state.rememberMe ? "local" : "session";
       storage.set("accessToken", action.payload.accessToken, storageType);
       storage.set("refreshToken", action.payload.refreshToken, storageType);
+      storage.set("expiresAt", state.expiresAt.toString(), storageType);
     },
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
@@ -97,12 +114,14 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
+      state.expiresAt = null;
       state.isAuthenticated = false;
       state.rememberMe = false;
 
       storage.removeFromBoth("user");
       storage.removeFromBoth("accessToken");
       storage.removeFromBoth("refreshToken");
+      storage.removeFromBoth("expiresAt");
     },
   },
   extraReducers: (builder) => {
