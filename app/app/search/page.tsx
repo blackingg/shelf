@@ -51,8 +51,8 @@ function SearchContent() {
     setSelectedBook(book);
   };
 
-  const handleFolderClick = (folderId: string) => {
-    router.push(`/app/folders/${folderId}`);
+  const handleFolderClick = (slug: string) => {
+    router.push(`/app/folders/${slug}`);
   };
 
   if (!query) {
@@ -160,23 +160,45 @@ function SearchContent() {
             <>
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-                  {items.map((item: SearchResultItem, idx: number) =>
-                    item.type === "book" ? (
-                      <BookCard
-                        key={`grid-book-${item.data.id}-${idx}`}
-                        {...(item.data as BookPreview)}
-                        onClick={() =>
-                          handleBookClick(item.data as BookPreview)
-                        }
-                      />
-                    ) : (
-                      <FolderCard
-                        key={`grid-folder-${item.data.id}-${idx}`}
-                        folder={item.data as any}
-                        onClick={() => handleFolderClick(item.data.id)}
-                      />
-                    ),
-                  )}
+                  {items.map((item: SearchResultItem, idx: number) => {
+                    if (item.type === "book") {
+                      return (
+                        <BookCard
+                          key={`grid-book-${item.data.id}-${idx}`}
+                          {...(item.data as BookPreview)}
+                          onClick={() =>
+                            handleBookClick(item.data as BookPreview)
+                          }
+                        />
+                      );
+                    } else if (item.type === "folder") {
+                      return (
+                        <FolderCard
+                          key={`grid-folder-${item.data.id}-${idx}`}
+                          folder={item.data}
+                          onClick={() => handleFolderClick(item.data.slug)}
+                        />
+                      );
+                    } else {
+                      // user
+                      return (
+                        <div
+                          key={`grid-user-${item.data.id}-${idx}`}
+                          onClick={() =>
+                            router.push(`/app/profile/${item.data.username}`)
+                          }
+                          className="flex flex-col items-center p-4 rounded-md border border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
+                        >
+                          <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
+                            {item.data.username[0].toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate w-full text-center">
+                            @{item.data.username}
+                          </span>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               ) : (
                 <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden">
@@ -186,6 +208,9 @@ function SearchContent() {
                       handleBookClick(item.data as BookPreview)
                     }
                     onFolderClick={handleFolderClick}
+                    onUserClick={(username) =>
+                      router.push(`/app/profile/${username}`)
+                    }
                   />
                 </div>
               )}

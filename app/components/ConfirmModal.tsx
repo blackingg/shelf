@@ -49,7 +49,7 @@ export const ConfirmModal = ({
                 </div>
               )}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                   {title}
                 </h3>
               </div>
@@ -67,14 +67,14 @@ export const ConfirmModal = ({
             <div className="flex space-x-3">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 font-bold text-xs uppercase tracking-widest rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700"
+                className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 font-medium text-sm rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700"
               >
                 {cancelText}
               </button>
               <button
                 onClick={onConfirm}
                 disabled={isLoading}
-                className={`flex-1 px-4 py-3 text-white font-bold text-xs uppercase tracking-widest rounded-md transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex-1 px-4 py-3 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isDanger
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-emerald-600 hover:bg-emerald-700"

@@ -20,7 +20,6 @@ export interface Folder {
   bookmarksCount: number;
   allowCollaboration: boolean;
   requireApproval: boolean;
-  createdBy: string;
   createdAt: string;
   updatedAt: string;
   user?: UserMinimal;
