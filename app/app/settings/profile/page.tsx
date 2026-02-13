@@ -224,43 +224,39 @@ export default function SettingsProfilePage() {
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
-                <div className="relative w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
-                  {user?.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={formData.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
-                      {user?.fullName?.charAt(0) ||
-                        user?.username?.charAt(0) ||
-                        "?"}
-                    </div>
-                  )}
-                  {isUploadingAvatar && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  )}
-                </div>
                 <div className="relative">
-                  <input
-                    type="file"
-                    id="avatar-upload"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    disabled={isUploadingAvatar}
-                  />
+                  <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={formData.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
+                        {user?.fullName?.charAt(0) ||
+                          user?.username?.charAt(0) ||
+                          "?"}
+                      </div>
+                    )}
+                  </div>
                   <label
                     htmlFor="avatar-upload"
-                    className={`px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
-                      isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-white dark:bg-neutral-800 rounded-full border border-gray-200 dark:border-neutral-700 shadow-sm flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                   >
-                    <FiCamera className="w-4 h-4" />
-                    <span>Change Photo</span>
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      disabled={isUploadingAvatar}
+                    />
+                    {isUploadingAvatar ? (
+                      <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
+                    ) : (
+                      <FiCamera className="w-4 h-4" />
+                    )}
                   </label>
                 </div>
               </div>
