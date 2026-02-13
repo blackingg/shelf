@@ -17,8 +17,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
 }) => {
   const router = useRouter();
 
-  const handleBack = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleBack = () => {
     if (!href) {
       router.back();
     }
@@ -33,7 +32,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
     </>
   );
 
-  const baseClasses = `group flex items-center space-x-2 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors py-2 ${className}`;
+  const baseClasses = `group inline-flex items-center space-x-2 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors py-2 cursor-pointer relative z-40 ${className}`;
 
   if (href) {
     return (

@@ -69,7 +69,7 @@ export default function UserProfilePage() {
       <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <div className="relative h-48 bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-950">
           <div className="absolute inset-0 bg-black/10" />
-          <div className="max-w-7xl mx-auto px-6 pt-6">
+          <div className="max-w-7xl mx-auto px-6 pt-6 relative z-10">
             <BackButton className="text-white/80 hover:text-white" />
           </div>
         </div>
