@@ -19,6 +19,8 @@ import {
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
+import { useTheme } from "next-themes";
+
 import { useRouter } from "next/navigation";
 import { useUploadBookMutation } from "@/app/store/api/booksApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
@@ -29,7 +31,17 @@ import { getErrorMessage } from "@/app/helpers/error";
 export default function UploadPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
+
   const [uploadBook, { isLoading: isSubmitting }] = useUploadBookMutation();
+
   const { data: departments = [], isLoading: isLoadingDepts } =
     useGetDepartmentsQuery();
   const { data: categoriesData = [], isLoading: isLoadingCategories } =
@@ -360,7 +372,7 @@ export default function UploadPage() {
                 onChange={(opt: any) =>
                   setFormData({ ...formData, department: opt?.label || "" })
                 }
-                styles={customSelectStyles}
+                styles={customSelectStyles(isDark)}
               />
             </div>
 
@@ -373,7 +385,7 @@ export default function UploadPage() {
                 onChange={(opt: any) =>
                   setFormData({ ...formData, category: opt?.value || "" })
                 }
-                styles={customSelectStyles}
+                styles={customSelectStyles(isDark)}
               />
             </div>
 
@@ -487,13 +499,13 @@ export default function UploadPage() {
   );
 }
 
-const customSelectStyles = {
+const customSelectStyles = (isDark: boolean) => ({
   control: (base: any, state: any) => ({
     ...base,
     borderRadius: "0.375rem",
     padding: "0.25rem 0.5rem",
-    borderColor: state.isFocused ? "#10b981" : "#e5e7eb",
-    backgroundColor: "transparent",
+    borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
+    backgroundColor: isDark ? "#171717" : "#ffffff",
     boxShadow: "none",
     "&:hover": { borderColor: "#10b981" },
   }),
@@ -501,27 +513,39 @@ const customSelectStyles = {
     ...base,
     borderRadius: "0.375rem",
     overflow: "hidden",
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05)",
-    border: "1px solid #e5e7eb",
-    backgroundColor: "rgb(23, 23, 23)", // neutral-900 for dark mode compatibility manually or handle via theme
+    boxShadow: isDark
+      ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
+      : "0 4px 6px -1px rgb(0 0 0 / 0.05)",
+    border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+    backgroundColor: isDark ? "#171717" : "#ffffff",
+    zIndex: 50,
   }),
   option: (base: any, state: any) => ({
     ...base,
     backgroundColor: state.isSelected
       ? "#10b981"
       : state.isFocused
-        ? "rgba(16, 185, 129, 0.1)"
+        ? isDark
+          ? "#262626"
+          : "#f3f4f6"
         : "transparent",
-    color: state.isSelected ? "white" : "inherit",
+    color: state.isSelected ? "white" : isDark ? "#ffffff" : "#111827",
     fontSize: "0.875rem",
     cursor: "pointer",
+    "&:active": {
+      backgroundColor: "#10b981",
+    },
   }),
   singleValue: (base: any) => ({
     ...base,
-    color: "inherit",
+    color: isDark ? "#ffffff" : "#111827",
+  }),
+  input: (base: any) => ({
+    ...base,
+    color: isDark ? "#ffffff" : "#111827",
   }),
   placeholder: (base: any) => ({
     ...base,
-    color: "#9ca3af",
+    color: isDark ? "#737373" : "#9ca3af",
   }),
-};
+});
