@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { NotificationProvider } from "../context/NotificationContext";
 import { useState, useEffect } from "react";
 import { LoadingScreen } from "../components/LoadingScreen";
+import TokenRefresher from "../components/Auth/TokenRefresher";
 
 export default function StoreProvider({
   children,
@@ -31,7 +32,7 @@ export default function StoreProvider({
     <Provider store={store}>
       <NotificationProvider>
         <GoogleOAuthProvider clientId={googleClientId}>
-          {children}
+          <TokenRefresher>{children}</TokenRefresher>
         </GoogleOAuthProvider>
       </NotificationProvider>
     </Provider>
