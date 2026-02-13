@@ -237,27 +237,32 @@ export default function Onboarding() {
                     control: (base) => ({
                       ...base,
                       borderRadius: "0.75rem",
-                      borderColor: "#d1d5db",
-                      backgroundColor: "transparent",
                       padding: "2px",
                       boxShadow: "none",
-                      "&:hover": { borderColor: "#059669" },
                     }),
                     option: (base, state) => ({
                       ...base,
                       backgroundColor: state.isSelected
-                        ? "#d1fae5"
+                        ? "#10b981"
                         : state.isFocused
-                          ? "#ecfdf5"
+                          ? "rgba(16, 185, 129, 0.1)"
                           : "transparent",
-                      color: "#111827",
+                      color: state.isSelected ? "white" : "inherit",
                     }),
                     menu: (base) => ({
                       ...base,
-                      backgroundColor: "var(--background)",
                       zIndex: 100,
                     }),
+                    input: (base) => ({
+                      ...base,
+                      color: "inherit",
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: "inherit",
+                    }),
                   }}
+
                   classNames={{
                     control: () =>
                       "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
@@ -296,27 +301,32 @@ export default function Onboarding() {
                     control: (base) => ({
                       ...base,
                       borderRadius: "0.75rem",
-                      borderColor: "#d1d5db",
-                      backgroundColor: "transparent",
                       padding: "2px",
                       boxShadow: "none",
-                      "&:hover": { borderColor: "#059669" },
                     }),
                     option: (base, state) => ({
                       ...base,
                       backgroundColor: state.isSelected
-                        ? "#d1fae5"
+                        ? "#10b981"
                         : state.isFocused
-                          ? "#ecfdf5"
+                          ? "rgba(16, 185, 129, 0.1)"
                           : "transparent",
-                      color: "#111827",
+                      color: state.isSelected ? "white" : "inherit",
                     }),
                     menu: (base) => ({
                       ...base,
-                      backgroundColor: "var(--background)",
                       zIndex: 100,
                     }),
+                    input: (base) => ({
+                      ...base,
+                      color: "inherit",
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: "inherit",
+                    }),
                   }}
+
                   classNames={{
                     control: () =>
                       "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Select, { SingleValue } from "react-select";
+import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -26,7 +27,17 @@ interface OptionType {
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
+
   const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
+
   const [uploadAvatar, { isLoading: isUploadingAvatar }] =
     useUploadAvatarMutation();
 
@@ -144,7 +155,8 @@ export default function SettingsProfilePage() {
       ...base,
       paddingLeft: "2rem",
       borderRadius: "0.375rem",
-      borderColor: state.isFocused ? "#10b981" : "#e5e7eb", // emerald-500 : gray-200
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
       boxShadow: state.isFocused ? "0 0 0 1px #10b981" : "none",
       "&:hover": {
         borderColor: "#10b981",
@@ -153,8 +165,39 @@ export default function SettingsProfilePage() {
     }),
     input: (base: any) => ({
       ...base,
+      color: isDark ? "#ffffff" : "#111827",
       "input:focus": {
         boxShadow: "none",
+      },
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#737373" : "#9ca3af",
+    }),
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+      boxShadow: isDark
+        ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
+        : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#10b981"
+        : state.isFocused
+          ? isDark
+            ? "#262626"
+            : "#f3f4f6"
+          : "transparent",
+      color: state.isSelected ? "#ffffff" : isDark ? "#ffffff" : "#111827",
+      "&:active": {
+        backgroundColor: "#10b981",
       },
     }),
   };
