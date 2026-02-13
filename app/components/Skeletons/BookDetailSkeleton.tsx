@@ -1,29 +1,35 @@
-export default function BookDetailSkeleton() {
+export default function BookDetailSkeleton({
+  hideHeader,
+}: {
+  hideHeader?: boolean;
+}) {
   return (
     <div className="flex min-h-screen bg-white dark:bg-neutral-900 overflow-y-auto">
       <div className="flex-1 flex flex-col">
-        <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800 animate-pulse">
-          <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-            <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
-              <div className="w-full md:w-1/3 lg:w-1/4 aspect-[2/3] bg-gray-200 dark:bg-neutral-800 rounded-md" />
-              <div className="flex-1 space-y-10 py-4">
-                <div className="space-y-4">
-                  <div className="h-4 w-24 bg-gray-200 dark:bg-neutral-800 rounded-md" />
-                  <div className="h-12 w-3/4 bg-gray-200 dark:bg-neutral-800 rounded-md" />
-                  <div className="h-6 w-1/2 bg-gray-200 dark:bg-neutral-800 rounded-md" />
-                </div>
-                <div className="flex gap-8 border-y border-gray-100 dark:border-neutral-800 py-8">
-                  <div className="h-10 w-32 bg-gray-200 dark:bg-neutral-800 rounded-md" />
-                  <div className="h-10 w-32 bg-gray-200 dark:bg-neutral-800 rounded-md" />
-                </div>
-                <div className="flex gap-4">
-                  <div className="h-14 w-48 bg-emerald-100 dark:bg-emerald-900/20 rounded-md" />
-                  <div className="h-14 w-48 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+        {!hideHeader && (
+          <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800 animate-pulse">
+            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+              <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+                <div className="w-full md:w-1/3 lg:w-1/4 aspect-[2/3] bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                <div className="flex-1 space-y-10 py-4">
+                  <div className="space-y-4">
+                    <div className="h-4 w-24 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                    <div className="h-12 w-3/4 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                    <div className="h-6 w-1/2 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                  </div>
+                  <div className="flex gap-8 border-y border-gray-100 dark:border-neutral-800 py-8">
+                    <div className="h-10 w-32 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                    <div className="h-10 w-32 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="h-14 w-48 bg-emerald-100 dark:bg-emerald-900/20 rounded-md" />
+                    <div className="h-14 w-48 bg-gray-200 dark:bg-neutral-800 rounded-md" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="max-w-6xl mx-auto px-6 py-16 w-full grid lg:grid-cols-3 gap-16 animate-pulse">
           <div className="lg:col-span-2 space-y-12">
             <div className="space-y-4">
