@@ -14,16 +14,10 @@ const SkeletonPulse = ({ className }: { className?: string }) => (
   </div>
 );
 
-export default function ProfileSkeleton({
-  hideHeader,
-}: {
-  hideHeader?: boolean;
-}) {
+export default function ProfileSkeleton() {
   return (
     <div className="bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800">
-      {!hideHeader && (
-        <SkeletonPulse className="h-48 rounded-none bg-gray-100 dark:bg-neutral-800 opacity-50" />
-      )}
+
 
       <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
         <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6">
