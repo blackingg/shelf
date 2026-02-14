@@ -164,7 +164,7 @@ export default function ShelfLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50 overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-emerald-50 overflow-hidden">
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -188,7 +188,7 @@ export default function ShelfLanding() {
 
             <motion.a
               href="#waitlist"
-              className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-full font-medium shadow-lg shadow-emerald-500/30"
+              className="px-6 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-700 text-white rounded-full font-medium shadow-lg shadow-emerald-500/30"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -209,7 +209,7 @@ export default function ShelfLanding() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-100 to-teal-100 px-5 py-2.5 rounded-full mb-8 border border-emerald-200"
+              className="inline-flex items-center space-x-2 bg-linear-to-r from-emerald-100 to-teal-100 px-5 py-2.5 rounded-full mb-8 border border-emerald-200"
             >
               <div>
                 <FiBook className="w-5 h-5 text-emerald-700" />
@@ -227,7 +227,7 @@ export default function ShelfLanding() {
             >
               <span className="block text-gray-900">Knowledge</span>
               <span className="block text-gray-900">for</span>
-              <span className="block bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-600 bg-clip-text text-transparent">
+              <span className="block bg-linear-to-r from-emerald-600 via-emerald-700 to-teal-600 bg-clip-text text-transparent">
                 Everyone
               </span>
             </motion.h1>
@@ -298,11 +298,11 @@ export default function ShelfLanding() {
             }}
           >
             <motion.div
-              className="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-[2rem] p-12 shadow-2xl border border-emerald-500/20"
+              className="relative bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-4xl p-12 shadow-2xl border border-emerald-500/20"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-[2rem]" />
+              <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent rounded-4xl" />
 
               <motion.div
                 className="absolute top-6 right-6 w-24 h-24 bg-emerald-400/20 rounded-full blur-2xl"
@@ -373,7 +373,7 @@ export default function ShelfLanding() {
             </motion.div>
 
             <motion.div
-              className="absolute -top-6 -left-6 bg-gradient-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-2xl shadow-xl flex items-center justify-center z-50"
+              className="absolute -top-6 -left-6 bg-linear-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-2xl shadow-xl flex items-center justify-center z-50"
               animate={{
                 y: [0, -20, 0],
                 rotate: [0, 10, 0],
@@ -384,7 +384,7 @@ export default function ShelfLanding() {
             </motion.div>
 
             <motion.div
-              className="absolute -bottom-6 -right-6 bg-gradient-to-br from-blue-400 to-indigo-500 w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center z-50"
+              className="absolute -bottom-6 -right-6 bg-linear-to-br from-blue-400 to-indigo-500 w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center z-50"
               animate={{
                 y: [0, 20, 0],
                 rotate: [0, -10, 0],
@@ -469,7 +469,7 @@ export default function ShelfLanding() {
                 >
                   <div className="relative z-10 group">
                     <div
-                      className={`inline-flex p-4 bg-gradient-to-br from-teal-600 to-emerald-700 rounded-2xl mb-6 text-white shadow-lg group-hover:animate- transition-colors`}
+                      className={`inline-flex p-4 bg-linear-to-br from-teal-600 to-emerald-700 rounded-2xl mb-6 text-white shadow-lg group-hover:animate- transition-colors`}
                     >
                       {feature.icon}
                     </div>
@@ -494,7 +494,7 @@ export default function ShelfLanding() {
       >
         <div className="absolute inset-0">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950"
+            className="absolute inset-0 bg-linear-to-br from-emerald-900 via-emerald-800 to-emerald-950"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -566,13 +566,13 @@ export default function ShelfLanding() {
                   <motion.button
                     onClick={handleSubmit}
                     disabled={isLoading}
-                    className="w-full px-8 py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-2xl shadow-emerald-500/50 disabled:opacity-50 relative overflow-hidden group"
+                    className="w-full px-8 py-5 rounded-2xl font-bold text-lg bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-2xl shadow-emerald-500/50 disabled:opacity-50 relative overflow-hidden group"
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                      className="absolute inset-0 bg-linear-to-r from-white/20 to-transparent"
                       initial={{ x: "-100%" }}
                       whileHover={{ x: "100%" }}
                       transition={{ duration: 0.6 }}
@@ -697,7 +697,7 @@ export default function ShelfLanding() {
         </div>
       </section>
 
-      <footer className="bg-gradient-to-br from-emerald-950 via-emerald-900 to-gray-900 py-16 px-6 relative overflow-hidden">
+      <footer className="bg-linear-to-br from-emerald-950 via-emerald-900 to-gray-900 py-16 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
