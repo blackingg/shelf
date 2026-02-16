@@ -82,7 +82,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const { data: ownerFoldersResponse, isLoading: isLoadingOwnerFolders } =
     useGetMeFoldersQuery(undefined, { skip: !isOwner });
 
-  const folders = isOwner ? ownerFoldersResponse?.items : publicFolders;
+  const folders = isOwner ? ownerFoldersResponse?.items : publicFolders?.items;
   const isLoadingFolders = isOwner
     ? isLoadingOwnerFolders
     : isLoadingPublicFolders;
@@ -104,7 +104,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
       id: "donated",
       label: "Donated",
       icon: FiUploadCloud,
-      count: isOwner ? booksResponse?.total || 0 : user?.booksCount || 0,
+      count: isOwner
+        ? booksResponse?.total || 0
+        : user?.counts.donatedBooks || 0,
     },
     {
       id: "folders",
@@ -112,7 +114,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
       icon: FiFolder,
       count: isOwner
         ? ownerFoldersResponse?.total || 0
-        : user?.foldersCount || 0,
+        : user?.counts.publicFolders || 0,
     },
     ...(isOwner
       ? [
@@ -348,7 +350,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner ? booksResponse?.total || 0 : user.booksCount}
+                    {isOwner
+                      ? booksResponse?.total || 0
+                      : user.counts.donatedBooks}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Donations
@@ -358,7 +362,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
                     {isOwner
                       ? ownerFoldersResponse?.total || 0
-                      : user.foldersCount}
+                      : user.counts.publicFolders}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Folders

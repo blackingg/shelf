@@ -11,6 +11,7 @@ import {
   FiShare2,
   FiCamera,
   FiBookmark,
+  FiLock,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
@@ -37,9 +38,12 @@ export default function FolderDetailsPage() {
   const [uploadFolderCover, { isLoading: isUploadingCover }] =
     useUploadFolderCoverMutation();
 
-  const { data: folder, isLoading } = useGetFolderBySlugQuery(slug);
+  const { data: folder, isLoading, error } = useGetFolderBySlugQuery(slug);
   const user = useSelector(selectCurrentUser);
   const currentUser = user?.username || "Guest";
+
+  // Check if error is a 403 Forbidden
+  const isForbidden = (error as any)?.status === 403;
 
   const { data: bookmarkData } = useGetIsFolderBookmarkedQuery(
     folder?.id || "",
@@ -137,8 +141,39 @@ export default function FolderDetailsPage() {
 
         {isLoading ? (
           <FolderDetailSkeleton hideHeader />
+        ) : isForbidden ? (
+          <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
+            <div className="w-20 h-20 bg-amber-50 dark:bg-amber-900/10 rounded-full flex items-center justify-center mb-6">
+              <FiLock className="w-10 h-10 text-amber-600 dark:text-amber-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Private Folder
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-8 max-w-sm leading-relaxed">
+              This folder is set to private. You don&apos;t have permission to
+              view its contents. If you believe this is an error, contact the
+              owner.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => router.push("/app/folders")}
+                className="px-6 py-2.5 bg-emerald-600 text-white rounded-md text-xs font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors shadow-sm"
+              >
+                Explore Folders
+              </button>
+              <button
+                onClick={() => router.back()}
+                className="px-6 py-2.5 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-md text-xs font-bold uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700/50"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
         ) : !folder ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
+            <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-6">
+              <FiFolder className="w-10 h-10 text-gray-300 dark:text-neutral-600" />
+            </div>
             <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
               Folder Not Found
             </h2>
