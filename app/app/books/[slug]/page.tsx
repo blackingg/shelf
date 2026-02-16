@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
 import {
-  FiBook,
-  FiStar,
   FiFileText,
   FiFolderPlus,
   FiPlay,
