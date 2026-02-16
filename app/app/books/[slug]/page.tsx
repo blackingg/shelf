@@ -60,12 +60,11 @@ export default function BookDetailsPage() {
     }
   };
 
-
   return (
     <div className="flex min-h-screen bg-white dark:bg-neutral-900 overflow-y-auto">
       <div className="flex-1 flex flex-col">
         <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
-          <div className="max-w-6xl mx-auto px-6 pt-12">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
             <BackButton />
           </div>
 
@@ -74,8 +73,8 @@ export default function BookDetailsPage() {
               <BookDetailSkeleton />
             </div>
           ) : !book ? (
-            <div className="py-24 text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="py-24 text-center px-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
                 Book Not Found
               </h2>
               <p className="text-gray-500 dark:text-neutral-400 mb-8 max-w-sm mx-auto">
@@ -87,14 +86,14 @@ export default function BookDetailsPage() {
               </Button>
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto px-6 pb-12 md:pb-16 pt-12 md:pt-16">
-              <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-8 md:pb-12 lg:pb-16 pt-8 md:pt-12 lg:pt-16">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 items-start">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
+                  className="w-full max-w-60 sm:max-w-[280px] md:max-w-none md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0"
                 >
-                  <div className="relative aspect-[2/3] rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
+                  <div className="relative aspect-2/3 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
                     <NextImage
                       src={
                         book.coverImage &&
@@ -113,33 +112,33 @@ export default function BookDetailsPage() {
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex-1 space-y-8"
+                  className="flex-1 space-y-6 md:space-y-8 w-full min-w-0"
                 >
-                  <div>
-                    <div className="flex items-center gap-2 mb-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4">
                       <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md text-[10px] font-bold uppercase tracking-widest border border-emerald-100 dark:border-emerald-800/50">
                         {book.category}
                       </span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 leading-tight wrap-break-word">
                       {book.title}
                     </h1>
-                    <p className="text-xl text-gray-500 dark:text-neutral-400 font-medium">
+                    <p className="text-lg sm:text-xl text-gray-500 dark:text-neutral-400 font-medium wrap-break-word">
                       {book.author}
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-10 border-y border-gray-100 dark:border-neutral-800 py-8">
+                  <div className="flex flex-wrap items-center gap-6 sm:gap-8 md:gap-10 border-y border-gray-100 dark:border-neutral-800 py-6 sm:py-8">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-neutral-500 mb-2">
                         Resource Rating
                       </span>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <StarRating
                           rating={book.rating || 0}
-                          size={20}
+                          size={18}
                         />
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">
+                        <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "5.0"}
                         </span>
                       </div>
@@ -149,21 +148,23 @@ export default function BookDetailsPage() {
                         Total Pages
                       </span>
                       <div className="flex items-center text-gray-900 dark:text-neutral-200">
-                        <FiFileText className="w-5 h-5 mr-2 text-emerald-500" />
-                        <span className="text-lg font-bold">{book.pages}</span>
+                        <FiFileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-emerald-500" />
+                        <span className="text-base sm:text-lg font-bold">
+                          {book.pages}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
                     <div className="w-full sm:w-48">
                       <button
                         onClick={() =>
                           router.push(`/app/books/${book.slug}/read`)
                         }
-                        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-3"
+                        className="w-full py-3 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3"
                       >
-                        <FiPlay className="w-5 h-5 fill-current" />
+                        <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                         <span>Read Now</span>
                       </button>
                     </div>
@@ -173,13 +174,13 @@ export default function BookDetailsPage() {
                         onClick={() =>
                           setShowFolderDropdown(!showFolderDropdown)
                         }
-                        className={`w-full sm:w-auto px-8 py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-3 ${
+                        className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
                           showFolderDropdown
                             ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
                             : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
                         }`}
                       >
-                        <FiFolderPlus className="w-5 h-5" />
+                        <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>Save to Folder</span>
                       </button>
 
@@ -187,7 +188,7 @@ export default function BookDetailsPage() {
                         isOpen={showFolderDropdown}
                         onClose={() => setShowFolderDropdown(false)}
                         bookId={actualBookId}
-                        className="top-full mt-3 w-80"
+                        className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
                       />
                     </div>
                   </div>
@@ -198,24 +199,24 @@ export default function BookDetailsPage() {
         </div>
 
         {!isLoadingBook && book && (
-          <div className="max-w-6xl mx-auto px-6 py-16 w-full">
-            <div className="grid lg:grid-cols-3 gap-16">
-              <div className="lg:col-span-2 space-y-16">
-                <section>
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-6">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 w-full">
+            <div className="grid lg:grid-cols-3 gap-12 lg:gap-16">
+              <div className="lg:col-span-2 space-y-12 sm:space-y-16 min-w-0">
+                <section className="min-w-0">
+                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-4 sm:mb-6">
                     Overview
                   </h3>
-                  <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-lg font-medium">
+                  <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-base sm:text-lg font-medium wrap-break-word">
                     {book.description}
                   </p>
                 </section>
 
-                <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-8 md:p-12 rounded-lg border border-gray-100 dark:border-neutral-800">
-                  <div className="mb-10">
+                <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-6 sm:p-8 md:p-12 rounded-lg border border-gray-100 dark:border-neutral-800 min-w-0">
+                  <div className="mb-8 sm:mb-10">
                     <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-2">
                       Community
                     </p>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white wrap-break-word">
                       Reviews & Discussion
                     </h2>
                   </div>
@@ -223,24 +224,26 @@ export default function BookDetailsPage() {
                 </section>
               </div>
 
-              <div className="space-y-12">
-                <section className="bg-white dark:bg-neutral-900 p-8 rounded-lg border border-gray-100 dark:border-neutral-800">
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-8">
+              <div className="space-y-8 sm:space-y-12 min-w-0">
+                <section className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-lg border border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-6 sm:mb-8">
                     Resource Stats
                   </h3>
-                  <div className="space-y-8">
-                    <div className="flex flex-col gap-2">
+                  <div className="space-y-6 sm:space-y-8">
+                    <div className="flex flex-col gap-2 min-w-0">
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                         Contributor
                       </span>
                       <Link
                         href={`/app/profile/${book.donor?.username}`}
-                        className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 transition-colors flex items-center gap-3 transition-colors"
+                        className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 flex items-center gap-2 sm:gap-3 transition-colors min-w-0"
                       >
-                        <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold">
+                        <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold shrink-0">
                           {book.donor?.username?.charAt(0).toUpperCase()}
                         </div>
-                        @{book.donor?.username || "user"}
+                        <span className="truncate">
+                          @{book.donor?.username || "user"}
+                        </span>
                       </Link>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -260,35 +263,35 @@ export default function BookDetailsPage() {
                           rating={myRatingData?.rating || 0}
                           interactive
                           onRate={handleRate}
-                          size={24}
+                          size={22}
                         />
                       </div>
                     </div>
                   </div>
                 </section>
 
-                <section>
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-8">
+                <section className="min-w-0">
+                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-6 sm:mb-8">
                     Similar Resources
                   </h3>
                   <div className="space-y-4">
                     {[1, 2, 3].map((_, i) => (
                       <div
                         key={i}
-                        className="flex items-center space-x-4 group cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors"
+                        className="flex items-center space-x-3 sm:space-x-4 group cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors min-w-0"
                       >
-                        <div className="w-14 h-20 bg-gray-100 dark:bg-neutral-800 rounded-md shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
+                        <div className="w-12 h-16 sm:w-14 sm:h-20 bg-gray-100 dark:bg-neutral-800 rounded-md shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
                           <div className="w-full h-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center font-bold text-emerald-500/10 text-[10px]">
                             SHELF
                           </div>
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-emerald-600 transition-colors truncate text-sm">
                             Explore More Assets
                           </p>
                           <a
                             href={`/app/library/categories/${book.category}`}
-                            className="text-[10px] font-bold uppercase text-gray-400 mt-1 tracking-wider opacity-60"
+                            className="text-[10px] font-bold uppercase text-gray-400 mt-1 tracking-wider opacity-60 block truncate"
                           >
                             {book.category}
                           </a>
