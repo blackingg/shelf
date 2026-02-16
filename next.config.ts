@@ -80,6 +80,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdnb.artstation.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdna.artstation.com",
+      },
     ],
   },
 };

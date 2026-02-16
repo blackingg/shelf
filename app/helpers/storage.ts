@@ -1,52 +1,41 @@
-type StorageType = "local" | "session";
-
 const isBrowser = typeof window !== "undefined";
 
 export const storage = {
-  get: (key: string, type: StorageType = "local"): string | null => {
+  get: (key: string): string | null => {
     if (!isBrowser) return null;
-    return type === "local"
-      ? localStorage.getItem(key)
-      : sessionStorage.getItem(key);
-  },
+    const value = localStorage.getItem(key);
 
-  set: (key: string, value: string, type: StorageType = "local"): void => {
-    if (!isBrowser) return;
-    if (type === "local") {
-      localStorage.setItem(key, value);
-    } else {
-      sessionStorage.setItem(key, value);
-    }
-  },
-
-  remove: (key: string, type: StorageType = "local"): void => {
-    if (!isBrowser) return;
-    if (type === "local") {
+    if (value === "undefined" || value === "null") {
       localStorage.removeItem(key);
-    } else {
-      sessionStorage.removeItem(key);
+      return null;
     }
+
+    return value;
   },
 
-  clear: (type: StorageType = "local"): void => {
+  set: (key: string, value: string | null | undefined): void => {
     if (!isBrowser) return;
-    if (type === "local") {
-      localStorage.clear();
-    } else {
-      sessionStorage.clear();
+
+    if (
+      value === undefined ||
+      value === null ||
+      value === "undefined" ||
+      value === "null"
+    ) {
+      localStorage.removeItem(key);
+      return;
     }
+
+    localStorage.setItem(key, value);
   },
 
-  // Helper to find key in either storage, preferring local
-  find: (key: string): string | null => {
-    if (!isBrowser) return null;
-    return localStorage.getItem(key) || sessionStorage.getItem(key);
-  },
-
-  // Helper to remove key from both
-  removeFromBoth: (key: string): void => {
+  remove: (key: string): void => {
     if (!isBrowser) return;
     localStorage.removeItem(key);
-    sessionStorage.removeItem(key);
+  },
+
+  clear: (): void => {
+    if (!isBrowser) return;
+    localStorage.clear();
   },
 };

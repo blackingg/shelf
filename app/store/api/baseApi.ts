@@ -30,14 +30,17 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  // Proactive refresh logic
   const state = api.getState() as RootState;
   const { expiresAt, refreshToken } = state.auth;
 
-  // Check if token is about to expire (within 60 seconds)
-  if (refreshToken && expiresAt) {
+  if (
+    refreshToken &&
+    refreshToken !== "undefined" &&
+    refreshToken !== "null" &&
+    expiresAt
+  ) {
     const now = Date.now();
-    // Default expiration buffer to 60 seconds
+    // buffer to 60 seconds
     const expirationBuffer = 60 * 1000;
 
     if (now > expiresAt - expirationBuffer) {
@@ -89,7 +92,7 @@ const baseQueryWithReauth: BaseQueryFn<
       try {
         const refreshToken = (api.getState() as RootState).auth.refreshToken;
 
-        if (refreshToken) {
+        if (refreshToken && refreshToken !== "undefined" && refreshToken !== "null") {
           const refreshResult = await baseQuery(
             {
               url: "/auth/refresh",

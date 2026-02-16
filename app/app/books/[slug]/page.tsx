@@ -14,10 +14,6 @@ import Link from "next/link";
 import { Button } from "@/app/components/Form/Button";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
-import {
-  useAddBookToFolderMutation,
-  useRemoveBookFromFolderMutation,
-} from "@/app/store/api/foldersApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
 import {
@@ -35,7 +31,6 @@ export default function BookDetailsPage() {
   const bookSlug = params.slug as string;
   const { addNotification } = useNotifications();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
-  const [savedFolders, setSavedFolders] = useState<string[]>([]);
 
   const { data: book, isLoading: isLoadingBook } = useGetBookBySlugQuery(
     bookSlug,
@@ -44,15 +39,18 @@ export default function BookDetailsPage() {
     },
   );
 
+  React.useEffect(() => {
+    if (book?.id) {
+      setShowFolderDropdown(false);
+    }
+  }, [book?.id]);
+
   const actualBookId = book?.id || "";
 
   const { data: myRatingData } = useGetMyRatingQuery(actualBookId, {
     skip: !actualBookId,
   });
   const [rateBook] = useRateBookMutation();
-
-  const [addBookToFolder] = useAddBookToFolderMutation();
-  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
 
   const handleRate = async (newRating: number) => {
     try {
@@ -62,30 +60,6 @@ export default function BookDetailsPage() {
     }
   };
 
-  const handleSaveToFolder = async (folderId: string) => {
-    try {
-      if (savedFolders.includes(folderId)) {
-        await removeBookFromFolder({
-          id: folderId,
-          bookId: actualBookId,
-        }).unwrap();
-        setSavedFolders(savedFolders.filter((id) => id !== folderId));
-        addNotification("success", "Book removed from folder");
-      } else {
-        await addBookToFolder({
-          id: folderId,
-          data: { bookId: actualBookId },
-        }).unwrap();
-        setSavedFolders([...savedFolders, folderId]);
-        addNotification("success", "Book added to folder");
-      }
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update folder"),
-      );
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-neutral-900 overflow-y-auto">
@@ -212,8 +186,7 @@ export default function BookDetailsPage() {
                       <FolderDropdown
                         isOpen={showFolderDropdown}
                         onClose={() => setShowFolderDropdown(false)}
-                        currentBookFolders={savedFolders}
-                        onSaveToFolder={handleSaveToFolder}
+                        bookId={actualBookId}
                         className="top-full mt-3 w-80"
                       />
                     </div>

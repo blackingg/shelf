@@ -13,28 +13,27 @@ interface AuthState {
 
 const getUserFromStorage = (): User | null => {
   try {
-    const userStr = storage.find("user");
+    const userStr = storage.get("user");
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
     console.error("Failed to parse user from storage:", error);
-    storage.removeFromBoth("user");
+    storage.remove("user");
     return null;
   }
 };
 
 const getExpiresAtFromStorage = (): number | null => {
-  const expiresAt = storage.find("expiresAt");
+  const expiresAt = storage.get("expiresAt");
   return expiresAt ? parseInt(expiresAt) : null;
 };
 
 const initialState: AuthState = {
-  // user: JSON.parse(storage.find("user") || "null"),
   user: getUserFromStorage(),
-  accessToken: storage.find("accessToken"),
-  refreshToken: storage.find("refreshToken"),
+  accessToken: storage.get("accessToken"),
+  refreshToken: storage.get("refreshToken"),
   expiresAt: getExpiresAtFromStorage(),
-  isAuthenticated: !!storage.find("accessToken"),
-  rememberMe: !!storage.get("accessToken", "local"),
+  isAuthenticated: !!storage.get("accessToken"),
+  rememberMe: storage.get("rememberMe") === "true",
 };
 
 const authSlice = createSlice({
@@ -60,23 +59,21 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.rememberMe = !!rememberMe;
 
-      const storageType = rememberMe ? "local" : "session";
+      storage.remove("user");
+      storage.remove("accessToken");
+      storage.remove("refreshToken");
+      storage.remove("expiresAt");
+      storage.remove("rememberMe");
 
-      // Clean up old storage first
-      storage.removeFromBoth("user");
-      storage.removeFromBoth("accessToken");
-      storage.removeFromBoth("refreshToken");
-      storage.removeFromBoth("expiresAt");
-
-      storage.set("user", JSON.stringify(user), storageType);
-      storage.set("accessToken", accessToken, storageType);
-      storage.set("refreshToken", refreshToken, storageType);
-      storage.set("expiresAt", state.expiresAt.toString(), storageType);
+      storage.set("user", JSON.stringify(user));
+      storage.set("accessToken", accessToken);
+      storage.set("refreshToken", refreshToken);
+      storage.set("expiresAt", state.expiresAt.toString());
+      storage.set("rememberMe", state.rememberMe.toString());
     },
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
-      const storageType = state.rememberMe ? "local" : "session";
-      storage.set("accessToken", action.payload, storageType);
+      storage.set("accessToken", action.payload);
     },
     updateTokens: (
       state,
@@ -89,25 +86,23 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.expiresAt = Date.now() + action.payload.expiresIn * 1000;
-      const storageType = state.rememberMe ? "local" : "session";
-      storage.set("accessToken", action.payload.accessToken, storageType);
-      storage.set("refreshToken", action.payload.refreshToken, storageType);
-      storage.set("expiresAt", state.expiresAt.toString(), storageType);
+
+      storage.set("accessToken", action.payload.accessToken);
+      storage.set("refreshToken", action.payload.refreshToken);
+      storage.set("expiresAt", state.expiresAt.toString());
     },
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
-      const storageType = state.rememberMe ? "local" : "session";
       if (action.payload) {
-        storage.set("user", JSON.stringify(action.payload), storageType);
+        storage.set("user", JSON.stringify(action.payload));
       } else {
-        storage.removeFromBoth("user");
+        storage.remove("user");
       }
     },
     setOnboardingStatus: (state, action: PayloadAction<boolean>) => {
       if (state.user) {
         state.user.onboardingCompleted = action.payload;
-        const storageType = state.rememberMe ? "local" : "session";
-        storage.set("user", JSON.stringify(state.user), storageType);
+        storage.set("user", JSON.stringify(state.user));
       }
     },
     logout: (state) => {
@@ -118,10 +113,11 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.rememberMe = false;
 
-      storage.removeFromBoth("user");
-      storage.removeFromBoth("accessToken");
-      storage.removeFromBoth("refreshToken");
-      storage.removeFromBoth("expiresAt");
+      storage.remove("user");
+      storage.remove("accessToken");
+      storage.remove("refreshToken");
+      storage.remove("expiresAt");
+      storage.remove("rememberMe");
     },
   },
   extraReducers: (builder) => {
@@ -133,8 +129,7 @@ const authSlice = createSlice({
         ),
       (state, action: PayloadAction<User>) => {
         state.user = action.payload;
-        const storageType = state.rememberMe ? "local" : "session";
-        storage.set("user", JSON.stringify(action.payload), storageType);
+        storage.set("user", JSON.stringify(action.payload));
       },
     );
   },

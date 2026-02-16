@@ -11,6 +11,7 @@ import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
 import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
+import { storage } from "@/app/helpers/storage";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
@@ -46,16 +47,16 @@ export default function Onboarding() {
 
   // Restore session data on mount
   useEffect(() => {
-    const savedStep = sessionStorage.getItem("onboarding_step");
-    const savedData = sessionStorage.getItem("onboarding_data");
+    const savedStep = storage.get("onboarding_step");
+    const savedData = storage.get("onboarding_data");
     if (savedStep) setCurrentStep(parseInt(savedStep));
     if (savedData) setFormData(JSON.parse(savedData));
   }, []);
 
   // Save session data on change
   useEffect(() => {
-    sessionStorage.setItem("onboarding_step", currentStep.toString());
-    sessionStorage.setItem("onboarding_data", JSON.stringify(formData));
+    storage.set("onboarding_step", currentStep.toString());
+    storage.set("onboarding_data", JSON.stringify(formData));
   }, [currentStep, formData]);
 
   const steps = ["School", "Department", "Interests"];
@@ -100,8 +101,8 @@ export default function Onboarding() {
       }).unwrap();
 
       dispatch(setOnboardingStatus(true));
-      sessionStorage.removeItem("onboarding_step");
-      sessionStorage.removeItem("onboarding_data");
+      storage.remove("onboarding_step");
+      storage.remove("onboarding_data");
       addNotification(
         "success",
         "Welcome to Shelf! Your profile is now set up.",
