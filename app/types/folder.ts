@@ -9,6 +9,12 @@ export interface FolderFilterParams extends PaginationParams {
 
 export type FolderVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
 
+export interface FolderCounts {
+  items: number;
+  bookmarks: number;
+  collaborators: number;
+}
+
 export interface Folder {
   id: string;
   slug: string;
@@ -25,6 +31,7 @@ export interface Folder {
   user?: UserMinimal;
   items?: FolderItem[];
   collaborators?: Collaborator[];
+  counts?: FolderCounts;
 }
 
 export interface FolderItem {

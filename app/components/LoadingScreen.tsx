@@ -8,7 +8,7 @@ export const LoadingScreen = () => {
           <Image
             src="/logo-stacked-2.png"
             alt="Shelf Logo"
-            width={1200}
+            width={120}
             height={150}
             priority
           />

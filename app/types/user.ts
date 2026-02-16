@@ -32,6 +32,13 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+export interface UserCounts {
+  donatedBooks: number;
+  publicFolders: number;
+  ratings: number;
+  reviews: number;
+}
+
 export interface UserPublic {
   id: string;
   uuid: string;
@@ -42,8 +49,10 @@ export interface UserPublic {
   bio: string | null;
   booksCount: number;
   foldersCount: number;
+  onboardingCompleted: boolean;
   school?: { id: string; name: string; shortName: string | null } | null;
   department?: { id: string; name: string } | null;
+  counts: UserCounts;
   createdAt: string;
   updatedAt: string;
 }
