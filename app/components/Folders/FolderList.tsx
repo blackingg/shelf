@@ -115,9 +115,9 @@ export const FolderList: React.FC<FolderListProps> = ({
                         <div className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                           {folder.name}
                         </div>
-                        {folder.coverImage && (
-                          <div className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
-                            Includes recent additions
+                        {folder.description && (
+                          <div className="inline-block first-letter:uppercase truncate text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                            {folder.description}
                           </div>
                         )}
                       </div>

@@ -19,6 +19,7 @@ import { selectCurrentUser } from "@/app/store/authSlice";
 import {
   useGetFolderBySlugQuery,
   useUploadFolderCoverMutation,
+  useRemoveBookFromFolderMutation,
 } from "@/app/store/api/foldersApi";
 import {
   useBookmarkFolderMutation,
@@ -111,6 +112,23 @@ export default function FolderDetailsPage() {
     folder?.visibility === "PUBLIC" || isOwner || isCollaborator;
 
   const hasMenuActions = canEdit || canDelete || canSeeShare;
+
+  const [removeBookFromFolder, { isLoading: isRemovingBook }] =
+    useRemoveBookFromFolderMutation();
+
+  const handleRemoveBook = async (bookId: string) => {
+    if (!folder) return;
+
+    try {
+      await removeBookFromFolder({ id: folder.id, bookId }).unwrap();
+      addNotification("success", "Book removed from folder");
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to remove book from folder"),
+      );
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
@@ -270,6 +288,9 @@ export default function FolderDetailsPage() {
             <div>
               <BooksTable
                 books={books}
+                canEdit={canEdit}
+                folderId={folder.id}
+                onRemoveBook={handleRemoveBook}
                 onBookClick={(bookId) => {
                   const book = books.find((b) => b.id === bookId);
                   router.push(`/app/books/${book?.slug || bookId}/read`);
