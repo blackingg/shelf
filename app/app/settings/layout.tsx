@@ -2,6 +2,7 @@
 import React from "react";
 import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
+import { PWAInstallPrompt } from "@/app/components/PWAInstallPrompt";
 import { SettingsSidebar } from "@/app/components/Settings/SettingsSidebar";
 
 export default function SettingsLayout({
@@ -20,6 +21,7 @@ export default function SettingsLayout({
             <div className="max-w-4xl">{children}</div>
           </div>
         </div>
+        <PWAInstallPrompt />
       </main>
     </div>
   );

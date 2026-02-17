@@ -1,6 +1,7 @@
 "use client";
 import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
+import { PWAInstallPrompt } from "@/app/components/PWAInstallPrompt";
 
 import { usePathname } from "next/navigation";
 
@@ -22,6 +23,7 @@ export default function ModeratorLayout({
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <PageHeader />
         <div className="flex-1 overflow-y-auto">{children}</div>
+        <PWAInstallPrompt />
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
+import { PWAInstallPrompt } from "@/app/components/PWAInstallPrompt";
 import { useState } from "react";
 
 export default function UserLayout({
@@ -21,6 +22,7 @@ export default function UserLayout({
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {children}
         </div>
+        <PWAInstallPrompt />
       </main>
     </div>
   );

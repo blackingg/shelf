@@ -1,6 +1,7 @@
 "use client";
 import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
+import { PWAInstallPrompt } from "@/app/components/PWAInstallPrompt";
 
 export default function FolderLayout({
   children,
@@ -15,6 +16,7 @@ export default function FolderLayout({
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {children}
         </div>
+        <PWAInstallPrompt />
       </main>
     </div>
   );

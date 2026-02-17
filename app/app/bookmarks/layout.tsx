@@ -1,6 +1,7 @@
 "use client";
 import { Sidebar } from "@/app/components/Sidebar";
 import { PageHeader } from "@/app/components/PageHeader";
+import { PWAInstallPrompt } from "@/app/components/PWAInstallPrompt";
 import { usePathname } from "next/navigation";
 
 export default function BookLayout({
@@ -21,6 +22,7 @@ export default function BookLayout({
       <main className="flex-1 flex flex-col">
         <PageHeader />
         <div className="flex-1 overflow-y-auto">{children}</div>
+        <PWAInstallPrompt />
       </main>
     </div>
   );
