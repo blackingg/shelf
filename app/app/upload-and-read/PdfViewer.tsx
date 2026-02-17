@@ -28,7 +28,7 @@ export function PdfViewer({ buffer }: { buffer: ArrayBuffer }) {
 
   return (
     <>
-      <canvas ref={canvasRef} />
+      <canvas ref={canvasRef} className="md:p-2 md:my-4"/>
       <div>
         <button onClick={viewer.prev}>Prev</button>
         <span>

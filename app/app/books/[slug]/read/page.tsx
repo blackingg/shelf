@@ -13,7 +13,6 @@ import {
   FiSun,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
-import { RenderEPub } from "@/app/app/upload-and-read/page";
 
 export default function ReaderPage() {
   const router = useRouter();
@@ -264,8 +263,6 @@ export default function ReaderPage() {
           style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
           className={`${currentTheme.text} font-serif`}
         >
-
-          {/*<RenderEPub buffer={buffer} /> */}
           
         </motion.div>
       </main>
