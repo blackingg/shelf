@@ -12,6 +12,7 @@ import {
   FiHeart,
   FiCheckCircle,
   FiBookmark,
+  FiBookOpen,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -48,6 +49,7 @@ export const Sidebar: React.FC = () => {
       icon: <FiBriefcase />,
       href: "/app/library/departments",
     },
+    {label: "Viewer", icon: <FiBookOpen />, href:"/app/upload-and-read"}, 
     { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
     { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
   ];
