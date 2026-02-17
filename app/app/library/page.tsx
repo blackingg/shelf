@@ -145,7 +145,7 @@ export default function LibraryPage() {
                 ))}
               </div>
             ) : (
-              <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
+              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
                   No resources found in this category.
                 </p>

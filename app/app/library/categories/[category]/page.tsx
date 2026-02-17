@@ -170,7 +170,7 @@ export default function CategoryPage({
                   />
                 </>
               ) : (
-                <div className="text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
+                <div className="h-[30vh] text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
                   <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
                     <FiSearch className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
                   </div>
