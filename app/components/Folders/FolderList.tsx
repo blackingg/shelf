@@ -46,13 +46,15 @@ export const FolderList: React.FC<FolderListProps> = ({
 
   if (folders.length === 0) {
     return (
-      <div className="text-center py-16 bg-white dark:bg-neutral-900 rounded-lg border border-dashed border-gray-300 dark:border-neutral-800">
-        <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
-          <FiFolder className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-center py-16 bg-white dark:bg-neutral-900 rounded-lg border border-dashed border-gray-300 dark:border-neutral-800 w-full">
+          <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiFolder className="w-8 h-8 text-gray-400 dark:text-neutral-500" />
+          </div>
+          <p className="text-gray-500 dark:text-neutral-400 text-lg">
+            {emptyMessage}
+          </p>
         </div>
-        <p className="text-gray-500 dark:text-neutral-400 text-lg">
-          {emptyMessage}
-        </p>
       </div>
     );
   }
@@ -113,9 +115,9 @@ export const FolderList: React.FC<FolderListProps> = ({
                         <div className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                           {folder.name}
                         </div>
-                        {folder.coverImage && (
-                          <div className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
-                            Includes recent additions
+                        {folder.description && (
+                          <div className="inline-block first-letter:uppercase truncate text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                            {folder.description}
                           </div>
                         )}
                       </div>

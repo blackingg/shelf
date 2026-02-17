@@ -32,13 +32,24 @@ export default function FoldersPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
   const [page, setPage] = useState(1);
-  const pageSize = 12;
+  const pageSize = 8;
+
+  const handleTabChange = (tab: "private" | "public" | "bookmarked") => {
+    setActiveTab(tab);
+    setPage(1);
+  };
 
   // API Queries
-  const { data: myFolders, isLoading: isLoadingMyFolders } =
-    useGetMeFoldersQuery(undefined, {
+  const {
+    data: myFoldersResponse,
+    isLoading: isLoadingMyFolders,
+    isFetching: isFetchingMyFolders,
+  } = useGetMeFoldersQuery(
+    { page, pageSize },
+    {
       skip: activeTab !== "private",
-    });
+    },
+  );
   const {
     data: publicFoldersResponse,
     isLoading: isLoadingPublicFolders,
@@ -49,10 +60,16 @@ export default function FoldersPage() {
       skip: activeTab !== "public",
     },
   );
-  const { data: bookmarkedFolders, isLoading: isLoadingBookmarked } =
-    useGetBookmarkedFoldersQuery(undefined, {
+  const {
+    data: bookmarkedFoldersResponse,
+    isLoading: isLoadingBookmarked,
+    isFetching: isFetchingBookmarked,
+  } = useGetBookmarkedFoldersQuery(
+    { page, pageSize },
+    {
       skip: activeTab !== "bookmarked",
-    });
+    },
+  );
 
   const [createFolder] = useCreateFolderMutation();
   const [deleteFolderMutation] = useDeleteFolderMutation();
@@ -101,15 +118,27 @@ export default function FoldersPage() {
 
   const displayedFolders: Folder[] =
     activeTab === "private"
-      ? myFolders || []
+      ? myFoldersResponse?.items || []
       : activeTab === "public"
         ? publicFoldersResponse?.items || []
-        : bookmarkedFolders || [];
+        : bookmarkedFoldersResponse?.items || [];
+
+  const currentResponse =
+    activeTab === "private"
+      ? myFoldersResponse
+      : activeTab === "public"
+        ? publicFoldersResponse
+        : bookmarkedFoldersResponse;
 
   const isLoading =
     (activeTab === "private" && isLoadingMyFolders) ||
     (activeTab === "public" && isLoadingPublicFolders) ||
     (activeTab === "bookmarked" && isLoadingBookmarked);
+
+  const isFetching =
+    (activeTab === "private" && isFetchingMyFolders) ||
+    (activeTab === "public" && isFetchingPublic) ||
+    (activeTab === "bookmarked" && isFetchingBookmarked);
 
   const filteredFolders = displayedFolders.filter((folder) =>
     folder.slug.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -122,7 +151,7 @@ export default function FoldersPage() {
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={handleTabChange}
             />
 
             <div className="flex w-full lg:w-fit items-start justify-between gap-3">
@@ -175,9 +204,7 @@ export default function FoldersPage() {
                     ? "No bookmarked folders yet."
                     : "No public folders available to explore."
               }
-              className={
-                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
-              }
+              className={isFetching ? "opacity-50" : ""}
             />
           ) : (
             <FolderList
@@ -194,23 +221,19 @@ export default function FoldersPage() {
                     ? "No bookmarked folders yet."
                     : "No public folders available to explore."
               }
-              className={
-                activeTab === "public" && isFetchingPublic ? "opacity-50" : ""
-              }
+              className={isFetching ? "opacity-50" : ""}
             />
           )}
 
-          {activeTab === "public" &&
-            publicFoldersResponse &&
-            publicFoldersResponse.totalPages > 1 && (
-              <Pagination
-                currentPage={page}
-                totalPages={publicFoldersResponse.totalPages}
-                onPageChange={setPage}
-                isLoading={isFetchingPublic}
-                className="mt-8"
-              />
-            )}
+          {currentResponse && currentResponse.totalPages > 1 && (
+            <Pagination
+              currentPage={page}
+              totalPages={currentResponse.totalPages}
+              onPageChange={setPage}
+              isLoading={isFetching}
+              className="mt-8"
+            />
+          )}
         </div>
       </main>
 
@@ -227,9 +250,9 @@ export default function FoldersPage() {
         title="Delete Folder?"
         message={
           folderToDelete && (
-            <p className="text-gray-600 text-center">
+            <p className="text-gray-600 text-left">
               Are you sure you want to delete{" "}
-              <span className="font-bold text-gray-900">
+              <span className="font-bold text-gray-600 dark:text-gray-300">
                 "{folderToDelete.name}"
               </span>
               ?

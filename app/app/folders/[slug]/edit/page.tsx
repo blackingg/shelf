@@ -496,7 +496,7 @@ export default function EditFolderPage() {
         message={
           <p className="text-gray-500 dark:text-neutral-400 text-center text-sm">
             Are you sure you want to permanently delete{" "}
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-bold text-gray-600 dark:text-gray-300">
               "{name}"
             </span>
             ?

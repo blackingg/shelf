@@ -8,6 +8,7 @@ export const categoriesApi = baseApi.injectEndpoints({
     getCategories: builder.query<Category[], void>({
       query: () => "/categories",
       providesTags: ["Categories"],
+      keepUnusedDataFor: 3600, // Cache for 1 hour
     }),
     getCategoryBySlug: builder.query<Category, string>({
       query: (slug) => `/categories/${slug}`,

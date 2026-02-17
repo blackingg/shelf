@@ -73,7 +73,8 @@ export const NotificationPanel: React.FC = () => {
     },
   ]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = 0;
 
   const handleMarkAsRead = (id: string) => {
     setNotifications((prev) =>
@@ -171,6 +172,17 @@ export const NotificationPanel: React.FC = () => {
               </div>
 
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
+                <div className="px-8 py-16 text-center">
+                  <div className="text-4xl mb-4 filter drop-shadow-sm">🚧</div>
+                  <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-1">
+                    Under Construction
+                  </p>
+                  <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-medium whitespace-nowrap">
+                    Notifications are being calibrated for your account.
+                  </p>
+                </div>
+
+                {/* 
                 {notifications.length === 0 ? (
                   <div className="px-8 py-16 text-center">
                     <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-neutral-800">
@@ -236,6 +248,7 @@ export const NotificationPanel: React.FC = () => {
                     </div>
                   ))
                 )}
+                */}
               </div>
             </motion.div>
           </>

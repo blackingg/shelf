@@ -6,10 +6,7 @@ export default function CategorySkeleton() {
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
-            <div className="flex items-center gap-2 text-gray-200 dark:text-neutral-800 mb-10">
-              <div className="w-4 h-4 bg-current rounded-md animate-pulse" />
-              <div className="w-24 h-3 bg-current rounded-md animate-pulse" />
-            </div>
+
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
               <div className="max-w-3xl flex-1">

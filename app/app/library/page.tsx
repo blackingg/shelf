@@ -68,31 +68,40 @@ export default function LibraryPage() {
             </div>
 
             {isLoadingRecommendations ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-                <FolderCardSkeleton count={2} />
-                <BookCardSkeleton count={2} />
+              <div className="flex items-stretch gap-6 md:gap-8 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
               </div>
             ) : displayItems.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
-                {displayItems.map((item, idx) => {
-                  if (item.type === "folder") {
-                    return (
+              <div className="flex items-stretch gap-8 md:gap-10 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                {displayItems.map((item, idx) => (
+                  <div
+                    key={`rec-${item.type}-${item.id}-${idx}`}
+                    className="w-60 md:w-[300px] shrink-0"
+                  >
+                    {item.type === "folder" ? (
                       <FolderCard
-                        key={`rec-folder-${item.id}-${idx}`}
                         folder={item}
                         onClick={() => router.push(`/app/folders/${item.slug}`)}
                       />
-                    );
-                  } else {
-                    return (
+                    ) : (
                       <BookCard
-                        key={`rec-book-${item.id}-${idx}`}
                         {...item}
                         onClick={() => setSelectedBook(item)}
                       />
-                    );
-                  }
-                })}
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">

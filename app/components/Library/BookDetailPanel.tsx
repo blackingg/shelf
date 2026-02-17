@@ -12,13 +12,9 @@ import {
   FiEdit3,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FolderDropdown } from "./FolderDropdown";
 import { BookPreview } from "@/app/types/book";
-import {
-  useAddBookToFolderMutation,
-  useRemoveBookFromFolderMutation,
-} from "@/app/store/api/foldersApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
   useBookmarkBookMutation,
@@ -44,9 +40,7 @@ export const BookDetailPanel: React.FC<{
 }> = ({ book, onClose, isOpen }) => {
   const router = useRouter();
   const { addNotification } = useNotifications();
-  const [addBookToFolder] = useAddBookToFolderMutation();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
-  const [bookFolders, setBookFolders] = useState<string[]>([]);
   const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(book?.id || "", {
     skip: !book?.id,
   });
@@ -59,8 +53,13 @@ export const BookDetailPanel: React.FC<{
   const [updateFile] = useUpdateBookFileMutation();
   const [rateBook] = useRateBookMutation();
   const isBookmarked = bookmarkStatus?.bookmarked;
-  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
   const userRating = myRatingData?.rating || 0;
+  
+  useEffect(() => {
+    if (book?.id) {
+      setShowFolderDropdown(false);
+    }
+  }, [book?.id]);
 
   const handleRate = async (newRating: number) => {
     if (!book?.id) return;
@@ -71,28 +70,6 @@ export const BookDetailPanel: React.FC<{
     }
   };
 
-  const handleSaveToFolder = async (folderId: string) => {
-    if (!book?.id) return;
-    try {
-      if (bookFolders.includes(folderId)) {
-        await removeBookFromFolder({ id: folderId, bookId: book.id }).unwrap();
-        setBookFolders(bookFolders.filter((id) => id !== folderId));
-        addNotification("success", "Book removed from folder");
-      } else {
-        await addBookToFolder({
-          id: folderId,
-          data: { bookId: book.id },
-        }).unwrap();
-        setBookFolders([...bookFolders, folderId]);
-        addNotification("success", "Book added to folder");
-      }
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update folder"),
-      );
-    }
-  };
 
   const handleBookmark = async () => {
     if (!book?.id) return;
@@ -317,8 +294,7 @@ export const BookDetailPanel: React.FC<{
                 <FolderDropdown
                   isOpen={showFolderDropdown}
                   onClose={() => setShowFolderDropdown(false)}
-                  onSaveToFolder={handleSaveToFolder}
-                  currentBookFolders={bookFolders}
+                  bookId={book?.id || ""}
                 />
               </div>
             </div>

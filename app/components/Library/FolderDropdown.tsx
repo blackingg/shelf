@@ -1,39 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiFolder, FiPlus, FiCheck, FiAlertCircle, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 
 import {
   useGetMeFoldersQuery,
   useCreateFolderMutation,
+  useAddBookToFolderMutation,
+  useRemoveBookFromFolderMutation,
 } from "@/app/store/api/foldersApi";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { getErrorMessage } from "@/app/helpers/error";
 
 export const FolderDropdown: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  onSaveToFolder: (folderId: string) => void;
-  currentBookFolders?: string[];
+  bookId: string;
   className?: string;
-}> = ({
-  isOpen,
-  onClose,
-  onSaveToFolder,
-  currentBookFolders = [],
-  className = "bottom-full mb-2 w-full",
-}) => {
+}> = ({ isOpen, onClose, bookId, className = "bottom-full mb-2 w-full" }) => {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [savedFolderIds, setSavedFolderIds] = useState<string[]>([]);
   const { addNotification } = useNotifications();
 
   const {
-    data: folders = [],
+    data: foldersData,
     isLoading,
     isError,
   } = useGetMeFoldersQuery(undefined, {
     skip: !isOpen,
   });
 
+  const folders = foldersData?.items || [];
+
   const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
+  const [addBookToFolder] = useAddBookToFolderMutation();
+  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
+
+  useEffect(() => {
+    if (bookId) {
+      setSavedFolderIds([]);
+      setIsCreatingNew(false);
+      setNewFolderName("");
+    }
+  }, [bookId]);
 
   const handleCreateFolder = async () => {
     if (newFolderName.trim() && !isCreating) {
@@ -48,9 +57,34 @@ export const FolderDropdown: React.FC<{
       } catch (error) {
         addNotification(
           "error",
-          `Failed to create folder "${newFolderName.trim()}"`,
+          getErrorMessage(error, `Failed to create folder "${newFolderName.trim()}"`),
         );
       }
+    }
+  };
+
+  const handleSaveToggle = async (folderId: string) => {
+    if (!bookId) return;
+
+    try {
+      if (savedFolderIds.includes(folderId)) {
+        await removeBookFromFolder({ id: folderId, bookId }).unwrap();
+        setSavedFolderIds((prev) => prev.filter((id) => id !== folderId));
+        addNotification("success", "Book removed from folder");
+      } else {
+        await addBookToFolder({
+          id: folderId,
+          data: { bookId },
+        }).unwrap();
+        setSavedFolderIds((prev) => [...prev, folderId]);
+        addNotification("success", "Book added to folder");
+      }
+      onClose();
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to update folder"),
+      );
     }
   };
 
@@ -113,7 +147,7 @@ export const FolderDropdown: React.FC<{
                 </div>
               ) : (
                 folders.map((folder) => {
-                  const isSaved = currentBookFolders.includes(folder.id);
+                  const isSaved = savedFolderIds.includes(folder.id);
                   return (
                     <div
                       key={folder.id}
@@ -131,7 +165,7 @@ export const FolderDropdown: React.FC<{
                         </div>
                       </div>
                       <button
-                        onClick={() => onSaveToFolder(folder.id)}
+                        onClick={() => handleSaveToggle(folder.id)}
                         className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
                           isSaved
                             ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50"

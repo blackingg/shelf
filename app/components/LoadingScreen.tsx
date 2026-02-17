@@ -4,19 +4,15 @@ export const LoadingScreen = () => {
   return (
     <div className="fixed inset-0 bg-gray-50 dark:bg-neutral-900 flex flex-col items-center justify-center z-50">
       <div className="relative flex flex-col items-center">
-        <div className="shadow-xl animate-pulse">
+        <div className="animate-pulse">
           <Image
-            src="/logo.png"
+            src="/logo-stacked-2.png"
             alt="Shelf Logo"
-            width={48}
-            height={48}
-            className="w-12 h-12"
+            width={120}
+            height={150}
             priority
           />
         </div>
-        <h1 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white tracking-tight animate-fade-in">
-          Shelf
-        </h1>
       </div>
     </div>
   );

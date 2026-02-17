@@ -2,11 +2,11 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Select, { SingleValue } from "react-select";
+import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useAppDispatch } from "@/app/store/store";
 import {
   useUpdateMeMutation,
   useUploadAvatarMutation,
@@ -25,10 +25,19 @@ interface OptionType {
 }
 
 export default function SettingsProfilePage() {
-  const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
+
   const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
+
   const [uploadAvatar, { isLoading: isUploadingAvatar }] =
     useUploadAvatarMutation();
 
@@ -55,8 +64,8 @@ export default function SettingsProfilePage() {
       setFormData({
         name: user?.fullName || "",
         username: user?.username || "",
-        schoolId: user?.schoolId || "",
-        departmentId: user?.departmentId || "",
+        schoolId: user?.school?.id || "",
+        departmentId: user?.department?.id || "",
         email: user?.email || "",
         bio: user?.bio || "",
       });
@@ -79,8 +88,8 @@ export default function SettingsProfilePage() {
     formData.name !== (user?.fullName || "") ||
     formData.username !== (user?.username || "") ||
     formData.bio !== (user?.bio || "") ||
-    formData.schoolId !== (user?.schoolId || "") ||
-    formData.departmentId !== (user?.departmentId || "");
+    formData.schoolId !== (user?.school?.id || "") ||
+    formData.departmentId !== (user?.department?.id || "");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -146,7 +155,8 @@ export default function SettingsProfilePage() {
       ...base,
       paddingLeft: "2rem",
       borderRadius: "0.375rem",
-      borderColor: state.isFocused ? "#10b981" : "#e5e7eb", // emerald-500 : gray-200
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
       boxShadow: state.isFocused ? "0 0 0 1px #10b981" : "none",
       "&:hover": {
         borderColor: "#10b981",
@@ -155,8 +165,39 @@ export default function SettingsProfilePage() {
     }),
     input: (base: any) => ({
       ...base,
+      color: isDark ? "#ffffff" : "#111827",
       "input:focus": {
         boxShadow: "none",
+      },
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#737373" : "#9ca3af",
+    }),
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+      boxShadow: isDark
+        ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
+        : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#10b981"
+        : state.isFocused
+          ? isDark
+            ? "#262626"
+            : "#f3f4f6"
+          : "transparent",
+      color: state.isSelected ? "#ffffff" : isDark ? "#ffffff" : "#111827",
+      "&:active": {
+        backgroundColor: "#10b981",
       },
     }),
   };
@@ -183,43 +224,39 @@ export default function SettingsProfilePage() {
                 Profile Photo
               </label>
               <div className="flex items-center space-x-6">
-                <div className="relative w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
-                  {user?.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={formData.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
-                      {user?.fullName?.charAt(0) ||
-                        user?.username?.charAt(0) ||
-                        "?"}
-                    </div>
-                  )}
-                  {isUploadingAvatar && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  )}
-                </div>
                 <div className="relative">
-                  <input
-                    type="file"
-                    id="avatar-upload"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    disabled={isUploadingAvatar}
-                  />
+                  <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={formData.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
+                        {user?.fullName?.charAt(0) ||
+                          user?.username?.charAt(0) ||
+                          "?"}
+                      </div>
+                    )}
+                  </div>
                   <label
                     htmlFor="avatar-upload"
-                    className={`px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors flex items-center space-x-2 cursor-pointer ${
-                      isUploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-white dark:bg-neutral-800 rounded-full border border-gray-200 dark:border-neutral-700 shadow-sm flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                   >
-                    <FiCamera className="w-4 h-4" />
-                    <span>Change Photo</span>
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      disabled={isUploadingAvatar}
+                    />
+                    {isUploadingAvatar ? (
+                      <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
+                    ) : (
+                      <FiCamera className="w-4 h-4" />
+                    )}
                   </label>
                 </div>
               </div>
@@ -275,7 +312,7 @@ export default function SettingsProfilePage() {
                           ) ||
                           (user?.school
                             ? {
-                                value: user.schoolId as string,
+                                value: user.school.id as string,
                                 label: user.school.name,
                               }
                             : null)
@@ -305,7 +342,7 @@ export default function SettingsProfilePage() {
                           ) ||
                           (user?.department
                             ? {
-                                value: user.departmentId as string,
+                                value: user.department.id as string,
                                 label: user.department.name,
                               }
                             : null)

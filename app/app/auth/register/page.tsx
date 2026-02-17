@@ -65,6 +65,7 @@ export default function SignupPage() {
           user: result.user,
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
+          expiresIn: result.tokens.expiresIn,
           rememberMe: true,
         }),
       );
@@ -169,6 +170,7 @@ export default function SignupPage() {
           user: result.user,
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
+          expiresIn: result.tokens.expiresIn,
           rememberMe: true,
         }),
       );

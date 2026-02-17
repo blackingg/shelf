@@ -1,26 +1,13 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { motion } from "motion/react";
-import {
-  FiUploadCloud,
-  FiFile,
-  FiCheck,
-  FiBook,
-  FiHeart,
-  FiInfo,
-  FiUser,
-  FiLayers,
-  FiCalendar,
-  FiTag,
-  FiImage,
-  FiAlertCircle,
-  FiX,
-} from "react-icons/fi";
+import { FiUploadCloud, FiAlertCircle } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
+import { useTheme } from "next-themes";
+
 import { useRouter } from "next/navigation";
-import { useUploadBookMutation } from "@/app/store/api/booksApi";
+import { useCreateBookMutation } from "@/app/store/api/booksApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
@@ -29,16 +16,24 @@ import { getErrorMessage } from "@/app/helpers/error";
 export default function UploadPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
-  const [uploadBook, { isLoading: isSubmitting }] = useUploadBookMutation();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
+
+  const [createBook, { isLoading: isSubmitting }] = useCreateBookMutation();
+
   const { data: departments = [], isLoading: isLoadingDepts } =
     useGetDepartmentsQuery();
   const { data: categoriesData = [], isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [dragActiveBook, setDragActiveBook] = useState(false);
-  const [dragActiveCover, setDragActiveCover] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -51,40 +46,30 @@ export default function UploadPage() {
     publishedYear: "",
     isbn: "",
     tags: "",
+    coverImage: "",
   });
 
   const bookInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDrag = (e: React.DragEvent, type: "book" | "cover") => {
+  const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const active = e.type === "dragenter" || e.type === "dragover";
-    if (type === "book") setDragActiveBook(active);
-    else setDragActiveCover(active);
+    setDragActiveBook(active);
   };
 
-  const handleDrop = (e: React.DragEvent, type: "book" | "cover") => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (type === "book") setDragActiveBook(false);
-    else setDragActiveCover(false);
+    setDragActiveBook(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (type === "book") {
-        if (file.size > 50 * 1024 * 1024) {
-          addNotification("error", "Book file must be less than 50MB");
-          return;
-        }
-        setBookFile(file);
-      } else {
-        if (file.size > 5 * 1024 * 1024) {
-          addNotification("error", "Cover image must be less than 5MB");
-          return;
-        }
-        setCoverFile(file);
+      if (file.size > 50 * 1024 * 1024) {
+        addNotification("error", "Book file must be less than 50MB");
+        return;
       }
+      setBookFile(file);
     }
   };
 
@@ -99,59 +84,48 @@ export default function UploadPage() {
     }
   };
 
-  const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        addNotification("error", "Cover image must be less than 5MB");
-        return;
-      }
-      setCoverFile(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // The validation error provided by the user shows these are required for /books/upload
-    if (
-      !formData.title ||
-      !formData.author ||
-      !formData.description ||
-      !formData.category ||
-      !formData.pages ||
-      !coverFile
-    ) {
-      addNotification(
-        "error",
-        "Please fill in all required fields and upload a cover image.",
-      );
-      return;
+    const requiredFields = [
+      { key: "title", label: "Title" },
+      { key: "author", label: "Author" },
+      { key: "description", label: "Description" },
+      { key: "category", label: "Category" },
+      { key: "pages", label: "Number of Pages" },
+      { key: "coverImage", label: "Cover Image URL" },
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field.key as keyof typeof formData]) {
+        addNotification("error", `Please provide a ${field.label}.`);
+        return;
+      }
     }
 
     try {
-      const submitData = new FormData();
-      submitData.append("title", formData.title);
-      submitData.append("author", formData.author);
-      submitData.append("description", formData.description);
-      submitData.append("category", formData.category);
-      submitData.append("pages", formData.pages);
-      submitData.append("cover_image", coverFile);
+      const payload = {
+        title: formData.title,
+        author: formData.author,
+        description: formData.description,
+        category: formData.category,
+        pages: parseInt(formData.pages) || 0,
+        coverImage: formData.coverImage,
+        department: formData.department || undefined,
+        publisher: formData.publisher || undefined,
+        publishedYear: formData.publishedYear
+          ? parseInt(formData.publishedYear)
+          : undefined,
+        isbn: formData.isbn || undefined,
+        tags: formData.tags
+          ? formData.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : [],
+      };
 
-      if (bookFile) {
-        submitData.append("book_file", bookFile);
-      }
-
-      if (formData.department)
-        submitData.append("department", formData.department);
-      if (formData.publisher)
-        submitData.append("publisher", formData.publisher);
-      if (formData.publishedYear)
-        submitData.append("published_year", formData.publishedYear);
-      if (formData.isbn) submitData.append("isbn", formData.isbn);
-      if (formData.tags) submitData.append("tags", formData.tags);
-
-      await uploadBook(submitData).unwrap();
+      await createBook(payload).unwrap();
 
       addNotification(
         "success",
@@ -161,7 +135,7 @@ export default function UploadPage() {
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to upload book."),
+        getErrorMessage(error, "Failed to donate book."),
       );
     }
   };
@@ -217,10 +191,10 @@ export default function UploadPage() {
               />
 
               <div
-                onDragEnter={(e) => handleDrag(e, "book")}
-                onDragOver={(e) => handleDrag(e, "book")}
-                onDragLeave={(e) => handleDrag(e, "book")}
-                onDrop={(e) => handleDrop(e, "book")}
+                onDragEnter={(e) => handleDrag(e)}
+                onDragOver={(e) => handleDrag(e)}
+                onDragLeave={(e) => handleDrag(e)}
+                onDrop={(e) => handleDrop(e)}
                 onClick={() => bookInputRef.current?.click()}
                 className={`border border-dashed rounded-md p-8 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[160px] relative ${
                   dragActiveBook
@@ -259,60 +233,22 @@ export default function UploadPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center mb-1">
-                <Label>Cover Image</Label>
-                <span className="text-[10px] font-medium uppercase text-emerald-600 dark:text-emerald-500 tracking-tight">
-                  Required (JPG, PNG)
-                </span>
-              </div>
-
+            <div className="space-y-1.5">
+              <Label>Cover Image URL</Label>
               <input
-                ref={coverInputRef}
-                type="file"
-                className="hidden"
-                onChange={handleCoverFileChange}
-                accept="image/*"
+                name="coverImage"
+                value={formData.coverImage}
+                onChange={(e) =>
+                  setFormData({ ...formData, coverImage: e.target.value })
+                }
+                placeholder="https://example.com/image.jpg"
+                required
+                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
               />
-
-              <div
-                onDragEnter={(e) => handleDrag(e, "cover")}
-                onDragOver={(e) => handleDrag(e, "cover")}
-                onDragLeave={(e) => handleDrag(e, "cover")}
-                onDrop={(e) => handleDrop(e, "cover")}
-                onClick={() => coverInputRef.current?.click()}
-                className={`border border-dashed rounded-md p-8 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[160px] relative ${
-                  dragActiveCover
-                    ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10"
-                    : coverFile
-                      ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/5"
-                      : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500 dark:hover:border-emerald-500"
-                }`}
-              >
-                {coverFile ? (
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-full px-4 mb-1">
-                      {coverFile.name}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCoverFile(null);
-                      }}
-                      className="mt-4 text-[10px] font-medium uppercase text-red-500 dark:text-red-400 hover:text-red-600 transition-colors"
-                    >
-                      Remove Image
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <FiImage className="text-gray-300 dark:text-neutral-700 text-2xl mb-3" />
-                    <span className="text-xs font-medium text-gray-500 dark:text-neutral-500">
-                      Drop image or click to upload
-                    </span>
-                  </>
-                )}
-              </div>
+              <p className="text-[10px] text-gray-400 dark:text-neutral-500 mt-1 italic">
+                Pro tip: Use a direct link to an image (ArtStation, Cloudinary,
+                etc.)
+              </p>
             </div>
           </div>
 
@@ -360,7 +296,7 @@ export default function UploadPage() {
                 onChange={(opt: any) =>
                   setFormData({ ...formData, department: opt?.label || "" })
                 }
-                styles={customSelectStyles}
+                styles={customSelectStyles(isDark)}
               />
             </div>
 
@@ -373,7 +309,7 @@ export default function UploadPage() {
                 onChange={(opt: any) =>
                   setFormData({ ...formData, category: opt?.value || "" })
                 }
-                styles={customSelectStyles}
+                styles={customSelectStyles(isDark)}
               />
             </div>
 
@@ -487,13 +423,13 @@ export default function UploadPage() {
   );
 }
 
-const customSelectStyles = {
+const customSelectStyles = (isDark: boolean) => ({
   control: (base: any, state: any) => ({
     ...base,
     borderRadius: "0.375rem",
     padding: "0.25rem 0.5rem",
-    borderColor: state.isFocused ? "#10b981" : "#e5e7eb",
-    backgroundColor: "transparent",
+    borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
+    backgroundColor: isDark ? "#171717" : "#ffffff",
     boxShadow: "none",
     "&:hover": { borderColor: "#10b981" },
   }),
@@ -501,27 +437,39 @@ const customSelectStyles = {
     ...base,
     borderRadius: "0.375rem",
     overflow: "hidden",
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05)",
-    border: "1px solid #e5e7eb",
-    backgroundColor: "rgb(23, 23, 23)", // neutral-900 for dark mode compatibility manually or handle via theme
+    boxShadow: isDark
+      ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
+      : "0 4px 6px -1px rgb(0 0 0 / 0.05)",
+    border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+    backgroundColor: isDark ? "#171717" : "#ffffff",
+    zIndex: 50,
   }),
   option: (base: any, state: any) => ({
     ...base,
     backgroundColor: state.isSelected
       ? "#10b981"
       : state.isFocused
-        ? "rgba(16, 185, 129, 0.1)"
+        ? isDark
+          ? "#262626"
+          : "#f3f4f6"
         : "transparent",
-    color: state.isSelected ? "white" : "inherit",
+    color: state.isSelected ? "white" : isDark ? "#ffffff" : "#111827",
     fontSize: "0.875rem",
     cursor: "pointer",
+    "&:active": {
+      backgroundColor: "#10b981",
+    },
   }),
   singleValue: (base: any) => ({
     ...base,
-    color: "inherit",
+    color: isDark ? "#ffffff" : "#111827",
+  }),
+  input: (base: any) => ({
+    ...base,
+    color: isDark ? "#ffffff" : "#111827",
   }),
   placeholder: (base: any) => ({
     ...base,
-    color: "#9ca3af",
+    color: isDark ? "#737373" : "#9ca3af",
   }),
-};
+});

@@ -15,6 +15,7 @@ export const departmentsApi = baseApi.injectEndpoints({
         params: params || {},
       }),
       providesTags: ["Departments"],
+      keepUnusedDataFor: 3600, // Cache for 1 hour
     }),
     getDepartmentBySlug: builder.query<Department, string>({
       query: (slug) => `/departments/${slug}`,

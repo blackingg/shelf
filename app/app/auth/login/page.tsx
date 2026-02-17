@@ -57,6 +57,7 @@ export default function LoginPage() {
           user: result.user,
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
+          expiresIn: result.tokens.expiresIn,
           rememberMe: true, // Google login is usually remembered
         }),
       );
@@ -125,6 +126,7 @@ export default function LoginPage() {
           user: result.user,
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
+          expiresIn: result.tokens.expiresIn,
           rememberMe,
         }),
       );

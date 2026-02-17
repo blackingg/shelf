@@ -8,8 +8,11 @@ import {
 import { RootState } from "../store";
 import { logout, updateTokens } from "../authSlice";
 import { TokenResponse } from "../../types/auth";
+import { Mutex } from "async-mutex";
 
-const API_BASE_URL =process.env.NEXT_PUBLIC_API_BASE_URL!;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+
+const mutex = new Mutex();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -27,37 +30,102 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  const state = api.getState() as RootState;
+  const { expiresAt, refreshToken } = state.auth;
+
+  if (
+    refreshToken &&
+    refreshToken !== "undefined" &&
+    refreshToken !== "null" &&
+    expiresAt
+  ) {
+    const now = Date.now();
+    // buffer to 60 seconds
+    const expirationBuffer = 60 * 1000;
+
+    if (now > expiresAt - expirationBuffer) {
+      // Token expiring soon (within 60s), try proactive refresh
+      if (!mutex.isLocked()) {
+        const release = await mutex.acquire();
+        try {
+          const currentState = api.getState() as RootState;
+          if (
+            currentState.auth.expiresAt &&
+            now > currentState.auth.expiresAt - expirationBuffer
+          ) {
+            const refreshResult = await baseQuery(
+              {
+                url: "/auth/refresh",
+                method: "POST",
+                body: { refreshToken },
+              },
+              api,
+              extraOptions,
+            );
+
+            if (refreshResult.data) {
+              const tokenResponse = refreshResult.data as TokenResponse;
+              api.dispatch(
+                updateTokens({
+                  accessToken: tokenResponse.accessToken,
+                  refreshToken: tokenResponse.refreshToken,
+                  expiresIn: tokenResponse.expiresIn,
+                }),
+              );
+            }
+          }
+        } finally {
+          release();
+        }
+      } else {
+        // Wait for the mutex to be released (refresh to complete)
+        await mutex.waitForUnlock();
+      }
+    }
+  }
+
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    const refreshToken = (api.getState() as RootState).auth.refreshToken;
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      try {
+        const refreshToken = (api.getState() as RootState).auth.refreshToken;
 
-    if (refreshToken) {
-      const refreshResult = await baseQuery(
-        {
-          url: "/auth/refresh",
-          method: "POST",
-          body: { refreshToken },
-        },
-        api,
-        extraOptions,
-      );
+        if (refreshToken && refreshToken !== "undefined" && refreshToken !== "null") {
+          const refreshResult = await baseQuery(
+            {
+              url: "/auth/refresh",
+              method: "POST",
+              body: { refreshToken },
+            },
+            api,
+            extraOptions,
+          );
 
-      if (refreshResult.data) {
-        const tokenResponse = refreshResult.data as TokenResponse;
-        api.dispatch(
-          updateTokens({
-            accessToken: tokenResponse.accessToken,
-            refreshToken: tokenResponse.refreshToken,
-          }),
-        );
+          if (refreshResult.data) {
+            const tokenResponse = refreshResult.data as TokenResponse;
+            api.dispatch(
+              updateTokens({
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken,
+                expiresIn: tokenResponse.expiresIn,
+              }),
+            );
 
-        result = await baseQuery(args, api, extraOptions);
-      } else {
-        api.dispatch(logout());
+            result = await baseQuery(args, api, extraOptions);
+          } else {
+            api.dispatch(logout());
+          }
+        } else {
+          api.dispatch(logout());
+        }
+      } finally {
+        release();
       }
     } else {
-      api.dispatch(logout());
+      await mutex.waitForUnlock();
+      result = await baseQuery(args, api, extraOptions);
     }
   }
   return result;

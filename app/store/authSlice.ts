@@ -6,28 +6,34 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
+  expiresAt: number | null;
   isAuthenticated: boolean;
   rememberMe: boolean;
 }
 
 const getUserFromStorage = (): User | null => {
   try {
-    const userStr = storage.find("user");
+    const userStr = storage.get("user");
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
     console.error("Failed to parse user from storage:", error);
-    storage.removeFromBoth("user");
+    storage.remove("user");
     return null;
   }
 };
 
+const getExpiresAtFromStorage = (): number | null => {
+  const expiresAt = storage.get("expiresAt");
+  return expiresAt ? parseInt(expiresAt) : null;
+};
+
 const initialState: AuthState = {
-  // user: JSON.parse(storage.find("user") || "null"),
   user: getUserFromStorage(),
-  accessToken: storage.find("accessToken"),
-  refreshToken: storage.find("refreshToken"),
-  isAuthenticated: !!storage.find("accessToken"),
-  rememberMe: !!storage.get("accessToken", "local"),
+  accessToken: storage.get("accessToken"),
+  refreshToken: storage.get("refreshToken"),
+  expiresAt: getExpiresAtFromStorage(),
+  isAuthenticated: !!storage.get("accessToken"),
+  rememberMe: storage.get("rememberMe") === "true",
 };
 
 const authSlice = createSlice({
@@ -37,72 +43,81 @@ const authSlice = createSlice({
     setCredentials: (
       state,
       {
-        payload: { user, accessToken, refreshToken, rememberMe },
+        payload: { user, accessToken, refreshToken, rememberMe, expiresIn },
       }: PayloadAction<{
         user: User;
         accessToken: string;
         refreshToken: string;
+        expiresIn: number;
         rememberMe?: boolean;
       }>,
     ) => {
       state.user = user;
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
+      state.expiresAt = Date.now() + expiresIn * 1000;
       state.isAuthenticated = true;
       state.rememberMe = !!rememberMe;
 
-      const storageType = rememberMe ? "local" : "session";
+      storage.remove("user");
+      storage.remove("accessToken");
+      storage.remove("refreshToken");
+      storage.remove("expiresAt");
+      storage.remove("rememberMe");
 
-      // Clean up old storage first
-      storage.removeFromBoth("user");
-      storage.removeFromBoth("accessToken");
-      storage.removeFromBoth("refreshToken");
-
-      storage.set("user", JSON.stringify(user), storageType);
-      storage.set("accessToken", accessToken, storageType);
-      storage.set("refreshToken", refreshToken, storageType);
+      storage.set("user", JSON.stringify(user));
+      storage.set("accessToken", accessToken);
+      storage.set("refreshToken", refreshToken);
+      storage.set("expiresAt", state.expiresAt.toString());
+      storage.set("rememberMe", state.rememberMe.toString());
     },
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
-      const storageType = state.rememberMe ? "local" : "session";
-      storage.set("accessToken", action.payload, storageType);
+      storage.set("accessToken", action.payload);
     },
     updateTokens: (
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
+      action: PayloadAction<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+      }>,
     ) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
-      const storageType = state.rememberMe ? "local" : "session";
-      storage.set("accessToken", action.payload.accessToken, storageType);
-      storage.set("refreshToken", action.payload.refreshToken, storageType);
+      state.expiresAt = Date.now() + action.payload.expiresIn * 1000;
+
+      storage.set("accessToken", action.payload.accessToken);
+      storage.set("refreshToken", action.payload.refreshToken);
+      storage.set("expiresAt", state.expiresAt.toString());
     },
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
-      const storageType = state.rememberMe ? "local" : "session";
       if (action.payload) {
-        storage.set("user", JSON.stringify(action.payload), storageType);
+        storage.set("user", JSON.stringify(action.payload));
       } else {
-        storage.removeFromBoth("user");
+        storage.remove("user");
       }
     },
     setOnboardingStatus: (state, action: PayloadAction<boolean>) => {
       if (state.user) {
         state.user.onboardingCompleted = action.payload;
-        const storageType = state.rememberMe ? "local" : "session";
-        storage.set("user", JSON.stringify(state.user), storageType);
+        storage.set("user", JSON.stringify(state.user));
       }
     },
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
+      state.expiresAt = null;
       state.isAuthenticated = false;
       state.rememberMe = false;
 
-      storage.removeFromBoth("user");
-      storage.removeFromBoth("accessToken");
-      storage.removeFromBoth("refreshToken");
+      storage.remove("user");
+      storage.remove("accessToken");
+      storage.remove("refreshToken");
+      storage.remove("expiresAt");
+      storage.remove("rememberMe");
     },
   },
   extraReducers: (builder) => {
@@ -114,8 +129,7 @@ const authSlice = createSlice({
         ),
       (state, action: PayloadAction<User>) => {
         state.user = action.payload;
-        const storageType = state.rememberMe ? "local" : "session";
-        storage.set("user", JSON.stringify(action.payload), storageType);
+        storage.set("user", JSON.stringify(action.payload));
       },
     );
   },
