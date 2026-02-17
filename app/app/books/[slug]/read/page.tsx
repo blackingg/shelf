@@ -19,7 +19,7 @@ export default function ReaderPage() {
   const router = useRouter();
   const params = useParams();
   const {id} = params
-  const {buffer, updateBuffer} = useContext(FileBufferContext)
+ 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light")
@@ -42,14 +42,7 @@ export default function ReaderPage() {
     }
   };
 
-async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
-    const files: FileList | null = e.target.files;
-    const file = files ? files[0] : null;
-    if (file) {
-      const buffer = await file.arrayBuffer();
-      updateBuffer(buffer)
-    }
-  }
+
 /*
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -148,23 +141,7 @@ async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
                 Author Name
               </p>
             </div>
-             <label
-              htmlFor="file"
-              className="p-2 rounded-lg text-white h-12  bg-emerald-500 grid col-span-2 items-center justify-center "
-            >
-              <span className="text-center w-full">Upload Book Here</span>
-              <input
-                type="file"
-                name="file"
-                id="file"
-                accept=".epub"
-                style={{
-                  visibility: "hidden",
-                  height: 0,
-                }}
-                onChange={handleFileUpload}
-              />
-            </label>  
+           
           </div>
 
           <div className="flex items-center space-x-2">
@@ -288,7 +265,7 @@ async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
           className={`${currentTheme.text} font-serif`}
         >
 
-          <RenderEPub buffer={buffer} />
+          {/*<RenderEPub buffer={buffer} /> */}
           
         </motion.div>
       </main>

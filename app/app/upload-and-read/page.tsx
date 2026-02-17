@@ -1,5 +1,6 @@
 "use client"
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext, ChangeEvent } from "react";
+import { FileBufferContext } from "@/app/context/FileBufferContext";
 import Epub, { Rendition} from "epubjs"
 
 type BookThemes = 'light' | "dark" | "sepia"
@@ -94,4 +95,41 @@ export function RenderEPub(props: EpubProps){
 }
 
 
+export default function Page(){
+   const {buffer, updateBuffer} = useContext(FileBufferContext)
 
+
+  async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
+    const files: FileList | null = e.target.files;
+    const file = files ? files[0] : null;
+    if (file) {
+      const buffer = await file.arrayBuffer();
+      updateBuffer(buffer)
+    }
+  }
+
+
+  return(
+    <>
+      <label
+              htmlFor="file"
+              className="p-2 rounded-lg text-white h-12  bg-emerald-500 grid col-span-2 items-center justify-center "
+            >
+              <span className="text-center w-full">Upload Book Here</span>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                accept=".epub"
+                style={{
+                  visibility: "hidden",
+                  height: 0,
+                }}
+                onChange={handleFileUpload}
+              />
+            </label>  
+
+            <RenderEPub buffer={buffer} />
+    </>
+  )
+}

@@ -19,6 +19,7 @@ export default function ProtectedRoute({
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isChecking, setIsChecking] = useState(true);
 
+  /*
   useGetMeQuery(undefined, { skip: !isAuthenticated });
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function ProtectedRoute({
   if (isChecking || !isAuthenticated) {
     return <LoadingScreen />;
   }
+*/
 
   return <>{children}</>;
 }

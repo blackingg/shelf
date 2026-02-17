@@ -43,7 +43,6 @@ export default function SignupPage() {
   const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
   const dispatch = useAppDispatch();
 
-  /*
   const handleGoogleSuccess = async (tokenResponse: any) => {
     try {
       const userInfoRes = await fetch(
@@ -94,7 +93,7 @@ export default function SignupPage() {
     onError: () =>
       addNotification("error", "Google registration was unsuccessful"),
   });
-*/ 
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -325,7 +324,7 @@ export default function SignupPage() {
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
-                
+               onClick={handleGoogleAuth} 
               />
             </div>
           </Card>

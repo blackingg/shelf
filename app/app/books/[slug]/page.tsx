@@ -107,9 +107,9 @@ export default function BookDetailsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
+                className="w-full md:w-1/3 lg:w-1/4 shrink-0"
               >
-                <div className="relative aspect-[2/3] rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
+                <div className="relative aspect-2/3 rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
                   <NextImage
                     src={
                       book.coverImage && (book.coverImage.startsWith("/") || book.coverImage.startsWith("http"))
@@ -245,7 +245,7 @@ export default function BookDetailsPage() {
                     </span>
                     <Link
                       href={`/app/profile/${book.donor?.username}`}
-                      className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 transition-colors flex items-center gap-3 transition-colors"
+                      className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 transition-colors flex items-center gap-3"
                     >
                       <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold">
                         {book.donor?.username?.charAt(0).toUpperCase()}

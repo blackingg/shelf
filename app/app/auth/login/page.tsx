@@ -35,7 +35,6 @@ export default function LoginPage() {
   const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
   const dispatch = useAppDispatch();
 
-  /*
   const handleGoogleSuccess = async (tokenResponse: any) => {
     try {
       const userInfoRes = await fetch(
@@ -81,7 +80,6 @@ export default function LoginPage() {
     onSuccess: handleGoogleSuccess,
     onError: () => addNotification("error", "Google login was unsuccessful"),
   });
-*/
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -250,13 +248,12 @@ export default function LoginPage() {
             </form>
 
             <Divider />
-
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
-                
+                onClick={handleGoogleAuth}
               />
-            </div>
+            </div> 
           </Card>
 
           <div className="mt-6 text-center">
