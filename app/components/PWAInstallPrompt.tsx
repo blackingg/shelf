@@ -65,7 +65,7 @@ export const PWAInstallPrompt: React.FC = () => {
                 <FiX className="w-5 h-5" />
               </button>
 
-              <div className="w-20 h-20 relative mb-4 bg-primary/5 rounded-3xl flex items-center justify-center p-3 shadow-inner border border-primary/10">
+              <div className="w-17 h-17 relative mb-4 ">
                 <Image
                   src="/logo.png"
                   alt="Shelf Logo"
