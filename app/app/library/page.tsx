@@ -57,7 +57,7 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-950 overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-950 min-h-full">
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-20">

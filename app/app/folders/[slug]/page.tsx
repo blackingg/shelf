@@ -135,7 +135,7 @@ export default function FolderDetailsPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
+    <div className="w-full min-h-full bg-white dark:bg-neutral-900">
       <div className="p-4 md:p-8 space-y-6">
         <BackButton />
 

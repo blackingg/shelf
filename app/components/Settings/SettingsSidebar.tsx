@@ -40,7 +40,7 @@ export const SettingsSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full md:w-64 lg:w-72 bg-white dark:bg-neutral-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-neutral-800 flex-shrink-0 sticky top-0 z-10 md:static">
+    <aside className="w-full md:w-64 lg:w-72 bg-white dark:bg-neutral-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-neutral-800 flex-shrink-0 sticky top-0 z-10">
       <div className="p-4 md:p-6">
         <div className="mb-4 md:mb-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
