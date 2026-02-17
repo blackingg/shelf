@@ -1,12 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
-import {
-  FiFileText,
-  FiFolderPlus,
-  FiPlay,
-} from "react-icons/fi";
+import { FiFileText, FiFolderPlus, FiPlay } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/app/components/Form/Button";
@@ -37,7 +33,7 @@ export default function BookDetailsPage() {
     },
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (book?.id) {
       setShowFolderDropdown(false);
     }
