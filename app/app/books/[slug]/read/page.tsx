@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef, ChangeEvent, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  useContext,
+} from "react";
 import { FileBufferContext } from "@/app/context/FileBufferContext";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -17,17 +23,21 @@ import { useRouter, useParams } from "next/navigation";
 export default function ReaderPage() {
   const router = useRouter();
   const params = useParams();
-  const {id} = params
- 
+  const { id } = params;
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
-  const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
+  const [totalPages] = useState(42);
+  const [currentPage, setCurrentPage] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Mock content (could be fetched based on params.id)
-  
+  const title = "The Psychology of Money";
+  const author = "Morgan Housel";
+  const chapterTitle = "Chapter 1: No One's Crazy";
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -41,8 +51,6 @@ export default function ReaderPage() {
     }
   };
 
-
-/*
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
@@ -55,7 +63,6 @@ export default function ReaderPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
-*/
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -75,7 +82,7 @@ export default function ReaderPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSettings]);
-/*
+
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -89,7 +96,6 @@ export default function ReaderPage() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-*/
 
   const themes = {
     light: {
@@ -133,21 +139,15 @@ export default function ReaderPage() {
               <FiArrowLeft className="w-6 h-6" />
             </button>
             <div className="block">
-              <h1 className={`font-bold text-lg ${currentTheme.text}`}>
-                {id}
-              </h1>
+              <h1 className={`font-bold text-lg ${currentTheme.text}`}>{id}</h1>
               <p className={`text-xs opacity-70 ${currentTheme.text}`}>
                 Author Name
               </p>
             </div>
-           
           </div>
 
           <div className="flex items-center space-x-2">
-            <div
-              className="relative"
-              ref={settingsRef}
-            >
+            <div className="relative" ref={settingsRef}>
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${currentTheme.text}`}
@@ -183,8 +183,8 @@ export default function ReaderPage() {
                                 t === "light"
                                   ? "bg-white text-gray-900"
                                   : t === "sepia"
-                                  ? "bg-[#f4ecd8] text-[#5b4636]"
-                                  : "bg-[#1a1a1a] text-white"
+                                    ? "bg-[#f4ecd8] text-[#5b4636]"
+                                    : "bg-[#1a1a1a] text-white"
                               }`}
                             >
                               {t === "light" && <FiSun className="w-4 h-4" />}
@@ -252,10 +252,7 @@ export default function ReaderPage() {
         </div>
       </motion.header>
 
-  
-      <main
-        className="grid w-full justify-center md:my-4 px-6 py-6 md:py-12 cursor-text"
-      >
+      <main className="grid w-full justify-center md:my-4 px-6 py-6 md:py-12 cursor-text">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -263,11 +260,61 @@ export default function ReaderPage() {
           style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
           className={`${currentTheme.text} font-serif`}
         >
-          
+          <div className="text-center mb-12">
+            <span
+              className={`text-sm font-sans uppercase tracking-widest opacity-60 ${currentTheme.text}`}
+            >
+              {chapterTitle}
+            </span>
+            <h2 className="text-4xl font-bold mt-4 mb-8">
+              No One&apos;s Crazy
+            </h2>
+          </div>
+
+          <p className="mb-6">
+            Let me tell you about a problem. It might make you feel better about
+            what you do with your money, and less judgmental about what other
+            people do with theirs.
+          </p>
+          <p className="mb-6">
+            People do some crazy things with money. But no one is crazy.
+          </p>
+          <p className="mb-6">
+            Here&apos;s the thing: People from different generations, raised by
+            different parents who earned different incomes and held different
+            values, in different parts of the world, born into different
+            economies, experiencing different job markets with different
+            incentives and different degrees of luck, learn very different
+            lessons.
+          </p>
+          <p className="mb-6">
+            Everyone has their own unique experience with how the world works.
+            And what you&apos;ve experienced is more compelling than what you
+            learn second-hand. So all of us—you, me, everyone—go through life
+            anchored to a set of views about how money works that vary wildly
+            from person to person. What seems crazy to you might make sense to
+            me.
+          </p>
+          <p className="mb-6">
+            The person who grew up in poverty thinks about risk and reward in
+            ways the child of a wealthy banker cannot fathom if he tried. The
+            person who grew up when inflation was high experienced something the
+            person who grew up with stable prices never had to. The stock broker
+            who lost everything during the Great Depression experienced
+            something the tech worker basking in the glory of the late 1990s
+            can&apos;t imagine. The Australian who hasn&apos;t seen a recession
+            in 30 years has experienced something the Greek worker hasn&apos;t.
+          </p>
+          <p className="mb-6">
+            On and on. The list of experiences is endless. You know stuff about
+            money that I don&apos;t, and vice versa. You go through life with
+            different beliefs, goals, and forecasts, than I do. That&apos;s not
+            because one of us is smarter than the other, or has better
+            information. It&apos;s because we&apos;ve had different lives.
+          </p>
         </motion.div>
       </main>
 
-      {/*
       <motion.footer
         initial={{ y: 100 }}
         animate={{ y: showControls ? 0 : 100 }}
@@ -313,7 +360,7 @@ export default function ReaderPage() {
             <FiChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </motion.footer> */}
+      </motion.footer>
     </div>
   );
 }
