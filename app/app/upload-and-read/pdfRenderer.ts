@@ -3,7 +3,7 @@ import { PdfPage } from "./processingFunctions";
 export async function renderPdfPage(
   pdfPage: PdfPage,
   canvas: HTMLCanvasElement,
-  scale = 0.75
+  scale = 1,
 ) {
   const viewport = pdfPage.page.getViewport({ scale });
 
@@ -14,7 +14,7 @@ export async function renderPdfPage(
   canvas.height = viewport.height;
 
   await pdfPage.page.render({
-    canvas, 
+    canvas,
     viewport,
   }).promise;
 }
