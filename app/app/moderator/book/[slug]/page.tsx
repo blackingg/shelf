@@ -49,11 +49,11 @@ export default function ModeratorBookDetailsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0"
+                className="w-full md:w-1/3 lg:w-1/4 shrink-0"
               >
-                <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl border border-gray-100 dark:border-neutral-700">
+                <div className="relative aspect-2/3 rounded-2xl overflow-hidden shadow-2xl border border-gray-100 dark:border-neutral-700">
                   <div className="absolute inset-0 bg-gray-200 dark:bg-neutral-800 animate-pulse" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-800 to-indigo-900 flex items-center justify-center text-white text-center p-6">
+                  <div className="absolute inset-0 bg-linear-to-br from-blue-800 to-indigo-900 flex items-center justify-center text-white text-center p-6">
                     <div>
                       <FiBook className="w-12 h-12 mx-auto mb-4 opacity-50" />
                       <span className="font-serif text-xl font-bold">

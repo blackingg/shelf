@@ -250,13 +250,12 @@ export default function LoginPage() {
             </form>
 
             <Divider />
-
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
                 onClick={handleGoogleAuth}
               />
-            </div>
+            </div> 
           </Card>
 
           <div className="mt-6 text-center">

@@ -326,7 +326,7 @@ export default function SignupPage() {
             <div className="grid grid-cols-1 gap-3">
               <SocialLoginButton
                 provider="google"
-                onClick={handleGoogleAuth}
+               onClick={handleGoogleAuth} 
               />
             </div>
           </Card>

@@ -221,7 +221,7 @@ export const BookDetailPanel: React.FC<{
 
               <div className="mb-12">
                 <h3 className="text-[10px] font-black text-gray-400 dark:text-neutral-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <div className="w-4 h-[1px] bg-current opacity-30" />
+                  <div className="w-4 h-px bg-current opacity-30" />
                   About this resource
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed font-medium">

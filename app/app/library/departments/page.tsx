@@ -16,7 +16,7 @@ export default function DepartmentsPage() {
   const userDepartment = user?.department?.name || null;
   const userDepartmentSlug = user?.department?.slug;
   const { data: allDepartments, isLoading } = useGetDepartmentsQuery();
-  const [viewDepartments, setViewDepartments] = useState(false);
+  const [viewDepartments, setViewDepartments] = useState(true);
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (

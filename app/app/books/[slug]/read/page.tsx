@@ -1,5 +1,12 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  useContext,
+} from "react";
+import { FileBufferContext } from "@/app/context/FileBufferContext";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FiArrowLeft,
@@ -16,13 +23,15 @@ import { useRouter, useParams } from "next/navigation";
 export default function ReaderPage() {
   const router = useRouter();
   const params = useParams();
+  const { id } = params;
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
+  const [totalPages] = useState(42);
   const [currentPage, setCurrentPage] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [totalPages] = useState(42);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Mock content (could be fetched based on params.id)
@@ -129,21 +138,16 @@ export default function ReaderPage() {
             >
               <FiArrowLeft className="w-6 h-6" />
             </button>
-            <div className="hidden md:block">
-              <h1 className={`font-bold text-lg ${currentTheme.text}`}>
-                {title}
-              </h1>
+            <div className="block">
+              <h1 className={`font-bold text-lg ${currentTheme.text}`}>{id}</h1>
               <p className={`text-xs opacity-70 ${currentTheme.text}`}>
-                {author}
+                Author Name
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
-            <div
-              className="relative"
-              ref={settingsRef}
-            >
+            <div className="relative" ref={settingsRef}>
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${currentTheme.text}`}
@@ -157,7 +161,7 @@ export default function ReaderPage() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-[70] ${currentTheme.ui}`}
+                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-70 ${currentTheme.ui}`}
                   >
                     <div className="space-y-4">
                       <div>
@@ -179,8 +183,8 @@ export default function ReaderPage() {
                                 t === "light"
                                   ? "bg-white text-gray-900"
                                   : t === "sepia"
-                                  ? "bg-[#f4ecd8] text-[#5b4636]"
-                                  : "bg-[#1a1a1a] text-white"
+                                    ? "bg-[#f4ecd8] text-[#5b4636]"
+                                    : "bg-[#1a1a1a] text-white"
                               }`}
                             >
                               {t === "light" && <FiSun className="w-4 h-4" />}
@@ -247,10 +251,8 @@ export default function ReaderPage() {
           </div>
         </div>
       </motion.header>
-      <main
-        className="flex-1 w-full max-w-3xl mx-auto px-6 py-24 md:py-32 cursor-text"
-        onClick={() => setShowControls(!showControls)}
-      >
+
+      <main className="grid w-full justify-center md:my-4 px-6 py-6 md:py-12 cursor-text">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -6,6 +6,7 @@ import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
+import { BufferProvider } from "./context/FileBufferContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -121,10 +122,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StoreProvider>
+            <BufferProvider>
             <ErrorBoundaryWithNotification>
               <ProtectedRoute>{children}</ProtectedRoute>
             </ErrorBoundaryWithNotification>
+          </BufferProvider>
           </StoreProvider>
+
         </ThemeProvider>
       </body>
       <Analytics />
