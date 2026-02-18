@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { FiUploadCloud, FiAlertCircle } from "react-icons/fi";
+import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
@@ -73,7 +74,9 @@ export default function UploadPage() {
     }
   };
 
-  const handleBookFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBookFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 50 * 1024 * 1024) {
@@ -81,6 +84,24 @@ export default function UploadPage() {
         return;
       }
       setBookFile(file);
+
+      //Metadata Parser Funct. for .epub files
+      if (file.type.includes("epub")) {
+        const fileToBuffer = await file.arrayBuffer();
+        const bookDetails = Epub(fileToBuffer);
+        const metadata = await bookDetails.loaded.metadata;
+        const { creator, title, description, pubdate, publisher } = metadata;
+        if (metadata) {
+          setFormData({
+            ...formData,
+            title: title,
+            author: creator,
+            description: description,
+            publishedYear: pubdate.slice(0, 4),
+            publisher: publisher,
+          });
+        }
+      }
     }
   };
 
@@ -169,10 +190,7 @@ export default function UploadPage() {
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-12 pb-20"
-        >
+        <form onSubmit={handleSubmit} className="space-y-12 pb-20">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <div className="flex justify-between items-center mb-1">
@@ -196,7 +214,7 @@ export default function UploadPage() {
                 onDragLeave={(e) => handleDrag(e)}
                 onDrop={(e) => handleDrop(e)}
                 onClick={() => bookInputRef.current?.click()}
-                className={`border border-dashed rounded-md p-8 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[160px] relative ${
+                className={`border border-dashed rounded-md md:p-4 p-2 flex flex-col items-center justify-center transition-all cursor-pointer min-h-40 relative ${
                   dragActiveBook
                     ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10"
                     : bookFile
@@ -205,8 +223,8 @@ export default function UploadPage() {
                 }`}
               >
                 {bookFile ? (
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-full px-4 mb-1">
+                  <div className="flex flex-col items-center w-[90%]">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white block truncate w-4/5 px-4 mb-1">
                       {bookFile.name}
                     </span>
                     <span className="text-[10px] text-gray-400">

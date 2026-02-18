@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
 import { FiFileText, FiFolderPlus, FiPlay } from "react-icons/fi";
+import processDescription from "./processDesc";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/app/components/Form/Button";
@@ -88,7 +89,7 @@ export default function BookDetailsPage() {
                   className="w-full max-w-60 sm:max-w-[280px] md:max-w-none md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0"
                 >
                   <div className="relative aspect-2/3 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
-                    <NextImage
+                    <img
                       src={
                         book.coverImage &&
                         (book.coverImage.startsWith("/") ||
@@ -97,7 +98,6 @@ export default function BookDetailsPage() {
                           : "/dummycover.png"
                       }
                       alt={book.title}
-                      fill
                       className="object-cover"
                     />
                   </div>
@@ -128,10 +128,7 @@ export default function BookDetailsPage() {
                         Resource Rating
                       </span>
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <StarRating
-                          rating={book.rating || 0}
-                          size={18}
-                        />
+                        <StarRating rating={book.rating || 0} size={18} />
                         <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "5.0"}
                         </span>
@@ -201,7 +198,7 @@ export default function BookDetailsPage() {
                     Overview
                   </h3>
                   <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-base sm:text-lg font-medium wrap-break-word">
-                    {book.description}
+                    {processDescription(book.description)}
                   </p>
                 </section>
 

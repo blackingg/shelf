@@ -1,4 +1,4 @@
-import Image from "next/image";
+//import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -54,7 +54,7 @@ export const BookDetailPanel: React.FC<{
   const [rateBook] = useRateBookMutation();
   const isBookmarked = bookmarkStatus?.bookmarked;
   const userRating = myRatingData?.rating || 0;
-  
+
   useEffect(() => {
     if (book?.id) {
       setShowFolderDropdown(false);
@@ -69,7 +69,6 @@ export const BookDetailPanel: React.FC<{
       // Error handled by optimistic update undo
     }
   };
-
 
   const handleBookmark = async () => {
     if (!book?.id) return;
@@ -145,7 +144,7 @@ export const BookDetailPanel: React.FC<{
 
             <div className="flex-1 overflow-y-auto custom-scrollbar pt-12">
               <div className="relative aspect-2/3 w-48 md:w-56 mx-auto rounded-lg overflow-hidden border border-emerald-700/50 mb-8 group">
-                <Image
+                <img
                   src={
                     book?.coverImage &&
                     (book.coverImage.startsWith("/") ||
@@ -154,7 +153,6 @@ export const BookDetailPanel: React.FC<{
                       : "/dummycover.png"
                   }
                   alt={book?.title || ""}
-                  fill
                   className="object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
               </div>
@@ -243,11 +241,7 @@ export const BookDetailPanel: React.FC<{
                     <FiChevronDown className="-rotate-90 w-3 h-3" />
                   </Link>
                 </div>
-                <BookReviews
-                  bookId={book?.id || ""}
-                  limit={3}
-                  hideForm
-                />
+                <BookReviews bookId={book?.id || ""} limit={3} hideForm />
               </div>
             </div>
 
