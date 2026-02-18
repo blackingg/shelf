@@ -7,6 +7,8 @@
   --foreground: #171717;
   --primary: #044c41;
   --primary-foreground: #ffffff;
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dark {
@@ -43,11 +45,16 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
+  /* user-select: none; */
+  /* -webkit-user-select: none; */
+  /* -webkit-tap-highlight-color: transparent; */
+  overscroll-behavior-y: none;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
   height: 8px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -66,4 +73,20 @@ body {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Safe Area Utility Classes */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+/* Standalone Specifics */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: none;
+  }
 }

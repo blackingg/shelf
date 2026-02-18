@@ -202,7 +202,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
+    <div className="min-h-full w-full bg-white dark:bg-neutral-900">
       <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <div className="relative h-48 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-950">
           <div className="absolute inset-0 bg-black/10" />

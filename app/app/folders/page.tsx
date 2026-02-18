@@ -146,7 +146,7 @@ export default function FoldersPage() {
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 w-full relative">
         <div className="p-4 md:p-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
             <FolderVisibilityToggle

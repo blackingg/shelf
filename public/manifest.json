@@ -2,8 +2,13 @@
     "name": "Shelf - Digital Library",
     "short_name": "Shelf",
     "description": "A student-powered digital library for preserving and sharing academic resources, books, and more.",
+    "id": "/app/library",
     "start_url": "/app/library",
     "display": "standalone",
+    "display_override": [
+        "standalone",
+        "minimal-ui"
+    ],
     "background_color": "#ffffff",
     "theme_color": "#044c41",
     "orientation": "portrait-primary",

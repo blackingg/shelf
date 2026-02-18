@@ -55,7 +55,7 @@ export default function BookDetailsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-neutral-900 overflow-y-auto">
+    <div className="flex min-h-full bg-white dark:bg-neutral-900 w-full">
       <div className="flex-1 flex flex-col">
         <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">

@@ -77,7 +77,7 @@ function SearchContent() {
 
   return (
     <>
-      <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
+      <main className="flex-1 w-full bg-white dark:bg-neutral-900 min-h-full">
         <div className="p-4 md:p-8">
           <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
