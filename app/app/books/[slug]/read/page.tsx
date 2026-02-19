@@ -1,8 +1,12 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "motion/react";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
+import {
+  useGetBookBySlugQuery,
+  useGetBooksQuery,
+} from "@/app/store/api/booksApi";
 
 export default function ReaderPage() {
   const params = useParams();
@@ -10,6 +14,11 @@ export default function ReaderPage() {
 
   const [totalPages] = useState(42);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showControls, setShowControls] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const { data, isLoading, isSuccess } = useGetBookBySlugQuery(String(slug));
+  console.log(data);
 
   const title = String(slug) || "Untitled";
   const chapterTitle = "Chapter 1: No One's Crazy";
