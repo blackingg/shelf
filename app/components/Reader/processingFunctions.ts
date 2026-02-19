@@ -38,7 +38,7 @@ export async function parsePdf(buffer: ArrayBuffer): Promise<PdfDocument> {
 
 export async function getPdfPage(
   pdf: PdfDocument["pdf"],
-  pageNumber: number,,
+  pageNumber: number,
 ): Promise<PdfPage> {
   const page = await pdf.getPage(pageNumber);
   const viewport = page.getViewport({ scale: 1 });

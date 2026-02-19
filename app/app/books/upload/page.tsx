@@ -2,9 +2,7 @@
 import React, { useState, useRef } from "react";
 import { FiUploadCloud, FiAlertCircle, FiFile } from "react-icons/fi";
 import Epub from "epubjs";
-import * as pdfjs from "pdfjs-dist";
 import { Button } from "@/app/components/Form/Button";
-import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
 import { useTheme } from "next-themes";
 
@@ -17,8 +15,7 @@ import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { loadPdf } from "../../upload-and-read/processingFunctions";
-import { buffer } from "stream/consumers";
+import { loadPdf } from "../../../components/Reader";
 
 interface PDFJSInfo {
   Title: string;

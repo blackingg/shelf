@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "motion/react";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
