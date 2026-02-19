@@ -1,193 +1,149 @@
 "use client";
-import { useContext, ChangeEvent, useState } from "react";
-import { PdfViewer } from "./PdfViewer";
+import { useContext, ChangeEvent, useState, useCallback, useRef } from "react";
 import { FileBufferContext } from "@/app/context/FileBufferContext";
-import { useEffect, useRef } from "react";
-import Epub, { Rendition } from "epubjs";
+import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
+import { PdfViewer } from "@/app/components/Reader/PdfViewer";
+import { EpubViewer } from "@/app/components/Reader/EpubViewer";
+import { FiUploadCloud } from "react-icons/fi";
+import { motion } from "motion/react";
 
-const themes = {
-  light: {
-    body: {
-      background: "#ffffff",
-      color: "#000000",
-    },
-  },
-  dark: {
-    body: {
-      background: "#1a1a1a",
-      color: "#eaeaea",
-    },
-  },
-  sepia: {
-    body: {
-      background: "#f4ecd8",
-      color: "#5b4636",
-    },
-  },
-};
-
-interface EpubProps extends React.ComponentPropsWithRef<"div"> {
-  buffer: ArrayBuffer;
-}
-
-export function RenderEPub(props: EpubProps) {
-  const viewRef = useRef(null);
-  const renditionRef = useRef<Rendition | null>(null);
-
-  useEffect(() => {
-    const book = Epub(props.buffer);
-    if (!viewRef.current) return;
-    const rendition = book.renderTo(viewRef.current, {
-      width: "100%",
-      height: "100%",
-      allowScriptedContent: true,
-    });
-    renditionRef.current = rendition;
-    rendition.themes.register("light", themes.light);
-    rendition.themes.register("dark", themes.dark);
-    rendition.themes.register("sepia", themes.sepia);
-
-    rendition.themes.select("light");
-
-    book.ready.then(() => {
-      rendition.display();
-    });
-
-    return () => {
-      renditionRef.current?.destroy();
-      book?.destroy();
-    };
-  }, [props.buffer]);
-
-  const nextPage = () => {
-    renditionRef.current?.next();
-  };
-
-  const prevPage = () => {
-    renditionRef.current?.prev();
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        nextPage();
-      } else if (e.key === "ArrowLeft") {
-        prevPage();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [props.buffer]);
-
-  return (
-    <>
-      {props.buffer && props.buffer.byteLength > 0 ? (
-        <div className="grid transition-all duration-150 relative">
-          <div className="grid grid-cols-12 w-full justify-self-center p-1 md:p-2 controls opacity-0 hover:opacity-100 transition-all absolute -bottom-[10]- z-10 bg-[#1a1a1a] duration-500">
-            <button
-              onClick={() => prevPage()}
-              className="grid justify-self-start"
-            >
-              &lt; Prev
-            </button>
-            <div className="grid col-span-10 justify-items-center">
-              <div className="flex justify-center md:gap-x-4 gap-x-2">
-                <button
-                  className="grid"
-                  onClick={() => renditionRef.current?.themes.select("light")}
-                >
-                  Light
-                </button>
-                <button
-                  className="grid"
-                  onClick={() => renditionRef.current?.themes.select("sepia")}
-                >
-                  Sepia
-                </button>
-                <button
-                  className="grid"
-                  onClick={() => renditionRef.current?.themes.select("dark")}
-                >
-                  Dark
-                </button>
-              </div>
-            </div>
-
-            <button
-              onClick={() => nextPage()}
-              className="grid justify-self-end"
-            >
-              Next &gt;
-            </button>
-          </div>
-
-          <div
-            ref={viewRef}
-            style={{
-              height: "72.5vh",
-              width: "80vw",
-              overflowX: "hidden",
-            }}
-          ></div>
-        </div>
-      ) : null}
-    </>
-  );
-}
-
-export default function Page() {
+export default function UploadAndReadPage() {
   const { buffer, updateBuffer } = useContext(FileBufferContext);
   const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
   const [fileName, setFileName] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const epubControlsRef = useRef<{ next: () => void; prev: () => void } | null>(
+    null,
+  );
+
   async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
     const files: FileList | null = e.target.files;
     const file = files ? files[0] : null;
 
-    if (file?.type == "application/pdf") {
+    if (file?.type === "application/pdf") {
       setFileType("pdf");
     } else {
       setFileType("epub");
     }
     if (file) {
       setFileName(file.name);
-      const buffer = await file.arrayBuffer();
-      updateBuffer(buffer);
+      setCurrentPage(1);
+      const buf = await file.arrayBuffer();
+      updateBuffer(buf);
     }
   }
 
-  return (
-    <div className="relative grid">
-      <div className="grid w-full grid-cols-12 p-2 md:p-4 bg-[#1a1a1a] items-center gap-2 md:gap-4 sticky top-0 z-20 text-xs">
-        <div className={`${fileName.length > 0 ? "col-span-8" : "hidden"}`}>
-          <p>{fileName}</p>
-        </div>
-        <label
-          htmlFor="file"
-          className="p-1 rounded-xl text-white h-12 place-items-center place-content-center bg-emerald-500 grid col-span-4 "
+  const handleNextPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.next();
+    } else {
+      if (currentPage < totalPages) {
+        setCurrentPage((prev) => prev + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
+
+  const handlePrevPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.prev();
+    } else {
+      if (currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
+
+  const uploadButton = (
+    <>
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all shadow-lg shadow-emerald-600/20"
+      >
+        <FiUploadCloud className="w-5 h-5" />
+        <span className="hidden sm:inline">
+          {fileName ? "Change File" : "Upload"}
+        </span>
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".epub, .pdf"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+    </>
+  );
+
+  if (!fileType) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center space-y-6 p-12"
         >
-          <span className="text-center w-full">Upload Book Here</span>
-          <input
-            type="file"
-            name="file"
-            id="file"
-            accept=".epub, .pdf"
-            style={{
-              visibility: "hidden",
-              height: 0,
+          <div className="w-24 h-24 mx-auto rounded-3xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+            <FiUploadCloud className="w-12 h-12 text-emerald-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Upload &amp; Read
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 max-w-sm">
+              Upload a PDF or EPUB file to start reading.
+            </p>
+          </div>
+          <label className="inline-flex items-center space-x-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition-all shadow-lg shadow-emerald-600/20">
+            <FiUploadCloud className="w-5 h-5" />
+            <span>Choose a file</span>
+            <input
+              type="file"
+              accept=".epub, .pdf"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+          </label>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            Supports .pdf and .epub formats
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-[100]">
+      <ReaderLayout
+        title={fileName || "Untitled"}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+        extraHeaderActions={uploadButton}
+      >
+        {fileType === "epub" ? (
+          <EpubViewer
+            buffer={buffer}
+            onReady={(controls) => {
+              epubControlsRef.current = controls;
             }}
-            onChange={handleFileUpload}
           />
-        </label>
-      </div>
-      <div className="p-1 w-full grid place-items-center mx-auto overflow-x-hidden">
-        {fileType.length < 1 ? (
-          <p className="w-full text-xl p-2 font-bold">Please add a file</p>
-        ) : fileType.length > 0 && fileType == "epub" ? (
-          <RenderEPub buffer={buffer} />
         ) : (
-          <PdfViewer buffer={buffer} />
+          <PdfViewer
+            buffer={buffer}
+            page={currentPage}
+            onPageInfo={({ totalPages: tp }) => {
+              setTotalPages(tp);
+            }}
+          />
         )}
-      </div>
+      </ReaderLayout>
     </div>
   );
 }
