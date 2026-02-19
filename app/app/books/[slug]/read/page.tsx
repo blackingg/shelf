@@ -19,12 +19,16 @@ import {
   FiSun,
 } from "react-icons/fi";
 import { useRouter, useParams } from "next/navigation";
+import {
+  useGetBookBySlugQuery,
+  useGetBooksQuery,
+} from "@/app/store/api/booksApi";
 
 export default function ReaderPage() {
   const router = useRouter();
   const params = useParams();
-  const { id } = params;
-
+  const { slug, id } = params;
+  const [testFeat, setTestStatus] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<"light" | "sepia" | "dark">("light");
@@ -33,6 +37,8 @@ export default function ReaderPage() {
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
+  const { data, isLoading, isSuccess } = useGetBookBySlugQuery(String(slug));
+  console.log(data);
 
   // Mock content (could be fetched based on params.id)
   const title = "The Psychology of Money";
