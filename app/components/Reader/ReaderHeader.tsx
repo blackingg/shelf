@@ -10,23 +10,14 @@ import {
   FiSun,
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import {
-  ReaderThemeColors,
-  ReaderThemeName,
-  readerThemes,
-} from "./readerThemes";
+import { useReader } from "./ReaderContext";
 
 interface ReaderHeaderProps {
   title: string;
   subtitle?: string;
   titlePrefix?: string;
-  theme: ReaderThemeName;
-  currentTheme: ReaderThemeColors;
-  fontSize: number;
   showControls: boolean;
   isFullScreen: boolean;
-  onThemeChange: (theme: ReaderThemeName) => void;
-  onFontSizeChange: (size: number) => void;
   onToggleFullScreen: () => void;
   /** Extra action buttons rendered before the settings button */
   extraActions?: React.ReactNode;
@@ -36,16 +27,13 @@ export function ReaderHeader({
   title,
   subtitle,
   titlePrefix,
-  theme,
-  currentTheme,
-  fontSize,
   showControls,
   isFullScreen,
-  onThemeChange,
-  onFontSizeChange,
   onToggleFullScreen,
   extraActions,
 }: ReaderHeaderProps) {
+  const { theme, setTheme, fontSize, setFontSize, currentTheme, format } =
+    useReader();
   const router = useRouter();
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -106,99 +94,101 @@ export function ReaderHeader({
             <div className="w-px h-6 bg-gray-300 dark:bg-neutral-800 mx-2" />
           )}
 
-          <div
-            className="relative"
-            ref={settingsRef}
-          >
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className={`p-2 rounded-full hover:bg-black/5 transition-colors ${currentTheme.text}`}
+          {format === "epub" && (
+            <div
+              className="relative"
+              ref={settingsRef}
             >
-              <FiType className="w-5 h-5" />
-            </button>
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={`p-2 rounded-full hover:bg-black/5 transition-colors ${currentTheme.text}`}
+              >
+                <FiType className="w-5 h-5" />
+              </button>
 
-            <AnimatePresence>
-              {showSettings && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-[70] ${currentTheme.ui}`}
-                >
-                  <div className="space-y-4">
-                    <div>
-                      <label
-                        className={`text-xs font-semibold uppercase tracking-wider mb-2 block ${currentTheme.text}`}
-                      >
-                        Theme
-                      </label>
-                      <div className="flex space-x-2">
-                        {(["light", "sepia", "dark"] as const).map((t) => (
-                          <button
-                            key={t}
-                            onClick={() => onThemeChange(t)}
-                            className={`flex-1 py-2 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
-                              theme === t
-                                ? "ring-2 ring-emerald-500 border-transparent"
-                                : "border-gray-200 hover:border-gray-300"
-                            } ${
-                              t === "light"
-                                ? "bg-white text-gray-900"
-                                : t === "sepia"
-                                  ? "bg-[#f4ecd8] text-[#5b4636]"
-                                  : "bg-[#1a1a1a] text-white"
-                            }`}
-                          >
-                            {t === "light" && <FiSun className="w-4 h-4" />}
-                            {t === "dark" && <FiMoon className="w-4 h-4" />}
-                            <span className="capitalize">{t}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        className={`text-xs font-semibold uppercase tracking-wider mb-2 block ${currentTheme.text}`}
-                      >
-                        Font Size
-                      </label>
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() =>
-                            onFontSizeChange(Math.max(14, fontSize - 2))
-                          }
-                          className={`p-2 rounded-lg border hover:bg-black/5 ${currentTheme.ui} ${currentTheme.text}`}
+              <AnimatePresence>
+                {showSettings && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-[70] ${currentTheme.ui}`}
+                  >
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          className={`text-xs font-semibold uppercase tracking-wider mb-2 block ${currentTheme.text}`}
                         >
-                          A-
-                        </button>
-                        <div className="flex-1">
-                          <input
-                            type="range"
-                            min="14"
-                            max="32"
-                            value={fontSize}
-                            onChange={(e) =>
-                              onFontSizeChange(Number(e.target.value))
-                            }
-                            className="w-full accent-emerald-600"
-                          />
+                          Theme
+                        </label>
+                        <div className="flex space-x-2">
+                          {(["light", "sepia", "dark"] as const).map((t) => (
+                            <button
+                              key={t}
+                              onClick={() => setTheme(t)}
+                              className={`flex-1 py-2 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
+                                theme === t
+                                  ? "ring-2 ring-emerald-500 border-transparent"
+                                  : "border-gray-200 hover:border-gray-300"
+                              } ${
+                                t === "light"
+                                  ? "bg-white text-gray-900"
+                                  : t === "sepia"
+                                    ? "bg-[#f4ecd8] text-[#5b4636]"
+                                    : "bg-[#1a1a1a] text-white"
+                              }`}
+                            >
+                              {t === "light" && <FiSun className="w-4 h-4" />}
+                              {t === "dark" && <FiMoon className="w-4 h-4" />}
+                              <span className="capitalize">{t}</span>
+                            </button>
+                          ))}
                         </div>
-                        <button
-                          onClick={() =>
-                            onFontSizeChange(Math.min(32, fontSize + 2))
-                          }
-                          className={`p-2 rounded-lg border hover:bg-black/5 ${currentTheme.ui} ${currentTheme.text}`}
+                      </div>
+
+                      <div>
+                        <label
+                          className={`text-xs font-semibold uppercase tracking-wider mb-2 block ${currentTheme.text}`}
                         >
-                          A+
-                        </button>
+                          Font Size
+                        </label>
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() =>
+                              setFontSize(Math.max(14, fontSize - 2))
+                            }
+                            className={`p-2 rounded-lg border hover:bg-black/5 ${currentTheme.ui} ${currentTheme.text}`}
+                          >
+                            A-
+                          </button>
+                          <div className="flex-1">
+                            <input
+                              type="range"
+                              min="14"
+                              max="32"
+                              value={fontSize}
+                              onChange={(e) =>
+                                setFontSize(Number(e.target.value))
+                              }
+                              className="w-full accent-emerald-600"
+                            />
+                          </div>
+                          <button
+                            onClick={() =>
+                              setFontSize(Math.min(32, fontSize + 2))
+                            }
+                            className={`p-2 rounded-lg border hover:bg-black/5 ${currentTheme.ui} ${currentTheme.text}`}
+                          >
+                            A+
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
           <button
             onClick={onToggleFullScreen}

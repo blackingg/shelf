@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ReaderHeader } from "./ReaderHeader";
 import { ReaderFooter } from "./ReaderFooter";
 import { ReaderThemeName, readerThemes } from "./readerThemes";
+import { ReaderProvider, useReader } from "./ReaderContext";
 
 interface ReaderLayoutProps {
   /** Title shown in the header */
@@ -27,9 +28,19 @@ interface ReaderLayoutProps {
   extraPanels?: React.ReactNode;
   /** Whether the content area should shrink for a side panel (e.g. moderator review panel) */
   contentShrink?: boolean;
+  /** The format of the file being read */
+  format?: "pdf" | "epub";
 }
 
-export function ReaderLayout({
+export function ReaderLayout(props: ReaderLayoutProps) {
+  return (
+    <ReaderProvider initialFormat={props.format}>
+      <ReaderLayoutContent {...props} />
+    </ReaderProvider>
+  );
+}
+
+function ReaderLayoutContent({
   title,
   subtitle,
   titlePrefix,
@@ -42,12 +53,10 @@ export function ReaderLayout({
   extraPanels,
   contentShrink = false,
 }: ReaderLayoutProps) {
+  const { theme, setTheme, fontSize, setFontSize, currentTheme, format } =
+    useReader();
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [fontSize, setFontSize] = useState(18);
-  const [theme, setTheme] = useState<ReaderThemeName>("light");
   const [showControls, setShowControls] = useState(true);
-
-  const currentTheme = readerThemes[theme];
 
   const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -81,13 +90,8 @@ export function ReaderLayout({
         title={title}
         subtitle={subtitle}
         titlePrefix={titlePrefix}
-        theme={theme}
-        currentTheme={currentTheme}
-        fontSize={fontSize}
         showControls={showControls}
         isFullScreen={isFullScreen}
-        onThemeChange={setTheme}
-        onFontSizeChange={setFontSize}
         onToggleFullScreen={toggleFullScreen}
         extraActions={extraHeaderActions}
       />
@@ -97,7 +101,14 @@ export function ReaderLayout({
           className={`flex-1 w-full mx-auto px-6 py-24 md:py-32 cursor-text transition-all duration-300 ${contentShrink ? "md:pr-[320px]" : ""}`}
           onClick={() => setShowControls(!showControls)}
         >
-          <div className="max-w-3xl mx-auto">{children}</div>
+          <div
+            className="max-w-3xl mx-auto"
+            style={{
+              fontSize: format === "epub" ? `${fontSize}px` : undefined,
+            }}
+          >
+            {children}
+          </div>
         </main>
 
         {extraPanels}
@@ -107,7 +118,6 @@ export function ReaderLayout({
         currentPage={currentPage}
         totalPages={totalPages}
         showControls={showControls}
-        currentTheme={currentTheme}
         onNextPage={onNextPage}
         onPrevPage={onPrevPage}
       />

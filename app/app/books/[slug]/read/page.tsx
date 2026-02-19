@@ -37,6 +37,8 @@ export default function ReaderPage() {
     }
   }, [currentPage]);
 
+  const format = data?.fileType?.includes("pdf") ? "pdf" : "epub";
+
   return (
     <ReaderLayout
       title={title}
@@ -45,6 +47,7 @@ export default function ReaderPage() {
       totalPages={totalPages}
       onNextPage={nextPage}
       onPrevPage={prevPage}
+      format={format}
     >
       <motion.div
         initial={{ opacity: 0 }}

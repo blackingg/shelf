@@ -126,6 +126,7 @@ export default function UploadAndReadPage() {
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
         extraHeaderActions={uploadButton}
+        format={fileType as "pdf" | "epub"}
       >
         {fileType === "epub" ? (
           <EpubViewer

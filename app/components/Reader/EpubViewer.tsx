@@ -1,15 +1,16 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import Epub, { Rendition } from "epubjs";
-import { epubThemes, ReaderThemeName } from "./readerThemes";
+import { epubThemes } from "./readerThemes";
+import { useReader } from "./ReaderContext";
 
 interface EpubViewerProps {
   buffer: ArrayBuffer;
-  theme?: ReaderThemeName;
   onReady?: (controls: { next: () => void; prev: () => void }) => void;
 }
 
-export function EpubViewer({ buffer, theme = "light", onReady }: EpubViewerProps) {
+export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
+  const { theme, fontSize } = useReader();
   const viewRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
@@ -30,6 +31,7 @@ export function EpubViewer({ buffer, theme = "light", onReady }: EpubViewerProps
     rendition.themes.register("dark", epubThemes.dark);
     rendition.themes.register("sepia", epubThemes.sepia);
     rendition.themes.select(theme);
+    rendition.themes.fontSize(`${fontSize}px`);
 
     book.ready.then(() => {
       rendition.display();
@@ -48,6 +50,10 @@ export function EpubViewer({ buffer, theme = "light", onReady }: EpubViewerProps
   useEffect(() => {
     renditionRef.current?.themes.select(theme);
   }, [theme]);
+
+  useEffect(() => {
+    renditionRef.current?.themes.fontSize(`${fontSize}px`);
+  }, [fontSize]);
 
   return (
     <div

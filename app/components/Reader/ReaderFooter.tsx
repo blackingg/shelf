@@ -2,13 +2,12 @@
 import React from "react";
 import { motion } from "motion/react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { ReaderThemeColors } from "./readerThemes";
+import { useReader } from "./ReaderContext";
 
 interface ReaderFooterProps {
   currentPage: number;
   totalPages: number;
   showControls: boolean;
-  currentTheme: ReaderThemeColors;
   onNextPage: () => void;
   onPrevPage: () => void;
 }
@@ -17,10 +16,10 @@ export function ReaderFooter({
   currentPage,
   totalPages,
   showControls,
-  currentTheme,
   onNextPage,
   onPrevPage,
 }: ReaderFooterProps) {
+  const { currentTheme } = useReader();
   return (
     <motion.footer
       initial={{ y: 100 }}
