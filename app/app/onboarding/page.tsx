@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
+import { useTheme } from "next-themes";
 import { FiHeart, FiUser, FiBook } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
@@ -18,8 +19,8 @@ import {
   useGetInterestsQuery,
   useCompleteOnboardingMutation,
 } from "@/app/store/api/onboardingApi";
-import { useAppDispatch } from "@/app/store/store";
-import { setOnboardingStatus } from "@/app/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/app/store/store";
+import { setOnboardingStatus, selectCurrentUser } from "@/app/store/authSlice";
 import { getErrorMessage } from "@/app/helpers/error";
 
 interface OptionType {
@@ -37,6 +38,15 @@ export default function Onboarding() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const dispatch = useAppDispatch();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     schoolId: "",
@@ -44,6 +54,15 @@ export default function Onboarding() {
     interestIds: [],
   });
   const [schoolSearch, setSchoolSearch] = useState("");
+
+  const user = useAppSelector(selectCurrentUser);
+
+  // Redirect if already completed
+  useEffect(() => {
+    if (user?.onboardingCompleted) {
+      router.replace("/app/library");
+    }
+  }, [user, router]);
 
   // Restore session data on mount
   useEffect(() => {
@@ -65,7 +84,9 @@ export default function Onboarding() {
   const { data: schools = [], isLoading: isLoadingSchools } =
     useGetSchoolsQuery(schoolSearch);
   const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetOnboardingDepartmentsQuery(formData.schoolId, { skip: !formData.schoolId });
+    useGetOnboardingDepartmentsQuery(formData.schoolId, {
+      skip: !formData.schoolId,
+    });
   const {
     data: interestsResponse,
     isLoading: isLoadingInterests,
@@ -85,12 +106,20 @@ export default function Onboarding() {
     label: dept.name,
   }));
 
-  const canProceed = (): boolean => {
+  const canProceedResult = useMemo((): boolean => {
     if (currentStep === 0) return formData.schoolId !== "";
     if (currentStep === 1) return formData.departmentId !== "";
-    if (currentStep === 2) return formData.interestIds.length >= 3;
+    if (currentStep === 2)
+      return (
+        formData.interestIds.length >= 3 && formData.interestIds.length <= 10
+      );
     return false;
-  };
+  }, [
+    currentStep,
+    formData.schoolId,
+    formData.departmentId,
+    formData.interestIds,
+  ]);
 
   const handleFinish = async (): Promise<void> => {
     try {
@@ -110,6 +139,16 @@ export default function Onboarding() {
       router.push("/app/library");
     } catch (error: any) {
       console.error("Onboarding failed:", error);
+
+      // If the user already completed onboarding, just redirect them
+      if (user?.onboardingCompleted) {
+        dispatch(setOnboardingStatus(true));
+        storage.remove("onboarding_step");
+        storage.remove("onboarding_data");
+        router.push("/app/library");
+        return;
+      }
+
       addNotification(
         "error",
         getErrorMessage(
@@ -152,12 +191,22 @@ export default function Onboarding() {
   };
 
   const toggleInterest = (interestId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      interestIds: prev.interestIds.includes(interestId)
-        ? prev.interestIds.filter((id) => id !== interestId)
-        : [...prev.interestIds, interestId],
-    }));
+    setFormData((prev) => {
+      const isSelected = prev.interestIds.includes(interestId);
+      if (!isSelected && prev.interestIds.length >= 10) {
+        addNotification(
+          "warning",
+          "You can select up to 10 interests maximum.",
+        );
+        return prev;
+      }
+      return {
+        ...prev,
+        interestIds: isSelected
+          ? prev.interestIds.filter((id) => id !== interestId)
+          : [...prev.interestIds, interestId],
+      };
+    });
   };
 
   const getIconComponent = (iconName: string) => {
@@ -169,6 +218,52 @@ export default function Onboarding() {
       .split("_")
       .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
       .join(" ");
+  };
+
+  const customSelectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      borderRadius: "0.75rem",
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
+      boxShadow: "none",
+      padding: "2px",
+      "&:hover": {
+        borderColor: "#10b981",
+      },
+    }),
+    input: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#737373" : "#9ca3af",
+    }),
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: isDark ? "#171717" : "#ffffff",
+      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+      zIndex: 100,
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#10b981"
+        : state.isFocused
+          ? isDark
+            ? "#262626"
+            : "#f3f4f6"
+          : "transparent",
+      color: state.isSelected ? "#ffffff" : isDark ? "#ffffff" : "#111827",
+      "&:active": {
+        backgroundColor: "#10b981",
+      },
+    }),
   };
 
   return (
@@ -206,7 +301,7 @@ export default function Onboarding() {
                   ? "We'll personalize your content based on your school."
                   : currentStep === 1
                     ? "Helps us recommend books and resources for your field."
-                    : "Choose at least 3 to personalize your experience."
+                    : "Choose between 3 to 10 interests to personalize your experience."
               }
             />
 
@@ -234,46 +329,7 @@ export default function Onboarding() {
                   }
                   placeholder="Start typing school name..."
                   classNamePrefix="react-select"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderRadius: "0.75rem",
-                      padding: "2px",
-                      boxShadow: "none",
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? "#10b981"
-                        : state.isFocused
-                          ? "rgba(16, 185, 129, 0.1)"
-                          : "transparent",
-                      color: state.isSelected ? "white" : "inherit",
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      zIndex: 100,
-                    }),
-                    input: (base) => ({
-                      ...base,
-                      color: "inherit",
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: "inherit",
-                    }),
-                  }}
-
-                  classNames={{
-                    control: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
-                    menu: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
-                    option: () =>
-                      "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
-                    singleValue: () => "text-gray-900 dark:text-white",
-                    input: () => "text-gray-900 dark:text-white",
-                  }}
+                  styles={customSelectStyles}
                 />
               </div>
             )}
@@ -298,46 +354,7 @@ export default function Onboarding() {
                   placeholder="Type to search..."
                   classNamePrefix="react-select"
                   isDisabled={!formData.schoolId}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderRadius: "0.75rem",
-                      padding: "2px",
-                      boxShadow: "none",
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? "#10b981"
-                        : state.isFocused
-                          ? "rgba(16, 185, 129, 0.1)"
-                          : "transparent",
-                      color: state.isSelected ? "white" : "inherit",
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      zIndex: 100,
-                    }),
-                    input: (base) => ({
-                      ...base,
-                      color: "inherit",
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: "inherit",
-                    }),
-                  }}
-
-                  classNames={{
-                    control: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white",
-                    menu: () =>
-                      "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700",
-                    option: () =>
-                      "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white",
-                    singleValue: () => "text-gray-900 dark:text-white",
-                    input: () => "text-gray-900 dark:text-white",
-                  }}
+                  styles={customSelectStyles}
                 />
               </div>
             )}
@@ -402,7 +419,7 @@ export default function Onboarding() {
               onBack={handleBack}
               onNext={handleNext}
               canGoBack={currentStep > 0}
-              canProceed={true}
+              canProceed={canProceedResult}
               isLastStep={currentStep === steps.length - 1}
               isLoading={isSubmitting}
             />
