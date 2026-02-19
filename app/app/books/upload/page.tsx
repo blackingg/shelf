@@ -9,7 +9,10 @@ import Select from "react-select";
 import { useTheme } from "next-themes";
 
 import { useRouter } from "next/navigation";
-import { useCreateBookMutation } from "@/app/store/api/booksApi";
+import {
+  useCreateBookMutation,
+  useUploadBookMutation,
+} from "@/app/store/api/booksApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
@@ -36,12 +39,15 @@ export default function UploadPage() {
 
   const [createBook, { isLoading: isSubmitting }] = useCreateBookMutation();
 
+  const [uploadBook, { isLoading: isUploading }] = useUploadBookMutation();
+
   const { data: departments = [], isLoading: isLoadingDepts } =
     useGetDepartmentsQuery();
   const { data: categoriesData = [], isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [dragActiveBook, setDragActiveBook] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -79,6 +85,17 @@ export default function UploadPage() {
         return;
       }
       setBookFile(file);
+    }
+  };
+
+  const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 50 * 1024 * 1024) {
+        addNotification("error", "Book file must be less than 50MB");
+        return;
+      }
+      setCoverFile(file);
     }
   };
 
@@ -191,6 +208,42 @@ export default function UploadPage() {
     }
   };
 
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let publishedYear = Number(formData.publishedYear);
+    let pages = Number(formData.pages);
+
+    try {
+      const formValues = new FormData();
+      if (bookFile && coverFile) {
+        formValues.append("title", formData.title);
+        formValues.append("author", formData.author);
+        formValues.append("description", formData.description);
+        formValues.append("cover_image", coverFile);
+        formValues.append("book_file", bookFile);
+        formValues.append("category", formData.category);
+        formValues.append("pages", pages.toString());
+        formValues.append("department", formData.description);
+        formValues.append("isbn", formData.isbn);
+        formValues.append("publisher", formData.publisher);
+        formValues.append("published_year", publishedYear.toString());
+        formValues.append("tags", formData.tags);
+      }
+      await uploadBook(formValues).unwrap();
+      addNotification(
+        "success",
+        "Book donated successfully! Thank you for your contribution.",
+      );
+      router.push("/app/library");
+    } catch (error) {
+      console.log(error);
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to donate book."),
+      );
+    }
+  };
+
   const departmentOptions = departments.map((dept) => ({
     value: dept.slug,
     label: dept.name,
@@ -220,7 +273,7 @@ export default function UploadPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-12 pb-20">
+        <form onSubmit={handleUpload} className="space-y-12 pb-20">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <div className="flex justify-between items-center mb-1">
@@ -231,6 +284,7 @@ export default function UploadPage() {
               </div>
 
               <input
+                name="book_file"
                 ref={bookInputRef}
                 type="file"
                 className="hidden"
@@ -302,6 +356,13 @@ export default function UploadPage() {
                 placeholder="https://example.com/image.jpg"
                 required
                 className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
+              />
+              <input
+                type="file"
+                name="cover_image"
+                id="cover_image"
+                required
+                onChange={handleCoverFileChange}
               />
               <p className="text-[10px] text-gray-400 dark:text-neutral-500 mt-1 italic">
                 Pro tip: Use a direct link to an image (ArtStation, Cloudinary,
@@ -468,7 +529,7 @@ export default function UploadPage() {
             <div className="w-full md:w-64">
               <Button
                 type="submit"
-                isLoading={isSubmitting}
+                isLoading={isUploading}
                 className="w-full py-4 rounded-md text-sm font-medium uppercase tracking-widest"
               >
                 Confirm Donation
