@@ -20,6 +20,7 @@ export interface PdfPage {
 }
 
 export async function loadPdf(buffer: ArrayBuffer) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   const loadingTask = pdfjs.getDocument({ data: buffer });
   return loadingTask.promise;
 }

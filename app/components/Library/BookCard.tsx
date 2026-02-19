@@ -27,7 +27,6 @@ export const BookCard: React.FC<BookCardProps> = ({
   const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(id || "", {
     skip: !id,
   });
-
   const isBookmarked = bookmarkStatus?.bookmarked;
 
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -46,7 +45,7 @@ export const BookCard: React.FC<BookCardProps> = ({
       className={`group cursor-pointer transition-colors duration-200 ${className}`}
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
-        <Image
+        <img
           src={
             coverImage &&
             (coverImage.startsWith("/") ||
@@ -56,8 +55,7 @@ export const BookCard: React.FC<BookCardProps> = ({
               : "/dummycover.png"
           }
           alt={title}
-          fill
-          className="object-cover"
+          className="object-cover h-full w-full"
         />
 
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
