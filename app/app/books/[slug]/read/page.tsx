@@ -37,6 +37,11 @@ export default function ReaderPage() {
     }
   }, [currentPage]);
 
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const format = data?.fileType?.includes("pdf") ? "pdf" : "epub";
 
   return (
@@ -47,6 +52,7 @@ export default function ReaderPage() {
       totalPages={totalPages}
       onNextPage={nextPage}
       onPrevPage={prevPage}
+      onPageChange={handlePageChange}
       format={format}
     >
       <motion.div

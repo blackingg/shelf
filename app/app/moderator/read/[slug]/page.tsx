@@ -52,6 +52,11 @@ export default function ModeratorReaderPage() {
     }
   }, [currentPage]);
 
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const [theme] = useState<ReaderThemeName>("light");
   const currentTheme = readerThemes[theme];
 
@@ -137,6 +142,7 @@ export default function ModeratorReaderPage() {
       totalPages={totalPages}
       onNextPage={nextPage}
       onPrevPage={prevPage}
+      onPageChange={handlePageChange}
       extraHeaderActions={reviewPanelToggle}
       extraPanels={reviewPanel}
       contentShrink={showReviewPanel}

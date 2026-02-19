@@ -15,9 +15,11 @@ export default function UploadAndReadPage() {
   const [totalPages, setTotalPages] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const epubControlsRef = useRef<{ next: () => void; prev: () => void } | null>(
-    null,
-  );
+  const epubControlsRef = useRef<{
+    next: () => void;
+    prev: () => void;
+    goTo?: (p: number) => void;
+  } | null>(null);
 
   async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
     const files: FileList | null = e.target.files;
@@ -57,6 +59,18 @@ export default function UploadAndReadPage() {
       }
     }
   }, [fileType, currentPage, totalPages]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (fileType === "epub") {
+        epubControlsRef.current?.goTo?.(page);
+      } else {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [fileType],
+  );
 
   const uploadButton = (
     <>
@@ -125,6 +139,7 @@ export default function UploadAndReadPage() {
         totalPages={totalPages}
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
+        onPageChange={handlePageChange}
         extraHeaderActions={uploadButton}
         format={fileType as "pdf" | "epub"}
       >

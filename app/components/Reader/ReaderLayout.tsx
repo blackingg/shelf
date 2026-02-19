@@ -20,6 +20,8 @@ interface ReaderLayoutProps {
   onNextPage: () => void;
   /** Called when user navigates to the previous page */
   onPrevPage: () => void;
+  /** Called when user jumps to a specific page */
+  onPageChange?: (page: number) => void;
   /** The main content to render in the reader area */
   children: React.ReactNode;
   /** Extra action buttons rendered in the header (e.g. moderator review panel toggle) */
@@ -48,6 +50,7 @@ function ReaderLayoutContent({
   totalPages,
   onNextPage,
   onPrevPage,
+  onPageChange,
   children,
   extraHeaderActions,
   extraPanels,
@@ -120,6 +123,7 @@ function ReaderLayoutContent({
         showControls={showControls}
         onNextPage={onNextPage}
         onPrevPage={onPrevPage}
+        onPageChange={onPageChange}
       />
     </div>
   );

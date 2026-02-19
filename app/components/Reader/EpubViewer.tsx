@@ -6,7 +6,11 @@ import { useReader } from "./ReaderContext";
 
 interface EpubViewerProps {
   buffer: ArrayBuffer;
-  onReady?: (controls: { next: () => void; prev: () => void }) => void;
+  onReady?: (controls: {
+    next: () => void;
+    prev: () => void;
+    goTo?: (page: number) => void;
+  }) => void;
 }
 
 export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
@@ -38,6 +42,7 @@ export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
       onReady?.({
         next: () => rendition.next(),
         prev: () => rendition.prev(),
+        goTo: (p) => rendition.display(p),
       });
     });
 
