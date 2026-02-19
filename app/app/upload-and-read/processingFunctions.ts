@@ -22,15 +22,12 @@ export interface PdfPage {
 
 //Loader
 
-
-
 export async function loadPdf(buffer: ArrayBuffer) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   const loadingTask = pdfjs.getDocument({ data: buffer });
   return loadingTask.promise;
 }
 //end loader
-
-
 
 //parser
 export async function parsePdf(buffer: ArrayBuffer): Promise<PdfDocument> {
@@ -49,7 +46,7 @@ export async function parsePdf(buffer: ArrayBuffer): Promise<PdfDocument> {
 //Get Page Util
 export async function getPdfPage(
   pdf: PdfDocument["pdf"],
-  pageNumber: number
+  pageNumber: number,
 ): Promise<PdfPage> {
   const page = await pdf.getPage(pageNumber);
   const viewport = page.getViewport({ scale: 1 });
@@ -63,7 +60,6 @@ export async function getPdfPage(
 }
 //
 
-
 import { useState } from "react";
 
 export function usePdfViewer(totalPages: number) {
@@ -71,14 +67,8 @@ export function usePdfViewer(totalPages: number) {
 
   return {
     page,
-    next: () => setPage(p => Math.min(p + 1, totalPages)),
-    prev: () => setPage(p => Math.max(p - 1, 1)),
-    goTo: (n: number) =>
-      setPage(Math.min(Math.max(1, n), totalPages)),
+    next: () => setPage((p) => Math.min(p + 1, totalPages)),
+    prev: () => setPage((p) => Math.max(p - 1, 1)),
+    goTo: (n: number) => setPage(Math.min(Math.max(1, n), totalPages)),
   };
 }
-
-
-
-
-

@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { FiUploadCloud, FiAlertCircle } from "react-icons/fi";
+import { FiUploadCloud, FiAlertCircle, FiFile } from "react-icons/fi";
 import Epub from "epubjs";
+import * as pdfjs from "pdfjs-dist";
 import { Button } from "@/app/components/Form/Button";
 import { FormInput } from "@/app/components/Form/FormInput";
 import Select from "react-select";
@@ -13,6 +14,13 @@ import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
+import { loadPdf } from "../../upload-and-read/processingFunctions";
+import { buffer } from "stream/consumers";
+
+interface PDFJSInfo {
+  Title: string;
+  Author: string;
+}
 
 export default function UploadPage() {
   const router = useRouter();
@@ -99,6 +107,28 @@ export default function UploadPage() {
             description: description,
             publishedYear: pubdate.slice(0, 4),
             publisher: publisher,
+          });
+        }
+      }
+
+      //Metadata parse handler for PDF files
+      if (file.type.includes("pdf")) {
+        const fileBuffer = await file.arrayBuffer();
+        const actualPDF = await loadPdf(fileBuffer);
+        setFormData({ ...formData, pages: String(actualPDF.numPages) });
+        const metadata = await actualPDF.getMetadata().catch(() => null);
+        const info = metadata?.info as PDFJSInfo;
+        if (metadata?.metadata == null) {
+          addNotification("error", "Chosen file has no metadata");
+        } else {
+          setFormData({
+            ...formData,
+            publisher: metadata?.metadata.get("dc:publisher") ?? "",
+            title: info["Title"] ?? "",
+            description: metadata?.metadata.get("dc:description") ?? "",
+            author: info["Author"] ?? "",
+            publishedYear:
+              String(metadata?.metadata.get("dc:date")).slice(0, 4) ?? "",
           });
         }
       }
@@ -223,22 +253,32 @@ export default function UploadPage() {
                 }`}
               >
                 {bookFile ? (
-                  <div className="flex flex-col items-center w-[90%]">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white block truncate w-4/5 px-4 mb-1">
-                      {bookFile.name}
-                    </span>
-                    <span className="text-[10px] text-gray-400">
-                      {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setBookFile(null);
-                      }}
-                      className="mt-4 text-[10px] font-medium uppercase text-red-500 dark:text-red-400 hover:text-red-600 transition-colors"
-                    >
-                      Remove File
-                    </button>
+                  <div className="flex flex-row items-center w-[90%]">
+                    <div className="flex flex-col justify-center">
+                      <FiFile
+                        className={`text-[3.25rem] p-2 ${bookFile.type.includes("pdf") ? "fill-red-600" : "fill-blue-600"}`}
+                      />
+                      <p className="uppercase text-xl text-center">
+                        {bookFile.type.includes("pdf") ? "pdf" : "epub"}
+                      </p>
+                    </div>
+                    <div className="flex flex-col flex-2 w-4/5 justify-center items-center">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white block truncate w-4/5 px-4 mb-1">
+                        {bookFile.name}
+                      </span>
+                      <span className="text-[10px] text-gray-400">
+                        {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBookFile(null);
+                        }}
+                        className="mt-4 text-[10px] font-medium uppercase text-red-500 dark:text-red-400 hover:text-red-600 transition-colors"
+                      >
+                        Remove File
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <>
