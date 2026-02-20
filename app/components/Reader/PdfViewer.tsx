@@ -39,7 +39,7 @@ export function PdfViewer({
 
     const currentPage = externalPage ?? viewer.page;
     getPdfPage(doc.pdf, currentPage).then((page) =>
-      renderPdfPage(page, canvasRef.current!),
+      renderPdfPage(page, canvasRef.current!, 1.2),
     );
   }, [doc, viewer.page, externalPage]);
 
@@ -47,10 +47,7 @@ export function PdfViewer({
 
   return (
     <div className="w-full grid justify-items-center">
-      <canvas
-        ref={canvasRef}
-        className="max-w-full"
-      />
+      <canvas ref={canvasRef} className="max-w-full" />
     </div>
   );
 }

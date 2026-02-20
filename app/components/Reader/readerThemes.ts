@@ -43,7 +43,7 @@ export const epubThemes = {
   dark: {
     body: {
       background: "#1a1a1a",
-      color: "#eaeaea",
+      color: "#ffffff",
     },
   },
   sepia: {

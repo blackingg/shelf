@@ -78,10 +78,7 @@ export function ReaderFooter({
           <span className="hidden sm:inline font-medium">Previous</span>
         </button>
 
-        <div
-          className="flex flex-col items-center relative"
-          ref={pageJumpRef}
-        >
+        <div className="flex flex-col items-center relative" ref={pageJumpRef}>
           <div className="flex items-center gap-2 group">
             <span
               className={`text-sm font-semibold opacity-50 ${currentTheme.text}`}
@@ -123,7 +120,7 @@ export function ReaderFooter({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-2xl shadow-2xl border ${currentTheme.ui} z-[60] overflow-hidden`}
+                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-2xl shadow-2xl border ${currentTheme.ui} z-60 overflow-hidden`}
               >
                 <div className="p-3 border-b border-gray-100 dark:border-neutral-800">
                   <span

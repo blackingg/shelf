@@ -1,6 +1,6 @@
 "use client";
-import React, { useRef, useEffect } from "react";
-import Epub, { Rendition } from "epubjs";
+import React, { useRef, useEffect, useState } from "react";
+import Epub, { Book, Location, Rendition } from "epubjs";
 import { epubThemes } from "./readerThemes";
 import { useReader } from "./ReaderContext";
 
@@ -11,10 +11,21 @@ interface EpubViewerProps {
     prev: () => void;
     goTo?: (page: number) => void;
   }) => void;
+  onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
 }
 
-export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
+const generateLocations = async (book: Book) => {
+  await book.ready;
+  await book.locations.generate(1024);
+};
+
+export function EpubViewer({
+  buffer,
+  onReady,
+  onPageDetails,
+}: EpubViewerProps) {
   const { theme, fontSize } = useReader();
+  const [isLoading, setLoadStatus] = useState(true);
   const viewRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
@@ -22,6 +33,7 @@ export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
     if (!buffer || buffer.byteLength === 0) return;
 
     const book = Epub(buffer);
+    generateLocations(book);
     if (!viewRef.current) return;
 
     const rendition = book.renderTo(viewRef.current, {
@@ -37,20 +49,32 @@ export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
     rendition.themes.select(theme);
     rendition.themes.fontSize(`${fontSize}px`);
 
-    book.ready.then(() => {
+    Promise.all([generateLocations(book), book.ready]).then(() => {
+      alert("loaded");
       rendition.display();
       onReady?.({
         next: () => rendition.next(),
         prev: () => rendition.prev(),
-        goTo: (p) => rendition.display(p),
+        goTo: (p) => {
+          const cfi = book.locations.cfiFromLocation(p);
+          rendition.display(cfi);
+        },
       });
+      onPageDetails?.({
+        currentPage: 1,
+        totalPages: book.locations.length(),
+      });
+    });
+
+    rendition.on("relocated", (location: Location) => {
+      const currentPage = book.locations.locationFromCfi(location.start.cfi);
     });
 
     return () => {
       renditionRef.current?.destroy();
       book?.destroy();
     };
-  }, [buffer]);
+  }, [buffer, fontSize]);
 
   useEffect(() => {
     renditionRef.current?.themes.select(theme);
@@ -61,14 +85,16 @@ export function EpubViewer({ buffer, onReady }: EpubViewerProps) {
   }, [fontSize]);
 
   return (
-    <div
-      ref={viewRef}
-      style={{
-        height: "72.5vh",
-        width: "100%",
-        maxWidth: "80vw",
-        overflowX: "hidden",
-      }}
-    />
+    <>
+      <div
+        ref={viewRef}
+        style={{
+          height: "80vh",
+          width: "100%",
+          maxWidth: "80vw",
+          overflowX: "hidden",
+        }}
+      />
+    </>
   );
 }

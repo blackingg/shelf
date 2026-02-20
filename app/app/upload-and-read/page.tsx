@@ -41,6 +41,7 @@ export default function UploadAndReadPage() {
   const handleNextPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.next();
+      setCurrentPage((prev) => prev + 1);
     } else {
       if (currentPage < totalPages) {
         setCurrentPage((prev) => prev + 1);
@@ -52,6 +53,7 @@ export default function UploadAndReadPage() {
   const handlePrevPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.prev();
+      setCurrentPage((prev) => prev - 1);
     } else {
       if (currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
@@ -64,6 +66,7 @@ export default function UploadAndReadPage() {
     (page: number) => {
       if (fileType === "epub") {
         epubControlsRef.current?.goTo?.(page);
+        setCurrentPage(page);
       } else {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -132,7 +135,7 @@ export default function UploadAndReadPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100]">
+    <div className="absolute top-0 left-0 inset-0 z-100">
       <ReaderLayout
         title={fileName || "Untitled"}
         currentPage={currentPage}
@@ -148,6 +151,10 @@ export default function UploadAndReadPage() {
             buffer={buffer}
             onReady={(controls) => {
               epubControlsRef.current = controls;
+            }}
+            onPageDetails={(info) => {
+              setCurrentPage(1);
+              setTotalPages(Number(info.totalPages));
             }}
           />
         ) : (

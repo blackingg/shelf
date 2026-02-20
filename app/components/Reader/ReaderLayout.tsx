@@ -101,7 +101,7 @@ function ReaderLayoutContent({
 
       <div className="flex flex-1 relative">
         <main
-          className={`flex-1 w-full mx-auto px-6 py-24 md:py-32 cursor-text transition-all duration-300 ${contentShrink ? "md:pr-[320px]" : ""}`}
+          className={`flex-1 w-full mx-auto px-6 py-8 md:py-16 cursor-text transition-all duration-300 ${contentShrink ? "md:pr-80" : ""}`}
           onClick={() => setShowControls(!showControls)}
         >
           <div
