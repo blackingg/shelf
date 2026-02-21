@@ -21,7 +21,8 @@ export function ReaderFooter({
   onPrevPage,
   onPageChange,
 }: ReaderFooterProps) {
-  const { currentTheme } = useReader();
+  const { currentTheme, format, epubCurrentPage, setEpubCurrentPage } =
+    useReader();
   const [showPageJump, setShowPageJump] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(currentPage.toString());
   const pageJumpRef = React.useRef<HTMLDivElement>(null);
@@ -88,7 +89,9 @@ export function ReaderFooter({
             <div className="relative">
               <input
                 type="text"
-                value={inputValue}
+                value={
+                  format === "epub" ? epubCurrentPage.toString() : inputValue
+                }
                 onChange={(e) => setInputValue(e.target.value)}
                 onFocus={() => setShowPageJump(true)}
                 onKeyDown={(e) => {

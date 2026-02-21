@@ -56,8 +56,16 @@ function ReaderLayoutContent({
   extraPanels,
   contentShrink = false,
 }: ReaderLayoutProps) {
-  const { theme, setTheme, fontSize, setFontSize, currentTheme, format } =
-    useReader();
+  const {
+    theme,
+    setTheme,
+    fontSize,
+    setFontSize,
+    currentTheme,
+    format,
+    setLoading,
+    loading,
+  } = useReader();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
 

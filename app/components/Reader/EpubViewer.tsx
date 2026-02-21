@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 import Epub, { Book, Location, Rendition } from "epubjs";
 import { epubThemes } from "./readerThemes";
 import { useReader } from "./ReaderContext";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 interface EpubViewerProps {
   buffer: ArrayBuffer;
@@ -11,10 +12,11 @@ interface EpubViewerProps {
     prev: () => void;
     goTo?: (page: number) => void;
   }) => void;
+  current?: number;
   onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
 }
 
-const generateLocations = async (book: Book) => {
+const generateLocations = async (book: Book, fontSize: number) => {
   await book.ready;
   await book.locations.generate(1024);
 };
@@ -23,17 +25,28 @@ export function EpubViewer({
   buffer,
   onReady,
   onPageDetails,
+  current,
 }: EpubViewerProps) {
-  const { theme, fontSize } = useReader();
-  const [isLoading, setLoadStatus] = useState(true);
+  const {
+    theme,
+    fontSize,
+    loading,
+    setLoading,
+    epubCurrentPage,
+    epubTotalPages,
+    setEpubTotalPages,
+    setEpubCurrentPage,
+  } = useReader();
   const viewRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
+  const bookRef = useRef<Book | null>(null);
+  const { addNotification } = useNotifications();
 
   useEffect(() => {
     if (!buffer || buffer.byteLength === 0) return;
 
     const book = Epub(buffer);
-    generateLocations(book);
+    bookRef.current = book;
     if (!viewRef.current) return;
 
     const rendition = book.renderTo(viewRef.current, {
@@ -49,36 +62,62 @@ export function EpubViewer({
     rendition.themes.select(theme);
     rendition.themes.fontSize(`${fontSize}px`);
 
-    Promise.all([generateLocations(book), book.ready]).then(() => {
-      alert("loaded");
-      rendition.display();
-      onReady?.({
-        next: () => rendition.next(),
-        prev: () => rendition.prev(),
-        goTo: (p) => {
-          const cfi = book.locations.cfiFromLocation(p);
-          rendition.display(cfi);
-        },
+    Promise.all([generateLocations(book, fontSize), book.ready])
+      .then(() => {
+        setEpubTotalPages(book.locations.length());
+        return rendition.display();
+      })
+      .then(() => {
+        onReady?.({
+          next: () => {
+            rendition.next();
+          },
+          prev: () => rendition.prev(),
+          goTo: (p) => {
+            const cfi = book.locations.cfiFromLocation(p);
+            rendition.display(cfi);
+            setEpubCurrentPage(p);
+          },
+        });
+        onPageDetails?.({
+          currentPage: epubCurrentPage,
+          totalPages: book.locations.length(),
+        });
+      })
+      .finally(() => {
+        addNotification("success", "Book Loaded Successfully");
+        setLoading(false);
       });
-      onPageDetails?.({
-        currentPage: 1,
-        totalPages: book.locations.length(),
-      });
-    });
 
     rendition.on("relocated", (location: Location) => {
-      const currentPage = book.locations.locationFromCfi(location.start.cfi);
+      const current_page = book.locations.locationFromCfi(location.start.cfi);
+
+      onPageDetails?.({
+        currentPage: Number(current_page),
+        totalPages: book.locations.length(),
+      });
     });
 
     return () => {
       renditionRef.current?.destroy();
       book?.destroy();
     };
-  }, [buffer, fontSize]);
+  }, [buffer]);
 
   useEffect(() => {
     renditionRef.current?.themes.select(theme);
   }, [theme]);
+
+  useEffect(() => {
+    const redmond = async () => {
+      const location = await renditionRef.current?.location.end.percentage;
+      if (!location) return;
+      console.log(Math.round(location * epubTotalPages));
+      setEpubCurrentPage(Math.round(location * epubTotalPages));
+    };
+
+    redmond();
+  }, [renditionRef.current?.location]);
 
   useEffect(() => {
     renditionRef.current?.themes.fontSize(`${fontSize}px`);
@@ -86,15 +125,29 @@ export function EpubViewer({
 
   return (
     <>
+      <p className={`${loading ? "text-4xl text-black" : "hidden"}`}>
+        Loading...
+      </p>
       <div
         ref={viewRef}
         style={{
           height: "80vh",
           width: "100%",
           maxWidth: "80vw",
+          display: !loading ? "block" : "none",
           overflowX: "hidden",
         }}
       />
     </>
   );
 }
+
+/*const rendition = renditionRef.current;
+    const book = bookRef.current;
+    if (!rendition || !book) return;
+
+    const currentLocation = rendition.currentLocation();
+    if (!currentLocation) return;
+
+    const currentCfi = currentLocation.cfi;
+    console.log(currentCfi); */

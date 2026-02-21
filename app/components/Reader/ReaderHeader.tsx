@@ -91,7 +91,6 @@ export function ReaderHeader({
 
         <div className="flex items-center space-x-2">
           {extraActions}
-
           {extraActions && (
             <div className="w-px h-6 bg-gray-300 dark:bg-neutral-800 mx-2" />
           )}

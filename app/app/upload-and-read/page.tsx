@@ -6,6 +6,7 @@ import { PdfViewer } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { FiUploadCloud } from "react-icons/fi";
 import { motion } from "motion/react";
+import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
   const { buffer, updateBuffer } = useContext(FileBufferContext);
@@ -52,8 +53,10 @@ export default function UploadAndReadPage() {
 
   const handlePrevPage = useCallback(() => {
     if (fileType === "epub") {
-      epubControlsRef.current?.prev();
-      setCurrentPage((prev) => prev - 1);
+      if (currentPage > 1) {
+        epubControlsRef.current?.prev();
+        setCurrentPage((prev) => prev - 1);
+      }
     } else {
       if (currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
@@ -66,7 +69,6 @@ export default function UploadAndReadPage() {
     (page: number) => {
       if (fileType === "epub") {
         epubControlsRef.current?.goTo?.(page);
-        setCurrentPage(page);
       } else {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -75,26 +77,37 @@ export default function UploadAndReadPage() {
     [fileType],
   );
 
-  const uploadButton = (
-    <>
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all shadow-lg shadow-emerald-600/20"
-      >
-        <FiUploadCloud className="w-5 h-5" />
-        <span className="hidden sm:inline">
-          {fileName ? "Change File" : "Upload"}
-        </span>
-      </button>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".epub, .pdf"
-        className="hidden"
-        onChange={handleFileUpload}
-      />
-    </>
-  );
+  function UploadButton() {
+    const { setLoading, setEpubCurrentPage, setEpubTotalPages } = useReader();
+    return (
+      <>
+        <button
+          onClick={() => {
+            fileInputRef.current?.click();
+            setEpubCurrentPage(1);
+            setEpubTotalPages(1);
+            setLoading(true);
+          }}
+          className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all shadow-lg shadow-emerald-600/20"
+        >
+          <FiUploadCloud className="w-5 h-5" />
+          <span className="hidden sm:inline">
+            {fileName ? "Change File" : "Upload"}
+          </span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".epub, .pdf"
+          className="hidden"
+          onChange={(e) => {
+            handleFileUpload(e);
+            setLoading(false);
+          }}
+        />
+      </>
+    );
+  }
 
   if (!fileType) {
     return (
@@ -143,7 +156,7 @@ export default function UploadAndReadPage() {
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
         onPageChange={handlePageChange}
-        extraHeaderActions={uploadButton}
+        extraHeaderActions={<UploadButton />}
         format={fileType as "pdf" | "epub"}
       >
         {fileType === "epub" ? (
@@ -153,7 +166,6 @@ export default function UploadAndReadPage() {
               epubControlsRef.current = controls;
             }}
             onPageDetails={(info) => {
-              setCurrentPage(1);
               setTotalPages(Number(info.totalPages));
             }}
           />
