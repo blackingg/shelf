@@ -12,8 +12,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isAuth = pathname?.startsWith("/app/auth");
   const isOnboarding = pathname?.startsWith("/app/onboarding");
   const isReader = pathname?.includes("/read");
+  const isLocalReader = pathname.includes("/upload-and-read");
 
-  if (isAuth || isOnboarding || isReader) {
+  if (isAuth || isOnboarding || isReader || isLocalReader) {
     return <>{children}</>;
   }
 

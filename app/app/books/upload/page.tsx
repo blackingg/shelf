@@ -41,7 +41,7 @@ async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
     const page = await getPdfPage(pdf, 1);
 
     const canvas = document.createElement("canvas");
-    await renderPdfPage(page, canvas);
+    await renderPdfPage(page, canvas, 1.2);
 
     return new Promise((resolve) => {
       canvas.toBlob(

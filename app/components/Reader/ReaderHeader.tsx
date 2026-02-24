@@ -73,7 +73,9 @@ export function ReaderHeader({
             <FiArrowLeft className="w-6 h-6" />
           </button>
           <div className="block">
-            <h1 className={`font-bold text-lg ${currentTheme.text}`}>
+            <h1
+              className={`font-bold text-lg ${currentTheme.text} truncate md:max-w-[600px] max-w-[25vw]`}
+            >
               {titlePrefix && (
                 <span className="opacity-70 font-normal">{titlePrefix} </span>
               )}
@@ -89,16 +91,12 @@ export function ReaderHeader({
 
         <div className="flex items-center space-x-2">
           {extraActions}
-
           {extraActions && (
             <div className="w-px h-6 bg-gray-300 dark:bg-neutral-800 mx-2" />
           )}
 
           {format === "epub" && (
-            <div
-              className="relative"
-              ref={settingsRef}
-            >
+            <div className="relative" ref={settingsRef}>
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${currentTheme.text}`}
@@ -112,7 +110,7 @@ export function ReaderHeader({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-[70] ${currentTheme.ui}`}
+                    className={`absolute right-0 mt-2 w-72 rounded-2xl shadow-xl border p-4 z-70 ${currentTheme.ui}`}
                   >
                     <div className="space-y-4">
                       <div>
