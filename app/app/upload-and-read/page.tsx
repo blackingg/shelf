@@ -69,6 +69,7 @@ export default function UploadAndReadPage() {
     (page: number) => {
       if (fileType === "epub") {
         epubControlsRef.current?.goTo?.(page);
+        setCurrentPage(page);
       } else {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: "smooth" });

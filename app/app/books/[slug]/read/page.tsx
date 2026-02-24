@@ -6,6 +6,7 @@ import { PdfViewer } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
 import { LoadingScreen } from "@/app/components/LoadingScreen";
+import { fileTypeFromBuffer } from "file-type";
 
 export default function ReaderPage() {
   const params = useParams();
@@ -33,23 +34,13 @@ export default function ReaderPage() {
           const response = await fetch(data.fileUrl);
           const contentType = response.headers.get("content-type");
           const buf = await response.arrayBuffer();
-
           setBuffer(buf);
-
-          if (
-            data.fileType?.includes("pdf") ||
-            contentType?.includes("pdf") ||
-            data.fileUrl.toLowerCase().endsWith(".pdf")
-          ) {
+          const derivedFileType = await fileTypeFromBuffer(buf);
+          console.log(derivedFileType?.ext);
+          if (derivedFileType?.ext === "pdf") {
             setFileType("pdf");
-          } else if (
-            data.fileType?.includes("epub") ||
-            contentType?.includes("epub") ||
-            data.fileUrl.toLowerCase().endsWith(".epub")
-          ) {
-            setFileType("epub");
           } else {
-            setFileType("pdf");
+            setFileType("epub");
           }
         } catch (error) {
           console.error("Failed to fetch book file:", error);
@@ -67,6 +58,7 @@ export default function ReaderPage() {
   const handleNextPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.next();
+      setCurrentPage((prev) => prev + 1);
     } else {
       if (currentPage < totalPages) {
         setCurrentPage((prev) => prev + 1);
@@ -78,6 +70,7 @@ export default function ReaderPage() {
   const handlePrevPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.prev();
+      setCurrentPage((prev) => prev - 1);
     } else {
       if (currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
@@ -90,6 +83,7 @@ export default function ReaderPage() {
     (page: number) => {
       if (fileType === "epub") {
         epubControlsRef.current?.goTo?.(page);
+        setCurrentPage(page);
       } else {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -114,7 +108,7 @@ export default function ReaderPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100]">
+    <div className="absolute top-0 left-0 inset-0 z-100">
       <ReaderLayout
         title={data.title}
         subtitle={data.author}
@@ -131,6 +125,7 @@ export default function ReaderPage() {
             onReady={(controls) => {
               epubControlsRef.current = controls;
             }}
+            onPageDetails={(info) => setTotalPages(Number(info.totalPages))}
           />
         ) : (
           <PdfViewer

@@ -6,13 +6,12 @@ import { useReader } from "./ReaderContext";
 import { useNotifications } from "@/app/context/NotificationContext";
 
 interface EpubViewerProps {
-  buffer: ArrayBuffer;
+  buffer?: ArrayBuffer;
   onReady?: (controls: {
     next: () => void;
     prev: () => void;
     goTo?: (page: number) => void;
   }) => void;
-  current?: number;
   onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
 }
 
@@ -31,7 +30,6 @@ export function EpubViewer({
     fontSize,
     loading,
     setLoading,
-    epubCurrentPage,
     epubTotalPages,
     setEpubTotalPages,
     setEpubCurrentPage,
@@ -43,7 +41,6 @@ export function EpubViewer({
 
   useEffect(() => {
     if (!buffer || buffer.byteLength === 0) return;
-
     const book = Epub(buffer);
     bookRef.current = book;
     if (!viewRef.current) return;
@@ -75,16 +72,15 @@ export function EpubViewer({
           goTo: (p) => {
             const cfi = book.locations.cfiFromLocation(p);
             rendition.display(cfi);
-            setEpubCurrentPage(p);
           },
         });
         onPageDetails?.({
-          currentPage: epubCurrentPage,
           totalPages: book.locations.length(),
         });
       })
       .finally(() => {
-        addNotification("success", "Book Loaded Successfully");
+        addNotification("success", "Book contents loaded sucessfully");
+        alert("Book contents loaded successfully");
         setLoading(false);
       });
 
@@ -109,7 +105,7 @@ export function EpubViewer({
 
   useEffect(() => {
     const getPercentageLocation = async () => {
-      const location = await renditionRef.current?.location.end.percentage;
+      const location = await renditionRef.current?.location.start.percentage;
       if (!location) return;
       setEpubCurrentPage(Math.round(location * epubTotalPages));
     };
