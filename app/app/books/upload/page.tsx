@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   FiUploadCloud,
   FiAlertCircle,
-  FiFile,
   FiCheck,
   FiArrowRight,
   FiArrowLeft,
+  FiImage,
 } from "react-icons/fi";
 import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
@@ -23,12 +23,57 @@ import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { loadPdf } from "../../../components/Reader";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface PDFJSInfo {
   Title: string;
   Author: string;
+}
+
+async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+  try {
+    const { parsePdf, getPdfPage } =
+      await import("@/app/components/Reader/processingFunctions");
+    const { renderPdfPage } =
+      await import("@/app/components/Reader/pdfRenderer");
+
+    const { pdf } = await parsePdf(fileBuffer.slice(0));
+    const page = await getPdfPage(pdf, 1);
+
+    const canvas = document.createElement("canvas");
+    await renderPdfPage(page, canvas);
+
+    return new Promise((resolve) => {
+      canvas.toBlob(
+        (blob) =>
+          resolve(
+            blob ? new File([blob], "cover.jpg", { type: "image/jpeg" }) : null,
+          ),
+        "image/jpeg",
+        0.85,
+      );
+    });
+  } catch (err) {
+    console.error("PDF cover extraction error:", err);
+    return null;
+  }
+}
+
+async function extractEpubCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+  try {
+    const bookDetails = Epub(fileBuffer.slice(0) as any);
+    await bookDetails.ready;
+
+    const coverUrl = await bookDetails.coverUrl();
+    if (!coverUrl) return null;
+
+    const response = await fetch(coverUrl);
+    const blob = await response.blob();
+    return new File([blob], "cover.jpg", { type: blob.type || "image/jpeg" });
+  } catch (err) {
+    console.error("EPUB cover extraction error:", err);
+    return null;
+  }
 }
 
 export default function UploadPage() {
@@ -38,6 +83,7 @@ export default function UploadPage() {
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
+  const [isExtractingMetadata, setIsExtractingMetadata] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -59,6 +105,7 @@ export default function UploadPage() {
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
   const [dragActiveBook, setDragActiveBook] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -77,13 +124,23 @@ export default function UploadPage() {
   const bookInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (!coverFile) {
+      setCoverPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(coverFile);
+    setCoverPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [coverFile]);
+
   const customSelectStyles = (isDark: boolean) => ({
     control: (base: any, state: any) => ({
       ...base,
       borderRadius: "0px",
       padding: "0.25rem 0.5rem",
       borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
-      backgroundColor: "transparent", // Minimalist flat look
+      backgroundColor: "transparent",
       boxShadow: "none",
       "&:hover": { borderColor: "#10b981" },
     }),
@@ -113,9 +170,7 @@ export default function UploadPage() {
       letterSpacing: "0.05em",
       cursor: "pointer",
       padding: "10px 15px",
-      "&:active": {
-        backgroundColor: "#10b981",
-      },
+      "&:active": { backgroundColor: "#10b981" },
     }),
     singleValue: (base: any) => ({
       ...base,
@@ -143,10 +198,8 @@ export default function UploadPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActiveBook(false);
-
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      validateAndSetBookFile(file);
+      validateAndSetBookFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -156,12 +209,13 @@ export default function UploadPage() {
       return;
     }
     setBookFile(file);
+    setIsExtractingMetadata(true);
 
-    // Metadata extraction
+    const fileBuffer = await file.arrayBuffer();
+
     if (file.type.includes("epub")) {
       try {
-        const fileToBuffer = await file.arrayBuffer();
-        const bookDetails = Epub(fileToBuffer);
+        const bookDetails = Epub(fileBuffer.slice(0) as any);
         const metadata = await bookDetails.loaded.metadata;
         if (metadata) {
           setFormData((prev) => ({
@@ -174,14 +228,20 @@ export default function UploadPage() {
           }));
         }
       } catch (err) {
-        console.error("Metdata extraction error (epub):", err);
+        console.error("EPUB metadata extraction error:", err);
+      }
+
+      const cover = await extractEpubCover(fileBuffer);
+      if (cover) {
+        setCoverFile(cover);
       }
     } else if (file.type.includes("pdf")) {
       try {
-        const fileBuffer = await file.arrayBuffer();
-        const actualPDF = await loadPdf(fileBuffer);
-        setFormData((prev) => ({ ...prev, pages: String(actualPDF.numPages) }));
-        const metadata = await actualPDF.getMetadata().catch(() => null);
+        const { parsePdf } =
+          await import("@/app/components/Reader/processingFunctions");
+        const { pdf, numPages } = await parsePdf(fileBuffer.slice(0));
+        setFormData((prev) => ({ ...prev, pages: String(numPages) }));
+        const metadata = await pdf.getMetadata().catch(() => null);
         const info = metadata?.info as PDFJSInfo;
         if (info) {
           setFormData((prev) => ({
@@ -198,9 +258,16 @@ export default function UploadPage() {
           }));
         }
       } catch (err) {
-        console.error("Metadata extraction error (pdf):", err);
+        console.error("PDF metadata extraction error:", err);
+      }
+
+      const cover = await extractPdfCover(fileBuffer);
+      if (cover) {
+        setCoverFile(cover);
       }
     }
+
+    setIsExtractingMetadata(false);
   };
 
   const handleBookFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -222,10 +289,14 @@ export default function UploadPage() {
 
   const handleStep1Submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bookFile || !coverFile) {
+    if (!bookFile) {
+      addNotification("error", "Please provide a document file.");
+      return;
+    }
+    if (!coverFile) {
       addNotification(
         "error",
-        "Please provide both a document file and a cover image.",
+        "Could not extract a cover from the file. Please upload one manually.",
       );
       return;
     }
@@ -273,7 +344,6 @@ export default function UploadPage() {
               .map((t) => t.trim())
               .filter(Boolean)
           : [],
-
         title: formData.title,
         author: formData.author,
         description: formData.description,
@@ -319,33 +389,36 @@ export default function UploadPage() {
           </div>
           <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
             {step === 1
-              ? "Start by uploading your document and basic information. We'll automatically try to extract metadata to save you time."
+              ? "Upload your document — we'll automatically extract the title, author, and cover image from the file."
               : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
           </p>
         </div>
 
         <div className="flex items-center gap-4 mb-12">
-          <div
-            className={`flex items-center gap-2 px-4 py-2 border ${step === 1 ? "border-emerald-500 text-emerald-600" : "border-gray-200 dark:border-neutral-800 text-gray-400"} transition-all duration-300`}
-          >
-            <span className="text-xs font-bold uppercase tracking-widest">
-              01
-            </span>
-            <span className="text-xs font-medium border-l border-current pl-2">
-              Files & Essentials
-            </span>
-          </div>
-          <div className="h-px w-8 bg-gray-200 dark:bg-neutral-800"></div>
-          <div
-            className={`flex items-center gap-2 px-4 py-2 border ${step === 2 ? "border-emerald-500 text-emerald-600" : "border-gray-200 dark:border-neutral-800 text-gray-400"} transition-all duration-300`}
-          >
-            <span className="text-xs font-bold uppercase tracking-widest">
-              02
-            </span>
-            <span className="text-xs font-medium border-l border-current pl-2">
-              Details & Polish
-            </span>
-          </div>
+          {[
+            { n: "01", label: "Files & Essentials" },
+            { n: "02", label: "Details & Polish" },
+          ].map(({ n, label }, i) => (
+            <React.Fragment key={n}>
+              {i > 0 && (
+                <div className="h-px w-8 bg-gray-200 dark:bg-neutral-800" />
+              )}
+              <div
+                className={`flex items-center gap-2 px-4 py-2 border ${
+                  step === i + 1
+                    ? "border-emerald-500 text-emerald-600"
+                    : "border-gray-200 dark:border-neutral-800 text-gray-400"
+                } transition-all duration-300`}
+              >
+                <span className="text-xs font-bold uppercase tracking-widest">
+                  {n}
+                </span>
+                <span className="text-xs font-medium border-l border-current pl-2">
+                  {label}
+                </span>
+              </div>
+            </React.Fragment>
+          ))}
         </div>
 
         <AnimatePresence mode="wait">
@@ -380,7 +453,14 @@ export default function UploadPage() {
                           : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
                       }`}
                     >
-                      {bookFile ? (
+                      {isExtractingMetadata ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                            Extracting metadata…
+                          </p>
+                        </div>
+                      ) : bookFile ? (
                         <div className="flex items-center gap-4 px-6 text-center">
                           <FiCheck className="text-emerald-500 text-xl" />
                           <div className="text-left">
@@ -404,7 +484,18 @@ export default function UploadPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <Label>Cover Image</Label>
+                    <div className="flex items-center justify-between">
+                      <Label>Cover Image</Label>
+                      {coverFile && (
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
+                        >
+                          Replace
+                        </button>
+                      )}
+                    </div>
                     <input
                       ref={coverInputRef}
                       type="file"
@@ -413,19 +504,35 @@ export default function UploadPage() {
                       accept="image/*"
                     />
                     <div
-                      onClick={() => coverInputRef.current?.click()}
-                      className="group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all cursor-pointer overflow-hidden flex items-center justify-center"
+                      onClick={() =>
+                        !coverFile && coverInputRef.current?.click()
+                      }
+                      className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
+                        !coverFile
+                          ? "cursor-pointer hover:border-emerald-500"
+                          : ""
+                      }`}
                     >
-                      {coverFile ? (
+                      {coverPreviewUrl ? (
                         <img
-                          src={URL.createObjectURL(coverFile)}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          src={coverPreviewUrl}
+                          className="w-full h-full object-cover"
                           alt="Cover preview"
                         />
+                      ) : isExtractingMetadata ? (
+                        <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
+                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-[11px] font-medium uppercase tracking-tighter">
+                            Extracting cover…
+                          </p>
+                        </div>
                       ) : (
-                        <div className="text-center">
-                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Pick Cover Image
+                        <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
+                          <FiImage className="text-2xl mb-1" />
+                          <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
+                            {bookFile
+                              ? "No cover found — click to upload"
+                              : "Auto-extracted from file"}
                           </p>
                         </div>
                       )}
@@ -504,16 +611,24 @@ export default function UploadPage() {
                       className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
                     />
                   </div>
+
+                  {bookFile && !isExtractingMetadata && (
+                    <p className="text-[10px] text-gray-400 dark:text-neutral-600 flex items-center gap-1.5 italic">
+                      <FiCheck className="text-emerald-500 shrink-0" />
+                      Fields prefilled from file — edit freely.
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
                 <Button
                   type="submit"
-                  isLoading={isUploading}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest flex items-center gap-2"
+                  isLoading={isUploading || isExtractingMetadata}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 whitespace-nowrap"
                 >
-                  Continue to Refining <FiArrowRight className="text-sm" />
+                  <span>Continue...</span>
+                  <FiArrowRight className="text-sm" />
                 </Button>
               </div>
             </motion.form>
@@ -601,10 +716,11 @@ export default function UploadPage() {
                   </h3>
                   <div className="flex gap-4">
                     <div className="w-20 h-28 bg-gray-200 dark:bg-neutral-800 overflow-hidden border border-gray-100 dark:border-white/10 shrink-0">
-                      {coverFile && (
+                      {coverPreviewUrl && (
                         <img
-                          src={URL.createObjectURL(coverFile)}
+                          src={coverPreviewUrl}
                           className="w-full h-full object-cover"
+                          alt="Cover"
                         />
                       )}
                     </div>
