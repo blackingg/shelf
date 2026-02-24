@@ -16,7 +16,7 @@ interface EpubViewerProps {
   onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
 }
 
-const generateLocations = async (book: Book, fontSize: number) => {
+const generateLocations = async (book: Book) => {
   await book.ready;
   await book.locations.generate(1024);
 };
@@ -25,7 +25,6 @@ export function EpubViewer({
   buffer,
   onReady,
   onPageDetails,
-  current,
 }: EpubViewerProps) {
   const {
     theme,
@@ -62,7 +61,7 @@ export function EpubViewer({
     rendition.themes.select(theme);
     rendition.themes.fontSize(`${fontSize}px`);
 
-    Promise.all([generateLocations(book, fontSize), book.ready])
+    Promise.all([generateLocations(book), book.ready])
       .then(() => {
         setEpubTotalPages(book.locations.length());
         return rendition.display();
@@ -109,14 +108,13 @@ export function EpubViewer({
   }, [theme]);
 
   useEffect(() => {
-    const redmond = async () => {
+    const getPercentageLocation = async () => {
       const location = await renditionRef.current?.location.end.percentage;
       if (!location) return;
-      console.log(Math.round(location * epubTotalPages));
       setEpubCurrentPage(Math.round(location * epubTotalPages));
     };
 
-    redmond();
+    getPercentageLocation();
   }, [renditionRef.current?.location]);
 
   useEffect(() => {

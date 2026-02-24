@@ -76,43 +76,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="manifest"
-          href="/manifest.json"
-        />
-        <link
-          rel="apple-touch-icon"
-          href="/icons/icon-192x192.png"
-        />
-        <meta
-          name="apple-mobile-web-app-capable"
-          content="yes"
-        />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="default"
-        />
-        <meta
-          name="apple-mobile-web-app-title"
-          content="Shelf"
-        />
-        <meta
-          name="mobile-web-app-capable"
-          content="yes"
-        />
-        <link
-          rel="me"
-          href="https://x.com/shelfng_"
-        />
-        <link
-          rel="me"
-          href="https://www.instagram.com/shelf_ng"
-        />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Shelf" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="me" href="https://x.com/shelfng_" />
+        <link rel="me" href="https://www.instagram.com/shelf_ng" />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
@@ -123,12 +96,11 @@ export default function RootLayout({
         >
           <StoreProvider>
             <BufferProvider>
-            <ErrorBoundaryWithNotification>
-              <ProtectedRoute>{children}</ProtectedRoute>
-            </ErrorBoundaryWithNotification>
-          </BufferProvider>
+              <ErrorBoundaryWithNotification>
+                <ProtectedRoute>{children}</ProtectedRoute>
+              </ErrorBoundaryWithNotification>
+            </BufferProvider>
           </StoreProvider>
-
         </ThemeProvider>
       </body>
       <Analytics />
