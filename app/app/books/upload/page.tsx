@@ -1,21 +1,30 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { FiUploadCloud, FiAlertCircle, FiFile } from "react-icons/fi";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  FiUploadCloud,
+  FiAlertCircle,
+  FiFile,
+  FiCheck,
+  FiArrowRight,
+  FiArrowLeft,
+} from "react-icons/fi";
 import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
 import Select from "react-select";
 import { useTheme } from "next-themes";
-
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
 import {
-  useCreateBookMutation,
   useUploadBookMutation,
+  useUpdateBookMutation,
 } from "@/app/store/api/booksApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { loadPdf } from "../../../components/Reader";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PDFJSInfo {
   Title: string;
@@ -27,19 +36,24 @@ export default function UploadPage() {
   const { addNotification } = useNotifications();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState(1);
+  const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
   const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
 
-  const [createBook, { isLoading: isSubmitting }] = useCreateBookMutation();
-
   const [uploadBook, { isLoading: isUploading }] = useUploadBookMutation();
+  const [updateBook, { isLoading: isUpdating }] = useUpdateBookMutation();
+
+  const user = useSelector(selectCurrentUser);
 
   const { data: departments = [], isLoading: isLoadingDepts } =
-    useGetDepartmentsQuery();
+    useGetDepartmentsQuery(
+      user?.school?.id ? { school_id: user.school.id } : undefined,
+    );
   const { data: categoriesData = [], isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
 
@@ -58,16 +72,71 @@ export default function UploadPage() {
     publishedYear: "",
     isbn: "",
     tags: "",
-    coverImage: "",
   });
 
   const bookInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const customSelectStyles = (isDark: boolean) => ({
+    control: (base: any, state: any) => ({
+      ...base,
+      borderRadius: "0px",
+      padding: "0.25rem 0.5rem",
+      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
+      backgroundColor: "transparent", // Minimalist flat look
+      boxShadow: "none",
+      "&:hover": { borderColor: "#10b981" },
+    }),
+    menu: (base: any) => ({
+      ...base,
+      borderRadius: "0px",
+      margin: "0px",
+      overflow: "hidden",
+      boxShadow: "none",
+      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
+      backgroundColor: isDark ? "#121212" : "#ffffff",
+      zIndex: 50,
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#10b981"
+        : state.isFocused
+          ? isDark
+            ? "#1a1a1a"
+            : "#f9fafb"
+          : "transparent",
+      color: state.isSelected ? "white" : isDark ? "#a3a3a3" : "#4b5563",
+      fontSize: "0.80rem",
+      fontWeight: "500",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      cursor: "pointer",
+      padding: "10px 15px",
+      "&:active": {
+        backgroundColor: "#10b981",
+      },
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+      fontSize: "0.875rem",
+    }),
+    input: (base: any) => ({
+      ...base,
+      color: isDark ? "#ffffff" : "#111827",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#525252" : "#9ca3af",
+      fontSize: "0.875rem",
+    }),
+  });
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const active = e.type === "dragenter" || e.type === "dragover";
-    setDragActiveBook(active);
+    setDragActiveBook(e.type === "dragenter" || e.type === "dragover");
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -77,105 +146,121 @@ export default function UploadPage() {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.size > 50 * 1024 * 1024) {
-        addNotification("error", "Book file must be less than 50MB");
-        return;
+      validateAndSetBookFile(file);
+    }
+  };
+
+  const validateAndSetBookFile = async (file: File) => {
+    if (file.size > 50 * 1024 * 1024) {
+      addNotification("error", "Book file must be less than 50MB");
+      return;
+    }
+    setBookFile(file);
+
+    // Metadata extraction
+    if (file.type.includes("epub")) {
+      try {
+        const fileToBuffer = await file.arrayBuffer();
+        const bookDetails = Epub(fileToBuffer);
+        const metadata = await bookDetails.loaded.metadata;
+        if (metadata) {
+          setFormData((prev) => ({
+            ...prev,
+            title: metadata.title || prev.title,
+            author: metadata.creator || prev.author,
+            description: metadata.description || prev.description,
+            publishedYear: metadata.pubdate?.slice(0, 4) || prev.publishedYear,
+            publisher: metadata.publisher || prev.publisher,
+          }));
+        }
+      } catch (err) {
+        console.error("Metdata extraction error (epub):", err);
       }
-      setBookFile(file);
+    } else if (file.type.includes("pdf")) {
+      try {
+        const fileBuffer = await file.arrayBuffer();
+        const actualPDF = await loadPdf(fileBuffer);
+        setFormData((prev) => ({ ...prev, pages: String(actualPDF.numPages) }));
+        const metadata = await actualPDF.getMetadata().catch(() => null);
+        const info = metadata?.info as PDFJSInfo;
+        if (info) {
+          setFormData((prev) => ({
+            ...prev,
+            title: info["Title"] || prev.title,
+            author: info["Author"] || prev.author,
+            publisher:
+              metadata?.metadata?.get("dc:publisher") || prev.publisher,
+            description:
+              metadata?.metadata?.get("dc:description") || prev.description,
+            publishedYear:
+              String(metadata?.metadata?.get("dc:date") || "").slice(0, 4) ||
+              prev.publishedYear,
+          }));
+        }
+      } catch (err) {
+        console.error("Metadata extraction error (pdf):", err);
+      }
+    }
+  };
+
+  const handleBookFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      validateAndSetBookFile(e.target.files[0]);
     }
   };
 
   const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (file.size > 50 * 1024 * 1024) {
-        addNotification("error", "Book file must be less than 50MB");
+      if (file.size > 5 * 1024 * 1024) {
+        addNotification("error", "Cover image must be less than 5MB");
         return;
       }
       setCoverFile(file);
     }
   };
 
-  const handleBookFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 50 * 1024 * 1024) {
-        addNotification("error", "Book file must be less than 50MB");
-        return;
-      }
-      setBookFile(file);
-
-      //Metadata Parser Funct. for .epub files
-      if (file.type.includes("epub")) {
-        const fileToBuffer = await file.arrayBuffer();
-        const bookDetails = Epub(fileToBuffer);
-        const metadata = await bookDetails.loaded.metadata;
-        const { creator, title, description, pubdate, publisher } = metadata;
-        if (metadata) {
-          setFormData({
-            ...formData,
-            title: title,
-            author: creator,
-            description: description,
-            publishedYear: pubdate.slice(0, 4),
-            publisher: publisher,
-          });
-        }
-      }
-
-      //Metadata parse handler for PDF files
-      if (file.type.includes("pdf")) {
-        const fileBuffer = await file.arrayBuffer();
-        const actualPDF = await loadPdf(fileBuffer);
-        setFormData({ ...formData, pages: String(actualPDF.numPages) });
-        const metadata = await actualPDF.getMetadata().catch(() => null);
-        const info = metadata?.info as PDFJSInfo;
-        if (metadata?.metadata == null) {
-          addNotification("error", "Chosen file has no metadata");
-        } else {
-          setFormData({
-            ...formData,
-            publisher: metadata?.metadata.get("dc:publisher") ?? "",
-            title: info["Title"] ?? "",
-            description: metadata?.metadata.get("dc:description") ?? "",
-            author: info["Author"] ?? "",
-            publishedYear:
-              String(metadata?.metadata.get("dc:date")).slice(0, 4) ?? "",
-          });
-        }
-      }
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleStep1Submit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const requiredFields = [
-      { key: "title", label: "Title" },
-      { key: "author", label: "Author" },
-      { key: "description", label: "Description" },
-      { key: "category", label: "Category" },
-      { key: "pages", label: "Number of Pages" },
-      { key: "coverImage", label: "Cover Image URL" },
-    ];
-
-    for (const field of requiredFields) {
-      if (!formData[field.key as keyof typeof formData]) {
-        addNotification("error", `Please provide a ${field.label}.`);
-        return;
-      }
+    if (!bookFile || !coverFile) {
+      addNotification(
+        "error",
+        "Please provide both a document file and a cover image.",
+      );
+      return;
     }
 
     try {
+      const formValues = new FormData();
+      formValues.append("title", formData.title);
+      formValues.append("author", formData.author);
+      formValues.append("description", formData.description);
+      formValues.append("category", formData.category);
+      formValues.append("pages", formData.pages);
+      formValues.append("book_file", bookFile);
+      formValues.append("cover_image", coverFile);
+
+      const result = await uploadBook(formValues).unwrap();
+      setUploadedBookId(result.id);
+      setStep(2);
+      addNotification(
+        "success",
+        "Files uploaded successfully! Now refine the details.",
+      );
+    } catch (error) {
+      addNotification(
+        "error",
+        getErrorMessage(error, "Failed to initiate upload."),
+      );
+    }
+  };
+
+  const handleStep2Submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadedBookId) return;
+
+    try {
       const payload = {
-        title: formData.title,
-        author: formData.author,
-        description: formData.description,
-        category: formData.category,
-        pages: parseInt(formData.pages) || 0,
-        coverImage: formData.coverImage,
         department: formData.department || undefined,
         publisher: formData.publisher || undefined,
         publishedYear: formData.publishedYear
@@ -185,58 +270,24 @@ export default function UploadPage() {
         tags: formData.tags
           ? formData.tags
               .split(",")
-              .map((tag) => tag.trim())
+              .map((t) => t.trim())
               .filter(Boolean)
           : [],
+
+        title: formData.title,
+        author: formData.author,
+        description: formData.description,
+        category: formData.category,
+        pages: parseInt(formData.pages) || 0,
       };
 
-      await createBook(payload).unwrap();
-
-      addNotification(
-        "success",
-        "Book donated successfully! Thank you for your contribution.",
-      );
+      await updateBook({ id: uploadedBookId, data: payload }).unwrap();
+      addNotification("success", "Book details updated and donation complete!");
       router.push("/app/library");
     } catch (error) {
       addNotification(
         "error",
-        getErrorMessage(error, "Failed to donate book."),
-      );
-    }
-  };
-
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    let publishedYear = Number(formData.publishedYear);
-    let pages = Number(formData.pages);
-
-    try {
-      const formValues = new FormData();
-      if (bookFile && coverFile) {
-        formValues.append("title", formData.title);
-        formValues.append("author", formData.author);
-        formValues.append("description", formData.description);
-        formValues.append("cover_image", coverFile);
-        formValues.append("book_file", bookFile);
-        formValues.append("category", formData.category);
-        formValues.append("pages", pages.toString());
-        formValues.append("department", formData.description);
-        formValues.append("isbn", formData.isbn);
-        formValues.append("publisher", formData.publisher);
-        formValues.append("published_year", publishedYear.toString());
-        formValues.append("tags", formData.tags);
-      }
-      await uploadBook(formValues).unwrap();
-      addNotification(
-        "success",
-        "Book donated successfully! Thank you for your contribution.",
-      );
-      router.push("/app/library");
-    } catch (error) {
-      console.log(error);
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to donate book."),
+        getErrorMessage(error, "Failed to update book details."),
       );
     }
   };
@@ -245,347 +296,367 @@ export default function UploadPage() {
     value: dept.slug,
     label: dept.name,
   }));
-
   const categoryOptions = categoriesData.map((cat) => ({
     value: cat.name,
     label: cat.name,
   }));
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[10px] uppercase font-medium tracking-widest text-gray-500 dark:text-neutral-400 ml-1 mb-2 block">
+    <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
       {children}
     </label>
   );
 
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 overflow-y-auto">
-      <main className="p-6 md:p-12 max-w-5xl mx-auto w-full">
-        <div className="mb-12">
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-2 tracking-tight">
-            Donate Resource
-          </h1>
-          <p className="text-gray-500 dark:text-neutral-500 text-sm">
-            Share academic materials with the community. Contributors help build
-            a collectively owned digital library.
+    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+      <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-1 bg-emerald-500"></div>
+            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+              {step === 1 ? "Upload Resource" : "Refine Metadata"}
+            </h1>
+          </div>
+          <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
+            {step === 1
+              ? "Start by uploading your document and basic information. We'll automatically try to extract metadata to save you time."
+              : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
           </p>
         </div>
 
-        <form onSubmit={handleUpload} className="space-y-12 pb-20">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center mb-1">
-                <Label>Document File</Label>
-                <span className="text-[10px] font-medium uppercase text-gray-400 dark:text-neutral-500 tracking-tight">
-                  Optional (PDF, EPUB)
-                </span>
-              </div>
+        <div className="flex items-center gap-4 mb-12">
+          <div
+            className={`flex items-center gap-2 px-4 py-2 border ${step === 1 ? "border-emerald-500 text-emerald-600" : "border-gray-200 dark:border-neutral-800 text-gray-400"} transition-all duration-300`}
+          >
+            <span className="text-xs font-bold uppercase tracking-widest">
+              01
+            </span>
+            <span className="text-xs font-medium border-l border-current pl-2">
+              Files & Essentials
+            </span>
+          </div>
+          <div className="h-px w-8 bg-gray-200 dark:bg-neutral-800"></div>
+          <div
+            className={`flex items-center gap-2 px-4 py-2 border ${step === 2 ? "border-emerald-500 text-emerald-600" : "border-gray-200 dark:border-neutral-800 text-gray-400"} transition-all duration-300`}
+          >
+            <span className="text-xs font-bold uppercase tracking-widest">
+              02
+            </span>
+            <span className="text-xs font-medium border-l border-current pl-2">
+              Details & Polish
+            </span>
+          </div>
+        </div>
 
-              <input
-                name="book_file"
-                ref={bookInputRef}
-                type="file"
-                className="hidden"
-                onChange={handleBookFileChange}
-                accept=".pdf,.epub"
-              />
-
-              <div
-                onDragEnter={(e) => handleDrag(e)}
-                onDragOver={(e) => handleDrag(e)}
-                onDragLeave={(e) => handleDrag(e)}
-                onDrop={(e) => handleDrop(e)}
-                onClick={() => bookInputRef.current?.click()}
-                className={`border border-dashed rounded-md md:p-4 p-2 flex flex-col items-center justify-center transition-all cursor-pointer min-h-40 relative ${
-                  dragActiveBook
-                    ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10"
-                    : bookFile
-                      ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/5"
-                      : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500 dark:hover:border-emerald-500"
-                }`}
-              >
-                {bookFile ? (
-                  <div className="flex flex-row items-center w-[90%]">
-                    <div className="flex flex-col justify-center">
-                      <FiFile
-                        className={`text-[3.25rem] p-2 ${bookFile.type.includes("pdf") ? "fill-red-600" : "fill-blue-600"}`}
-                      />
-                      <p className="uppercase text-xl text-center">
-                        {bookFile.type.includes("pdf") ? "pdf" : "epub"}
-                      </p>
-                    </div>
-                    <div className="flex flex-col flex-2 w-4/5 justify-center items-center">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white block truncate w-4/5 px-4 mb-1">
-                        {bookFile.name}
-                      </span>
-                      <span className="text-[10px] text-gray-400">
-                        {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setBookFile(null);
-                        }}
-                        className="mt-4 text-[10px] font-medium uppercase text-red-500 dark:text-red-400 hover:text-red-600 transition-colors"
-                      >
-                        Remove File
-                      </button>
+        <AnimatePresence mode="wait">
+          {step === 1 ? (
+            <motion.form
+              key="step1"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              onSubmit={handleStep1Submit}
+              className="space-y-12"
+            >
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <Label>Document File (.pdf, .epub)</Label>
+                    <input
+                      ref={bookInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={handleBookFileChange}
+                      accept=".pdf,.epub"
+                    />
+                    <div
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                      onClick={() => bookInputRef.current?.click()}
+                      className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        dragActiveBook
+                          ? "border-emerald-500 bg-emerald-50/20"
+                          : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                      }`}
+                    >
+                      {bookFile ? (
+                        <div className="flex items-center gap-4 px-6 text-center">
+                          <FiCheck className="text-emerald-500 text-xl" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                              {bookFile.name}
+                            </p>
+                            <p className="text-[10px] text-gray-400 uppercase">
+                              {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
+                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                            Click or Drag File
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <>
-                    <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-3" />
-                    <span className="text-xs font-medium text-gray-500 dark:text-neutral-500">
-                      Drop document or click to upload
-                    </span>
-                  </>
-                )}
+
+                  <div className="space-y-4">
+                    <Label>Cover Image</Label>
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={handleCoverFileChange}
+                      accept="image/*"
+                    />
+                    <div
+                      onClick={() => coverInputRef.current?.click()}
+                      className="group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all cursor-pointer overflow-hidden flex items-center justify-center"
+                    >
+                      {coverFile ? (
+                        <img
+                          src={URL.createObjectURL(coverFile)}
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          alt="Cover preview"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                            Pick Cover Image
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-1.5">
+                    <Label>Title</Label>
+                    <input
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      placeholder="Resource Title"
+                      required
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Author</Label>
+                    <input
+                      value={formData.author}
+                      onChange={(e) =>
+                        setFormData({ ...formData, author: e.target.value })
+                      }
+                      placeholder="Author Name"
+                      required
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Category</Label>
+                      <Select
+                        options={categoryOptions}
+                        isLoading={isLoadingCategories}
+                        placeholder="Select..."
+                        onChange={(opt: any) =>
+                          setFormData({
+                            ...formData,
+                            category: opt?.value || "",
+                          })
+                        }
+                        styles={customSelectStyles(isDark)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Pages</Label>
+                      <input
+                        type="number"
+                        value={formData.pages}
+                        onChange={(e) =>
+                          setFormData({ ...formData, pages: e.target.value })
+                        }
+                        placeholder="0"
+                        required
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Short Description</Label>
+                    <textarea
+                      rows={3}
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      placeholder="Brief summary..."
+                      required
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label>Cover Image URL</Label>
-              <input
-                name="coverImage"
-                value={formData.coverImage}
-                onChange={(e) =>
-                  setFormData({ ...formData, coverImage: e.target.value })
-                }
-                placeholder="https://example.com/image.jpg"
-                required
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-              <input
-                type="file"
-                name="cover_image"
-                id="cover_image"
-                required
-                onChange={handleCoverFileChange}
-              />
-              <p className="text-[10px] text-gray-400 dark:text-neutral-500 mt-1 italic">
-                Pro tip: Use a direct link to an image (ArtStation, Cloudinary,
-                etc.)
-              </p>
-            </div>
-          </div>
+              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+                <Button
+                  type="submit"
+                  isLoading={isUploading}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest flex items-center gap-2"
+                >
+                  Continue to Refining <FiArrowRight className="text-sm" />
+                </Button>
+              </div>
+            </motion.form>
+          ) : (
+            <motion.form
+              key="step2"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              onSubmit={handleStep2Submit}
+              className="space-y-12"
+            >
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <div className="space-y-1.5">
+                    <Label>Department</Label>
+                    <Select
+                      options={departmentOptions}
+                      isLoading={isLoadingDepts}
+                      placeholder="Academic Department"
+                      onChange={(opt: any) =>
+                        setFormData({
+                          ...formData,
+                          department: opt?.label || "",
+                        })
+                      }
+                      styles={customSelectStyles(isDark)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Publisher</Label>
+                    <input
+                      value={formData.publisher}
+                      onChange={(e) =>
+                        setFormData({ ...formData, publisher: e.target.value })
+                      }
+                      placeholder="e.g. Pearson, O'Reilly"
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Published Year</Label>
+                      <input
+                        type="number"
+                        value={formData.publishedYear}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            publishedYear: e.target.value,
+                          })
+                        }
+                        placeholder="YYYY"
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>ISBN</Label>
+                      <input
+                        value={formData.isbn}
+                        onChange={(e) =>
+                          setFormData({ ...formData, isbn: e.target.value })
+                        }
+                        placeholder="Optional"
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Tags (Comma separated)</Label>
+                    <input
+                      value={formData.tags}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tags: e.target.value })
+                      }
+                      placeholder="e.g. engineering, study guide, exam"
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 border-t border-gray-100 dark:border-neutral-800 pt-12">
-            <div className="space-y-6 md:col-span-2">
-              <h2 className="text-xs font-medium uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
-                Core Metadata
-              </h2>
-            </div>
+                <div className="p-6 border border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-white/5 space-y-4">
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
+                    File Preview
+                  </h3>
+                  <div className="flex gap-4">
+                    <div className="w-20 h-28 bg-gray-200 dark:bg-neutral-800 overflow-hidden border border-gray-100 dark:border-white/10 shrink-0">
+                      {coverFile && (
+                        <img
+                          src={URL.createObjectURL(coverFile)}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                        {formData.title || "Untitled"}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-neutral-500 mb-2">
+                        {formData.author || "Unknown Author"}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] px-1.5 py-0.5 border border-emerald-500/20 text-emerald-600 font-bold uppercase">
+                          {formData.category || "General"}
+                        </span>
+                        <span className="text-[9px] text-gray-400 font-medium uppercase">
+                          {formData.pages || 0} Pages
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-4 mt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center gap-2 text-[10px] text-gray-500 italic">
+                    <FiAlertCircle className="text-xs shrink-0" />
+                    <span>You can still edit core fields here.</span>
+                  </div>
+                </div>
+              </div>
 
-            <div className="space-y-1.5">
-              <Label>Resource Title</Label>
-              <input
-                name="title"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                placeholder="e.g. Organic Chemistry Vol. 1"
-                required
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Author</Label>
-              <input
-                name="author"
-                value={formData.author}
-                onChange={(e) =>
-                  setFormData({ ...formData, author: e.target.value })
-                }
-                placeholder="e.g. Jonathan Clayden"
-                required
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Department</Label>
-              <Select
-                options={departmentOptions}
-                isLoading={isLoadingDepts}
-                placeholder="Select Department"
-                onChange={(opt: any) =>
-                  setFormData({ ...formData, department: opt?.label || "" })
-                }
-                styles={customSelectStyles(isDark)}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Category</Label>
-              <Select
-                options={categoryOptions}
-                isLoading={isLoadingCategories}
-                placeholder="Select Category"
-                onChange={(opt: any) =>
-                  setFormData({ ...formData, category: opt?.value || "" })
-                }
-                styles={customSelectStyles(isDark)}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Number of Pages</Label>
-              <input
-                name="pages"
-                type="number"
-                value={formData.pages}
-                onChange={(e) =>
-                  setFormData({ ...formData, pages: e.target.value })
-                }
-                placeholder="e.g. 450"
-                required
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Published Year</Label>
-              <input
-                name="publishedYear"
-                type="number"
-                value={formData.publishedYear}
-                onChange={(e) =>
-                  setFormData({ ...formData, publishedYear: e.target.value })
-                }
-                placeholder="e.g. 2023"
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5 md:col-span-2">
-              <Label>Description</Label>
-              <textarea
-                rows={4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors resize-none"
-                placeholder="Provide a brief summary of the resource..."
-                required
-              />
-            </div>
-
-            <div className="space-y-6 md:col-span-2 mt-4">
-              <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                Optional Identifiers
-              </h2>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Publisher</Label>
-              <input
-                name="publisher"
-                value={formData.publisher}
-                onChange={(e) =>
-                  setFormData({ ...formData, publisher: e.target.value })
-                }
-                placeholder="e.g. Pearson"
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>ISBN</Label>
-              <input
-                name="isbn"
-                value={formData.isbn}
-                onChange={(e) =>
-                  setFormData({ ...formData, isbn: e.target.value })
-                }
-                placeholder="e.g. 978-3-16-148410-0"
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Tags (Comma separated)</Label>
-              <input
-                name="tags"
-                value={formData.tags}
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
-                }
-                placeholder="e.g. chemistry, organic, science"
-                className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-12 border-t border-gray-100 dark:border-neutral-800">
-            <div className="flex items-center gap-2 text-gray-400 dark:text-neutral-500 text-[10px] font-medium uppercase tracking-tight">
-              <FiAlertCircle className="text-xs" />
-              <span>Review required by community moderators</span>
-            </div>
-            <div className="w-full md:w-64">
-              <Button
-                type="submit"
-                isLoading={isUploading}
-                className="w-full py-4 rounded-md text-sm font-medium uppercase tracking-widest"
-              >
-                Confirm Donation
-              </Button>
-            </div>
-          </div>
-        </form>
+              <div className="flex justify-between pt-8 border-t border-gray-100 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <FiArrowLeft className="text-sm" /> Back to Upload
+                </button>
+                <div className="flex items-center gap-4">
+                  <div className="hidden md:flex items-center gap-2 text-[10px] font-medium uppercase text-gray-400 tracking-tighter mr-4">
+                    <FiAlertCircle /> Final Review
+                  </div>
+                  <Button
+                    type="submit"
+                    isLoading={isUpdating}
+                    className="px-12 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest"
+                  >
+                    Confirm Donation
+                  </Button>
+                </div>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
 }
-
-const customSelectStyles = (isDark: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    borderRadius: "0.375rem",
-    padding: "0.25rem 0.5rem",
-    borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
-    backgroundColor: isDark ? "#171717" : "#ffffff",
-    boxShadow: "none",
-    "&:hover": { borderColor: "#10b981" },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    borderRadius: "0.375rem",
-    overflow: "hidden",
-    boxShadow: isDark
-      ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
-      : "0 4px 6px -1px rgb(0 0 0 / 0.05)",
-    border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
-    backgroundColor: isDark ? "#171717" : "#ffffff",
-    zIndex: 50,
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? "#10b981"
-      : state.isFocused
-        ? isDark
-          ? "#262626"
-          : "#f3f4f6"
-        : "transparent",
-    color: state.isSelected ? "white" : isDark ? "#ffffff" : "#111827",
-    fontSize: "0.875rem",
-    cursor: "pointer",
-    "&:active": {
-      backgroundColor: "#10b981",
-    },
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: isDark ? "#ffffff" : "#111827",
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: isDark ? "#ffffff" : "#111827",
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: isDark ? "#737373" : "#9ca3af",
-  }),
-});
