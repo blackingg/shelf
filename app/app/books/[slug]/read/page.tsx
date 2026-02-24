@@ -1,115 +1,147 @@
 "use client";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { motion } from "motion/react";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
-import {
-  useGetBookBySlugQuery,
-  useGetBooksQuery,
-} from "@/app/store/api/booksApi";
+import { PdfViewer } from "@/app/components/Reader/PdfViewer";
+import { EpubViewer } from "@/app/components/Reader/EpubViewer";
+import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
+import { LoadingScreen } from "@/app/components/LoadingScreen";
 
 export default function ReaderPage() {
   const params = useParams();
   const { slug } = params;
 
-  const [totalPages] = useState(42);
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
+  const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [showControls, setShowControls] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
-  const settingsRef = useRef<HTMLDivElement>(null);
-  const { data, isLoading, isSuccess } = useGetBookBySlugQuery(String(slug));
-  console.log(data);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isFetchingFile, setIsFetchingFile] = useState(false);
 
-  const title = String(slug) || "Untitled";
-  const chapterTitle = "Chapter 1: No One's Crazy";
+  const epubControlsRef = useRef<{
+    next: () => void;
+    prev: () => void;
+    goTo?: (p: number) => void;
+  } | null>(null);
 
-  const nextPage = useCallback(() => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  const { data, isLoading } = useGetBookBySlugQuery(String(slug));
+
+  useEffect(() => {
+    async function fetchFile() {
+      if (data?.fileUrl) {
+        setIsFetchingFile(true);
+        try {
+          const response = await fetch(data.fileUrl);
+          const contentType = response.headers.get("content-type");
+          const buf = await response.arrayBuffer();
+
+          setBuffer(buf);
+
+          if (
+            data.fileType?.includes("pdf") ||
+            contentType?.includes("pdf") ||
+            data.fileUrl.toLowerCase().endsWith(".pdf")
+          ) {
+            setFileType("pdf");
+          } else if (
+            data.fileType?.includes("epub") ||
+            contentType?.includes("epub") ||
+            data.fileUrl.toLowerCase().endsWith(".epub")
+          ) {
+            setFileType("epub");
+          } else {
+            setFileType("pdf");
+          }
+        } catch (error) {
+          console.error("Failed to fetch book file:", error);
+        } finally {
+          setIsFetchingFile(false);
+        }
+      }
     }
-  }, [currentPage, totalPages]);
 
-  const prevPage = useCallback(() => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (data) {
+      fetchFile();
     }
-  }, [currentPage]);
+  }, [data]);
 
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const handleNextPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.next();
+    } else {
+      if (currentPage < totalPages) {
+        setCurrentPage((prev) => prev + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
 
-  const format = data?.fileType?.includes("pdf") ? "pdf" : "epub";
+  const handlePrevPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.prev();
+    } else {
+      if (currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (fileType === "epub") {
+        epubControlsRef.current?.goTo?.(page);
+      } else {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [fileType],
+  );
+
+  if (isLoading || isFetchingFile) {
+    return <LoadingScreen />;
+  }
+
+  if (!data || !buffer) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Failed to load book</h2>
+          <p className="text-gray-500">The book file could not be retrieved.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <ReaderLayout
-      title={title}
-      subtitle="Author Name"
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onNextPage={nextPage}
-      onPrevPage={prevPage}
-      onPageChange={handlePageChange}
-      format={format}
-    >
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="font-serif"
-        style={{ lineHeight: "1.8" }}
+    <div className="fixed inset-0 z-[100]">
+      <ReaderLayout
+        title={data.title}
+        subtitle={data.author}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+        onPageChange={handlePageChange}
+        format={fileType as "pdf" | "epub"}
       >
-        <div className="text-center mb-12">
-          <span className="text-sm font-sans uppercase tracking-widest opacity-60">
-            {chapterTitle}
-          </span>
-          <h2 className="text-4xl font-bold mt-4 mb-8">No One&apos;s Crazy</h2>
-        </div>
-
-        <p className="mb-6">
-          Let me tell you about a problem. It might make you feel better about
-          what you do with your money, and less judgmental about what other
-          people do with theirs.
-        </p>
-        <p className="mb-6">
-          People do some crazy things with money. But no one is crazy.
-        </p>
-        <p className="mb-6">
-          Here&apos;s the thing: People from different generations, raised by
-          different parents who earned different incomes and held different
-          values, in different parts of the world, born into different
-          economies, experiencing different job markets with different
-          incentives and different degrees of luck, learn very different
-          lessons.
-        </p>
-        <p className="mb-6">
-          Everyone has their own unique experience with how the world works. And
-          what you&apos;ve experienced is more compelling than what you learn
-          second-hand. So all of us—you, me, everyone—go through life anchored
-          to a set of views about how money works that vary wildly from person
-          to person. What seems crazy to you might make sense to me.
-        </p>
-        <p className="mb-6">
-          The person who grew up in poverty thinks about risk and reward in ways
-          the child of a wealthy banker cannot fathom if he tried. The person
-          who grew up when inflation was high experienced something the person
-          who grew up with stable prices never had to. The stock broker who lost
-          everything during the Great Depression experienced something the tech
-          worker basking in the glory of the late 1990s can&apos;t imagine. The
-          Australian who hasn&apos;t seen a recession in 30 years has
-          experienced something the Greek worker hasn&apos;t.
-        </p>
-        <p className="mb-6">
-          On and on. The list of experiences is endless. You know stuff about
-          money that I don&apos;t, and vice versa. You go through life with
-          different beliefs, goals, and forecasts, than I do. That&apos;s not
-          because one of us is smarter than the other, or has better
-          information. It&apos;s because we&apos;ve had different lives.
-        </p>
-      </motion.div>
-    </ReaderLayout>
+        {fileType === "epub" ? (
+          <EpubViewer
+            buffer={buffer}
+            onReady={(controls) => {
+              epubControlsRef.current = controls;
+            }}
+          />
+        ) : (
+          <PdfViewer
+            buffer={buffer}
+            page={currentPage}
+            onPageInfo={({ totalPages: tp }) => {
+              setTotalPages(tp);
+            }}
+          />
+        )}
+      </ReaderLayout>
+    </div>
   );
 }
