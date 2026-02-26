@@ -332,12 +332,12 @@ export default function UploadPage() {
 
     try {
       const payload = {
-        department: formData.department || undefined,
-        publisher: formData.publisher || undefined,
+        department: formData.department || "",
+        publisher: formData.publisher || "",
         publishedYear: formData.publishedYear
           ? parseInt(formData.publishedYear)
-          : undefined,
-        isbn: formData.isbn || undefined,
+          : 2000,
+        isbn: formData.isbn || "",
         tags: formData.tags
           ? formData.tags
               .split(",")

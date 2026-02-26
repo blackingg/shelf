@@ -25,15 +25,7 @@ export function EpubViewer({
   onReady,
   onPageDetails,
 }: EpubViewerProps) {
-  const {
-    theme,
-    fontSize,
-    loading,
-    setLoading,
-    epubTotalPages,
-    setEpubTotalPages,
-    setEpubCurrentPage,
-  } = useReader();
+  const { theme, fontSize, loading, setLoading } = useReader();
   const viewRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
   const bookRef = useRef<Book | null>(null);
@@ -60,7 +52,6 @@ export function EpubViewer({
 
     Promise.all([generateLocations(book), book.ready])
       .then(() => {
-        setEpubTotalPages(book.locations.length());
         return rendition.display();
       })
       .then(() => {
@@ -102,16 +93,6 @@ export function EpubViewer({
   useEffect(() => {
     renditionRef.current?.themes.select(theme);
   }, [theme]);
-
-  useEffect(() => {
-    const getPercentageLocation = async () => {
-      const location = await renditionRef.current?.location.start.percentage;
-      if (!location) return;
-      setEpubCurrentPage(Math.round(location * epubTotalPages));
-    };
-
-    getPercentageLocation();
-  }, [renditionRef.current?.location]);
 
   useEffect(() => {
     renditionRef.current?.themes.fontSize(`${fontSize}px`);
