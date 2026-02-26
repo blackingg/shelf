@@ -373,7 +373,7 @@ export default function SettingsProfilePage() {
                 type="submit"
                 isLoading={isUpdating || isCompleting}
                 disabled={!isDirty}
-                className="w-auto px-8"
+                className="w-auto px-8 disabled:cursor-not-allowed"
               >
                 Save Changes
               </Button>
