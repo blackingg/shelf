@@ -13,7 +13,6 @@ import { BookCardProps } from "@/app/types/book";
 import { motion } from "motion/react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useDeleteBookMutation } from "@/app/store/api/booksApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 
 export const BookCard: React.FC<BookCardProps> = ({
@@ -25,11 +24,12 @@ export const BookCard: React.FC<BookCardProps> = ({
   donor,
   onClick,
   className = "",
+  deleteFunct,
 }) => {
   const { addNotification } = useNotifications();
   const [bookmarkBook] = useBookmarkBookMutation();
   const [unbookmarkBook] = useUnbookmarkBookMutation();
-  const [deleteBook] = useDeleteBookMutation();
+
   const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(id || "", {
     skip: !id,
   });
@@ -43,15 +43,6 @@ export const BookCard: React.FC<BookCardProps> = ({
       await unbookmarkBook(id);
     } else {
       await bookmarkBook(id);
-    }
-  };
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!id || !user) return;
-    if (user.username == donor?.username) {
-      await deleteBook(id);
-      addNotification("success", "Document Deleted Successfully");
     }
   };
 
@@ -96,20 +87,6 @@ export const BookCard: React.FC<BookCardProps> = ({
           >
             <FiBookmark
               className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`}
-            />
-          </button>
-        )}
-
-        {isDonor && (
-          <button
-            onClick={handleDelete}
-            disabled={!isDonor}
-            title="Delete Book"
-            className={`absolute top-2 left-12 p-1.5 rounded-md transition-all duration-200 opacity-0 group-hover:opacity-100 hover: bg-red-600 hover:opacity-100"
-            }`}
-          >
-            <FiDelete
-              className={`w-4 h-4 ${isDonor ? "fill-red-400" : ""} hover:fill-red-600 `}
             />
           </button>
         )}

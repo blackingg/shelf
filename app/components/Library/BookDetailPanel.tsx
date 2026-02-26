@@ -10,6 +10,7 @@ import {
   FiCamera,
   FiFileText,
   FiEdit3,
+  FiTrash,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useRef, useEffect } from "react";
@@ -22,6 +23,7 @@ import {
   useGetIsBookBookmarkedQuery,
 } from "@/app/store/api/bookmarksApi";
 import {
+  useDeleteBookMutation,
   useUpdateBookCoverMutation,
   useUpdateBookFileMutation,
 } from "@/app/store/api/booksApi";
@@ -32,6 +34,8 @@ import {
   useGetMyRatingQuery,
   useRateBookMutation,
 } from "@/app/store/api/ratingsApi";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
 
 export const BookDetailPanel: React.FC<{
   book: BookPreview | null;
@@ -47,13 +51,28 @@ export const BookDetailPanel: React.FC<{
   const { data: myRatingData } = useGetMyRatingQuery(book?.id || "", {
     skip: !book?.id,
   });
+  const user = useSelector(selectCurrentUser);
   const [bookmarkBook] = useBookmarkBookMutation();
+  const [deleteBook, { isLoading: isDeleting }] = useDeleteBookMutation();
   const [unbookmarkBook] = useUnbookmarkBookMutation();
   const [updateCover] = useUpdateBookCoverMutation();
   const [updateFile] = useUpdateBookFileMutation();
   const [rateBook] = useRateBookMutation();
   const isBookmarked = bookmarkStatus?.bookmarked;
   const userRating = myRatingData?.rating || 0;
+
+  const handleDelete = async (
+    e: React.MouseEvent,
+    id?: string,
+    donor?: any,
+  ) => {
+    e.stopPropagation();
+    if (!id || !user) return;
+    if (user.username == donor?.username) {
+      await deleteBook(id);
+      addNotification("success", "Document Deleted Successfully");
+    }
+  };
 
   useEffect(() => {
     if (book?.id) {
@@ -270,13 +289,17 @@ export const BookDetailPanel: React.FC<{
                 </button>
               </div>
 
-              <div className="relative">
+              <div
+                className={`relative ${user?.username == book?.donor?.username ? "grid grid-cols-2 gap-x-4" : ""}`}
+              >
                 <button
                   onClick={() => setShowFolderDropdown(!showFolderDropdown)}
                   className="w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
                 >
                   <div className="flex items-center gap-3">
-                    <FiBookmark className="w-4 h-4" />
+                    <FiBookmark
+                      className={`${user?.username == book?.donor?.username ? `w-8 h-8` : `w-4 h-4`}`}
+                    />
                     <span>Add to Folder</span>
                   </div>
                   <FiChevronDown
@@ -290,6 +313,21 @@ export const BookDetailPanel: React.FC<{
                   onClose={() => setShowFolderDropdown(false)}
                   bookId={book?.id || ""}
                 />
+                {user?.username === book?.donor?.username && (
+                  <button
+                    className="w-full bg-emerald-700/50 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center transition-all duration-200 border border-emerald-600/50 gap-x-2"
+                    onClick={(e) => {
+                      handleDelete(e, book?.id, book?.donor);
+                    }}
+                  >
+                    {isDeleting ? (
+                      <div className="w-6 shrink-0 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <FiTrash className="w-8 h-8" />
+                    )}
+                    <span>{isDeleting ? "Deleting..." : "Delete Book"}</span>
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

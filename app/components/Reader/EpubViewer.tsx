@@ -116,13 +116,3 @@ export function EpubViewer({
     </>
   );
 }
-
-/*const rendition = renditionRef.current;
-    const book = bookRef.current;
-    if (!rendition || !book) return;
-
-    const currentLocation = rendition.currentLocation();
-    if (!currentLocation) return;
-
-    const currentCfi = currentLocation.cfi;
-    console.log(currentCfi); */
