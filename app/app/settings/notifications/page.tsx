@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FiBell, FiMail, FiSmartphone } from "react-icons/fi";
+import { Switch } from "@/app/components/Form/Switch";
 
 export default function NotificationsSettingsPage() {
   const [preferences, setPreferences] = useState({
@@ -15,142 +16,91 @@ export default function NotificationsSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
           Notifications
         </h1>
-        <p className="text-gray-500 dark:text-neutral-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Choose what messages you want to receive.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 overflow-hidden">
-        <div className="p-6 md:p-8 space-y-8">
-          <div>
-            <div className="flex items-center space-x-3 mb-6">
-              <FiBell className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Library Activity
-              </h3>
+      <div className="space-y-10">
+        <section>
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="p-2 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-sm">
+              <FiBell className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
-                    Folder Updates
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
-                    Notify me when new documents are added to folders I follow
-                  </div>
-                </div>
-                <button
-                  role="switch"
-                  aria-checked={preferences.emailUpdates}
-                  onClick={() => toggle("emailUpdates")}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.emailUpdates
-                      ? "bg-emerald-500"
-                      : "bg-gray-200 dark:bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.emailUpdates
-                        ? "translate-x-6"
-                        : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
-                    Folder Invites
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
-                    Receive notifications when invited to private folders
-                  </div>
-                </div>
-                <button
-                  role="switch"
-                  aria-checked={preferences.pushMessages}
-                  onClick={() => toggle("pushMessages")}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.pushMessages
-                      ? "bg-emerald-500"
-                      : "bg-gray-200 dark:bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.pushMessages
-                        ? "translate-x-6"
-                        : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
+            <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Library Activity
+            </h3>
           </div>
 
-          {/* <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <FiMail className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Email Digests
-              </h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">Weekly Readings</div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
-                    A weekly summary of trending books in your department
-                  </div>
+          <div className="space-y-0 border border-gray-100 dark:border-white/5 rounded-sm overflow-hidden divide-y divide-gray-50 dark:divide-white/5">
+            <div className="flex items-center justify-between p-6 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+              <div>
+                <div className="font-medium text-gray-900 dark:text-white">
+                  Folder Updates
                 </div>
-                <button
-                  role="switch"
-                  aria-checked={preferences.pushReminders}
-                  onClick={() => toggle("pushReminders")}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.pushReminders ? "bg-emerald-500" : "bg-gray-200 dark:bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.pushReminders ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md">
+                  Notify me when new documents are added to folders I follow
+                </div>
               </div>
+              <Switch
+                id="emailUpdates"
+                checked={preferences.emailUpdates}
+                onChange={() => toggle("emailUpdates")}
+              />
+            </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">Department News</div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
-                     Updates and announcements from your university department
-                  </div>
+            <div className="flex items-center justify-between p-6 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+              <div>
+                <div className="font-medium text-gray-900 dark:text-white">
+                  Folder Invites
                 </div>
-                <button
-                  role="switch"
-                  aria-checked={preferences.emailPromotions}
-                  onClick={() => toggle("emailPromotions")}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 ${
-                    preferences.emailPromotions ? "bg-emerald-500" : "bg-gray-200 dark:bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.emailPromotions ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md">
+                  Receive notifications when invited to private folders
+                </div>
               </div>
+              <Switch
+                id="pushMessages"
+                checked={preferences.pushMessages}
+                onChange={() => toggle("pushMessages")}
+              />
             </div>
-          </div> */}
-        </div>
+          </div>
+        </section>
+
+        {/* <section className="opacity-50 grayscale pointer-events-none">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="p-2 bg-gray-500/10 dark:bg-white/5 rounded-sm">
+              <FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            </div>
+            <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Email Digests
+            </h3>
+          </div>
+
+          <div className="space-y-0 border border-gray-100 dark:border-white/5 rounded-sm overflow-hidden divide-y divide-gray-50 dark:divide-white/5">
+            <div className="flex items-center justify-between p-6">
+              <div>
+                <div className="font-medium text-gray-900 dark:text-white">
+                  Weekly Readings
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  A weekly summary of trending books in your department
+                </div>
+              </div>
+              <Switch
+                id="pushReminders"
+                checked={preferences.pushReminders}
+                onChange={() => toggle("pushReminders")}
+                disabled={true}
+              />
+            </div>
+          </div>
+        </section> */}
       </div>
     </div>
   );

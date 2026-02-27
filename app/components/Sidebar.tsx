@@ -51,7 +51,7 @@ export const Sidebar: React.FC = () => {
     },
     {label: "Viewer", icon: <FiBookOpen />, href:"/app/upload-and-read"}, 
     { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
-    { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
+    // { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
   ];
 
   const bottomItems: SidebarItem[] = [
