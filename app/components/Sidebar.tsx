@@ -85,14 +85,12 @@ export const Sidebar: React.FC = () => {
             className="flex items-center space-x-2"
           >
             <Image
-              width={18}
-              height={18}
-              src="/logo.png"
+              width={120}
+              height={40}
+              src="/logo-stacked-1.png"
+              className="h-auto w-14"
               alt="Shelf Logo"
             />
-            <span className="text-base font-medium text-gray-900 dark:text-white">
-              Shelf
-            </span>
           </Link>
         </div>
 
