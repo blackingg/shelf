@@ -603,12 +603,12 @@ export default function UploadPage() {
                     onChange={(opt: any) =>
                       setFormData({
                         ...formData,
-                        department: opt?.label || "",
+                        department: opt?.value || "",
                       })
                     }
                     value={
                       departmentOptions.find(
-                        (opt) => opt.label === formData.department,
+                        (opt) => opt.value === formData.department,
                       ) || null
                     }
                   />

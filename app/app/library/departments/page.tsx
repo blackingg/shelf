@@ -11,11 +11,17 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-
   const user = useSelector(selectCurrentUser);
+
+  const { data: allDepartments = [], isLoading } = useGetDepartmentsQuery(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
+
   const userDepartment = user?.department?.name || null;
-  const userDepartmentSlug = user?.department?.slug;
-  const { data: allDepartments, isLoading } = useGetDepartmentsQuery();
+  const userDepartmentSlug = allDepartments.find(
+    (d) => d.id === user?.department?.id,
+  )?.slug;
+
   const [viewDepartments, setViewDepartments] = useState(true);
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
@@ -69,7 +75,7 @@ export default function DepartmentsPage() {
             )}
           </AnimatePresence>
 
-          {userDepartment !== null && (
+          {userDepartment !== null && userDepartmentSlug && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
               <UserDepartmentBooks departmentSlug={userDepartmentSlug} />
             </div>
