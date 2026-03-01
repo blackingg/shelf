@@ -3,11 +3,15 @@ export const StepHeader: React.FC<{
   title: string;
   description: string;
 }> = ({ icon, title, description }) => (
-  <div className="text-center mb-8">
-    <div className="inline-flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30 w-14 h-14 rounded-full mb-4">
+  <div className="text-center mb-10">
+    <div className="inline-flex items-center justify-center bg-emerald-50 dark:bg-white/5 w-14 h-14 rounded-sm mb-6 border border-emerald-100 dark:border-white/5">
       {icon}
     </div>
-    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{title}</h2>
-    <p className="text-gray-700 dark:text-neutral-400">{description}</p>
+    <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-2 tracking-tight">
+      {title}
+    </h2>
+    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[280px] mx-auto leading-relaxed">
+      {description}
+    </p>
   </div>
 );

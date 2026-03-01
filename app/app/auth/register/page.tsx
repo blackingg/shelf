@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
@@ -200,33 +201,30 @@ export default function SignupPage() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-white dark:bg-black font-onest">
       <AppHeader
         rightContent={
-          <button
-            onClick={() => router.push("/app/auth/login")}
-            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
+          <Link
+            href="/app/auth/login"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
           >
-            Already have an account? Sign In
-          </button>
+            Sign In
+          </Link>
         }
       />
 
-      <PageContainer>
-        <div className="max-w-lg w-full">
-          <Card>
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center bg-emerald-700 dark:bg-emerald-600 p-3 rounded-lg mb-4">
-                <FiUser className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Create Account
-              </h2>
-              <p className="text-gray-600 dark:text-neutral-400">
-                Join thousands of students discovering great books
-              </p>
-            </div>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+        <div className="w-full max-w-[440px]">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
+              Create Account
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              Join thousands of students and readers
+            </p>
+          </div>
 
+          <Card className="!p-8">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -241,8 +239,8 @@ export default function SignupPage() {
                 value={formData.fullName}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                icon={<FiUser className="w-5 h-5" />}
-                placeholder="Enter your full name"
+                icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                placeholder="John Doe"
                 autoComplete="name"
               />
 
@@ -253,12 +251,12 @@ export default function SignupPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                icon={<FiMail className="w-5 h-5" />}
-                placeholder="Enter your email"
+                icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                placeholder="you@example.com"
                 autoComplete="email"
               />
 
-              <div>
+              <div className="space-y-4">
                 <FormInput
                   label="Password"
                   name="password"
@@ -266,8 +264,8 @@ export default function SignupPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  icon={<FiLock className="w-5 h-5" />}
-                  placeholder="Create a password"
+                  icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                  placeholder="••••••••"
                   autoComplete="new-password"
                   showPasswordToggle={true}
                 />
@@ -281,8 +279,8 @@ export default function SignupPage() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                icon={<FiLock className="w-5 h-5" />}
-                placeholder="Confirm your password"
+                icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                placeholder="••••••••"
                 autoComplete="new-password"
                 showPasswordToggle={true}
               />
@@ -292,18 +290,18 @@ export default function SignupPage() {
                 checked={acceptTerms}
                 onChange={setAcceptTerms}
                 label={
-                  <span>
+                  <span className="text-xs text-gray-500">
                     I agree to the{" "}
                     <Link
                       href="/docs/terms"
-                      className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium hover:underline cursor-pointer"
+                      className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/docs/privacy"
-                      className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium hover:underline cursor-pointer"
+                      className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
                     >
                       Privacy Policy
                     </Link>
@@ -315,35 +313,31 @@ export default function SignupPage() {
                 type="submit"
                 variant="primary"
                 isLoading={isRegisterLoading}
-                icon={<FiArrowRight className="w-4 h-4" />}
+                className="py-4"
               >
                 Create Account
               </Button>
             </form>
 
-            <Divider />
+            <Divider text="or sign up with" />
 
-            <div className="grid grid-cols-1 gap-3">
-              <SocialLoginButton
-                provider="google"
-               onClick={handleGoogleAuth} 
-              />
-            </div>
+            <SocialLoginButton
+              provider="google"
+              onClick={handleGoogleAuth}
+            />
           </Card>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400">
-              Already have an account?{" "}
-              <Link
-                href="/app/auth/login"
-                className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <Link
+              href="/app/auth/login"
+              className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+            >
+              Sign In
+            </Link>
+          </p>
         </div>
-      </PageContainer>
-    </>
+      </div>
+    </div>
   );
 }

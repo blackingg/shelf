@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
@@ -132,154 +134,169 @@ export default function ForgotPassword() {
   const isLastStep = currentStep === "newPassword";
 
   return (
-    <>
-      <AppHeader />
-      <PageContainer>
-        <Card className="w-full max-w-md">
-          {currentStep === "email" && (
-            <>
-              <StepHeader
-                icon={
-                  <FiMail className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
-                }
-                title="Forgot Password?"
-                description="Enter your email address and we'll send you a code to reset your password"
-              />
-              <FormInput
-                label="Email Address"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyPress={(e) =>
-                  e.key === "Enter" && canProceed() && handleNext()
-                }
-                icon={<FiMail className="w-5 h-5" />}
-                placeholder="you@example.com"
-                autoComplete="email"
-              />
-            </>
-          )}
+    <div className="min-h-screen bg-white dark:bg-black font-onest">
+      <AppHeader
+        rightContent={
+          <Link
+            href="/app/auth/login"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
+          >
+            Sign In
+          </Link>
+        }
+      />
 
-          {currentStep === "sent" && (
-            <>
-              <StepHeader
-                icon={
-                  <FiCheckCircle className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
-                }
-                title="Check Your Email"
-                description={`We've sent a 6-digit verification code to ${email}`}
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+        <div className="w-full max-w-[440px]">
+          <div className="mb-10 text-center">
+            <Link href="/" className="inline-block mb-8">
+              <Image
+                src="/logo-stacked-1.png"
+                alt="Shelf"
+                width={120}
+                height={40}
+                className="h-8 w-auto dark:invert"
+                priority
               />
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-4 mb-6">
-                <p className="text-sm text-emerald-800 dark:text-emerald-300 text-center">
-                  Didn&apos;t receive the code? Check your spam folder or click
-                  continue to enter the code
-                </p>
-              </div>
-            </>
-          )}
+            </Link>
+          </div>
 
-          {currentStep === "otp" && (
-            <>
-              <StepHeader
-                icon={
-                  <FiKey className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
-                }
-                title="Enter Verification Code"
-                description="Enter the 6-digit code we sent to your email"
-              />
-              <FormInput
-                label="Verification Code"
-                name="otp"
-                type="text"
-                value={otp}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-                  setOtp(value);
-                }}
-                onKeyPress={(e) =>
-                  e.key === "Enter" && canProceed() && handleNext()
-                }
-                icon={<FiKey className="w-5 h-5" />}
-                placeholder="123456"
-                autoComplete="one-time-code"
-              />
-              <button
-                onClick={handleResendCode}
-                disabled={isLoading}
-                className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Resend code
-              </button>
-            </>
-          )}
-
-          {currentStep === "newPassword" && (
-            <>
-              <StepHeader
-                icon={
-                  <FiLock className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
-                }
-                title="Create New Password"
-                description="Choose a strong password for your account"
-              />
-              <div className="space-y-4">
-                <div>
-                  <FormInput
-                    label="New Password"
-                    name="newPassword"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    icon={<FiLock className="w-5 h-5" />}
-                    placeholder="Enter new password"
-                    autoComplete="new-password"
-                    showPasswordToggle
-                  />
-                  <PasswordStrengthIndicator password={newPassword} />
-                </div>
+          <Card className="!p-8">
+            {currentStep === "email" && (
+              <>
+                <StepHeader
+                  icon={<FiMail className="w-6 h-6 text-emerald-600" />}
+                  title="Forgot Password?"
+                  description="Enter your email to receive a password reset code"
+                />
                 <FormInput
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  icon={<FiLock className="w-5 h-5" />}
-                  placeholder="Confirm new password"
-                  autoComplete="new-password"
-                  showPasswordToggle
+                  icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                  placeholder="you@example.com"
+                  autoComplete="email"
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          <NavigationButtons
-            onBack={handleBack}
-            onNext={handleNext}
-            canGoBack={canGoBack}
-            canProceed={canProceed()}
-            isLastStep={isLastStep}
-            isLoading={isLoading}
-          />
+            {currentStep === "sent" && (
+              <>
+                <StepHeader
+                  icon={<FiCheckCircle className="w-6 h-6 text-emerald-600" />}
+                  title="Check Your Email"
+                  description={`We've sent a 6-digit verification code to ${email}`}
+                />
+                <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/50 rounded-sm p-4 mb-6">
+                  <p className="text-xs text-emerald-800 dark:text-emerald-400 text-center leading-relaxed">
+                    Didn&apos;t receive the code? Check your spam folder or click
+                    continue to enter the code.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {currentStep === "otp" && (
+              <>
+                <StepHeader
+                  icon={<FiKey className="w-6 h-6 text-emerald-600" />}
+                  title="Verification Code"
+                  description="Enter the 6-digit code we sent to your email"
+                />
+                <FormInput
+                  label="Verification Code"
+                  name="otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setOtp(value);
+                  }}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && canProceed() && handleNext()
+                  }
+                  icon={<FiKey className="w-5 h-5 text-gray-400" />}
+                  placeholder="123456"
+                  autoComplete="one-time-code"
+                />
+                <button
+                  onClick={handleResendCode}
+                  disabled={isLoading}
+                  className="text-xs text-emerald-600 hover:text-emerald-700 font-medium mt-4 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Resend code
+                </button>
+              </>
+            )}
+
+            {currentStep === "newPassword" && (
+              <>
+                <StepHeader
+                  icon={<FiLock className="w-6 h-6 text-emerald-600" />}
+                  title="New Password"
+                  description="Create a strong, secure password for your account"
+                />
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <FormInput
+                      label="New Password"
+                      name="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      showPasswordToggle
+                    />
+                    <PasswordStrengthIndicator password={newPassword} />
+                  </div>
+                  <FormInput
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && canProceed() && handleNext()
+                    }
+                    icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    showPasswordToggle
+                  />
+                </div>
+              </>
+            )}
+
+            <NavigationButtons
+              onBack={handleBack}
+              onNext={handleNext}
+              canGoBack={canGoBack}
+              canProceed={canProceed()}
+              isLastStep={isLastStep}
+              isLoading={isLoading}
+            />
+          </Card>
 
           {currentStep === "email" && (
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Remember your password?{" "}
-                <button
-                  onClick={() => router.push("/app/auth/login")}
-                  className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium"
-                >
-                  Sign in
-                </button>
-              </p>
-            </div>
+            <p className="mt-8 text-center text-sm text-gray-500">
+              Remember your password?{" "}
+              <Link
+                href="/app/auth/login"
+                className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+              >
+                Sign In
+              </Link>
+            </p>
           )}
-        </Card>
-      </PageContainer>
-    </>
+        </div>
+      </div>
+    </div>
   );
 }

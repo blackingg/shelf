@@ -8,16 +8,16 @@ export const InterestButton: React.FC<{
 }> = ({ name, icon, isSelected, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 text-sm transition-all cursor-pointer ${
+    className={`flex items-center justify-between px-4 py-2.5 rounded-sm border text-sm font-medium transition-colors cursor-pointer ${
       isSelected
-        ? "border-primary bg-primary/5 text-primary"
-        : "border-gray-200 dark:border-neutral-700 text-gray-800 dark:text-neutral-200 hover:border-gray-300 dark:hover:border-neutral-600"
+        ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400"
+        : "border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:border-gray-200 dark:hover:border-white/10"
     }`}
   >
-    <span className="flex items-center space-x-2">
+    <span className="flex items-center space-x-3">
       {icon}
       <span>{name}</span>
     </span>
-    {isSelected && <FiCheck className="w-4 h-4 text-primary" />}
+    {isSelected && <FiCheck className="w-4 h-4 text-emerald-600" />}
   </button>
 );

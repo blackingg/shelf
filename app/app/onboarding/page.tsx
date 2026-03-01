@@ -1,17 +1,16 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Select from "react-select";
 import { useTheme } from "next-themes";
-import { FiHeart, FiUser, FiBook } from "react-icons/fi";
+import { FiHeart, FiBook, FiBriefcase } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
-import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
 import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
+import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
 import {
   useGetSchoolsQuery,
@@ -220,98 +219,51 @@ export default function Onboarding() {
       .join(" ");
   };
 
-  const customSelectStyles = {
-    control: (base: any, state: any) => ({
-      ...base,
-      borderRadius: "0.75rem",
-      backgroundColor: isDark ? "#171717" : "#ffffff",
-      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
-      boxShadow: "none",
-      padding: "2px",
-      "&:hover": {
-        borderColor: "#10b981",
-      },
-    }),
-    input: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: isDark ? "#737373" : "#9ca3af",
-    }),
-    menu: (base: any) => ({
-      ...base,
-      backgroundColor: isDark ? "#171717" : "#ffffff",
-      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
-      zIndex: 100,
-    }),
-    option: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? "#10b981"
-        : state.isFocused
-          ? isDark
-            ? "#262626"
-            : "#f3f4f6"
-          : "transparent",
-      color: state.isSelected ? "#ffffff" : isDark ? "#ffffff" : "#111827",
-      "&:active": {
-        backgroundColor: "#10b981",
-      },
-    }),
-  };
-
   return (
-    <>
+    <div className="min-h-screen bg-white dark:bg-black font-onest">
       <AppHeader
         rightContent={
-          <p className="text-sm text-gray-800 dark:text-neutral-200">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">
             Step {currentStep + 1} of {steps.length}
           </p>
         }
       />
 
-      <PageContainer>
-        <div className="max-w-lg w-full">
-          <Card>
+      <div className="flex flex-col items-center min-h-[calc(100vh-64px)] px-6 py-12">
+        <div className="w-full max-w-[480px]">
+          <Card className="p-10">
             <StepHeader
               icon={
                 currentStep === 0 ? (
-                  <FiUser className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
+                  <FiBook className="w-6 h-6 text-emerald-600" />
                 ) : currentStep === 1 ? (
-                  <FiBook className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
+                  <FiBriefcase className="w-6 h-6 text-emerald-600" />
                 ) : (
-                  <FiHeart className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
+                  <FiHeart className="w-6 h-6 text-emerald-600" />
                 )
               }
               title={
                 currentStep === 0
-                  ? "Which school do you attend?"
+                  ? "Which school?"
                   : currentStep === 1
-                    ? "What's your department?"
-                    : "What interests you?"
+                    ? "Study field?"
+                    : "Interests"
               }
               description={
                 currentStep === 0
-                  ? "We'll personalize your content based on your school."
+                  ? "Select your current university or institution"
                   : currentStep === 1
-                    ? "Helps us recommend books and resources for your field."
-                    : "Choose between 3 to 10 interests to personalize your experience."
+                    ? "What is your major or area of study?"
+                    : "Pick 3 to 10 topics to personalize your feed"
               }
             />
 
-            {/* Step 1: School */}
-            {currentStep === 0 && (
-              <div className="space-y-4">
-                <label className="text-gray-800 dark:text-neutral-200 font-medium">
-                  Search your school
-                </label>
-                <Select<OptionType, false>
+            <div className="mt-8">
+              {/* Step 1: School */}
+              {currentStep === 0 && (
+                <FormSelect<OptionType, false>
+                  label="Search school"
+                  icon={<FiBook />}
                   options={schoolOptions}
                   isLoading={isLoadingSchools}
                   onInputChange={(val) => setSchoolSearch(val)}
@@ -327,20 +279,15 @@ export default function Onboarding() {
                       (opt) => opt.value === formData.schoolId,
                     ) || null
                   }
-                  placeholder="Start typing school name..."
-                  classNamePrefix="react-select"
-                  styles={customSelectStyles}
+                  placeholder="Enter institution name..."
                 />
-              </div>
-            )}
+              )}
 
-            {/* Step 2: Department */}
-            {currentStep === 1 && (
-              <div className="space-y-4">
-                <label className="text-gray-800 dark:text-neutral-200 font-medium">
-                  Search your department
-                </label>
-                <Select<OptionType, false>
+              {/* Step 2: Department */}
+              {currentStep === 1 && (
+                <FormSelect<OptionType, false>
+                  label="Department"
+                  icon={<FiBriefcase />}
                   options={departmentOptions}
                   isLoading={isLoadingDepartments}
                   onChange={(opt) =>
@@ -351,69 +298,72 @@ export default function Onboarding() {
                       (opt) => opt.value === formData.departmentId,
                     ) || null
                   }
-                  placeholder="Type to search..."
-                  classNamePrefix="react-select"
+                  placeholder="Select your department..."
                   isDisabled={!formData.schoolId}
-                  styles={customSelectStyles}
                 />
-              </div>
-            )}
+              )}
 
-            {/* Step 3: Interests */}
-            {currentStep === 2 && (
-              <div className="space-y-5 max-h-80 overflow-y-auto">
-                {isLoadingInterests ? (
-                  <div className="space-y-6">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i}>
-                        <Skeleton className="h-4 w-32 mb-3" />
-                        <div className="grid grid-cols-2 gap-3">
-                          {[1, 2, 3, 4].map((j) => (
-                            <Skeleton
-                              key={j}
-                              className="h-12 w-full rounded-xl"
-                            />
-                          ))}
+              {/* Step 3: Interests */}
+              {currentStep === 2 && (
+                <div className="space-y-6 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
+                  {isLoadingInterests ? (
+                    <div className="space-y-8">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i}>
+                          <Skeleton className="h-4 w-24 mb-4" />
+                          <div className="grid grid-cols-2 gap-3">
+                            {[1, 2, 3, 4].map((j) => (
+                              <Skeleton
+                                key={j}
+                                className="h-10 w-full rounded-sm"
+                              />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : isInterestError || !interestsResponse ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <p className="text-red-500 mb-3">
-                      Failed to load interests. Please check your connection.
-                    </p>
-                    <button
-                      onClick={() => refetchInterests()}
-                      className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 font-medium underline"
-                    >
-                      Try Again
-                    </button>
-                  </div>
-                ) : (
-                  Object.entries(interestsResponse).map(([category, list]) => (
-                    <div key={category}>
-                      <h3 className="text-sm font-semibold text-gray-800 dark:text-neutral-200 mb-2">
-                        {formatCategory(category)}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        {list.map((interest) => (
-                          <InterestButton
-                            key={interest.id}
-                            name={interest.name}
-                            icon={getIconComponent(interest.icon)}
-                            isSelected={formData.interestIds.includes(
-                              interest.id,
-                            )}
-                            onClick={() => toggleInterest(interest.id)}
-                          />
-                        ))}
-                      </div>
+                      ))}
                     </div>
-                  ))
-                )}
-              </div>
-            )}
+                  ) : isInterestError || !interestsResponse ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-gray-100 dark:border-white/5 rounded-sm">
+                      <p className="text-sm text-gray-500 mb-4">
+                        Failed to load interests
+                      </p>
+                      <button
+                        onClick={() => refetchInterests()}
+                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium font-onest uppercase tracking-widest"
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  ) : (
+                    Object.entries(interestsResponse).map(
+                      ([category, list]) => (
+                        <div
+                          key={category}
+                          className="mb-8 last:mb-0"
+                        >
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
+                            {formatCategory(category)}
+                          </h3>
+                          <div className="grid grid-cols-2 gap-3">
+                            {list.map((interest) => (
+                              <InterestButton
+                                key={interest.id}
+                                name={interest.name}
+                                icon={getIconComponent(interest.icon)}
+                                isSelected={formData.interestIds.includes(
+                                  interest.id,
+                                )}
+                                onClick={() => toggleInterest(interest.id)}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ),
+                    )
+                  )}
+                </div>
+              )}
+            </div>
 
             <NavigationButtons
               onBack={handleBack}
@@ -425,7 +375,7 @@ export default function Onboarding() {
             />
           </Card>
         </div>
-      </PageContainer>
-    </>
+      </div>
+    </div>
   );
 }
