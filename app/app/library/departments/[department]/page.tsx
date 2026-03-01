@@ -12,6 +12,7 @@ import {
 } from "@/app/store/api/departmentsApi";
 import { BookPreview } from "@/app/types/book";
 import { Pagination } from "@/app/components/Library/Pagination";
+import { SortFilter } from "@/app/components/Library/SortFilter";
 
 export default function DepartmentPage({
   params,
@@ -63,10 +64,7 @@ export default function DepartmentPage({
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-10">
-            <BackButton
-              label="All Departments"
-              href="/app/library/departments"
-            />
+            <BackButton />
           </div>
 
           {isLoadingDept ? (
@@ -142,22 +140,19 @@ export default function DepartmentPage({
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                  <div className="flex items-center gap-3 bg-gray-50/50 dark:bg-neutral-900/40 px-4 py-3 rounded-md border border-gray-100 dark:border-neutral-800 transition-colors">
-                    <FiFilter className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as any)}
-                      className="bg-transparent border-none focus:ring-0 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-neutral-500 cursor-pointer outline-none"
-                    >
-                      <option value="createdAt">Recently Added</option>
-                      <option value="rating">Top Rated</option>
-                      <option value="title">Alphabetical</option>
-                    </select>
-                  </div>
+                  <SortFilter
+                    value={sortBy}
+                    onValueChange={(val) => setSortBy(val as any)}
+                    options={[
+                      { value: "createdAt", label: "Recently Added" },
+                      { value: "rating", label: "Top Rated" },
+                      { value: "title", label: "Alphabetical" },
+                    ]}
+                  />
 
                   <button
                     onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
                     title={order === "asc" ? "Ascending" : "Descending"}
                   >
                     <span className="text-sm font-black">

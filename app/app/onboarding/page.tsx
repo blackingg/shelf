@@ -59,7 +59,7 @@ export default function Onboarding() {
   // Redirect if already completed
   useEffect(() => {
     if (user?.onboardingCompleted) {
-      router.replace("/app/library");
+      router.replace("/app/discover");
     }
   }, [user, router]);
 
@@ -135,7 +135,7 @@ export default function Onboarding() {
         "success",
         "Welcome to Shelf! Your profile is now set up.",
       );
-      router.push("/app/library");
+      router.push("/app/discover");
     } catch (error: any) {
       console.error("Onboarding failed:", error);
 
@@ -144,7 +144,7 @@ export default function Onboarding() {
         dispatch(setOnboardingStatus(true));
         storage.remove("onboarding_step");
         storage.remove("onboarding_data");
-        router.push("/app/library");
+        router.push("/app/discover");
         return;
       }
 

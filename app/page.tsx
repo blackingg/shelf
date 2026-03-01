@@ -94,7 +94,7 @@ export default function ShelfLanding() {
                 alt="Shelf"
                 width={120}
                 height={40}
-                className="h-10 w-auto dark:invert"
+                className="h-10 w-auto"
                 priority
               />
             </Link>
@@ -377,7 +377,7 @@ export default function ShelfLanding() {
               alt="Shelf"
               width={100}
               height={32}
-              className="h-6 w-auto dark:invert"
+              className="h-6 w-auto"
             />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">

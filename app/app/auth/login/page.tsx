@@ -66,7 +66,7 @@ export default function LoginPage() {
 
       addNotification("success", "Login successful! Welcome.");
       if (result.user.onboardingCompleted) {
-        router.push("/app/library");
+        router.push("/app/discover");
       } else {
         router.push("/app/onboarding");
       }
@@ -136,7 +136,7 @@ export default function LoginPage() {
       addNotification("success", "Login successful! Welcome back.");
 
       if (result.user.onboardingCompleted) {
-        router.push("/app/library");
+        router.push("/app/discover");
       } else {
         addNotification("info", "Please complete the onboarding process.");
         router.push("/app/onboarding");

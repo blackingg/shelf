@@ -149,13 +149,16 @@ export default function ForgotPassword() {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
         <div className="w-full max-w-[440px]">
           <div className="mb-10 text-center">
-            <Link href="/" className="inline-block mb-8">
+            <Link
+              href="/"
+              className="inline-block mb-8"
+            >
               <Image
                 src="/logo-stacked-1.png"
                 alt="Shelf"
                 width={120}
                 height={40}
-                className="h-8 w-auto dark:invert"
+                className="h-8 w-auto"
                 priority
               />
             </Link>
@@ -194,8 +197,8 @@ export default function ForgotPassword() {
                 />
                 <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/50 rounded-sm p-4 mb-6">
                   <p className="text-xs text-emerald-800 dark:text-emerald-400 text-center leading-relaxed">
-                    Didn&apos;t receive the code? Check your spam folder or click
-                    continue to enter the code.
+                    Didn&apos;t receive the code? Check your spam folder or
+                    click continue to enter the code.
                   </p>
                 </div>
               </>

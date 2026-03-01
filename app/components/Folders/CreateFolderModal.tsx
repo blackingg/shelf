@@ -7,7 +7,11 @@ import { FolderVisibility } from "@/app/types/folder";
 interface CreateFolderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (name: string, visibility: FolderVisibility) => void;
+  onSubmit: (
+    name: string,
+    visibility: FolderVisibility,
+    description?: string,
+  ) => void;
 }
 
 export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
@@ -16,13 +20,15 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   onSubmit,
 }) => {
   const [folderName, setFolderName] = useState("");
+  const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState<FolderVisibility>("PRIVATE");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (folderName.trim()) {
-      onSubmit(folderName.trim(), visibility);
+      onSubmit(folderName.trim(), visibility, description.trim() || undefined);
       setFolderName("");
+      setDescription("");
       setVisibility("PRIVATE");
       onClose();
     }
@@ -73,6 +79,19 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                   placeholder="e.g., Summer Reading, Favorites"
                   className="w-full px-4 py-3 border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 rounded-md focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-600 transition-colors"
                   autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest font-medium text-gray-400 dark:text-neutral-500 mb-2">
+                  Description (Optional)
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What's this folder about?"
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 rounded-md focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-gray-900 dark:text-white dark:placeholder-gray-600 transition-colors resize-none"
                 />
               </div>
 

@@ -9,8 +9,8 @@ import { motion } from "motion/react";
 import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
-  const { buffer, updateBuffer } = useContext(FileBufferContext);
-  const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
+  const { buffer, updateBuffer, fileType, setFileType } =
+    useContext(FileBufferContext);
   const [fileName, setFileName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

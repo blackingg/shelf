@@ -150,9 +150,10 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const handleCreateFolder = async (
     name: string,
     visibility: FolderVisibility,
+    description?: string,
   ) => {
     try {
-      await createFolder({ name, visibility }).unwrap();
+      await createFolder({ name, visibility, description }).unwrap();
       addNotification("success", "Folder created successfully!");
       setShowCreateFolderModal(false);
     } catch (err: any) {
@@ -236,7 +237,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               The user @{username} doesn&apos;t exist.
             </p>
             <button
-              onClick={() => router.push("/app/library")}
+              onClick={() => router.push("/app/discover")}
               className="px-6 py-2 bg-emerald-600 text-white rounded-md font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors"
             >
               Back to Library

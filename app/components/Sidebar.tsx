@@ -6,13 +6,10 @@ import {
   FiBook,
   FiSettings,
   FiLogOut,
-  FiBriefcase,
-  FiTag,
-  FiFolder,
   FiHeart,
-  FiCheckCircle,
-  FiBookmark,
+  FiCompass,
   FiBookOpen,
+  FiCheckCircle,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -40,16 +37,9 @@ export const Sidebar: React.FC = () => {
   };
 
   const mainItems: SidebarItem[] = [
+    { label: "Discover", icon: <FiCompass />, href: "/app/discover" },
     { label: "My Library", icon: <FiBook />, href: "/app/library" },
-    { label: "Bookmarks", icon: <FiBookmark />, href: "/app/bookmarks" },
-    { label: "Folders", icon: <FiFolder />, href: "/app/folders" },
-    { label: "Categories", icon: <FiTag />, href: "/app/library/categories" },
-    {
-      label: "Departments",
-      icon: <FiBriefcase />,
-      href: "/app/library/departments",
-    },
-    {label: "Viewer", icon: <FiBookOpen />, href:"/app/upload-and-read"}, 
+    { label: "Viewer", icon: <FiBookOpen />, href: "/app/upload-and-read" },
     { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
     // { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
   ];
@@ -62,13 +52,17 @@ export const Sidebar: React.FC = () => {
   const isActive = (href: string) => {
     if (pathname === href) return true;
 
-    // Special handling to prevent "My Library" from being active when we're inside /app/library/categories/ or /app/library/departments/*
+    // Prevent "My Library" from being active on categories/departments sub-routes
     if (
-      (href === "/app/library" &&
-        pathname.startsWith("/app/library/categories")) ||
-      (href === "/app/library" &&
+      href === "/app/library" &&
+      (pathname.startsWith("/app/library/categories") ||
         pathname.startsWith("/app/library/departments"))
     ) {
+      return false;
+    }
+
+    // Prevent "Discover" from matching other /app/* routes
+    if (href === "/app/discover" && pathname !== "/app/discover") {
       return false;
     }
 
@@ -87,7 +81,7 @@ export const Sidebar: React.FC = () => {
       <aside className="hidden lg:flex w-56 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col">
         <div className="px-5 py-5 border-b border-gray-100 dark:border-neutral-800">
           <Link
-            href={"/app/library"}
+            href={"/app/discover"}
             className="flex items-center space-x-2"
           >
             <Image

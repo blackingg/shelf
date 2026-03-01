@@ -301,7 +301,7 @@ export default function UploadPage() {
 
       await updateBook({ id: uploadedBookId, data: payload }).unwrap();
       addNotification("success", "Book details updated and donation complete!");
-      router.push("/app/library");
+      router.push("/app/discover");
     } catch (error) {
       addNotification(
         "error",

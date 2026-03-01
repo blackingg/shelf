@@ -17,7 +17,7 @@ export const AppHeader: React.FC<{
             alt="Shelf"
             width={120}
             height={40}
-            className="h-10 w-auto dark:invert"
+            className="h-10 w-auto"
             priority
           />
         </Link>

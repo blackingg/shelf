@@ -77,9 +77,10 @@ export default function FoldersPage() {
   const handleCreateFolder = async (
     name: string,
     visibility: FolderVisibility,
+    description?: string,
   ) => {
     try {
-      await createFolder({ name, visibility }).unwrap();
+      await createFolder({ name, visibility, description }).unwrap();
       addNotification("success", "Folder created successfully!");
       setShowCreateModal(false);
     } catch (err: any) {

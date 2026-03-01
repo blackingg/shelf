@@ -1,0 +1,295 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
+import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
+import {
+  FolderCard,
+  FolderCardSkeleton,
+} from "@/app/components/Folders/FolderCard";
+import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
+import { FiBook, FiArrowRight } from "react-icons/fi";
+import { BookPreview } from "@/app/types/book";
+import { Folder } from "@/app/types/folder";
+import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
+import { useGetBooksQuery } from "@/app/store/api/booksApi";
+import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
+import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
+import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
+
+type RecommendedItem =
+  | (BookPreview & { type: "book" })
+  | (Folder & { type: "folder" });
+
+export default function DiscoverPage() {
+  const router = useRouter();
+  const user = useSelector(selectCurrentUser);
+  const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const { data: recommendations, isLoading: isLoadingRecommendations } =
+    useGetDiscoverFeedQuery();
+
+  const { data: departments = [], isLoading: isLoadingDepartments } =
+    useGetDepartmentsQuery(
+      user?.school?.id ? { school_id: user.school.id } : undefined,
+    );
+
+  const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
+    useGetPublicFoldersQuery({
+      page: 1,
+      pageSize: 4,
+      sort_by: "createdAt",
+      order: "desc",
+    });
+
+  const displayDepartments = departments.slice(0, 5);
+  const displayFolders = publicFoldersResponse?.items || [];
+
+  const {
+    data: categoryBooksResponse,
+    isLoading: isLoadingCategoryBooks,
+    isFetching: isFetchingCategoryBooks,
+  } = useGetBooksQuery({
+    category: activeCategory === "all" ? undefined : activeCategory,
+    pageSize: 8,
+  });
+
+  const isCategoryLoading = isLoadingCategoryBooks || isFetchingCategoryBooks;
+
+  const categoryBooks = categoryBooksResponse?.items || [];
+  const displayItems: RecommendedItem[] = [];
+
+  if (recommendations) {
+    const folders = recommendations.items
+      .filter((item) => item.type === "folder")
+      .map((item) => ({ ...item.data, type: "folder" as const }));
+
+    const books = recommendations.items
+      .filter((item) => item.type === "book")
+      .map((item) => ({ ...item.data, type: "book" as const }));
+
+    const maxLength = Math.max(folders.length, books.length);
+    for (let i = 0; i < maxLength; i++) {
+      if (i < folders.length) displayItems.push(folders[i]);
+      if (i < books.length) displayItems.push(books[i]);
+    }
+  }
+
+  return (
+    <div className="flex-1 flex flex-col min-h-full">
+      <main className="p-6 md:p-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-20">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Discover
+              </h2>
+            </div>
+
+            {isLoadingRecommendations ? (
+              <div className="flex items-stretch gap-6 md:gap-8 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
+              </div>
+            ) : displayItems.length > 0 ? (
+              <div className="flex items-stretch gap-8 md:gap-10 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                {displayItems.map((item, idx) => (
+                  <div
+                    key={`rec-${item.type}-${item.id}-${idx}`}
+                    className="w-60 md:w-[300px] shrink-0"
+                  >
+                    {item.type === "folder" ? (
+                      <FolderCard
+                        folder={item}
+                        onClick={() => router.push(`/app/folders/${item.slug}`)}
+                      />
+                    ) : (
+                      <BookCard
+                        {...item}
+                        onClick={() => setSelectedBook(item)}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
+                <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
+                  <FiBook className="w-6 h-6 text-emerald-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  No Recommendations Yet
+                </h3>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
+                  Start exploring to get personalized suggestions.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Categories
+              </h2>
+              <button
+                onClick={() => router.push("/app/library/categories")}
+                className="flex items-center gap-2 group"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
+                  View Gallery
+                </span>
+                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+
+            <CategoryFilter
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+            />
+
+            {isCategoryLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12">
+                <BookCardSkeleton count={5} />
+              </div>
+            ) : categoryBooks.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-12">
+                {categoryBooks.map((book) => (
+                  <BookCard
+                    key={book.id}
+                    {...book}
+                    onClick={() => setSelectedBook(book as BookPreview)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                  No resources found in this category.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-20">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Departments
+              </h2>
+              <button
+                onClick={() => router.push("/app/library/departments")}
+                className="flex items-center gap-2 group"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
+                  View All
+                </span>
+                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+
+            {isLoadingDepartments ? (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-32 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : displayDepartments.length > 0 ? (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+                {displayDepartments.map((dept) => (
+                  <DepartmentCard
+                    key={dept.id}
+                    department={dept}
+                    onClick={() =>
+                      router.push(`/app/library/departments/${dept.id}`)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
+                  Explore specialized collections from your school&apos;s
+                  departments.
+                </p>
+                <button
+                  onClick={() => router.push("/app/library/departments")}
+                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
+                >
+                  Browse Departments
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-20">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Community Folders
+              </h2>
+              <button
+                onClick={() => router.push("/app/discover/folders")}
+                className="flex items-center gap-2 group"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
+                  View All
+                </span>
+                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+
+            {isLoadingPublicFolders ? (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <FolderCardSkeleton count={4} />
+              </div>
+            ) : displayFolders.length > 0 ? (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {displayFolders.map((folder) => (
+                  <FolderCard
+                    key={folder.id}
+                    folder={folder}
+                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
+                  Discover curated reading lists and collections created by the
+                  community.
+                </p>
+                <button
+                  onClick={() => router.push("/app/discover/folders")}
+                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
+                >
+                  Browse Folders
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
+    </div>
+  );
+}

@@ -10,6 +10,7 @@ import { BookPreview } from "@/app/types/book";
 import { useGetBooksQuery } from "@/app/store/api/booksApi";
 import { useGetCategoryBySlugQuery } from "@/app/store/api/categoriesApi";
 import { Pagination } from "@/app/components/Library/Pagination";
+import { SortFilter } from "@/app/components/Library/SortFilter";
 
 export default function CategoryPage({
   params,
@@ -57,13 +58,10 @@ export default function CategoryPage({
 
   return (
     <div className="flex-1 flex flex-col">
-      <main className="p-6 md:p-12">
+      <main className="flex-1 p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-10">
-            <BackButton
-              label="Back to Library"
-              href="/app/library"
-            />
+            <BackButton />
           </div>
 
           {isLoadingCategory ? (
@@ -80,7 +78,7 @@ export default function CategoryPage({
                 been removed from our system.
               </p>
               <button
-                onClick={() => router.push("/app/library")}
+                onClick={() => router.push("/app/discover")}
                 className="px-6 py-2 bg-emerald-600 text-white rounded-md font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-colors"
               >
                 Explore Library
@@ -131,18 +129,15 @@ export default function CategoryPage({
                   />
                 </div>
 
-                <div className="flex items-center gap-3 bg-gray-50/50 dark:bg-neutral-900/40 px-4 py-3 rounded-md border border-gray-100 dark:border-neutral-800 transition-colors">
-                  <FiFilter className="text-emerald-600 dark:text-emerald-500 w-4 h-4" />
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-neutral-400 cursor-pointer outline-none"
-                  >
-                    <option value="rating">Top Rated</option>
-                    <option value="createdAt">Recently Added</option>
-                    <option value="title">Alphabetical</option>
-                  </select>
-                </div>
+                <SortFilter
+                  value={sortBy}
+                  onValueChange={setSortBy}
+                  options={[
+                    { value: "rating", label: "Top Rated" },
+                    { value: "createdAt", label: "Recently Added" },
+                    { value: "title", label: "Alphabetical" },
+                  ]}
+                />
               </div>
 
               {showSkeleton ? (

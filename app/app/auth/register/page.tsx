@@ -77,7 +77,7 @@ export default function SignupPage() {
       );
 
       if (result.user.onboardingCompleted) {
-        router.push("/app/library");
+        router.push("/app/discover");
       } else {
         router.push("/app/onboarding");
       }
