@@ -216,7 +216,7 @@ export default function DiscoverPage() {
                     key={dept.id}
                     department={dept}
                     onClick={() =>
-                      router.push(`/app/library/departments/${dept.id}`)
+                      router.push(`/app/library/departments/${dept.slug}`)
                     }
                   />
                 ))}
