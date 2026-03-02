@@ -9,9 +9,8 @@ import { motion } from "motion/react";
 import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
-  const { buffer, updateBuffer, fileType, setFileType } =
+  const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
     useContext(FileBufferContext);
-  const [fileName, setFileName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
