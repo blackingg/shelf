@@ -76,7 +76,7 @@ export default function BookDetailsPage() {
                 The resource you&apos;re looking for doesn&apos;t exist or has
                 been removed from our system.
               </p>
-              <Button onClick={() => router.push("/app/library")}>
+              <Button onClick={() => router.push("/app/discover")}>
                 Back to Library
               </Button>
             </div>
@@ -128,7 +128,10 @@ export default function BookDetailsPage() {
                         Resource Rating
                       </span>
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <StarRating rating={book.rating || 0} size={18} />
+                        <StarRating
+                          rating={book.rating || 0}
+                          size={18}
+                        />
                         <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "5.0"}
                         </span>

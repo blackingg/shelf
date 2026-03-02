@@ -11,16 +11,22 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-
   const user = useSelector(selectCurrentUser);
+
+  const { data: allDepartments = [], isLoading } = useGetDepartmentsQuery(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
+
   const userDepartment = user?.department?.name || null;
-  const userDepartmentSlug = user?.department?.slug;
-  const { data: allDepartments, isLoading } = useGetDepartmentsQuery();
-  const [viewDepartments, setViewDepartments] = useState(true);
+  const userDepartmentSlug = allDepartments.find(
+    (d) => d.id === user?.department?.id,
+  )?.slug;
+
+  const [viewDepartments, setViewDepartments] = useState(false);
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (
-    <main className="flex-1">
+    <div className="flex-1 flex flex-col">
       <div className="p-8 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
@@ -54,28 +60,48 @@ export default function DepartmentsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20"
               >
-                {allDepartments?.map((department) => (
-                  <DepartmentCard
-                    key={department.id}
-                    department={department}
-                    onClick={() =>
-                      router.push(`/app/library/departments/${department.id}`)
-                    }
-                  />
-                ))}
+                {isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-40 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : allDepartments.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
+                    {allDepartments.map((department) => (
+                      <DepartmentCard
+                        key={department.id}
+                        department={department}
+                        onClick={() =>
+                          router.push(
+                            `/app/library/departments/${department.id}`,
+                          )
+                        }
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-[40vh] bg-gray-50/30 dark:bg-neutral-900/10 p-12 md:p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center mb-20">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                      No departments found for your school.
+                    </p>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
 
-          {userDepartment !== null && (
+          {userDepartment !== null && userDepartmentSlug && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
               <UserDepartmentBooks departmentSlug={userDepartmentSlug} />
             </div>
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

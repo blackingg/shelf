@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import Link from "next/link";
+import Image from "next/image";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
@@ -64,7 +66,7 @@ export default function LoginPage() {
 
       addNotification("success", "Login successful! Welcome.");
       if (result.user.onboardingCompleted) {
-        router.push("/app/library");
+        router.push("/app/discover");
       } else {
         router.push("/app/onboarding");
       }
@@ -134,7 +136,7 @@ export default function LoginPage() {
       addNotification("success", "Login successful! Welcome back.");
 
       if (result.user.onboardingCompleted) {
-        router.push("/app/library");
+        router.push("/app/discover");
       } else {
         addNotification("info", "Please complete the onboarding process.");
         router.push("/app/onboarding");
@@ -159,33 +161,30 @@ export default function LoginPage() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-white dark:bg-black font-onest">
       <AppHeader
         rightContent={
-          <button
-            onClick={() => router.push("/app/auth/register")}
-            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+          <Link
+            href="/app/auth/register"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
           >
-            Don&apos;t have an account? Sign Up
-          </button>
+            Sign Up
+          </Link>
         }
       />
 
-      <PageContainer>
-        <div className="max-w-lg w-full">
-          <Card>
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center bg-emerald-700 dark:bg-emerald-600 p-3 rounded-lg mb-4">
-                <FiLock className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Welcome Back
-              </h2>
-              <p className="text-gray-600 dark:text-neutral-400">
-                Log in to access your library
-              </p>
-            </div>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+        <div className="w-full max-w-[440px]">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
+              Welcome Back
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              Log in to your account to continue
+            </p>
+          </div>
 
+          <Card className="!p-8">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -200,20 +199,20 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                icon={<FiMail className="w-5 h-5" />}
-                placeholder="Enter your email"
+                icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                placeholder="you@example.com"
                 autoComplete="email"
               />
 
-              <div>
-                <div className="flex justify-between items-center mb-2">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
                   <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
+                    className="text-xs text-gray-400 hover:text-emerald-600 transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -225,8 +224,8 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  icon={<FiLock className="w-5 h-5" />}
-                  placeholder="Enter your password"
+                  icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                  placeholder="••••••••"
                   autoComplete="current-password"
                   showPasswordToggle={true}
                 />
@@ -236,41 +235,38 @@ export default function LoginPage() {
                 id="rememberMe"
                 checked={rememberMe}
                 onChange={setRememberMe}
-                label="Remember me for 30 days"
+                label="Keep me logged in"
               />
 
               <Button
                 type="submit"
                 variant="primary"
                 isLoading={isLoginLoading}
-                icon={<FiArrowRight className="w-4 h-4" />}
+                className="py-4"
               >
                 Log In
               </Button>
             </form>
 
-            <Divider />
-            <div className="grid grid-cols-1 gap-3">
-              <SocialLoginButton
-                provider="google"
-                onClick={handleGoogleAuth}
-              />
-            </div> 
+            <Divider text="or sign in with" />
+
+            <SocialLoginButton
+              provider="google"
+              onClick={handleGoogleAuth}
+            />
           </Card>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-neutral-400">
-              New to Shelf?{" "}
-              <button
-                onClick={() => router.push("/app/auth/register")}
-                className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium cursor-pointer"
-              >
-                Create an account
-              </button>
-            </p>
-          </div>
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/app/auth/register"
+              className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+            >
+              Create Account
+            </Link>
+          </p>
         </div>
-      </PageContainer>
-    </>
+      </div>
+    </div>
   );
 }

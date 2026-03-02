@@ -5,6 +5,7 @@ import { FolderSortBy, SortOrder, PaginationParams } from "./common";
 export interface FolderFilterParams extends PaginationParams {
   sort_by?: FolderSortBy;
   order?: SortOrder;
+  q?: string;
 }
 
 export type FolderVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";

@@ -95,7 +95,7 @@ function ReaderLayoutContent({
 
   return (
     <div
-      className={`min-h-screen flex flex-col transition-colors duration-300 ${currentTheme.bg}`}
+      className={`h-screen flex flex-col overflow-hidden transition-colors duration-300 ${currentTheme.bg}`}
     >
       <ReaderHeader
         title={title}
@@ -107,9 +107,9 @@ function ReaderLayoutContent({
         extraActions={extraHeaderActions}
       />
 
-      <div className="flex flex-1 relative">
+      <div className="flex flex-1 relative overflow-hidden">
         <main
-          className={`flex-1 w-full mx-auto px-6 py-8 md:py-16 cursor-text transition-all duration-300 ${contentShrink ? "md:pr-80" : ""}`}
+          className={`flex-1 w-full mx-auto px-6 py-8 md:py-16 cursor-text transition-all duration-300 overflow-y-auto custom-scrollbar ${contentShrink ? "md:pr-80" : ""}`}
           onClick={() => setShowControls(!showControls)}
         >
           <div

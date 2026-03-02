@@ -10,7 +10,7 @@ export default function CategoriesPage() {
   const { data: categories = [], isLoading } = useGetCategoriesQuery();
 
   return (
-    <main className="flex-1 flex flex-col bg-white dark:bg-neutral-950 overflow-y-auto">
+    <div className="flex-1 flex flex-col">
       <div className="p-8 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
@@ -58,6 +58,6 @@ export default function CategoriesPage() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

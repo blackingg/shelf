@@ -7,10 +7,12 @@ import {
   FiArrowRight,
   FiArrowLeft,
   FiImage,
+  FiLayout,
+  FiBookOpen,
 } from "react-icons/fi";
 import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
-import Select from "react-select";
+import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -133,60 +135,6 @@ export default function UploadPage() {
     setCoverPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [coverFile]);
-
-  const customSelectStyles = (isDark: boolean) => ({
-    control: (base: any, state: any) => ({
-      ...base,
-      borderRadius: "0px",
-      padding: "0.25rem 0.5rem",
-      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
-      backgroundColor: "transparent",
-      boxShadow: "none",
-      "&:hover": { borderColor: "#10b981" },
-    }),
-    menu: (base: any) => ({
-      ...base,
-      borderRadius: "0px",
-      margin: "0px",
-      overflow: "hidden",
-      boxShadow: "none",
-      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
-      backgroundColor: isDark ? "#121212" : "#ffffff",
-      zIndex: 50,
-    }),
-    option: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? "#10b981"
-        : state.isFocused
-          ? isDark
-            ? "#1a1a1a"
-            : "#f9fafb"
-          : "transparent",
-      color: state.isSelected ? "white" : isDark ? "#a3a3a3" : "#4b5563",
-      fontSize: "0.80rem",
-      fontWeight: "500",
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-      cursor: "pointer",
-      padding: "10px 15px",
-      "&:active": { backgroundColor: "#10b981" },
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-      fontSize: "0.875rem",
-    }),
-    input: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: isDark ? "#525252" : "#9ca3af",
-      fontSize: "0.875rem",
-    }),
-  });
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -353,7 +301,7 @@ export default function UploadPage() {
 
       await updateBook({ id: uploadedBookId, data: payload }).unwrap();
       addNotification("success", "Book details updated and donation complete!");
-      router.push("/app/library");
+      router.push("/app/discover");
     } catch (error) {
       addNotification(
         "error",
@@ -566,21 +514,24 @@ export default function UploadPage() {
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label>Category</Label>
-                      <Select
-                        options={categoryOptions}
-                        isLoading={isLoadingCategories}
-                        placeholder="Select..."
-                        onChange={(opt: any) =>
-                          setFormData({
-                            ...formData,
-                            category: opt?.value || "",
-                          })
-                        }
-                        styles={customSelectStyles(isDark)}
-                      />
-                    </div>
+                    <FormSelect<any, false>
+                      label="Category"
+                      icon={<FiLayout />}
+                      options={categoryOptions}
+                      isLoading={isLoadingCategories}
+                      placeholder="Select..."
+                      onChange={(opt: any) =>
+                        setFormData({
+                          ...formData,
+                          category: opt?.value || "",
+                        })
+                      }
+                      value={
+                        categoryOptions.find(
+                          (opt) => opt.value === formData.category,
+                        ) || null
+                      }
+                    />
                     <div className="space-y-1.5">
                       <Label>Pages</Label>
                       <input
@@ -591,7 +542,7 @@ export default function UploadPage() {
                         }
                         placeholder="0"
                         required
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
                       />
                     </div>
                   </div>
@@ -643,21 +594,24 @@ export default function UploadPage() {
             >
               <div className="grid md:grid-cols-2 gap-10">
                 <div className="space-y-6">
-                  <div className="space-y-1.5">
-                    <Label>Department</Label>
-                    <Select
-                      options={departmentOptions}
-                      isLoading={isLoadingDepts}
-                      placeholder="Academic Department"
-                      onChange={(opt: any) =>
-                        setFormData({
-                          ...formData,
-                          department: opt?.label || "",
-                        })
-                      }
-                      styles={customSelectStyles(isDark)}
-                    />
-                  </div>
+                  <FormSelect<any, false>
+                    label="Department"
+                    icon={<FiBookOpen />}
+                    options={departmentOptions}
+                    isLoading={isLoadingDepts}
+                    placeholder="Academic Department"
+                    onChange={(opt: any) =>
+                      setFormData({
+                        ...formData,
+                        department: opt?.value || "",
+                      })
+                    }
+                    value={
+                      departmentOptions.find(
+                        (opt) => opt.value === formData.department,
+                      ) || null
+                    }
+                  />
                   <div className="space-y-1.5">
                     <Label>Publisher</Label>
                     <input

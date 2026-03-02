@@ -54,10 +54,10 @@ export const FormInput: React.FC<{
           onKeyPress={onKeyPress}
           className={`w-full ${icon ? "pl-10" : "pl-4"} ${
             showPasswordToggle ? "pr-12" : "pr-4"
-          } py-3 text-gray-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 border rounded-md focus:ring-0 outline-none transition-all duration-200 ${
+          } py-3 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
             error
-              ? "border-red-300 dark:border-red-900/50 focus:border-red-500"
-              : "border-gray-200 dark:border-neutral-700 focus:border-emerald-500"
+              ? "border-red-500"
+              : "border-gray-100 dark:border-white/5 focus:border-emerald-500"
           }`}
           placeholder={placeholder}
           autoComplete={autoComplete}

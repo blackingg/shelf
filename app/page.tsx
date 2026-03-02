@@ -13,26 +13,14 @@ import {
   FiStar,
   FiZap,
 } from "react-icons/fi";
-import { BiLibrary } from "react-icons/bi";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ShelfLanding() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 300], [0, 100]);
   const y2 = useTransform(scrollY, [0, 300], [0, -100]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX - window.innerWidth / 2) / 50,
-        y: (e.clientY - window.innerHeight / 2) / 50,
-      });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   const features = [
     {
@@ -88,188 +76,128 @@ export default function ShelfLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-emerald-50 overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black overflow-hidden font-onest">
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.6, 0.05, 0.01, 0.9] }}
-        className="fixed top-0 w-full bg-white/70 backdrop-blur-xl border-b border-gray-200/50 z-50"
+        transition={{ duration: 0.5 }}
+        className="fixed top-0 w-full bg-white dark:bg-black border-b border-gray-100 dark:border-white/5 z-50 px-6"
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-3">
-              <div className="rounded-lg">
-                <Image
-                  width={20}
-                  height={20}
-                  src="/logo.png"
-                  alt="Shelf Logo"
-                  className="text-white"
-                />
-              </div>
-              <span className="text-2xl font-bold text-black">Shelf</span>
-            </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center h-16">
+            <Link
+              href="/"
+              className="flex items-center"
+            >
+              <Image
+                src="/logo-stacked-1.png"
+                alt="Shelf"
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+                priority
+              />
+            </Link>
 
-            <div className="flex items-center space-x-4">
-              <motion.button
+            <div className="flex items-center space-x-2">
+              <button
                 onClick={() => (window.location.href = "/app/auth/login")}
-                className="text-gray-700 hover:text-emerald-700 font-medium transition-colors px-4 py-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 transition-colors"
               >
                 Login
-              </motion.button>
-              <motion.button
+              </button>
+              <button
                 onClick={() => (window.location.href = "/app/auth/register")}
-                className="px-6 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-700 text-white rounded-full font-medium shadow-lg shadow-emerald-500/30"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-sm text-sm font-medium hover:bg-emerald-700 transition-colors"
               >
                 Get Started
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      <section className="relative min-h-screen flex items-center justify-center pt-20 px-6">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
+      <section className="relative min-h-screen flex items-center justify-center pt-16 px-6">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, ease: [0.6, 0.05, 0.01, 0.9] }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="inline-flex items-center space-x-2 bg-linear-to-r from-emerald-100 to-teal-100 px-5 py-2.5 rounded-full mb-8 border border-emerald-200"
-            >
-              <FiBook className="w-5 h-5 text-emerald-700" />
-              <span className="text-sm font-semibold text-emerald-800">
+            <div className="inline-flex items-center space-x-2 border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-sm mb-8">
+              <FiBook className="w-4 h-4 text-emerald-600" />
+              <span className="text-[10px] uppercase font-medium tracking-widest text-emerald-700">
                 Your Personal E-Library
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              className="text-6xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1]"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            >
-              <span className="block text-gray-900">Knowledge</span>
-              <span className="block text-gray-900">for Students</span>
-              <span className="block bg-linear-to-r from-emerald-600 via-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                & Readers
-              </span>
-            </motion.h1>
+            <h1 className="text-6xl md:text-8xl font-medium mb-8 leading-[1] tracking-tighter text-gray-900 dark:text-white">
+              Knowledge <br />
+              for Students <br />
+              <span className="text-emerald-600">& Readers</span>
+            </h1>
 
-            <motion.p
-              className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed max-w-xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            >
+            <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 leading-relaxed max-w-lg">
               A cross-platform e-library combining academic resources and
-              leisure reading. Organize, discover, and share with personalized
-              recommendations.
-            </motion.p>
+              leisure reading. Organize, discover, and share.
+            </p>
 
-            <motion.div
-              className="flex flex-wrap gap-6 mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-            >
+            <div className="flex flex-wrap gap-4 mb-10">
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl border border-gray-200 shadow-sm"
+                  className="flex items-center space-x-3 bg-gray-50 dark:bg-white/5 px-4 py-2 rounded-sm border border-gray-100 dark:border-white/5"
                 >
-                  <div className="text-emerald-600 text-2xl">{stat.icon}</div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs text-gray-600">{stat.label}</div>
+                  <div className="text-emerald-600 w-4 h-4">{stat.icon}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    {stat.value} {stat.label}
                   </div>
                 </div>
               ))}
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.8 }}
-            >
-              <motion.button
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
                 onClick={() => (window.location.href = "/app/auth/register")}
-                className="px-8 py-4 bg-linear-to-r from-emerald-600 to-emerald-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-emerald-500/30 flex items-center justify-center space-x-2"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
               >
                 <span>Start Reading Free</span>
                 <FiArrowRight className="w-5 h-5" />
-              </motion.button>
+              </button>
 
-              <motion.button
+              <button
                 onClick={() => (window.location.href = "/app/auth/login")}
-                className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-900 rounded-2xl font-bold text-lg shadow-lg"
-                whileHover={{ scale: 1.05, y: -2, borderColor: "#059669" }}
-                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-sm font-medium text-base hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
               >
                 Sign In
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
           </motion.div>
 
           <motion.div
             className="relative"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 1 }}
-            style={{
-              rotateX: mousePosition.y,
-              rotateY: mousePosition.x,
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <motion.div
-              className="relative bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-4xl p-12 shadow-2xl border border-emerald-500/20"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent rounded-4xl" />
-
-              <motion.div
-                className="absolute top-6 right-6 w-24 h-24 bg-emerald-400/20 rounded-full blur-2xl"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 0.8, 0.5],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-
+            <div className="relative bg-emerald-600 dark:bg-emerald-950 rounded-sm p-10 lg:p-12 border border-emerald-500/20">
               <div className="relative z-10">
-                <div className="flex items-center space-x-3 mb-8">
-                  <Image
-                    width={40}
-                    height={40}
-                    src="/logo.png"
-                    alt="Shelf Logo"
-                    className="text-white rounded-lg"
-                  />
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
                   <div>
-                    <div className="text-white font-bold text-lg">
-                      Your Library
-                    </div>
-                    <div className="text-emerald-200 text-sm">
+                    <Image
+                      src="/logo-stacked-1.png"
+                      alt="Shelf"
+                      width={120}
+                      height={38}
+                      className="h-8 w-auto mb-3"
+                    />
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/60 font-medium">
                       Everywhere, Always
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[
                     {
                       icon: <FiFolder />,
@@ -289,47 +217,27 @@ export default function ShelfLanding() {
                   ].map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20"
+                      className="flex items-center justify-between bg-white/10 rounded-sm p-4 border border-white/10 hover:bg-white/15 transition-all cursor-pointer group"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-white text-xl">{item.icon}</div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-white text-lg group-hover:scale-110 transition-transform">
+                          {item.icon}
+                        </div>
                         <div>
-                          <div className="text-white font-semibold">
+                          <div className="text-white text-sm font-medium">
                             {item.title}
                           </div>
-                          <div className="text-emerald-200 text-sm">
+                          <div className="text-emerald-50 text-[10px] font-medium opacity-60">
                             {item.count}
                           </div>
                         </div>
                       </div>
-                      <FiArrowRight className="text-white/60" />
+                      <FiArrowRight className="text-white/40 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   ))}
                 </div>
               </div>
-            </motion.div>
-
-            <motion.div
-              className="absolute -top-6 -left-6 bg-linear-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-2xl shadow-xl flex items-center justify-center z-50"
-              animate={{
-                y: [0, -20, 0],
-                rotate: [0, 10, 0],
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
-            >
-              <FiStar className="w-10 h-10 text-white" />
-            </motion.div>
-
-            <motion.div
-              className="absolute -bottom-6 -right-6 bg-linear-to-br from-blue-400 to-indigo-500 w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center z-50"
-              animate={{
-                y: [0, 20, 0],
-                rotate: [0, -10, 0],
-              }}
-              transition={{ duration: 5, repeat: Infinity }}
-            >
-              <FiZap className="w-12 h-12 text-white" />
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
@@ -337,67 +245,53 @@ export default function ShelfLanding() {
           className="absolute bottom-12 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
+          transition={{ delay: 1 }}
           style={{ opacity }}
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center space-y-2"
-          >
-            <span className="text-sm text-gray-500">Scroll to explore</span>
-            <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center">
+          <div className="flex flex-col items-center space-y-2">
+            <span className="text-[10px] uppercase tracking-widest text-gray-400">
+              Scroll
+            </span>
+            <div className="w-[1px] h-12 bg-gray-100 dark:bg-white/10 relative overflow-hidden">
               <motion.div
-                className="w-1.5 h-3 bg-emerald-600 rounded-full mt-2"
-                animate={{ y: [0, 12, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute top-0 left-0 w-full h-full bg-emerald-500"
+                animate={{ y: ["-100%", "100%"] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               />
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </section>
 
-      <section className="py-32 px-6 bg-white">
+      <section className="py-32 px-6 bg-white dark:bg-black border-t border-gray-50 dark:border-white/5">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div
-              className="inline-block bg-emerald-100 px-4 py-2 rounded-full mb-6"
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="text-emerald-700 font-semibold text-sm">
+          <div className="mb-16">
+            <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
+              <span className="text-emerald-700 font-medium text-[10px] uppercase tracking-widest">
                 WHY CHOOSE SHELF
               </span>
-            </motion.div>
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6">
+            </div>
+            <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-6 tracking-tight">
               Everything You Need
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-xl">
               Build your perfect digital library with powerful features
             </p>
-          </motion.div>
+          </div>
 
-          <div className="space-y-4">
+          <div className="divide-y divide-gray-50 dark:divide-white/5 border-t border-b border-gray-50 dark:border-white/5">
             {benefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={index}
-                className="flex items-start space-x-4 bg-linear-to-r from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-200"
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                whileHover={{ scale: 1.02, x: 10 }}
+                className="flex items-start space-x-6 py-8 group transition-colors"
               >
-                <div className="bg-emerald-600 rounded-full p-2 mt-1 shadow-lg">
-                  <FiCheck className="w-5 h-5 text-white" />
+                <div className="w-6 h-6 rounded-sm bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-1">
+                  <FiCheck className="w-4 h-4 text-emerald-600" />
                 </div>
-                <p className="text-lg text-gray-800 font-medium">{benefit}</p>
-              </motion.div>
+                <p className="text-lg text-gray-700 dark:text-gray-300 font-medium leading-tight">
+                  {benefit}
+                </p>
+              </div>
             ))}
           </div>
         </div>
@@ -405,151 +299,114 @@ export default function ShelfLanding() {
 
       <section
         id="features"
-        className="py-32 px-6 relative"
+        className="py-32 px-6 bg-white dark:bg-black"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div
-              className="inline-block bg-emerald-100 px-4 py-2 rounded-full mb-6"
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="text-emerald-700 font-semibold text-sm">
+          <div className="text-center mb-20">
+            <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
+              <span className="text-emerald-700 font-medium text-[10px] uppercase tracking-widest">
                 POWERFUL FEATURES
               </span>
-            </motion.div>
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6">
+            </div>
+            <h2 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-6 tracking-tight">
               Built for Students & Readers
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              From textbooks to novels, magazines to comics, organized the way
-              you learn and read
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+              From textbooks to novels, magazines to comics.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
-                className="group relative"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="bg-white dark:bg-black p-8 border border-gray-100 dark:border-white/5 rounded-sm hover:border-emerald-500/30 transition-colors"
               >
-                <motion.div
-                  className="relative h-full bg-white rounded-3xl p-8 border border-gray-200 overflow-hidden shadow-lg"
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <div className="relative z-10">
-                    <div className="inline-flex p-4 bg-linear-to-br from-emerald-600 to-emerald-700 rounded-2xl mb-6 text-white shadow-lg">
-                      {feature.icon}
-                    </div>
+                <div className="w-10 h-10 bg-emerald-500 flex items-center justify-center rounded-sm text-white mb-6">
+                  {feature.icon}
+                </div>
 
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-emerald-700 transition-colors">
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                </motion.div>
-              </motion.div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-32 px-6 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <motion.div
-            className="absolute inset-0 bg-linear-to-br from-emerald-900 via-emerald-800 to-emerald-950"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          />
-          <motion.div
-            className="absolute top-0 left-0 w-full h-full"
-            style={{ y: y1 }}
-          >
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl" />
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 right-0 w-full h-full"
-            style={{ y: y2 }}
-          >
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-600/20 rounded-full blur-3xl" />
-          </motion.div>
-        </div>
+      <section className="py-40 px-6 bg-emerald-600 dark:bg-emerald-900/10 border-t border-emerald-500/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-block border border-white/20 bg-white/10 px-3 py-1 rounded-sm mb-8">
+            <span className="text-white font-medium text-[10px] uppercase tracking-widest flex items-center space-x-2">
+              <FiZap className="w-3 h-3" />
+              <span>START YOUR JOURNEY TODAY</span>
+            </span>
+          </div>
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+          <h2 className="text-5xl md:text-7xl font-medium text-white mb-8 tracking-tighter leading-tight">
+            Ready to Transform <br />
+            Your Reading?
+          </h2>
+          <p className="text-lg text-emerald-50 dark:text-emerald-200/60 max-w-xl mx-auto mb-12">
+            Join thousands of students and readers already using Shelf to
+            organize and discover amazing content.
+          </p>
+
+          <button
+            onClick={() => (window.location.href = "/app/auth/register")}
+            className="px-10 py-5 bg-white text-emerald-600 rounded-sm font-medium text-lg hover:bg-emerald-50 transition-colors inline-flex items-center space-x-2"
           >
-            <motion.div
-              className="inline-flex items-center space-x-2 bg-emerald-800/50 backdrop-blur-sm px-5 py-2 rounded-full mb-8 border border-emerald-700"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <FiZap className="w-4 h-4 text-emerald-300" />
-              <span className="text-emerald-200 font-semibold text-sm">
-                START YOUR JOURNEY TODAY
-              </span>
-            </motion.div>
-
-            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-              Ready to Transform
-              <br />
-              Your Reading?
-            </h2>
-            <p className="text-xl md:text-2xl text-emerald-100 max-w-2xl mx-auto mb-12">
-              Join thousands of students and readers already using Shelf to
-              organize and discover amazing content
-            </p>
-
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <motion.button
-                onClick={() => (window.location.href = "/app/auth/register")}
-                className="px-10 py-5 bg-white text-emerald-700 rounded-2xl font-bold text-lg shadow-2xl flex items-center justify-center space-x-2"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span>Create Free Account</span>
-                <FiArrowRight className="w-6 h-6" />
-              </motion.button>
-            </motion.div>
-          </motion.div>
+            <span>Create Free Account</span>
+            <FiArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </section>
 
-      <footer className="bg-linear-to-br from-emerald-950 via-emerald-900 to-gray-900 py-16 px-6">
+      <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-50 dark:border-white/5">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="bg-emerald-700 p-2.5 rounded-xl">
-              <BiLibrary className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-white">Shelf</span>
-          </div>
-          <p className="text-emerald-200 leading-relaxed mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center mb-6"
+          >
+            <Image
+              src="/logo-stacked-1.png"
+              alt="Shelf"
+              width={100}
+              height={32}
+              className="h-6 w-auto"
+            />
+          </Link>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
             Building the future of digital libraries. Knowledge for students and
             readers, everywhere.
           </p>
-          <p className="text-emerald-300 text-sm">
+          <div className="flex justify-center space-x-8 mb-8 text-xs font-medium uppercase tracking-widest text-gray-400">
+            <Link
+              href="/privacy"
+              className="hover:text-emerald-600 transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-emerald-600 transition-colors"
+            >
+              Terms
+            </Link>
+            <a
+              href="https://twitter.com/shelf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-emerald-600 transition-colors"
+            >
+              Twitter
+            </a>
+          </div>
+          <p className="text-[10px] text-gray-400">
             © {new Date().getFullYear()} Shelf. All rights reserved.
           </p>
         </div>

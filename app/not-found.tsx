@@ -35,7 +35,7 @@ export default function NotFound() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href="/app/library"
+                href="/app/discover"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 h-14 bg-gray-900 dark:bg-white text-white dark:text-neutral-950 text-[11px] font-black uppercase tracking-widest rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-black/5 dark:shadow-white/5"
               >
                 <FiHome className="w-4 h-4" />

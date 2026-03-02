@@ -7,6 +7,8 @@ export interface School {
 export interface Department {
   id: string;
   name: string;
+  slug: string;
+  faculty?: string | null;
 }
 
 export interface Interest {

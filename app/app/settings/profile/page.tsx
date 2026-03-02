@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import Select, { SingleValue } from "react-select";
+import { SingleValue } from "react-select";
 import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
@@ -21,6 +21,7 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";
+import { FormSelect } from "@/app/components/Form/FormSelect";
 
 interface OptionType {
   value: string;
@@ -162,58 +163,6 @@ export default function SettingsProfilePage() {
     }
   };
 
-  const customSelectStyles = {
-    control: (base: any, state: any) => ({
-      ...base,
-      paddingLeft: "2rem",
-      borderRadius: "0.375rem",
-      backgroundColor: isDark ? "#171717" : "#ffffff",
-      borderColor: state.isFocused ? "#10b981" : isDark ? "#262626" : "#e5e7eb",
-      boxShadow: state.isFocused ? "0 0 0 1px #10b981" : "none",
-      "&:hover": {
-        borderColor: "#10b981",
-      },
-      minHeight: "42px",
-    }),
-    input: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-      "input:focus": {
-        boxShadow: "none",
-      },
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      color: isDark ? "#ffffff" : "#111827",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: isDark ? "#737373" : "#9ca3af",
-    }),
-    menu: (base: any) => ({
-      ...base,
-      backgroundColor: isDark ? "#171717" : "#ffffff",
-      border: isDark ? "1px solid #262626" : "1px solid #e5e7eb",
-      boxShadow: isDark
-        ? "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
-        : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-    }),
-    option: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? "#10b981"
-        : state.isFocused
-          ? isDark
-            ? "#262626"
-            : "#f3f4f6"
-          : "transparent",
-      color: state.isSelected ? "#ffffff" : isDark ? "#ffffff" : "#111827",
-      "&:active": {
-        backgroundColor: "#10b981",
-      },
-    }),
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -304,68 +253,50 @@ export default function SettingsProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-                  University / School
-                </label>
-                <div className="relative">
-                  <FiBook className="absolute left-3 top-3 z-10 text-gray-400 dark:text-neutral-500 pointer-events-none" />
-                  <Select<OptionType, false>
-                    options={schoolOptions}
-                    isLoading={isLoadingSchools}
-                    onInputChange={(val) => setSchoolSearch(val)}
-                    value={
-                      formData.schoolId
-                        ? schoolOptions.find(
-                            (opt) => opt.value === formData.schoolId,
-                          ) ||
-                          (user?.school
-                            ? {
-                                value: user.school.id as string,
-                                label: user.school.name,
-                              }
-                            : null)
-                        : null
-                    }
-                    onChange={handleSchoolChange}
-                    placeholder="Select School"
-                    styles={customSelectStyles}
-                    classNamePrefix="react-select"
-                    className="text-gray-900 dark:text-neutral-100"
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-                  Department / Major
-                </label>
-                <div className="relative">
-                  <FiBriefcase className="absolute left-3 top-3 z-10 text-gray-400 dark:text-neutral-500 pointer-events-none" />
-                  <Select<OptionType, false>
-                    options={departmentOptions}
-                    isLoading={isLoadingDepartments}
-                    value={
-                      formData.departmentId
-                        ? departmentOptions.find(
-                            (opt) => opt.value === formData.departmentId,
-                          ) ||
-                          (user?.department
-                            ? {
-                                value: user.department.id as string,
-                                label: user.department.name,
-                              }
-                            : null)
-                        : null
-                    }
-                    onChange={handleDepartmentChange}
-                    placeholder="Select Department"
-                    isDisabled={!formData.schoolId}
-                    styles={customSelectStyles}
-                    classNamePrefix="react-select"
-                    className="text-gray-900 dark:text-neutral-100"
-                  />
-                </div>
-              </div>
+              <FormSelect<OptionType, false>
+                label="University / School"
+                icon={<FiBook />}
+                options={schoolOptions}
+                isLoading={isLoadingSchools}
+                onInputChange={(val) => setSchoolSearch(val)}
+                value={
+                  formData.schoolId
+                    ? schoolOptions.find(
+                        (opt) => opt.value === formData.schoolId,
+                      ) ||
+                      (user?.school
+                        ? {
+                            value: user.school.id as string,
+                            label: user.school.name,
+                          }
+                        : null)
+                    : null
+                }
+                onChange={handleSchoolChange}
+                placeholder="Select School"
+              />
+              <FormSelect<OptionType, false>
+                label="Department / Major"
+                icon={<FiBriefcase />}
+                options={departmentOptions}
+                isLoading={isLoadingDepartments}
+                value={
+                  formData.departmentId
+                    ? departmentOptions.find(
+                        (opt) => opt.value === formData.departmentId,
+                      ) ||
+                      (user?.department
+                        ? {
+                            value: user.department.id as string,
+                            label: user.department.name,
+                          }
+                        : null)
+                    : null
+                }
+                onChange={handleDepartmentChange}
+                placeholder="Select Department"
+                isDisabled={!formData.schoolId}
+              />
             </div>
 
             <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
