@@ -44,6 +44,7 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility } from "@/app/types/folder";
+import { useDeleteBookMutation } from "@/app/store/api/booksApi";
 
 interface ProfileClientProps {
   username: string;
@@ -426,7 +427,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     <BookCard
                       key={book.id}
                       {...book}
-                      onClick={() => setSelectedBook(book)}
+                      onClick={() => {
+                        setSelectedBook(book);
+                      }}
                     />
                   ))
                 ) : (

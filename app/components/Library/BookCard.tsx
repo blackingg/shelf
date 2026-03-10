@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiStar, FiBookmark } from "react-icons/fi";
+import { FiStar, FiBookmark, FiDelete } from "react-icons/fi";
 import {
   useBookmarkBookMutation,
   useUnbookmarkBookMutation,
@@ -11,6 +11,9 @@ import {
 } from "@/app/store/api/bookmarksApi";
 import { BookCardProps } from "@/app/types/book";
 import { motion } from "motion/react";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/app/store/authSlice";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -21,14 +24,18 @@ export const BookCard: React.FC<BookCardProps> = ({
   donor,
   onClick,
   className = "",
+  deleteFunct,
 }) => {
+  const { addNotification } = useNotifications();
   const [bookmarkBook] = useBookmarkBookMutation();
   const [unbookmarkBook] = useUnbookmarkBookMutation();
+
   const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(id || "", {
     skip: !id,
   });
   const isBookmarked = bookmarkStatus?.bookmarked;
-
+  const user = useSelector(selectCurrentUser);
+  const isDonor = user?.username == donor?.username;
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;

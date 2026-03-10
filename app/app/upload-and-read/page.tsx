@@ -9,9 +9,8 @@ import { motion } from "motion/react";
 import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
-  const { buffer, updateBuffer, fileType, setFileType } =
+  const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
     useContext(FileBufferContext);
-  const [fileName, setFileName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +39,7 @@ export default function UploadAndReadPage() {
   }
 
   const handleNextPage = useCallback(() => {
-    if (fileType === "epub") {
+    if (fileType === "epub" && currentPage < totalPages) {
       epubControlsRef.current?.next();
       setCurrentPage((prev) => prev + 1);
     } else {
@@ -79,14 +78,12 @@ export default function UploadAndReadPage() {
   );
 
   function UploadButton() {
-    const { setLoading, setEpubCurrentPage, setEpubTotalPages } = useReader();
+    const { setLoading } = useReader();
     return (
       <>
         <button
           onClick={() => {
             fileInputRef.current?.click();
-            setEpubCurrentPage(1);
-            setEpubTotalPages(1);
             setLoading(true);
           }}
           className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all shadow-lg shadow-emerald-600/20"

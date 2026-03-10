@@ -8,12 +8,15 @@ import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import {
+  useGetMeQuery,
   useUpdateMeMutation,
   useUploadAvatarMutation,
 } from "@/app/store/api/usersApi";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
+  useGetMyInterestsQuery,
+  useCompleteOnboardingMutation,
 } from "@/app/store/api/onboardingApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
@@ -28,6 +31,7 @@ interface OptionType {
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
+  console.log(user);
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -59,6 +63,11 @@ export default function SettingsProfilePage() {
     useGetOnboardingDepartmentsQuery(formData.schoolId, {
       skip: !formData.schoolId,
     });
+
+  const { data: myInterests = [] } = useGetMyInterestsQuery();
+  const interestIDs = myInterests?.map((interest) => String(interest.id));
+  const [completeOnboarding, { isLoading: isCompleting }] =
+    useCompleteOnboardingMutation();
 
   useEffect(() => {
     if (user) {
@@ -117,13 +126,16 @@ export default function SettingsProfilePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const updatedUser = await updateMe({
+      await updateMe({
         fullName: formData.name,
         username: formData.username,
         bio: formData.bio,
+      }).unwrap();
+      await completeOnboarding({
         schoolId: formData.schoolId,
         departmentId: formData.departmentId,
-      }).unwrap();
+        interestIds: interestIDs,
+      }).unwrap;
       addNotification("success", "Profile updated successfully!");
     } catch (error) {
       addNotification(
@@ -164,10 +176,7 @@ export default function SettingsProfilePage() {
 
       <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
         <div className="p-6 md:p-8">
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-8"
-          >
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-4">
                 Profile Photo
@@ -293,9 +302,9 @@ export default function SettingsProfilePage() {
             <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
               <Button
                 type="submit"
-                isLoading={isUpdating}
+                isLoading={isUpdating || isCompleting}
                 disabled={!isDirty}
-                className="w-auto px-8"
+                className="w-auto px-8 disabled:cursor-not-allowed"
               >
                 Save Changes
               </Button>

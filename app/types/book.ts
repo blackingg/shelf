@@ -53,6 +53,7 @@ export interface BookCardProps {
   donor?: { id: string; username: string };
   onClick?: () => void;
   className?: string;
+  deleteFunct?: () => void;
 }
 
 export interface BookFilterParams extends PaginationParams {

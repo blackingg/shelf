@@ -6,6 +6,8 @@ export const FileBufferContext = createContext<{
   updateBuffer: React.Dispatch<SetStateAction<ArrayBuffer>>;
   fileType: "epub" | "pdf" | "";
   setFileType: React.Dispatch<SetStateAction<"epub" | "pdf" | "">>;
+  fileName: string;
+  setFileName: (name: string) => void;
 }>({} as any);
 
 export const BufferProvider: React.FC<{
@@ -13,6 +15,7 @@ export const BufferProvider: React.FC<{
 }> = ({ children }) => {
   const [buffer, updateBuffer] = useState({} as ArrayBuffer);
   const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
+  const [fileName, setFileName] = useState("");
 
   return (
     <FileBufferContext
@@ -21,6 +24,8 @@ export const BufferProvider: React.FC<{
         updateBuffer,
         fileType,
         setFileType,
+        fileName,
+        setFileName,
       }}
     >
       {children}

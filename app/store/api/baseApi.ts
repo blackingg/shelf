@@ -92,7 +92,11 @@ const baseQueryWithReauth: BaseQueryFn<
       try {
         const refreshToken = (api.getState() as RootState).auth.refreshToken;
 
-        if (refreshToken && refreshToken !== "undefined" && refreshToken !== "null") {
+        if (
+          refreshToken &&
+          refreshToken !== "undefined" &&
+          refreshToken !== "null"
+        ) {
           const refreshResult = await baseQuery(
             {
               url: "/auth/refresh",

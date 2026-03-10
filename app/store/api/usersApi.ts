@@ -55,12 +55,14 @@ export const usersApi = baseApi.injectEndpoints({
         url: `/users/${username}/books`,
         params,
       }),
+      providesTags: ["Books"],
     }),
     getUserFolders: builder.query<PaginatedResponse<Folder>, string>({
       query: (username) => `/users/${username}/folders`,
       providesTags: ["Folders"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
