@@ -15,7 +15,7 @@ interface EpubViewerProps {
   onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
 }
 
-const generateLocations = async (book: Book) => {
+export const generateLocations = async (book: Book) => {
   await book.ready;
   await book.locations.generate(1024);
 };

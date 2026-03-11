@@ -184,7 +184,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <Card className="!p-8">
+          <Card className="p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -250,10 +250,7 @@ export default function LoginPage() {
 
             <Divider text="or sign in with" />
 
-            <SocialLoginButton
-              provider="google"
-              onClick={handleGoogleAuth}
-            />
+            <SocialLoginButton provider="google" onClick={handleGoogleAuth} />
           </Card>
 
           <p className="mt-8 text-center text-sm text-gray-500">

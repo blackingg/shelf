@@ -28,12 +28,14 @@ import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
 import MultipleUploadForm from "@/app/components/MultipleUploadForm";
 
-interface PDFJSInfo {
+export interface PDFJSInfo {
   Title: string;
   Author: string;
 }
 
-async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractPdfCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const { parsePdf, getPdfPage } =
       await import("@/app/components/Reader/processingFunctions");
@@ -62,7 +64,9 @@ async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
   }
 }
 
-async function extractEpubCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractEpubCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const bookDetails = Epub(fileBuffer.slice(0) as any);
     await bookDetails.ready;
@@ -151,8 +155,13 @@ export default function UploadPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActiveBook(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetBookFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files) {
+      if (e.dataTransfer.files.length === 1) {
+        validateAndSetBookFile(e.dataTransfer.files[0]);
+      } else {
+        updateMultiplesList(e.dataTransfer.files);
+        updateBookCount(e.dataTransfer.files.length);
+      }
     }
   };
 
@@ -740,6 +749,14 @@ export default function UploadPage() {
       </main>
     </div>
   ) : (
-    <MultipleUploadForm files={multiplesList} />
+    <div className="grid bg-inherit">
+      <button
+        className="justify-self-end grid p-2 text-xl uppercase bg-red-600"
+        onClick={() => updateBookCount(0)}
+      >
+        Clear Books
+      </button>
+      <MultipleUploadForm files={multiplesList} />
+    </div>
   );
 }
