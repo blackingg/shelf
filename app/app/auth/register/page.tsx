@@ -224,7 +224,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <Card className="!p-8">
+          <Card className="p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -321,10 +321,7 @@ export default function SignupPage() {
 
             <Divider text="or sign up with" />
 
-            <SocialLoginButton
-              provider="google"
-              onClick={handleGoogleAuth}
-            />
+            <SocialLoginButton provider="google" onClick={handleGoogleAuth} />
           </Card>
 
           <p className="mt-8 text-center text-sm text-gray-500">

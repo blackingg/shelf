@@ -40,8 +40,8 @@ export async function metadataParse(buffer: ArrayBuffer) {
       return {
         title: title,
         author: creator,
-        description: description.slice(0, 1800),
-        publishedYear: pubdate.slice(0, 4),
+        description: description.slice(0, 1800) || "",
+        publishedYear: pubdate.slice(0, 4) || "",
         publisher: publisher,
         pages: bookDetails.locations.length(),
         category: "Fiction",

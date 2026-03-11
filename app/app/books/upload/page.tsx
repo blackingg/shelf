@@ -751,7 +751,7 @@ export default function UploadPage() {
   ) : (
     <div className="grid bg-inherit">
       <button
-        className="justify-self-end grid p-2 text-xl uppercase bg-red-600"
+        className="justify-self-end grid p-2 text-xl uppercase rounded-xl bg-red-600"
         onClick={() => updateBookCount(0)}
       >
         Clear Books
