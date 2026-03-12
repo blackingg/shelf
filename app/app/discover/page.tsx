@@ -277,11 +277,11 @@ export default function DiscoverPage() {
             </div>
 
             {isLoadingPublicFolders ? (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 <FolderCardSkeleton count={4} />
               </div>
             ) : displayFolders.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {displayFolders.map((folder) => (
                   <FolderCard
                     key={folder.id}
