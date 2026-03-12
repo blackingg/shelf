@@ -172,12 +172,12 @@ export default function DiscoverPage() {
             />
 
             {isCategoryLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-12">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-12">
                 <BookCardSkeleton count={8} />
               </div>
             ) : categoryBooks.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mt-12">
                   {categoryBooks.map((book) => (
                     <BookCard
                       key={book.id}
