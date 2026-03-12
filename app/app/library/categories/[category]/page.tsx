@@ -19,6 +19,7 @@ export default function CategoryPage({
 }) {
   const resolvedParams = use(params);
   const slug = resolvedParams.category;
+  const isAllCategory = slug === "all";
   const router = useRouter();
 
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
@@ -37,19 +38,29 @@ export default function CategoryPage({
   }, [searchQuery]);
 
   const { data: category, isLoading: isLoadingCategory } =
-    useGetCategoryBySlugQuery(slug);
+    useGetCategoryBySlugQuery(slug, { skip: isAllCategory });
+  const booksQueryParams = {
+    q: debouncedSearch,
+    page,
+    pageSize,
+    sort_by: sortBy as any,
+    order: "desc" as const,
+    ...(isAllCategory ? {} : { category: slug }),
+  };
   const {
     data: booksResponse,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetBooksQuery({
-    q: debouncedSearch,
-    category: slug,
-    page,
-    pageSize,
-    sort_by: sortBy as any,
-    order: "desc",
-  });
+  } = useGetBooksQuery(booksQueryParams);
+
+  const categoryView =
+    category ||
+    (isAllCategory
+      ? {
+          name: "All Categories",
+          description: "Explore our full collection across every category.",
+        }
+      : null);
 
   const showSkeleton = isLoadingBooks || isFetchingBooks;
 
@@ -68,7 +79,7 @@ export default function CategoryPage({
             <div className="">
               <CategorySkeleton />
             </div>
-          ) : !category ? (
+          ) : !categoryView ? (
             <div className="text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Category Not Found
@@ -93,11 +104,11 @@ export default function CategoryPage({
                       Community Library
                     </p>
                     <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
-                      {category.name}
+                      {categoryView.name}
                     </h1>
                     <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
-                      {category.description ||
-                        `Explore our extensive collection of community-curated resources for ${category.name}.`}
+                      {categoryView.description ||
+                        `Explore our extensive collection of community-curated resources for ${categoryView.name}.`}
                     </p>
                   </div>
 

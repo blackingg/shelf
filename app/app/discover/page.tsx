@@ -60,17 +60,16 @@ export default function DiscoverPage() {
 
   const isCategoryLoading = isLoadingCategoryBooks || isFetchingCategoryBooks;
 
-  const categoryBooks = categoryBooksResponse?.items || [];
-  const hasMoreCategoryBooks = !!categoryBooksResponse?.hasNext;
+  const rawCategoryBooks = categoryBooksResponse?.items || [];
+  const categoryBooks = rawCategoryBooks.slice(0, 6);
+  const hasMoreCategoryBooks =
+    !!categoryBooksResponse?.hasNext ||
+    (categoryBooksResponse?.total || 0) > 6 ||
+    rawCategoryBooks.length > 6;
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
-    if (activeCategory !== "all") {
-      router.push(`/app/library/categories/${activeCategory}`);
-      return;
-    }
-
-    router.push("/app/library/categories");
+    router.push(`/app/library/categories/${activeCategory}`);
   };
 
   if (recommendations) {
