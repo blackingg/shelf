@@ -55,17 +55,17 @@ export default function DiscoverPage() {
   } = useGetBooksQuery({
     category: activeCategory === "all" ? undefined : activeCategory,
     page: 1,
-    pageSize: 6,
+    pageSize: 8,
   });
 
   const isCategoryLoading = isLoadingCategoryBooks || isFetchingCategoryBooks;
 
   const rawCategoryBooks = categoryBooksResponse?.items || [];
-  const categoryBooks = rawCategoryBooks.slice(0, 6);
+  const categoryBooks = rawCategoryBooks.slice(0, 8);
   const hasMoreCategoryBooks =
     !!categoryBooksResponse?.hasNext ||
-    (categoryBooksResponse?.total || 0) > 6 ||
-    rawCategoryBooks.length > 6;
+    (categoryBooksResponse?.total || 0) > 8 ||
+    rawCategoryBooks.length > 8;
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
@@ -173,7 +173,7 @@ export default function DiscoverPage() {
 
             {isCategoryLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-12">
-                <BookCardSkeleton count={6} />
+                <BookCardSkeleton count={8} />
               </div>
             ) : categoryBooks.length > 0 ? (
               <>
@@ -199,7 +199,7 @@ export default function DiscoverPage() {
                 )}
               </>
             ) : (
-              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
+              <div className="min-h-144 md:min-h-176 bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12 flex items-center justify-center">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
                   No resources found in this category.
                 </p>
