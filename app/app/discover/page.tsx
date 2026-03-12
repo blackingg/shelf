@@ -54,13 +54,24 @@ export default function DiscoverPage() {
     isFetching: isFetchingCategoryBooks,
   } = useGetBooksQuery({
     category: activeCategory === "all" ? undefined : activeCategory,
-    pageSize: 8,
+    page: 1,
+    pageSize: 6,
   });
 
   const isCategoryLoading = isLoadingCategoryBooks || isFetchingCategoryBooks;
 
   const categoryBooks = categoryBooksResponse?.items || [];
+  const hasMoreCategoryBooks = !!categoryBooksResponse?.hasNext;
   const displayItems: RecommendedItem[] = [];
+
+  const handleViewMoreCategories = () => {
+    if (activeCategory !== "all") {
+      router.push(`/app/library/categories/${activeCategory}`);
+      return;
+    }
+
+    router.push("/app/library/categories");
+  };
 
   if (recommendations) {
     const folders = recommendations.items
@@ -146,11 +157,11 @@ export default function DiscoverPage() {
                 Categories
               </h2>
               <button
-                onClick={() => router.push("/app/library/categories")}
+                onClick={handleViewMoreCategories}
                 className="flex items-center gap-2 group"
               >
                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
-                  View Gallery
+                  View More
                 </span>
                 <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
               </button>
@@ -162,19 +173,32 @@ export default function DiscoverPage() {
             />
 
             {isCategoryLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12">
-                <BookCardSkeleton count={5} />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-12">
+                <BookCardSkeleton count={6} />
               </div>
             ) : categoryBooks.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-12">
-                {categoryBooks.map((book) => (
-                  <BookCard
-                    key={book.id}
-                    {...book}
-                    onClick={() => setSelectedBook(book as BookPreview)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12">
+                  {categoryBooks.map((book) => (
+                    <BookCard
+                      key={book.id}
+                      {...book}
+                      onClick={() => setSelectedBook(book as BookPreview)}
+                    />
+                  ))}
+                </div>
+
+                {hasMoreCategoryBooks && (
+                  <div className="mt-10 flex justify-center">
+                    <button
+                      onClick={handleViewMoreCategories}
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                    >
+                      View More
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
