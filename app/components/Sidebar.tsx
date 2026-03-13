@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
   ];
 
   const bottomItems: SidebarItem[] = [
-    { label: "Settings", icon: <FiSettings />, href: "/app/settings" },
+    { label: "Settings", icon: <FiSettings />, href: "/app/settings/profile" },
     { label: "Logout", icon: <FiLogOut />, onClick: handleLogout },
   ];
 
