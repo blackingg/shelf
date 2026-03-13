@@ -1,15 +1,27 @@
 "use client";
 import { useState } from "react";
-import { FiSettings, FiLogOut, FiUser, FiChevronDown } from "react-icons/fi";
+import {
+  FiSettings,
+  FiLogOut,
+  FiUser,
+  FiChevronDown,
+  FiLogIn,
+  FiUserPlus,
+} from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, logout } from "../store/authSlice";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+  logout,
+} from "../store/authSlice";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const userFullName = user?.fullName || "";
   const userName = user?.username || "User";
@@ -34,11 +46,42 @@ export const UserProfileDropdown: React.FC = () => {
     router.push("/app/auth/login");
   };
 
+  const handleLogin = () => {
+    setIsOpen(false);
+    router.push("/app/auth/login");
+  };
+
+  const handleRegister = () => {
+    setIsOpen(false);
+    router.push("/app/auth/register");
+  };
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleLogin}
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-neutral-200 border border-gray-200 dark:border-neutral-700 rounded-md hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+        >
+          <FiLogIn className="w-4 h-4" />
+          <span>Log in</span>
+        </button>
+        <button
+          onClick={handleRegister}
+          className="hidden sm:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/60 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+        >
+          <FiUserPlus className="w-4 h-4" />
+          <span>Create account</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 px-3 py-2 rounded-md transition-colors border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
+        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors border border-transparent hover:bg-gray-50 dark:hover:bg-neutral-800 hover:border-gray-100 dark:hover:border-neutral-700/50"
       >
         <div className="w-8 h-8 md:w-9 md:h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm font-bold border border-emerald-100 dark:border-emerald-800/50">
           {userAvatar &&
@@ -53,7 +96,7 @@ export const UserProfileDropdown: React.FC = () => {
             userFullName.charAt(0).toUpperCase()
           )}
         </div>
-        <span className="hidden md:block text-sm font-bold text-gray-900 dark:text-neutral-100">
+        <span className="hidden md:block text-sm font-medium text-gray-900 dark:text-neutral-100">
           @{userName}
         </span>
         <FiChevronDown
@@ -94,10 +137,10 @@ export const UserProfileDropdown: React.FC = () => {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 dark:text-white text-sm truncate leading-tight mb-1">
+                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate leading-tight mb-1">
                       {userFullName}
                     </p>
-                    <p className="text-[10px] font-bold tracking-widest text-emerald-600 dark:text-emerald-400 truncate opacity-60">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                       {userEmail}
                     </p>
                   </div>
@@ -110,7 +153,7 @@ export const UserProfileDropdown: React.FC = () => {
                   className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                 >
                   <FiUser className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                  <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                     View Profile
                   </span>
                 </button>
@@ -119,7 +162,7 @@ export const UserProfileDropdown: React.FC = () => {
                   className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                 >
                   <FiSettings className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                  <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                     Settings
                   </span>
                 </button>
@@ -131,7 +174,7 @@ export const UserProfileDropdown: React.FC = () => {
                   className="w-full px-5 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left group"
                 >
                   <FiLogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-neutral-300 group-hover:text-red-600">
+                  <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-red-600">
                     Logout
                   </span>
                 </button>
