@@ -13,6 +13,7 @@ export const categoriesApi = baseApi.injectEndpoints({
     getCategoryBySlug: builder.query<Category, string>({
       query: (slug) => `/categories/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Categories", id: slug }],
+      keepUnusedDataFor: 300,
     }),
     getBooksByCategory: builder.query<
       PaginatedResponse<Book>,
@@ -23,6 +24,7 @@ export const categoriesApi = baseApi.injectEndpoints({
         params,
       }),
       providesTags: ["Books"],
+      keepUnusedDataFor: 300,
     }),
   }),
 });

@@ -15,6 +15,7 @@ export const recommendationsApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Books", "Folders"],
+      keepUnusedDataFor: 300,
     }),
     getDiscoverFeed: builder.query<
       DiscoveryFeedResponse,
@@ -25,6 +26,7 @@ export const recommendationsApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Books", "Folders"],
+      keepUnusedDataFor: 300,
     }),
   }),
 });

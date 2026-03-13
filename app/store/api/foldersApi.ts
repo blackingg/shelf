@@ -30,6 +30,7 @@ export const foldersApi = baseApi.injectEndpoints({
         params: params || { include_collaborated: true },
       }),
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getPublicFolders: builder.query<
       PaginatedResponse<Folder>,
@@ -40,6 +41,7 @@ export const foldersApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getRecommendedFolders: builder.query<
       RecommendedFoldersResponse,
@@ -50,14 +52,17 @@ export const foldersApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getFolderById: builder.query<Folder, string>({
       query: (id) => `/folders/${id}`,
       providesTags: (result, error, id) => [{ type: "Folders", id }],
+      keepUnusedDataFor: 300,
     }),
     getFolderBySlug: builder.query<Folder, string>({
       query: (slug) => `/folders/slug/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Folders", id: slug }],
+      keepUnusedDataFor: 300,
     }),
     createFolder: builder.mutation<Folder, CreateFolderRequest>({
       query: (data) => ({

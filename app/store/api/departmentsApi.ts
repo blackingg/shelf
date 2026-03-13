@@ -22,6 +22,7 @@ export const departmentsApi = baseApi.injectEndpoints({
       providesTags: (result, error, slug) => [
         { type: "Departments", id: slug },
       ],
+      keepUnusedDataFor: 300,
     }),
     getBooksByDepartment: builder.query<
       PaginatedResponse<Book>,
@@ -34,6 +35,7 @@ export const departmentsApi = baseApi.injectEndpoints({
       providesTags: (result, error, { slug }) => [
         { type: "Books", id: `dept-${slug}` },
       ],
+      keepUnusedDataFor: 300,
     }),
   }),
 });

@@ -17,6 +17,7 @@ export const booksApi = baseApi.injectEndpoints({
         params,
       }),
       providesTags: ["Books"],
+      keepUnusedDataFor: 300,
     }),
     getRecommendedBooks: builder.query<
       RecommendedBooksResponse,
@@ -27,14 +28,17 @@ export const booksApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Books"],
+      keepUnusedDataFor: 300,
     }),
     getBookById: builder.query<Book, string>({
       query: (id) => `/books/${id}`,
       providesTags: (result, error, id) => [{ type: "Books", id }],
+      keepUnusedDataFor: 300,
     }),
     getBookBySlug: builder.query<Book, string>({
       query: (slug) => `/books/slug/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Books", id: slug }],
+      keepUnusedDataFor: 300,
     }),
     createBook: builder.mutation<Book, CreateBookRequest>({
       query: (data) => ({

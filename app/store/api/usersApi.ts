@@ -14,6 +14,7 @@ export const usersApi = baseApi.injectEndpoints({
     getMe: builder.query<User, void>({
       query: () => "/users/me",
       providesTags: ["User"],
+      keepUnusedDataFor: 300,
     }),
     updateMe: builder.mutation<User, UpdateUserRequest>({
       query: (data) => ({
@@ -46,6 +47,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
     getUserByUsername: builder.query<UserPublic, string>({
       query: (username) => `/users/${username}`,
+      keepUnusedDataFor: 300,
     }),
     getUserBooks: builder.query<
       PaginatedResponse<Book>,
@@ -55,10 +57,12 @@ export const usersApi = baseApi.injectEndpoints({
         url: `/users/${username}/books`,
         params,
       }),
+      keepUnusedDataFor: 300,
     }),
     getUserFolders: builder.query<PaginatedResponse<Folder>, string>({
       query: (username) => `/users/${username}/folders`,
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
   }),
 });

@@ -59,7 +59,7 @@ export default function DiscoverPage() {
   const displayFolders = publicFoldersResponse?.items || [];
 
   const {
-    data: categoryBooksResponse,
+    currentData: categoryBooksResponse,
     isLoading: isLoadingCategoryBooks,
     isFetching: isFetchingCategoryBooks,
   } = useGetBooksQuery({
@@ -68,9 +68,10 @@ export default function DiscoverPage() {
     pageSize: 8,
   });
 
-  const isCategoryLoading = isLoadingCategoryBooks || isFetchingCategoryBooks;
-
   const rawCategoryBooks = categoryBooksResponse?.items || [];
+  const isCategoryLoading =
+    rawCategoryBooks.length === 0 &&
+    (isLoadingCategoryBooks || isFetchingCategoryBooks);
   const categoryBooks = rawCategoryBooks.slice(0, 8);
   const hasMoreCategoryBooks =
     !!categoryBooksResponse?.hasNext ||

@@ -105,16 +105,19 @@ export default function LibraryPage() {
   const bookmarkedFolders = bookmarkedFoldersResponse?.items || [];
   const totalBookmarkedFolders = bookmarkedFoldersResponse?.total || 0;
   const showBooksSkeleton =
-    isLoadingBookmarkedBooks || isFetchingBookmarkedBooks;
+    !bookmarkedBooksResponse &&
+    (isLoadingBookmarkedBooks || isFetchingBookmarkedBooks);
   const showFoldersSkeleton =
-    isLoadingBookmarkedFolders || isFetchingBookmarkedFolders;
+    !bookmarkedFoldersResponse &&
+    (isLoadingBookmarkedFolders || isFetchingBookmarkedFolders);
 
   // ── Folders data ──
   const myFolders = myFoldersResponse?.items || [];
 
   // ── Uploads data ──
   const myBooks = myBooksResponse?.items || [];
-  const showUploadsSkeleton = isLoadingMyBooks || isFetchingMyBooks;
+  const showUploadsSkeleton =
+    !myBooksResponse && (isLoadingMyBooks || isFetchingMyBooks);
 
   // ── Handlers ──
   const handleCreateFolder = async (
@@ -306,7 +309,7 @@ export default function LibraryPage() {
                     showFoldersSkeleton ? "opacity-50" : ""
                   }`}
                 >
-                  {isLoadingBookmarkedFolders ? (
+                  {showFoldersSkeleton ? (
                     <FolderCardSkeleton count={4} />
                   ) : bookmarkedFolders && bookmarkedFolders.length > 0 ? (
                     bookmarkedFolders.map((folder) => (
