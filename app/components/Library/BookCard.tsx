@@ -92,11 +92,14 @@ export const BookCard: React.FC<BookCardProps> = ({
       </p>
       {donor?.username && (
         <Link
-          href={`/app/profile/${donor.username}`}
+          href={`/app/profile/${encodeURIComponent(donor.username.replace(/\s+/g, ""))}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-[10px] text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 mt-0.5 block truncate transition-colors"
+          className="text-[10px] text-gray-400 dark:text-neutral-500 mt-0.5 block truncate"
         >
-          Donated by <span className="hover:underline">{donor.username}</span>
+          Donated by
+          <span className="ml-1 underline-offset-2 hover:underline">
+            {donor.username}
+          </span>
         </Link>
       )}
     </div>

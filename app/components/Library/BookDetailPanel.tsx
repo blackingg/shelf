@@ -166,12 +166,12 @@ export const BookDetailPanel: React.FC<{
                 </p>
                 {book?.donor?.username && (
                   <Link
-                    href={`/app/profile/${book.donor.username}`}
-                    className="text-emerald-100/70 text-xs sm:text-sm hover:text-emerald-200 transition-colors group inline-block"
+                    href={`/app/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
+                    className="text-emerald-100/70 text-xs sm:text-sm inline-block"
                     onClick={() => onClose()}
                   >
                     Donated by{" "}
-                    <span className="text-white font-semibold hover:underline">
+                    <span className="text-white font-semibold underline-offset-2 hover:underline">
                       {book.donor.username}
                     </span>
                   </Link>

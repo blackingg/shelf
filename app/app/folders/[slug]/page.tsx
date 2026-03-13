@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import BooksTable from "@/app/components/Folders/BooksTable";
 import { BackButton } from "@/app/components/Layout/BackButton";
@@ -194,10 +195,10 @@ export default function FolderDetailsPage() {
               <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
                 <div className="relative group/cover">
                   <div
-                    className={`w-20 h-20 md:w-24 md:h-24 rounded-md flex-shrink-0 flex items-center justify-center overflow-hidden border transition-all duration-300 ${
+                    className={`w-20 h-20 md:w-24 md:h-24 rounded-md shrink-0 flex items-center justify-center overflow-hidden border transition-all duration-300 ${
                       folder.visibility === "PUBLIC"
                         ? "bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border-gray-100 dark:border-white/5"
-                        : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-500 border-gray-200 dark:border-neutral-700/50 grayscale-[50%] opacity-90"
+                        : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-500 border-gray-200 dark:border-neutral-700/50 grayscale-50 opacity-90"
                     }`}
                   >
                     {folder.coverImage ? (
@@ -245,7 +246,12 @@ export default function FolderDetailsPage() {
                       <span>{folder.bookmarksCount} bookmarks</span>
                     </div>
                     <span className="hidden md:inline">•</span>
-                    <span>Created by {folder.user?.username || "Unknown"}</span>
+                    <Link
+                      href={`/app/profile/${encodeURIComponent((folder.user?.username || "").replace(/\s+/g, ""))}`}
+                      className="underline-offset-2 hover:underline"
+                    >
+                      Created by {folder.user?.username}
+                    </Link>
                     <span className="hidden md:inline">•</span>
                     <span className="capitalize">
                       {folder.visibility.toLowerCase()}
