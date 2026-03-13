@@ -1,7 +1,6 @@
 "use client";
 import { parsePdf, getPdfPage, usePdfViewer } from "./processingFunctions";
 import { renderPdfPage } from "./pdfRenderer";
-import * as pdfjs from "pdfjs-dist";
 import { useRef, useState, useEffect } from "react";
 
 interface PdfViewerProps {
@@ -15,7 +14,6 @@ export function PdfViewer({
   onPageInfo,
   page: externalPage,
 }: PdfViewerProps) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [doc, setDoc] = useState<any>(null);
 
@@ -47,7 +45,10 @@ export function PdfViewer({
 
   return (
     <div className="w-full grid justify-items-center">
-      <canvas ref={canvasRef} className="max-w-full" />
+      <canvas
+        ref={canvasRef}
+        className="max-w-full"
+      />
     </div>
   );
 }
