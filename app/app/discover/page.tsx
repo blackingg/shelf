@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
@@ -45,7 +45,17 @@ export default function DiscoverPage() {
       order: "desc",
     });
 
-  const displayDepartments = departments.slice(0, 5);
+  const displayDepartments = useMemo(
+    () =>
+      [...departments]
+        .sort((a, b) => {
+          const booksDiff = (b.booksCount || 0) - (a.booksCount || 0);
+          if (booksDiff !== 0) return booksDiff;
+          return a.name.localeCompare(b.name);
+        })
+        .slice(0, 8),
+    [departments],
+  );
   const displayFolders = publicFoldersResponse?.items || [];
 
   const {
@@ -224,8 +234,8 @@ export default function DiscoverPage() {
             </div>
 
             {isLoadingDepartments ? (
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-                {Array.from({ length: 5 }).map((_, i) => (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
                     className="h-32 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
@@ -233,7 +243,7 @@ export default function DiscoverPage() {
                 ))}
               </div>
             ) : displayDepartments.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {displayDepartments.map((dept) => (
                   <DepartmentCard
                     key={dept.id}
