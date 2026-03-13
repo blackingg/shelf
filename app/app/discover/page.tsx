@@ -65,18 +65,18 @@ export default function DiscoverPage() {
   } = useGetBooksQuery({
     category: activeCategory === "all" ? undefined : activeCategory,
     page: 1,
-    pageSize: 8,
+    pageSize: 10,
   });
 
   const rawCategoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =
     rawCategoryBooks.length === 0 &&
     (isLoadingCategoryBooks || isFetchingCategoryBooks);
-  const categoryBooks = rawCategoryBooks.slice(0, 8);
+  const categoryBooks = rawCategoryBooks.slice(0, 10);
   const hasMoreCategoryBooks =
     !!categoryBooksResponse?.hasNext ||
-    (categoryBooksResponse?.total || 0) > 8 ||
-    rawCategoryBooks.length > 8;
+    (categoryBooksResponse?.total || 0) > 10 ||
+    rawCategoryBooks.length > 10;
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
@@ -184,7 +184,7 @@ export default function DiscoverPage() {
 
             {isCategoryLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-12">
-                <BookCardSkeleton count={8} />
+                <BookCardSkeleton count={10} />
               </div>
             ) : categoryBooks.length > 0 ? (
               <>
