@@ -22,7 +22,7 @@ export default function DiscoverFoldersPage() {
     "createdAt" | "booksCount" | "bookmarksCount"
   >("createdAt");
   const [order, setOrder] = useState<SortOrder>("desc");
-  const pageSize = 15;
+  const pageSize = 8;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,6 +47,7 @@ export default function DiscoverFoldersPage() {
   const showSkeleton = isLoading || isFetching;
 
   const folders = foldersResponse?.items || [];
+  const visibleFolders = folders.slice(0, pageSize);
   const totalPages = foldersResponse?.totalPages || 1;
 
   return (
@@ -130,10 +131,10 @@ export default function DiscoverFoldersPage() {
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               <FolderCardSkeleton count={pageSize} />
             </div>
-          ) : folders.length > 0 ? (
+          ) : visibleFolders.length > 0 ? (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {folders.map((folder) => (
+                {visibleFolders.map((folder) => (
                   <FolderCard
                     key={folder.id}
                     folder={folder}

@@ -40,7 +40,7 @@ export default function DiscoverPage() {
   const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
     useGetPublicFoldersQuery({
       page: 1,
-      pageSize: 4,
+      pageSize: 8,
       sort_by: "createdAt",
       order: "desc",
     });
@@ -57,10 +57,11 @@ export default function DiscoverPage() {
     [departments],
   );
   const hasMoreDepartments = departments.length > displayDepartments.length;
-  const displayFolders = publicFoldersResponse?.items || [];
+  const displayFolders = (publicFoldersResponse?.items || []).slice(0, 8);
   const hasMorePublicFolders =
     !!publicFoldersResponse?.hasNext ||
-    (publicFoldersResponse?.total || 0) > displayFolders.length;
+    (publicFoldersResponse?.total || 0) > 8 ||
+    (publicFoldersResponse?.items?.length || 0) > 8;
 
   const {
     currentData: categoryBooksResponse,
@@ -279,7 +280,7 @@ export default function DiscoverPage() {
 
             {isLoadingPublicFolders ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                <FolderCardSkeleton count={4} />
+                <FolderCardSkeleton count={8} />
               </div>
             ) : displayFolders.length > 0 ? (
               <>
