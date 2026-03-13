@@ -8,7 +8,7 @@ import {
   FolderCardSkeleton,
 } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiBook, FiArrowRight } from "react-icons/fi";
+import { FiBook } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
@@ -56,7 +56,11 @@ export default function DiscoverPage() {
         .slice(0, 8),
     [departments],
   );
+  const hasMoreDepartments = departments.length > displayDepartments.length;
   const displayFolders = publicFoldersResponse?.items || [];
+  const hasMorePublicFolders =
+    !!publicFoldersResponse?.hasNext ||
+    (publicFoldersResponse?.total || 0) > displayFolders.length;
 
   const {
     currentData: categoryBooksResponse,
@@ -162,19 +166,10 @@ export default function DiscoverPage() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
                 Categories
               </h2>
-              <button
-                onClick={handleViewMoreCategories}
-                className="flex items-center gap-2 group"
-              >
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
-                  View More
-                </span>
-                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-              </button>
             </div>
 
             <CategoryFilter
@@ -219,19 +214,10 @@ export default function DiscoverPage() {
           </div>
 
           <div className="mt-20">
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
                 Departments
               </h2>
-              <button
-                onClick={() => router.push("/app/library/departments")}
-                className="flex items-center gap-2 group"
-              >
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
-                  View All
-                </span>
-                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-              </button>
             </div>
 
             {isLoadingDepartments ? (
@@ -244,17 +230,30 @@ export default function DiscoverPage() {
                 ))}
               </div>
             ) : displayDepartments.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {displayDepartments.map((dept) => (
-                  <DepartmentCard
-                    key={dept.id}
-                    department={dept}
-                    onClick={() =>
-                      router.push(`/app/library/departments/${dept.slug}`)
-                    }
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {displayDepartments.map((dept) => (
+                    <DepartmentCard
+                      key={dept.id}
+                      department={dept}
+                      onClick={() =>
+                        router.push(`/app/library/departments/${dept.slug}`)
+                      }
+                    />
+                  ))}
+                </div>
+
+                {hasMoreDepartments && (
+                  <div className="mt-10 flex justify-center">
+                    <button
+                      onClick={() => router.push("/app/library/departments")}
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                    >
+                      View All
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
@@ -272,19 +271,10 @@ export default function DiscoverPage() {
           </div>
 
           <div className="mt-20">
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
                 Community Folders
               </h2>
-              <button
-                onClick={() => router.push("/app/discover/folders")}
-                className="flex items-center gap-2 group"
-              >
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-emerald-600 transition-colors">
-                  View All
-                </span>
-                <FiArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-              </button>
             </div>
 
             {isLoadingPublicFolders ? (
@@ -292,15 +282,28 @@ export default function DiscoverPage() {
                 <FolderCardSkeleton count={4} />
               </div>
             ) : displayFolders.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {displayFolders.map((folder) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {displayFolders.map((folder) => (
+                    <FolderCard
+                      key={folder.id}
+                      folder={folder}
+                      onClick={() => router.push(`/app/folders/${folder.slug}`)}
+                    />
+                  ))}
+                </div>
+
+                {hasMorePublicFolders && (
+                  <div className="mt-10 flex justify-center">
+                    <button
+                      onClick={() => router.push("/app/discover/folders")}
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                    >
+                      View More
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
