@@ -56,6 +56,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   >("donated");
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
+  const [folderPage, setFolderPage] = useState(1);
+  const [bookmarkBooksPage, setBookmarkBooksPage] = useState(1);
+  const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const pageSize = 10;
 
@@ -77,33 +80,56 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   } = useGetUserBooksQuery({ username, page, pageSize });
 
   // Use getMeFolders if owner to see private ones
-  const { data: publicFolders, isLoading: isLoadingPublicFolders } =
-    useGetUserFoldersQuery(username, { skip: isOwner });
-  const { data: ownerFoldersResponse, isLoading: isLoadingOwnerFolders } =
-    useGetMeFoldersQuery(undefined, { skip: !isOwner });
+  const {
+    data: publicFolders,
+    isLoading: isLoadingPublicFolders,
+    isFetching: isFetchingPublicFolders,
+  } = useGetUserFoldersQuery(
+    { username, page: folderPage, pageSize },
+    { skip: isOwner || activeTab !== "folders" },
+  );
+  const {
+    data: ownerFoldersResponse,
+    isLoading: isLoadingOwnerFolders,
+    isFetching: isFetchingOwnerFolders,
+  } = useGetMeFoldersQuery(
+    { include_collaborated: true, page: folderPage, pageSize },
+    { skip: !isOwner || activeTab !== "folders" },
+  );
 
   const folders = isOwner ? ownerFoldersResponse?.items : publicFolders?.items;
-  const isLoadingFolders = isOwner
-    ? isLoadingOwnerFolders
-    : isLoadingPublicFolders;
+  const isLoadingFolders =
+    (isOwner ? isLoadingOwnerFolders : isLoadingPublicFolders) ||
+    (isOwner ? isFetchingOwnerFolders : isFetchingPublicFolders);
 
-  const { data: bookmarkedBooks, isLoading: isLoadingBookmarkedBooks } =
-    useGetBookmarkedBooksQuery(
-      { page: 1, pageSize },
-      {
-        skip: !isOwner || activeTab !== "bookmarks",
-      },
-    );
-  const { data: bookmarkedFolders, isLoading: isLoadingBookmarkedFolders } =
-    useGetBookmarkedFoldersQuery(
-      { page: 1, pageSize },
-      {
-        skip: !isOwner || activeTab !== "bookmarks",
-      },
-    );
+  const {
+    data: bookmarkedBooks,
+    isLoading: isLoadingBookmarkedBooks,
+    isFetching: isFetchingBookmarkedBooks,
+  } = useGetBookmarkedBooksQuery(
+    { page: bookmarkBooksPage, pageSize },
+    {
+      skip: !isOwner || activeTab !== "bookmarks",
+    },
+  );
+  const {
+    data: bookmarkedFolders,
+    isLoading: isLoadingBookmarkedFolders,
+    isFetching: isFetchingBookmarkedFolders,
+  } = useGetBookmarkedFoldersQuery(
+    { page: bookmarkFoldersPage, pageSize },
+    {
+      skip: !isOwner || activeTab !== "bookmarks",
+    },
+  );
 
   const books = booksResponse?.items || [];
   const totalPages = booksResponse?.totalPages || 1;
+  const foldersTotalPages =
+    (isOwner ? ownerFoldersResponse?.totalPages : publicFolders?.totalPages) ||
+    1;
+  const bookmarkedBooksTotalPages = bookmarkedBooks?.totalPages || 1;
+  const bookmarkedFoldersTotalPages = bookmarkedFolders?.totalPages || 1;
 
   const tabs = [
     {
@@ -209,7 +235,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   };
 
   return (
-    <div className="min-h-full w-full bg-white dark:bg-neutral-900">
+    <div className="flex-1 min-h-full w-full">
       <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <div className="relative h-48 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-950">
           <div className="absolute inset-0 bg-black/10" />
@@ -460,34 +486,45 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           )}
 
           {activeTab === "folders" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {isLoadingFolders ? (
-                Array.from({ length: pageSize }).map((_, i) => (
-                  <FolderCardSkeleton key={i} />
-                ))
-              ) : folders && folders.length > 0 ? (
-                folders.map((folder: any) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
-                  <p className="text-gray-500 dark:text-neutral-400 mb-6">
-                    No folders yet.
-                  </p>
-                  {isOwner && (
-                    <button
-                      onClick={() => setShowCreateFolderModal(true)}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
-                    >
-                      <FiPlus className="w-4 h-4" />
-                      Create Your First Folder
-                    </button>
-                  )}
-                </div>
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {isLoadingFolders ? (
+                  Array.from({ length: pageSize }).map((_, i) => (
+                    <FolderCardSkeleton key={i} />
+                  ))
+                ) : folders && folders.length > 0 ? (
+                  folders.map((folder: any) => (
+                    <FolderCard
+                      key={folder.id}
+                      folder={folder}
+                      onClick={() => router.push(`/app/folders/${folder.slug}`)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
+                    <p className="text-gray-500 dark:text-neutral-400 mb-6">
+                      No folders yet.
+                    </p>
+                    {isOwner && (
+                      <button
+                        onClick={() => setShowCreateFolderModal(true)}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+                      >
+                        <FiPlus className="w-4 h-4" />
+                        Create Your First Folder
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {!!folders?.length && foldersTotalPages > 1 && (
+                <Pagination
+                  currentPage={folderPage}
+                  totalPages={foldersTotalPages}
+                  onPageChange={setFolderPage}
+                  isLoading={isLoadingFolders}
+                />
               )}
             </div>
           )}
@@ -502,7 +539,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   </h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  {isLoadingBookmarkedBooks ? (
+                  {isLoadingBookmarkedBooks || isFetchingBookmarkedBooks ? (
                     Array.from({ length: pageSize }).map((_, i) => (
                       <BookCardSkeleton key={i} />
                     ))
@@ -522,6 +559,18 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     </div>
                   )}
                 </div>
+
+                {!!bookmarkedBooks?.items?.length &&
+                  bookmarkedBooksTotalPages > 1 && (
+                    <Pagination
+                      currentPage={bookmarkBooksPage}
+                      totalPages={bookmarkedBooksTotalPages}
+                      onPageChange={setBookmarkBooksPage}
+                      isLoading={
+                        isLoadingBookmarkedBooks || isFetchingBookmarkedBooks
+                      }
+                    />
+                  )}
               </section>
 
               <section>
@@ -532,7 +581,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                  {isLoadingBookmarkedFolders ? (
+                  {isLoadingBookmarkedFolders || isFetchingBookmarkedFolders ? (
                     Array.from({ length: pageSize }).map((_, i) => (
                       <FolderCardSkeleton key={i} />
                     ))
@@ -554,6 +603,19 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     </div>
                   )}
                 </div>
+
+                {!!bookmarkedFolders?.items?.length &&
+                  bookmarkedFoldersTotalPages > 1 && (
+                    <Pagination
+                      currentPage={bookmarkFoldersPage}
+                      totalPages={bookmarkedFoldersTotalPages}
+                      onPageChange={setBookmarkFoldersPage}
+                      isLoading={
+                        isLoadingBookmarkedFolders ||
+                        isFetchingBookmarkedFolders
+                      }
+                    />
+                  )}
               </section>
             </div>
           )}

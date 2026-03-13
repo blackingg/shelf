@@ -59,8 +59,14 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       keepUnusedDataFor: 300,
     }),
-    getUserFolders: builder.query<PaginatedResponse<Folder>, string>({
-      query: (username) => `/users/${username}/folders`,
+    getUserFolders: builder.query<
+      PaginatedResponse<Folder>,
+      { username: string; page?: number; pageSize?: number }
+    >({
+      query: ({ username, ...params }) => ({
+        url: `/users/${username}/folders`,
+        params,
+      }),
       providesTags: ["Folders"],
       keepUnusedDataFor: 300,
     }),
