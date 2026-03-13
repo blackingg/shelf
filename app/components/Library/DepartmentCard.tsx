@@ -11,7 +11,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   department,
   onClick,
 }) => {
-  const colorClass = getDepartmentColor(department.slug);
+  const iconColorClass = getDepartmentColor(department.slug);
   const resourcesCount = department.booksCount || 0;
 
   return (
@@ -21,14 +21,13 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
     >
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${colorClass}`} />
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 line-clamp-1">
             {department.faculty || "Department"}
           </p>
         </div>
 
-        <div className="w-8 h-8 rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/70 flex items-center justify-center shrink-0">
-          <FaBuilding className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400" />
+        <div className="w-8 h-8 shrink-0 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70 flex items-center justify-center">
+          <FaBuilding className={`w-3.5 h-3.5 ${iconColorClass}`} />
         </div>
       </div>
 
