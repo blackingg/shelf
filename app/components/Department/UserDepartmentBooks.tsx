@@ -27,6 +27,7 @@ export default function UserDepartmentBooks({
   } = useGetBooksByDepartmentQuery({
     slug: departmentSlug,
     page,
+    pageSize: 10,
     sort_by: sortBy,
   });
 
@@ -57,7 +58,7 @@ export default function UserDepartmentBooks({
 
       {showSkeleton ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          <BookCardSkeleton count={5} />
+          <BookCardSkeleton count={10} />
         </div>
       ) : books.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
@@ -70,7 +71,7 @@ export default function UserDepartmentBooks({
           ))}
         </div>
       ) : (
-        <div className="h-[30vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-20 rounded-md text-center border border-gray-100 dark:border-neutral-800/50">
+        <div className="min-h-144 md:min-h-176 flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-20 rounded-md text-center border border-gray-100 dark:border-neutral-800/50">
           <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
             <FiBookOpen className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
           </div>
