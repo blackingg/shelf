@@ -30,6 +30,16 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  const shouldForceLogout = (error: FetchBaseQueryError) => {
+    const status = error.status;
+    const detail = (error.data as { detail?: string } | undefined)?.detail;
+
+    if (status === 401) return true;
+    if (status === 403 && detail === "Not authenticated") return true;
+
+    return false;
+  };
+
   const state = api.getState() as RootState;
   const { expiresAt, refreshToken } = state.auth;
 
@@ -92,7 +102,11 @@ const baseQueryWithReauth: BaseQueryFn<
       try {
         const refreshToken = (api.getState() as RootState).auth.refreshToken;
 
-        if (refreshToken && refreshToken !== "undefined" && refreshToken !== "null") {
+        if (
+          refreshToken &&
+          refreshToken !== "undefined" &&
+          refreshToken !== "null"
+        ) {
           const refreshResult = await baseQuery(
             {
               url: "/auth/refresh",
@@ -128,6 +142,11 @@ const baseQueryWithReauth: BaseQueryFn<
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
+  if (result.error && shouldForceLogout(result.error)) {
+    api.dispatch(logout());
+  }
+
   return result;
 };
 
