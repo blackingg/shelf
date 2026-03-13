@@ -57,7 +57,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
-  const pageSize = 12;
+  const pageSize = 10;
 
   const currentUser = useSelector(selectCurrentUser);
   const isOwner = currentUser?.username === username;
@@ -88,13 +88,19 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     : isLoadingPublicFolders;
 
   const { data: bookmarkedBooks, isLoading: isLoadingBookmarkedBooks } =
-    useGetBookmarkedBooksQuery(undefined, {
-      skip: !isOwner || activeTab !== "bookmarks",
-    });
+    useGetBookmarkedBooksQuery(
+      { page: 1, pageSize },
+      {
+        skip: !isOwner || activeTab !== "bookmarks",
+      },
+    );
   const { data: bookmarkedFolders, isLoading: isLoadingBookmarkedFolders } =
-    useGetBookmarkedFoldersQuery(undefined, {
-      skip: !isOwner || activeTab !== "bookmarks",
-    });
+    useGetBookmarkedFoldersQuery(
+      { page: 1, pageSize },
+      {
+        skip: !isOwner || activeTab !== "bookmarks",
+      },
+    );
 
   const books = booksResponse?.items || [];
   const totalPages = booksResponse?.totalPages || 1;
@@ -372,7 +378,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               </div>
             </div>
 
-            <div className="flex gap-8 border-b border-gray-100 dark:border-neutral-800">
+            <div className="flex gap-1 overflow-x-auto no-scrollbar pb-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -380,24 +386,24 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-3 pb-4 text-[11px] font-bold uppercase tracking-widest transition-all relative ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                       isActive
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
+                        ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
+                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                     {tab.label}
                     {tab.count > 0 && (
-                      <span className="text-[10px] opacity-60">
+                      <span
+                        className={`ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                          isActive
+                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                            : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
+                        }`}
+                      >
                         {tab.count}
                       </span>
-                    )}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-500"
-                      />
                     )}
                   </button>
                 );
@@ -408,12 +414,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div key={activeTab}>
           {activeTab === "donated" && (
             <div className="space-y-8">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
@@ -430,7 +431,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full py-20 text-center flex flex-col items-center justify-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md">
+                  <div className="col-span-full min-h-[50vh] text-center flex flex-col items-center justify-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md">
                     <p className="text-gray-500 dark:text-neutral-400 mb-6">
                       No books donated yet.
                     </p>
@@ -461,7 +462,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           {activeTab === "folders" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {isLoadingFolders ? (
-                Array.from({ length: 4 }).map((_, i) => (
+                Array.from({ length: pageSize }).map((_, i) => (
                   <FolderCardSkeleton key={i} />
                 ))
               ) : folders && folders.length > 0 ? (
@@ -473,7 +474,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   />
                 ))
               ) : (
-                <div className="col-span-full py-20 text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
+                <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
                   <p className="text-gray-500 dark:text-neutral-400 mb-6">
                     No folders yet.
                   </p>
@@ -502,7 +503,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                   {isLoadingBookmarkedBooks ? (
-                    Array.from({ length: 5 }).map((_, i) => (
+                    Array.from({ length: pageSize }).map((_, i) => (
                       <BookCardSkeleton key={i} />
                     ))
                   ) : bookmarkedBooks?.items?.length ? (
@@ -514,7 +515,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                       />
                     ))
                   ) : (
-                    <div className="col-span-full py-32 text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
+                    <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
                       <p className="text-gray-400 text-xs">
                         No books bookmarked.
                       </p>
@@ -532,7 +533,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                   {isLoadingBookmarkedFolders ? (
-                    Array.from({ length: 3 }).map((_, i) => (
+                    Array.from({ length: pageSize }).map((_, i) => (
                       <FolderCardSkeleton key={i} />
                     ))
                   ) : bookmarkedFolders?.items?.length ? (
@@ -546,7 +547,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                       />
                     ))
                   ) : (
-                    <div className="col-span-full py-32 text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
+                    <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
                       <p className="text-gray-400 text-xs">
                         No folders bookmarked.
                       </p>
@@ -556,7 +557,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               </section>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       <BookDetailPanel

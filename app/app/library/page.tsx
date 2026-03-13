@@ -202,7 +202,7 @@ export default function LibraryPage() {
             My Library
           </h1>
 
-          <div className="flex border-b border-gray-200 dark:border-neutral-800 overflow-x-auto no-scrollbar pb-1">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar pb-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -210,13 +210,13 @@ export default function LibraryPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-4 font-medium text-sm border-b-2 transition-colors duration-200 shrink-0 ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                     isActive
-                      ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
-                      : "border-transparent text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-neutral-700"
+                      ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
+                      : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3.5 h-3.5" />
                   {tab.label}
                 </button>
               );
@@ -225,12 +225,9 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
-        {/* ── BOOKMARKS TAB ── */}
         {activeTab === "bookmarks" && (
           <div>
-            {/* Sub-tabs for books/folders */}
             <div className="flex gap-1 mb-8 overflow-x-auto no-scrollbar pb-1">
               {bookmarkSubTabs.map((tab) => {
                 const Icon = tab.icon;
