@@ -78,7 +78,7 @@ export default function DepartmentsPage() {
                         department={department}
                         onClick={() =>
                           router.push(
-                            `/app/library/departments/${department.id}`,
+                            `/app/library/departments/${department.slug}`,
                           )
                         }
                       />
