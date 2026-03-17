@@ -42,7 +42,7 @@ export const SortFilter: React.FC<SortFilterProps> = ({
 
   return (
     <div
-      className={`relative ${className}`}
+      className={`relative inline-block ${className}`}
       ref={dropdownRef}
     >
       <button

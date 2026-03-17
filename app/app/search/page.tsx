@@ -9,9 +9,18 @@ import { FolderCard } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { useSearchQuery } from "@/app/store/api/searchApi";
 import { Pagination } from "@/app/components/Library/Pagination";
+import { SortFilter } from "@/app/components/Library/SortFilter";
 import { SearchResultItem } from "@/app/types/search";
 import { SearchList } from "@/app/components/Search/SearchList";
-import { SearchFilters } from "@/app/components/Search/SearchFilters";
+
+const searchTypeOptions = [
+  { value: "all", label: "All" },
+  { value: "book", label: "Books" },
+  { value: "folder", label: "Folders" },
+  { value: "user", label: "Users" },
+] as const;
+
+type SearchFilterType = (typeof searchTypeOptions)[number]["value"];
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -20,9 +29,7 @@ function SearchContent() {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
-  const [filterType, setFilterType] = useState<"all" | "book" | "folder">(
-    "all",
-  );
+  const [filterType, setFilterType] = useState<SearchFilterType>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
@@ -126,10 +133,14 @@ function SearchContent() {
             </div>
           </div>
 
-          <div className="mb-8">
-            <SearchFilters
+          <div className="mb-8 flex justify-end">
+            <SortFilter
               value={filterType}
-              onChange={setFilterType}
+              onValueChange={(value) =>
+                setFilterType(value as SearchFilterType)
+              }
+              options={[...searchTypeOptions]}
+              labelPrefix="Filter:"
             />
           </div>
 
@@ -231,7 +242,7 @@ function SearchContent() {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
                 No results found
               </h2>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium font-medium leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium leading-relaxed">
                 We couldn&apos;t find any matches for &quot;{query}&quot;. Try
                 broadening your keywords.
               </p>
