@@ -5,7 +5,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
 import { FiSearch, FiArrowLeft, FiGrid, FiList } from "react-icons/fi";
 import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
-import { FolderCard } from "@/app/components/Folders/FolderCard";
+import {
+  FolderCard,
+  FolderCardSkeleton,
+} from "@/app/components/Folders/FolderCard";
+import {
+  ProfileCard,
+  ProfileCardSkeleton,
+} from "@/app/components/Search/ProfileCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { useSearchQuery } from "@/app/store/api/searchApi";
 import { Pagination } from "@/app/components/Library/Pagination";
@@ -60,6 +67,20 @@ function SearchContent() {
 
   const handleFolderClick = (slug: string) => {
     router.push(`/app/folders/${slug}`);
+  };
+
+  const renderGridSkeleton = () => {
+    if (filterType === "book") return <BookCardSkeleton count={10} />;
+    if (filterType === "folder") return <FolderCardSkeleton count={10} />;
+    if (filterType === "user") return <ProfileCardSkeleton count={10} />;
+
+    return (
+      <>
+        <BookCardSkeleton count={4} />
+        <FolderCardSkeleton count={3} />
+        <ProfileCardSkeleton count={3} />
+      </>
+    );
   };
 
   if (!query) {
@@ -152,20 +173,18 @@ function SearchContent() {
                   : "flex flex-col border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden"
               }
             >
-              {viewMode === "grid" ? (
-                <BookCardSkeleton count={10} />
-              ) : (
-                Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-4 py-4 px-6 animate-pulse border-b border-gray-50 dark:border-neutral-800/50 last:border-0"
-                  >
-                    <div className="w-2 h-2 rounded-full bg-gray-200 dark:bg-neutral-700" />
-                    <div className="flex-1 h-4 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
-                    <div className="hidden sm:block w-24 h-3 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
-                  </div>
-                ))
-              )}
+              {viewMode === "grid"
+                ? renderGridSkeleton()
+                : Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-4 py-4 px-6 animate-pulse border-b border-gray-50 dark:border-neutral-800/50 last:border-0"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-gray-200 dark:bg-neutral-700" />
+                      <div className="flex-1 h-4 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
+                      <div className="hidden sm:block w-24 h-3 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
+                    </div>
+                  ))}
             </div>
           ) : items.length > 0 ? (
             <>
@@ -190,25 +209,19 @@ function SearchContent() {
                           onClick={() => handleFolderClick(item.data.slug)}
                         />
                       );
-                    } else {
-                      // user
+                    } else if (item.type === "user") {
                       return (
-                        <div
+                        <ProfileCard
                           key={`grid-user-${item.data.id}-${idx}`}
+                          user={item.data}
                           onClick={() =>
                             router.push(`/app/profile/${item.data.username}`)
                           }
-                          className="flex flex-col items-center p-4 rounded-md border border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
-                        >
-                          <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
-                            {item.data.username[0].toUpperCase()}
-                          </div>
-                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate w-full text-center">
-                            @{item.data.username}
-                          </span>
-                        </div>
+                        />
                       );
                     }
+
+                    return null;
                   })}
                 </div>
               ) : (
