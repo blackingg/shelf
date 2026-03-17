@@ -398,13 +398,15 @@ export default function LibraryPage() {
                 {myBooksResponse?.total || 0} book
                 {myBooksResponse?.total !== 1 ? "s" : ""} donated
               </p>
-              <button
-                onClick={() => router.push("/app/books/upload")}
-                className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
-              >
-                <FiHeart className="w-4 h-4" />
-                <span>Donate Another</span>
-              </button>
+              {(myBooksResponse?.total || 0) > 0 && (
+                <button
+                  onClick={() => router.push("/app/books/upload")}
+                  className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
+                >
+                  <FiHeart className="w-4 h-4" />
+                  <span>Donate Another</span>
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
