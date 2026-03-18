@@ -311,7 +311,7 @@ export default function UploadPage() {
   };
 
   const departmentOptions = departments.map((dept) => ({
-    value: dept.slug,
+    value: dept.id,
     label: dept.name,
   }));
   const categoryOptions = categoriesData.map((cat) => ({
