@@ -576,10 +576,10 @@ export default function UploadPage() {
                 <Button
                   type="submit"
                   isLoading={isUploading || isExtractingMetadata}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 whitespace-nowrap"
+                  icon={<FiArrowRight className="text-sm" />}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
                 >
-                  <span>Continue...</span>
-                  <FiArrowRight className="text-sm" />
+                  Continue...
                 </Button>
               </div>
             </motion.form>
