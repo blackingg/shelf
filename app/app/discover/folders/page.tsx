@@ -11,6 +11,7 @@ import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { FolderSortBy, SortOrder } from "@/app/types/common";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function DiscoverFoldersPage() {
   const router = useRouter();
@@ -18,11 +19,21 @@ export default function DiscoverFoldersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState<
-    "createdAt" | "booksCount" | "bookmarksCount"
-  >("createdAt");
+  const [sortBy, setSortBy] = useState<FolderSortBy>("createdAt");
   const [order, setOrder] = useState<SortOrder>("desc");
-  const pageSize = 8;
+  const [pageSize, setPageSize] = useState(8);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, lg: 3, xl: 4 },
+      setPageSize,
+      2,
+    );
+  }, []);
+
+  useEffect(() => {
+    setPage(1);
+  }, [pageSize]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,8 +49,8 @@ export default function DiscoverFoldersPage() {
     isFetching,
   } = useGetPublicFoldersQuery({
     page,
-    pageSize,
-    sort_by: sortBy as any,
+    limit: pageSize,
+    sort_by: sortBy,
     order,
     q: debouncedSearch,
   });
@@ -47,7 +58,6 @@ export default function DiscoverFoldersPage() {
   const showSkeleton = isLoading || isFetching;
 
   const folders = foldersResponse?.items || [];
-  const visibleFolders = folders.slice(0, pageSize);
   const totalPages = foldersResponse?.totalPages || 1;
 
   return (
@@ -107,7 +117,7 @@ export default function DiscoverFoldersPage() {
             <div className="flex items-center gap-4 w-full md:w-auto">
               <SortFilter
                 value={sortBy}
-                onValueChange={(val) => setSortBy(val as any)}
+                onValueChange={(val) => setSortBy(val as FolderSortBy)}
                 options={[
                   { value: "createdAt", label: "Recently Added" },
                   { value: "booksCount", label: "Most Resources" },
@@ -131,10 +141,10 @@ export default function DiscoverFoldersPage() {
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               <FolderCardSkeleton count={pageSize} />
             </div>
-          ) : visibleFolders.length > 0 ? (
+          ) : folders.length > 0 ? (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {visibleFolders.map((folder) => (
+                {folders.map((folder) => (
                   <FolderCard
                     key={folder.id}
                     folder={folder}
