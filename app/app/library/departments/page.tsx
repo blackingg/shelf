@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiList, FiX } from "react-icons/fi";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
@@ -8,6 +8,7 @@ import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { motion, AnimatePresence } from "motion/react";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function DepartmentsPage() {
   const router = useRouter();
@@ -23,6 +24,16 @@ export default function DepartmentsPage() {
   )?.slug;
 
   const [viewDepartments, setViewDepartments] = useState(false);
+  const [departmentSkeletonCount, setDepartmentSkeletonCount] = useState(10);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 5 },
+      setDepartmentSkeletonCount,
+      2,
+    );
+  }, []);
+
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (
@@ -63,12 +74,14 @@ export default function DepartmentsPage() {
               >
                 {isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
-                    {Array.from({ length: 10 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="h-40 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
-                      />
-                    ))}
+                    {Array.from({ length: departmentSkeletonCount }).map(
+                      (_, i) => (
+                        <div
+                          key={i}
+                          className="h-40 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
+                        />
+                      ),
+                    )}
                   </div>
                 ) : allDepartments.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">

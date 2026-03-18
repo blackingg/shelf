@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryFilter } from "@/app/components/Library/CategoryFilter";
 import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
@@ -18,6 +18,7 @@ import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
 import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -28,6 +29,35 @@ export default function DiscoverPage() {
   const user = useSelector(selectCurrentUser);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [categoryFetchLimit, setCategoryFetchLimit] = useState(10);
+  const [departmentDisplayLimit, setDepartmentDisplayLimit] = useState(8);
+  const [publicFoldersFetchLimit, setPublicFoldersFetchLimit] = useState(8);
+
+  useEffect(() => {
+    const stopCategoryWatch = watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 5 },
+      setCategoryFetchLimit,
+      2,
+    );
+
+    const stopDepartmentWatch = watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 4 },
+      setDepartmentDisplayLimit,
+      2,
+    );
+
+    const stopPublicFoldersWatch = watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 4 },
+      setPublicFoldersFetchLimit,
+      2,
+    );
+
+    return () => {
+      stopCategoryWatch();
+      stopDepartmentWatch();
+      stopPublicFoldersWatch();
+    };
+  }, []);
 
   const { data: recommendations, isLoading: isLoadingRecommendations } =
     useGetDiscoverFeedQuery();
@@ -40,7 +70,7 @@ export default function DiscoverPage() {
   const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
     useGetPublicFoldersQuery({
       page: 1,
-      pageSize: 8,
+      limit: publicFoldersFetchLimit,
       sort_by: "createdAt",
       order: "desc",
     });
@@ -53,15 +83,14 @@ export default function DiscoverPage() {
           if (booksDiff !== 0) return booksDiff;
           return a.name.localeCompare(b.name);
         })
-        .slice(0, 8),
-    [departments],
+        .slice(0, departmentDisplayLimit),
+    [departments, departmentDisplayLimit],
   );
   const hasMoreDepartments = departments.length > displayDepartments.length;
-  const displayFolders = (publicFoldersResponse?.items || []).slice(0, 8);
+  const displayFolders = publicFoldersResponse?.items || [];
   const hasMorePublicFolders =
     !!publicFoldersResponse?.hasNext ||
-    (publicFoldersResponse?.total || 0) > 8 ||
-    (publicFoldersResponse?.items?.length || 0) > 8;
+    (publicFoldersResponse?.total || 0) > displayFolders.length;
 
   const {
     currentData: categoryBooksResponse,
@@ -70,18 +99,16 @@ export default function DiscoverPage() {
   } = useGetBooksQuery({
     category: activeCategory === "all" ? undefined : activeCategory,
     page: 1,
-    pageSize: 10,
+    limit: categoryFetchLimit,
   });
 
-  const rawCategoryBooks = categoryBooksResponse?.items || [];
+  const categoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =
-    rawCategoryBooks.length === 0 &&
+    categoryBooks.length === 0 &&
     (isLoadingCategoryBooks || isFetchingCategoryBooks);
-  const categoryBooks = rawCategoryBooks.slice(0, 10);
   const hasMoreCategoryBooks =
     !!categoryBooksResponse?.hasNext ||
-    (categoryBooksResponse?.total || 0) > 10 ||
-    rawCategoryBooks.length > 10;
+    (categoryBooksResponse?.total || 0) > categoryBooks.length;
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
@@ -180,7 +207,7 @@ export default function DiscoverPage() {
 
             {isCategoryLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-12">
-                <BookCardSkeleton count={10} />
+                <BookCardSkeleton count={categoryFetchLimit} />
               </div>
             ) : categoryBooks.length > 0 ? (
               <>
@@ -223,7 +250,7 @@ export default function DiscoverPage() {
 
             {isLoadingDepartments ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: departmentDisplayLimit }).map((_, i) => (
                   <div
                     key={i}
                     className="h-32 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
@@ -280,7 +307,7 @@ export default function DiscoverPage() {
 
             {isLoadingPublicFolders ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                <FolderCardSkeleton count={8} />
+                <FolderCardSkeleton count={publicFoldersFetchLimit} />
               </div>
             ) : displayFolders.length > 0 ? (
               <>
