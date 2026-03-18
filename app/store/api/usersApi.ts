@@ -51,21 +51,39 @@ export const usersApi = baseApi.injectEndpoints({
     }),
     getUserBooks: builder.query<
       PaginatedResponse<Book>,
-      { username: string; page?: number; pageSize?: number }
+      {
+        username: string;
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      }
     >({
-      query: ({ username, ...params }) => ({
+      query: ({ username, pageSize, limit, ...params }) => ({
         url: `/users/${username}/books`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
       keepUnusedDataFor: 300,
     }),
     getUserFolders: builder.query<
       PaginatedResponse<Folder>,
-      { username: string; page?: number; pageSize?: number }
+      {
+        username: string;
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      }
     >({
-      query: ({ username, ...params }) => ({
+      query: ({ username, pageSize, limit, ...params }) => ({
         url: `/users/${username}/folders`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
       providesTags: ["Folders"],
       keepUnusedDataFor: 300,

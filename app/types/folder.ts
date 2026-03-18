@@ -3,6 +3,8 @@ import { Book } from "./book";
 import { FolderSortBy, SortOrder, PaginationParams } from "./common";
 
 export interface FolderFilterParams extends PaginationParams {
+  limit?: number;
+  max_limit?: number;
   sort_by?: FolderSortBy;
   order?: SortOrder;
   q?: string;

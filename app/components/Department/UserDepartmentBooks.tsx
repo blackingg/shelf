@@ -27,7 +27,7 @@ export default function UserDepartmentBooks({
   } = useGetBooksByDepartmentQuery({
     slug: departmentSlug,
     page,
-    pageSize: 10,
+    limit: 10,
     sort_by: sortBy,
   });
 

@@ -50,6 +50,7 @@ export default function DepartmentPage({
   } = useGetBooksByDepartmentQuery({
     slug,
     page,
+    limit: pageSize,
     sort_by: sortBy,
     order: order,
     q: debouncedSearch,

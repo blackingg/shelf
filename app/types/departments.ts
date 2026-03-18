@@ -29,6 +29,8 @@ export interface DepartmentBooksParams {
   q?: string;
   slug: string;
   page?: number;
+  limit?: number;
+  max_limit?: number;
   pageSize?: number;
   sort_by?: "createdAt" | "rating" | "title";
   order?: "asc" | "desc";

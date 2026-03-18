@@ -58,23 +58,61 @@ export const bookmarksApi = baseApi.injectEndpoints({
     }),
     getBookmarkedBooks: builder.query<
       PaginatedResponse<Book>,
-      { page?: number; pageSize?: number } | void
+      {
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      } | void
     >({
-      query: (params) => ({
-        url: "/bookmarks/books",
-        params: params || undefined,
-      }),
+      query: (params) => {
+        if (!params) {
+          return {
+            url: "/bookmarks/books",
+            params: undefined,
+          };
+        }
+
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/bookmarks/books",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Bookmarks"],
       keepUnusedDataFor: 300,
     }),
     getBookmarkedFolders: builder.query<
       PaginatedResponse<Folder>,
-      { page?: number; pageSize?: number } | void
+      {
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      } | void
     >({
-      query: (params) => ({
-        url: "/folders/bookmarked",
-        params: params || undefined,
-      }),
+      query: (params) => {
+        if (!params) {
+          return {
+            url: "/folders/bookmarked",
+            params: undefined,
+          };
+        }
+
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/folders/bookmarked",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Bookmarks"],
       keepUnusedDataFor: 300,
     }),

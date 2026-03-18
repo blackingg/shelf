@@ -12,10 +12,17 @@ import { PaginatedResponse } from "../../types/common";
 export const booksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBooks: builder.query<PaginatedResponse<Book>, BookFilterParams>({
-      query: (params) => ({
-        url: "/books",
-        params,
-      }),
+      query: (params) => {
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/books",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Books"],
       keepUnusedDataFor: 300,
     }),

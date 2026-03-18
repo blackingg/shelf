@@ -21,5 +21,7 @@ export interface SearchParams {
   q: string;
   type?: "all" | "book" | "folder" | "user";
   page?: number;
+  limit?: number;
+  max_limit?: number;
   pageSize?: number;
 }

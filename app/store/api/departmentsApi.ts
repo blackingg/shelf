@@ -28,9 +28,12 @@ export const departmentsApi = baseApi.injectEndpoints({
       PaginatedResponse<Book>,
       DepartmentBooksParams
     >({
-      query: ({ slug, ...params }) => ({
+      query: ({ slug, pageSize, limit, ...params }) => ({
         url: `/departments/${slug}/books`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
       providesTags: (result, error, { slug }) => [
         { type: "Books", id: `dept-${slug}` },

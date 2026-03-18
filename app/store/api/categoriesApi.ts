@@ -19,9 +19,12 @@ export const categoriesApi = baseApi.injectEndpoints({
       PaginatedResponse<Book>,
       CategoryBooksParams
     >({
-      query: ({ slug, ...params }) => ({
+      query: ({ slug, pageSize, limit, ...params }) => ({
         url: `/categories/${slug}/books`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
       providesTags: ["Books"],
       keepUnusedDataFor: 300,
