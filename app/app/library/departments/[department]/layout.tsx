@@ -2,13 +2,27 @@ import type { Metadata } from "next";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
+type DepartmentListItem = {
+  slug: string;
+  name: string;
+  description?: string | null;
+};
+
+type DepartmentsListResponse =
+  | DepartmentListItem[]
+  | { items?: DepartmentListItem[] };
+
 async function getDepartment(slug: string) {
   try {
-    const res = await fetch(`${API_BASE}/departments/${slug}`, {
+    const res = await fetch(`${API_BASE}/departments`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
-    return res.json();
+    const data = (await res.json()) as DepartmentsListResponse;
+
+    const departments = Array.isArray(data) ? data : data.items || [];
+
+    return departments.find((department) => department.slug === slug) || null;
   } catch {
     return null;
   }

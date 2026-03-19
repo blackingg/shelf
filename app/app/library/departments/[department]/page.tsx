@@ -7,7 +7,7 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiFilter, FiSearch } from "react-icons/fi";
 import {
-  useGetDepartmentBySlugQuery,
+  useGetDepartmentsQuery,
   useGetBooksByDepartmentQuery,
 } from "@/app/store/api/departmentsApi";
 import { BookPreview } from "@/app/types/book";
@@ -41,8 +41,10 @@ export default function DepartmentPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: department, isLoading: isLoadingDept } =
-    useGetDepartmentBySlugQuery(slug);
+  const { data: allDepartments = [], isLoading: isLoadingDept } =
+    useGetDepartmentsQuery();
+
+  const department = allDepartments.find((item) => item.slug === slug);
   const {
     data: booksResponse,
     isLoading: isLoadingBooks,
@@ -94,7 +96,7 @@ export default function DepartmentPage({
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                   <div className="max-w-3xl">
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
-                      {department.faculty || "General Faculty"}
+                      {department.faculty}
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
                       {department.name}
@@ -117,7 +119,7 @@ export default function DepartmentPage({
                     {department.school && (
                       <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
                         <span className="block text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
-                          {department.school.shortName || "Uni"}
+                          {department.school.shortName}
                         </span>
                         <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                           Institution
