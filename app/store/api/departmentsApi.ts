@@ -7,6 +7,11 @@ import {
 import { Book } from "../../types/book";
 import { PaginatedResponse } from "../../types/common";
 
+type DepartmentBooksResponse = {
+  department: Department;
+  books: PaginatedResponse<Book>;
+};
+
 export const departmentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDepartments: builder.query<Department[], DepartmentFilterParams | void>({
@@ -25,7 +30,7 @@ export const departmentsApi = baseApi.injectEndpoints({
       keepUnusedDataFor: 300,
     }),
     getBooksByDepartment: builder.query<
-      PaginatedResponse<Book>,
+      DepartmentBooksResponse,
       DepartmentBooksParams
     >({
       query: ({ slug, pageSize, limit, ...params }) => ({

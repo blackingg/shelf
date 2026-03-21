@@ -32,7 +32,7 @@ export default function UserDepartmentBooks({
   });
 
   const showSkeleton = isLoading || isFetching;
-  const books = booksResponse?.items || [];
+  const books = booksResponse?.books?.items || [];
 
   const sortOptions = [
     { value: "createdAt", label: "New Arrivals" },
