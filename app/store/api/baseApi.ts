@@ -33,28 +33,21 @@ const baseQueryWithReauth: BaseQueryFn<
   const shouldForceLogout = (error: FetchBaseQueryError) => {
     const status = error.status;
     const detail = (error.data as { detail?: string } | undefined)?.detail;
-
-    if (status === 401) return true;
     if (status === 403 && detail === "Not authenticated") return true;
-
     return false;
   };
 
   const state = api.getState() as RootState;
   const { expiresAt, refreshToken } = state.auth;
 
-  if (
-    refreshToken &&
-    refreshToken !== "undefined" &&
-    refreshToken !== "null" &&
-    expiresAt
-  ) {
+  const isValidToken = (token: string | null | undefined): token is string =>
+    !!token && token !== "undefined" && token !== "null";
+
+  if (isValidToken(refreshToken) && expiresAt) {
     const now = Date.now();
-    // buffer to 60 seconds
     const expirationBuffer = 60 * 1000;
 
     if (now > expiresAt - expirationBuffer) {
-      // Token expiring soon (within 60s), try proactive refresh
       if (!mutex.isLocked()) {
         const release = await mutex.acquire();
         try {
@@ -82,13 +75,20 @@ const baseQueryWithReauth: BaseQueryFn<
                   expiresIn: tokenResponse.expiresIn,
                 }),
               );
+            } else {
+              api.dispatch(logout());
+              return {
+                error: {
+                  status: 401,
+                  data: "Proactive token refresh failed. User logged out.",
+                } as FetchBaseQueryError,
+              };
             }
           }
         } finally {
           release();
         }
       } else {
-        // Wait for the mutex to be released (refresh to complete)
         await mutex.waitForUnlock();
       }
     }
@@ -100,18 +100,15 @@ const baseQueryWithReauth: BaseQueryFn<
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
-        const refreshToken = (api.getState() as RootState).auth.refreshToken;
+        const currentRefreshToken = (api.getState() as RootState).auth
+          .refreshToken;
 
-        if (
-          refreshToken &&
-          refreshToken !== "undefined" &&
-          refreshToken !== "null"
-        ) {
+        if (isValidToken(currentRefreshToken)) {
           const refreshResult = await baseQuery(
             {
               url: "/auth/refresh",
               method: "POST",
-              body: { refreshToken },
+              body: { refreshToken: currentRefreshToken },
             },
             api,
             extraOptions,
@@ -139,7 +136,11 @@ const baseQueryWithReauth: BaseQueryFn<
       }
     } else {
       await mutex.waitForUnlock();
-      result = await baseQuery(args, api, extraOptions);
+
+      const updatedState = api.getState() as RootState;
+      if (updatedState.auth.accessToken) {
+        result = await baseQuery(args, api, extraOptions);
+      }
     }
   }
 
