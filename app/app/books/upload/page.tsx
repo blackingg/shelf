@@ -279,8 +279,16 @@ export default function UploadPage() {
     if (!uploadedBookId) return;
 
     try {
+      const selectedDepartmentId = formData.department
+        ? departments.find(
+            (dept) =>
+              dept.id === formData.department ||
+              dept.slug === formData.department,
+          )?.id
+        : undefined;
+
       const payload = {
-        department: formData.department || undefined,
+        department: selectedDepartmentId,
         publisher: formData.publisher || undefined,
         publishedYear: formData.publishedYear
           ? parseInt(formData.publishedYear)
