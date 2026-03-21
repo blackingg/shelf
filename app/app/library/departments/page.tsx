@@ -33,7 +33,7 @@ export default function DepartmentsPage() {
     return watchResponsiveGridFetchLimit(
       { base: 2, md: 3, lg: 5 },
       setDepartmentSkeletonCount,
-      2,
+      4,
     );
   }, []);
 
