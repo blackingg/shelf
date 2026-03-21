@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { FiBookOpen } from "react-icons/fi";
 import { useGetBooksByDepartmentQuery } from "@/app/store/api/departmentsApi";
 import { SortFilter } from "@/app/components/Library/SortFilter";
+import { Pagination } from "@/app/components/Library/Pagination";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
@@ -34,6 +35,10 @@ export default function UserDepartmentBooks({
   const showSkeleton = isLoading || isFetching;
   const books = booksResponse?.books?.items || [];
 
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, departmentSlug]);
+
   const sortOptions = [
     { value: "createdAt", label: "New Arrivals" },
     { value: "rating", label: "Top Rated" },
@@ -61,15 +66,25 @@ export default function UserDepartmentBooks({
           <BookCardSkeleton count={10} />
         </div>
       ) : books.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-          {books.map((book) => (
-            <BookCard
-              key={book.id}
-              {...book}
-              onClick={() => setSelectedBook(book as BookPreview)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+            {books.map((book) => (
+              <BookCard
+                key={book.id}
+                {...book}
+                onClick={() => setSelectedBook(book as BookPreview)}
+              />
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={booksResponse?.books?.totalPages || 1}
+            onPageChange={setPage}
+            isLoading={isLoading || isFetching}
+            className="mt-12"
+          />
+        </>
       ) : (
         <div className="min-h-144 md:min-h-176 flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-20 rounded-md text-center border border-gray-100 dark:border-neutral-800/50">
           <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">

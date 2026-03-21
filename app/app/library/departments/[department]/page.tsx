@@ -41,6 +41,10 @@ export default function DepartmentPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, order, slug]);
+
   const { data: allDepartments = [], isLoading: isLoadingDept } =
     useGetDepartmentsQuery();
 
