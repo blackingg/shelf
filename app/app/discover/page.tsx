@@ -15,7 +15,10 @@ import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
 import { useGetBooksQuery } from "@/app/store/api/booksApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
-import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
+import {
+  DepartmentCard,
+  DepartmentCardSkeleton,
+} from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
@@ -62,10 +65,13 @@ export default function DiscoverPage() {
   const { data: recommendations, isLoading: isLoadingRecommendations } =
     useGetDiscoverFeedQuery();
 
-  const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetDepartmentsQuery(
-      user?.school?.id ? { school_id: user.school.id } : undefined,
-    );
+  const {
+    data: departments = [],
+    isLoading: isLoadingDepartments,
+    isFetching: isFetchingDepartments,
+  } = useGetDepartmentsQuery(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
 
   const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
     useGetPublicFoldersQuery({
@@ -248,13 +254,10 @@ export default function DiscoverPage() {
               </h2>
             </div>
 
-            {isLoadingDepartments ? (
+            {isLoadingDepartments || isFetchingDepartments ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Array.from({ length: departmentDisplayLimit }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-32 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
-                  />
+                  <DepartmentCardSkeleton key={i} />
                 ))}
               </div>
             ) : displayDepartments.length > 0 ? (

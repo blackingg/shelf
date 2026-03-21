@@ -10,10 +10,12 @@ import { Pagination } from "@/app/components/Library/Pagination";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
+  departmentName?: string;
 }
 
 export default function UserDepartmentBooks({
   departmentSlug,
+  departmentName,
 }: UserDepartmentBooksProps) {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [sortBy, setSortBy] = useState<"createdAt" | "rating" | "title">(
@@ -50,8 +52,13 @@ export default function UserDepartmentBooks({
       <div className="flex items-center justify-between mb-10 flex-wrap gap-6">
         <div>
           <p className="text-[11px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-            Quick access to your Course's resources
+            Quick access to your department resources
           </p>
+          {departmentName && (
+            <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-neutral-200">
+              {departmentName}
+            </p>
+          )}
         </div>
 
         <SortFilter

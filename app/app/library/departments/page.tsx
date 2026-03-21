@@ -2,7 +2,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiList, FiX } from "react-icons/fi";
-import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
+import {
+  DepartmentCard,
+  DepartmentCardSkeleton,
+} from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useSelector } from "react-redux";
@@ -76,10 +79,7 @@ export default function DepartmentsPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
                     {Array.from({ length: departmentSkeletonCount }).map(
                       (_, i) => (
-                        <div
-                          key={i}
-                          className="h-40 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
-                        />
+                        <DepartmentCardSkeleton key={i} />
                       ),
                     )}
                   </div>
@@ -110,7 +110,10 @@ export default function DepartmentsPage() {
 
           {userDepartment !== null && userDepartmentSlug && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
-              <UserDepartmentBooks departmentSlug={userDepartmentSlug} />
+              <UserDepartmentBooks
+                departmentSlug={userDepartmentSlug}
+                departmentName={userDepartment}
+              />
             </div>
           )}
         </div>

@@ -41,3 +41,21 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
     </div>
   );
 };
+
+export const DepartmentCardSkeleton: React.FC = () => {
+  return (
+    <div className="bg-white dark:bg-neutral-900 rounded-md p-4 md:p-5 border border-gray-200 dark:border-neutral-800 animate-pulse">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div className="h-3 w-2/3 bg-gray-100 dark:bg-neutral-800 rounded-md" />
+        <div className="w-8 h-8 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70" />
+      </div>
+
+      <div className="space-y-2 mb-2">
+        <div className="h-4 w-4/5 bg-gray-100 dark:bg-neutral-800 rounded-md" />
+        <div className="h-4 w-3/5 bg-gray-100 dark:bg-neutral-800 rounded-md" />
+      </div>
+
+      <div className="h-3 w-2/5 bg-gray-50 dark:bg-neutral-800/50 rounded-md" />
+    </div>
+  );
+};
