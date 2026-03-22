@@ -10,6 +10,7 @@ import { BookPreview } from "@/app/types/book";
 import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function CategoryPage({
   params,
@@ -25,7 +26,15 @@ export default function CategoryPage({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("rating");
-  const pageSize = 15;
+  const [pageSize, setPageSize] = useState(15);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 4, lg: 5 },
+      setPageSize,
+      3,
+    );
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {

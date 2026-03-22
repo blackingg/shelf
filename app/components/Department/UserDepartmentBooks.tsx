@@ -7,6 +7,7 @@ import { FiBookOpen } from "react-icons/fi";
 import { useGetBooksByDepartmentQuery } from "@/app/store/api/departmentsApi";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { Pagination } from "@/app/components/Library/Pagination";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
@@ -22,6 +23,15 @@ export default function UserDepartmentBooks({
     "createdAt",
   );
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 4, xl: 5 },
+      setPageSize,
+      2,
+    );
+  }, []);
 
   const {
     data: booksResponse,
@@ -30,7 +40,7 @@ export default function UserDepartmentBooks({
   } = useGetBooksByDepartmentQuery({
     slug: departmentSlug,
     page,
-    limit: 10,
+    limit: pageSize,
     sort_by: sortBy,
   });
 
@@ -70,7 +80,7 @@ export default function UserDepartmentBooks({
 
       {showSkeleton ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          <BookCardSkeleton count={10} />
+          <BookCardSkeleton count={pageSize} />
         </div>
       ) : books.length > 0 ? (
         <>

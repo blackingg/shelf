@@ -13,6 +13,7 @@ import {
 import { BookPreview } from "@/app/types/book";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function DepartmentPage({
   params,
@@ -31,7 +32,15 @@ export default function DepartmentPage({
   );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
-  const pageSize = 15;
+  const [pageSize, setPageSize] = useState(15);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 4, lg: 5 },
+      setPageSize,
+      3,
+    );
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
