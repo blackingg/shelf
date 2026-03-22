@@ -3,6 +3,11 @@ import { Category, CategoryBooksParams } from "../../types/categories";
 import { Book } from "../../types/book";
 import { PaginatedResponse } from "../../types/common";
 
+export interface CategoryBooksResponse {
+  category: Category;
+  books: PaginatedResponse<Book>;
+}
+
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
@@ -16,7 +21,7 @@ export const categoriesApi = baseApi.injectEndpoints({
       keepUnusedDataFor: 300,
     }),
     getBooksByCategory: builder.query<
-      PaginatedResponse<Book>,
+      CategoryBooksResponse,
       CategoryBooksParams
     >({
       query: ({ slug, pageSize, limit, ...params }) => ({

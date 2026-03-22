@@ -13,6 +13,7 @@ import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
 import { useGetBooksQuery } from "@/app/store/api/booksApi";
+import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
 import {
@@ -22,6 +23,7 @@ import {
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -98,15 +100,46 @@ export default function DiscoverPage() {
     !!publicFoldersResponse?.hasNext ||
     (publicFoldersResponse?.total || 0) > displayFolders.length;
 
+  const isAllCategory = activeCategory === "all";
+
   const {
-    currentData: categoryBooksResponse,
-    isLoading: isLoadingCategoryBooks,
-    isFetching: isFetchingCategoryBooks,
-  } = useGetBooksQuery({
-    category: activeCategory === "all" ? undefined : activeCategory,
-    page: 1,
-    limit: categoryFetchLimit,
-  });
+    currentData: allCategoryBooksResponse,
+    isLoading: isLoadingAllCategoryBooks,
+    isFetching: isFetchingAllCategoryBooks,
+  } = useGetBooksQuery(
+    isAllCategory
+      ? {
+          page: 1,
+          limit: categoryFetchLimit,
+        }
+      : skipToken,
+  );
+
+  const {
+    currentData: singleCategoryBooksResponse,
+    isLoading: isLoadingSingleCategoryBooks,
+    isFetching: isFetchingSingleCategoryBooks,
+  } = useGetBooksByCategoryQuery(
+    !isAllCategory
+      ? {
+          slug: activeCategory,
+          page: 1,
+          limit: categoryFetchLimit,
+        }
+      : skipToken,
+  );
+
+  const categoryBooksResponse = isAllCategory
+    ? allCategoryBooksResponse
+    : singleCategoryBooksResponse?.books;
+
+  const isLoadingCategoryBooks = isAllCategory
+    ? isLoadingAllCategoryBooks
+    : isLoadingSingleCategoryBooks;
+
+  const isFetchingCategoryBooks = isAllCategory
+    ? isFetchingAllCategoryBooks
+    : isFetchingSingleCategoryBooks;
 
   const categoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =

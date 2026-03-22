@@ -7,8 +7,7 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiFilter, FiSearch, FiLayers } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
-import { useGetBooksQuery } from "@/app/store/api/booksApi";
-import { useGetCategoryBySlugQuery } from "@/app/store/api/categoriesApi";
+import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 
@@ -37,24 +36,22 @@ export default function CategoryPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: category, isLoading: isLoadingCategory } =
-    useGetCategoryBySlugQuery(slug, { skip: isAllCategory });
   const booksQueryParams = {
+    slug,
     q: debouncedSearch,
     page,
     pageSize,
     sort_by: sortBy as any,
     order: "desc" as const,
-    ...(isAllCategory ? {} : { category: slug }),
   };
   const {
     data: booksResponse,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetBooksQuery(booksQueryParams);
+  } = useGetBooksByCategoryQuery(booksQueryParams);
 
   const categoryView =
-    category ||
+    booksResponse?.category ||
     (isAllCategory
       ? {
           name: "All Categories",
@@ -62,10 +59,11 @@ export default function CategoryPage({
         }
       : null);
 
+  const isLoadingCategory = isLoadingBooks;
   const showSkeleton = isLoadingBooks || isFetchingBooks;
 
-  const books = booksResponse?.items || [];
-  const totalPages = booksResponse?.totalPages || 1;
+  const books = booksResponse?.books?.items || [];
+  const totalPages = booksResponse?.books?.totalPages || 1;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -118,7 +116,7 @@ export default function CategoryPage({
                     </div>
                     <div>
                       <span className="block text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-                        {booksResponse?.total || 0}
+                        {booksResponse?.books?.total || 0}
                       </span>
                       <span className="text-[10px] font-bold uppercase text-gray-400 dark:text-neutral-600 tracking-widest">
                         Resources
