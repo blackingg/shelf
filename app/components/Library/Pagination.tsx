@@ -22,15 +22,25 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   const generatePageNumbers = () => {
     const pages = [];
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 3;
 
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      let start = Math.max(1, currentPage - 2);
-      let end = Math.min(totalPages, start + maxVisiblePages - 1);
+      let start = currentPage - 1;
+      let end = currentPage + 1;
+
+      if (start < 1) {
+        start = 1;
+        end = maxVisiblePages;
+      }
+
+      if (end > totalPages) {
+        end = totalPages;
+        start = totalPages - maxVisiblePages + 1;
+      }
 
       if (end === totalPages) {
         start = Math.max(1, end - maxVisiblePages + 1);
@@ -59,22 +69,6 @@ export const Pagination: React.FC<PaginationProps> = ({
       </button>
 
       <div className="flex items-center gap-1.5">
-        {pages[0] > 1 && (
-          <>
-            <button
-              onClick={() => onPageChange(1)}
-              className="h-10 w-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-sm font-medium"
-            >
-              1
-            </button>
-            {pages[0] > 2 && (
-              <span className="text-gray-400 dark:text-neutral-600 px-1">
-                ...
-              </span>
-            )}
-          </>
-        )}
-
         {pages.map((page) => (
           <button
             key={page}
@@ -89,22 +83,6 @@ export const Pagination: React.FC<PaginationProps> = ({
             {page}
           </button>
         ))}
-
-        {pages[pages.length - 1] < totalPages && (
-          <>
-            {pages[pages.length - 1] < totalPages - 1 && (
-              <span className="text-gray-400 dark:text-neutral-600 px-1">
-                ...
-              </span>
-            )}
-            <button
-              onClick={() => onPageChange(totalPages)}
-              className="h-10 w-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-sm font-medium"
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
       </div>
 
       <button
