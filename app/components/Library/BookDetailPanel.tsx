@@ -53,7 +53,7 @@ export const BookDetailPanel: React.FC<{
   const [updateFile] = useUpdateBookFileMutation();
   const [rateBook] = useRateBookMutation();
   const isBookmarked = bookmarkStatus?.bookmarked;
-  const userRating = myRatingData?.rating || 0;
+  const userRating = myRatingData?.rating ?? 0;
 
   useEffect(() => {
     if (book?.id) {
@@ -201,10 +201,12 @@ export const BookDetailPanel: React.FC<{
                 </div>
                 <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
                   <p className="text-lg font-bold text-white leading-none mb-1">
-                    {book?.publishedYear || "-"}
+                    {typeof book?.rating === "number"
+                      ? book.rating.toFixed(1)
+                      : "-"}
                   </p>
                   <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
-                    Year
+                    Rating
                   </p>
                 </div>
                 <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
