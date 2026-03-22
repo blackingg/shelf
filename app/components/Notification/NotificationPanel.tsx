@@ -1,80 +1,162 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FiBell,
   FiBook,
   FiFolder,
-  FiClock,
   FiCheckSquare,
+  FiPlus,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
-
-interface UserNotification {
-  id: string;
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-  type: "book_saved" | "folder_created" | "system" | "reminder";
-}
+import { UserNotification } from "@/app/types/notification";
 
 export const NotificationPanel: React.FC = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<UserNotification[]>([
-    {
-      id: "1",
-      title: "Book Saved",
-      message:
-        "You saved 'The Great Gatsby' to your 'ENG 203 - American Literature' folder",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      read: false,
-      type: "book_saved",
-    },
-    {
-      id: "2",
-      title: "Book Saved",
-      message:
-        "You saved 'Things Fall Apart' to your public folder 'African Classics'",
-      timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      read: false,
-      type: "book_saved",
-    },
-    {
-      id: "3",
-      title: "New Folder Created",
-      message: "Folder 'ENG 203 - American Literature' has been created",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      read: false,
-      type: "folder_created",
-    },
-    {
-      id: "4",
-      title: "Folder Shared",
-      message: "Your folder 'POL 302 - Governance & Policy' is now public",
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      read: false,
-      type: "folder_created",
-    },
-    {
-      id: "5",
-      title: "Reading Reminder",
-      message: "Time to continue reading 'Atomic Habits",
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      read: true,
-      type: "reminder",
-    },
-    {
-      id: "6",
-      title: "Book Added to Folder",
-      message:
-        "A new book 'Digital Design and Computer Architecture' was added to 'CPE 310 Group Folder'",
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      read: true,
-      type: "book_saved",
-    },
+    // {
+    //   id: "0",
+    //   title: "New Uploads in Department",
+    //   message: "3 new books were added to 'Clinical Pharmacology' department",
+    //   timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    //   read: false,
+    //   type: "department_new_uploads",
+    //   resourceType: "department",
+    //   resourceId: "dept-1",
+    //   resourceSlug: "clinical-pharmacology-basic-clinical-sciences-unilag",
+    // },
+    // {
+    //   id: "1",
+    //   title: "Book Saved",
+    //   message:
+    //     "You saved 'The Great Gatsby' to your 'ENG 203 - American Literature' folder",
+    //   timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    //   read: false,
+    //   type: "book_added_to_folder",
+    //   resourceType: "book",
+    //   resourceId: "1",
+    //   resourceSlug: "the-great-gatsby",
+    // },
+    // {
+    //   id: "2",
+    //   title: "Book Saved",
+    //   message:
+    //     "You saved 'Things Fall Apart' to your public folder 'African Classics'",
+    //   timestamp: new Date(Date.now() - 15 * 60 * 1000),
+    //   read: false,
+    //   type: "book_added_to_folder",
+    //   resourceType: "book",
+    //   resourceId: "2",
+    //   resourceSlug: "things-fall-apart",
+    // },
+    // {
+    //   id: "3",
+    //   title: "Folder Created",
+    //   message: "Your folder 'ENG 203 - American Literature' is ready",
+    //   timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    //   read: false,
+    //   type: "folder_created",
+    //   resourceType: "folder",
+    //   resourceId: "3",
+    //   resourceSlug: "eng-203-american-literature",
+    // },
+    // {
+    //   id: "7",
+    //   title: "Added to Your Folder",
+    //   message:
+    //     "@ada_lovelace added 'Computer Networks' to your folder 'ENG 203 - American Literature'",
+    //   timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+    //   read: false,
+    //   type: "book_added_to_folder",
+    //   resourceType: "folder",
+    //   resourceId: "7",
+    //   resourceSlug: "eng-203-american-literature",
+    //   actor: {
+    //     id: "user-ada-lovelace",
+    //     username: "ada_lovelace",
+    //     fullName: "Ada Lovelace",
+    //     avatar: null,
+    //   },
+    // },
+    // {
+    //   id: "4",
+    //   title: "Invited to Folder",
+    //   message:
+    //     "@prof_smith invited you to collaborate on 'POL 302 - Governance & Policy'",
+    //   timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+    //   read: false,
+    //   type: "folder_invite",
+    //   resourceType: "folder",
+    //   resourceId: "4",
+    //   resourceSlug: "pol-302-governance-policy",
+    //   actor: {
+    //     id: "user-prof-smith",
+    //     username: "prof_smith",
+    //     fullName: "Prof Smith",
+    //     avatar: null,
+    //   },
+    // },
+    // {
+    //   id: "8",
+    //   title: "Invite Accepted",
+    //   message:
+    //     "@student_jane accepted your invite to 'ENG 203 - American Literature'",
+    //   timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000),
+    //   read: false,
+    //   type: "collab_accepted",
+    //   resourceType: "folder",
+    //   resourceId: "8",
+    //   resourceSlug: "eng-203-american-literature",
+    //   actor: {
+    //     id: "user-student-jane",
+    //     username: "student_jane",
+    //     fullName: "Student Jane",
+    //     avatar: null,
+    //   },
+    // },
+    // {
+    //   id: "9",
+    //   title: "Invite Rejected",
+    //   message: "@sam_okafor declined your invite to 'CPE 310 Group Folder'",
+    //   timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
+    //   read: true,
+    //   type: "collab_rejected",
+    //   resourceType: "folder",
+    //   resourceId: "9",
+    //   resourceSlug: "cpe-310-group-folder",
+    //   actor: {
+    //     id: "user-sam-okafor",
+    //     username: "sam_okafor",
+    //     fullName: "Sam Okafor",
+    //     avatar: null,
+    //   },
+    // },
+    // {
+    //   id: "5",
+    //   title: "Reading Reminder",
+    //   message: "Time to continue reading 'Atomic Habits",
+    //   timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    //   read: true,
+    //   type: "book_review",
+    //   resourceType: "book",
+    //   resourceId: "5",
+    //   resourceSlug: "atomic-habits",
+    // },
+    // {
+    //   id: "6",
+    //   title: "Book Added to Folder",
+    //   message:
+    //     "A new book 'Digital Design and Computer Architecture' was added to 'CPE 310 Group Folder'",
+    //   timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    //   read: true,
+    //   type: "book_added_to_folder",
+    //   resourceType: "book",
+    //   resourceId: "6",
+    //   resourceSlug: "digital-design-computer-architecture",
+    // },
   ]);
 
-  // const unreadCount = notifications.filter((n) => !n.read).length;
-  const unreadCount = 0;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAsRead = (id: string) => {
     setNotifications((prev) =>
@@ -82,23 +164,48 @@ export const NotificationPanel: React.FC = () => {
     );
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const handleMarkAllAsRead = async () => {
+    try {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
+  };
+
+  const handleNotificationClick = (notification: UserNotification) => {
+    handleMarkAsRead(notification.id);
+
+    if (notification.resourceType === "book") {
+      router.push(`/app/books/${notification.resourceSlug}`);
+    } else if (notification.resourceType === "folder") {
+      router.push(`/app/folders/${notification.resourceSlug}`);
+    } else if (notification.resourceType === "department") {
+      router.push(`/app/library/departments/${notification.resourceSlug}`);
+    }
+    setIsOpen(false);
   };
 
   const getNotificationIcon = (type: UserNotification["type"]) => {
     switch (type) {
-      case "book_saved":
+      case "book_approved":
+      case "book_review":
+      case "book_added_to_department":
+      case "book_added_to_folder":
+      case "trending_book":
         return (
           <FiBook className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
         );
       case "folder_created":
+      case "folder_invite":
+      case "collab_accepted":
+      case "collab_rejected":
+      case "folder_shared":
         return (
           <FiFolder className="w-4 h-4 text-blue-600 dark:text-blue-400" />
         );
-      case "reminder":
+      case "department_new_uploads":
         return (
-          <FiClock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <FiPlus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
         );
       default:
         return (
@@ -166,23 +273,12 @@ export const NotificationPanel: React.FC = () => {
                     onClick={handleMarkAllAsRead}
                     className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-emerald-600 uppercase tracking-widest transition-colors"
                   >
-                    Clear All
+                    Mark All as Read
                   </button>
                 )}
               </div>
 
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
-                <div className="px-8 py-16 text-center">
-                  <div className="text-4xl mb-4 filter drop-shadow-sm">🚧</div>
-                  <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-1">
-                    Under Construction
-                  </p>
-                  <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-medium whitespace-nowrap">
-                    Notifications are being calibrated for your account.
-                  </p>
-                </div>
-
-                {/* 
                 {notifications.length === 0 ? (
                   <div className="px-8 py-16 text-center">
                     <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-neutral-800">
@@ -204,11 +300,11 @@ export const NotificationPanel: React.FC = () => {
                           ? "bg-emerald-50/10 dark:bg-emerald-900/5"
                           : ""
                       }`}
-                      onClick={() => handleMarkAsRead(notification.id)}
+                      onClick={() => handleNotificationClick(notification)}
                     >
                       <div className="flex items-start gap-4">
                         <div
-                          className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 border transition-colors ${
+                          className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 border transition-colors ${
                             !notification.read
                               ? "bg-white dark:bg-neutral-800 border-emerald-100 dark:border-emerald-800/50 shadow-sm"
                               : "bg-gray-50 dark:bg-neutral-800/50 border-gray-100 dark:border-neutral-800"
@@ -228,7 +324,7 @@ export const NotificationPanel: React.FC = () => {
                               {notification.title}
                             </p>
                             {!notification.read && (
-                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0 mt-1"></span>
+                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shrink-0 mt-1"></span>
                             )}
                           </div>
                           <p
@@ -248,7 +344,6 @@ export const NotificationPanel: React.FC = () => {
                     </div>
                   ))
                 )}
-                */}
               </div>
             </motion.div>
           </>
