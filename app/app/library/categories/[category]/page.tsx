@@ -18,7 +18,6 @@ export default function CategoryPage({
 }) {
   const resolvedParams = use(params);
   const slug = resolvedParams.category;
-  const isAllCategory = slug === "all";
   const router = useRouter();
 
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
@@ -36,34 +35,32 @@ export default function CategoryPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const booksQueryParams = {
-    slug,
+  const commonBooksParams = {
     q: debouncedSearch,
     page,
     pageSize,
     sort_by: sortBy as any,
     order: "desc" as const,
   };
+
   const {
-    data: booksResponse,
+    data: categoryBooksResponse,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetBooksByCategoryQuery(booksQueryParams);
+  } = useGetBooksByCategoryQuery({
+    slug,
+    ...commonBooksParams,
+  });
 
-  const categoryView =
-    booksResponse?.category ||
-    (isAllCategory
-      ? {
-          name: "All Categories",
-          description: "Explore our full collection across every category.",
-        }
-      : null);
+  const booksResponse = categoryBooksResponse?.books;
+
+  const categoryView = categoryBooksResponse?.category || null;
 
   const isLoadingCategory = isLoadingBooks;
   const showSkeleton = isLoadingBooks || isFetchingBooks;
 
-  const books = booksResponse?.books?.items || [];
-  const totalPages = booksResponse?.books?.totalPages || 1;
+  const books = booksResponse?.items || [];
+  const totalPages = booksResponse?.totalPages || 1;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -116,7 +113,7 @@ export default function CategoryPage({
                     </div>
                     <div>
                       <span className="block text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-                        {booksResponse?.books?.total || 0}
+                        {booksResponse?.total || 0}
                       </span>
                       <span className="text-[10px] font-bold uppercase text-gray-400 dark:text-neutral-600 tracking-widest">
                         Resources
