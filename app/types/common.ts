@@ -5,6 +5,8 @@ export type FolderSortBy = "createdAt" | "booksCount" | "bookmarksCount";
 
 export interface PaginationParams {
   page?: number;
+  limit?: number;
+  max_limit?: number;
   pageSize?: number;
 }
 
@@ -41,6 +43,8 @@ export interface ErrorResponse {
   success: boolean;
   message: string;
   code: string;
-  details: { field: string | null; message: string; code: string | null }[] | null;
+  details:
+    | { field: string | null; message: string; code: string | null }[]
+    | null;
   timestamp: string;
 }

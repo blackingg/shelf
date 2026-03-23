@@ -14,6 +14,7 @@ export const usersApi = baseApi.injectEndpoints({
     getMe: builder.query<User, void>({
       query: () => "/users/me",
       providesTags: ["User"],
+      keepUnusedDataFor: 300,
     }),
     updateMe: builder.mutation<User, UpdateUserRequest>({
       query: (data) => ({
@@ -46,20 +47,46 @@ export const usersApi = baseApi.injectEndpoints({
     }),
     getUserByUsername: builder.query<UserPublic, string>({
       query: (username) => `/users/${username}`,
+      keepUnusedDataFor: 300,
     }),
     getUserBooks: builder.query<
       PaginatedResponse<Book>,
-      { username: string; page?: number; pageSize?: number }
+      {
+        username: string;
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      }
     >({
-      query: ({ username, ...params }) => ({
+      query: ({ username, pageSize, limit, ...params }) => ({
         url: `/users/${username}/books`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
-      providesTags: ["Books"],
+      keepUnusedDataFor: 300,
     }),
-    getUserFolders: builder.query<PaginatedResponse<Folder>, string>({
-      query: (username) => `/users/${username}/folders`,
+    getUserFolders: builder.query<
+      PaginatedResponse<Folder>,
+      {
+        username: string;
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      }
+    >({
+      query: ({ username, pageSize, limit, ...params }) => ({
+        url: `/users/${username}/folders`,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
+      }),
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
   }),
   overrideExisting: true,

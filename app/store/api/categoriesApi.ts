@@ -3,6 +3,11 @@ import { Category, CategoryBooksParams } from "../../types/categories";
 import { Book } from "../../types/book";
 import { PaginatedResponse } from "../../types/common";
 
+export interface CategoryBooksResponse {
+  category: Category;
+  books: PaginatedResponse<Book>;
+}
+
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
@@ -13,16 +18,21 @@ export const categoriesApi = baseApi.injectEndpoints({
     getCategoryBySlug: builder.query<Category, string>({
       query: (slug) => `/categories/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Categories", id: slug }],
+      keepUnusedDataFor: 300,
     }),
     getBooksByCategory: builder.query<
-      PaginatedResponse<Book>,
+      CategoryBooksResponse,
       CategoryBooksParams
     >({
-      query: ({ slug, ...params }) => ({
+      query: ({ slug, pageSize, limit, ...params }) => ({
         url: `/categories/${slug}/books`,
-        params,
+        params: {
+          ...params,
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+        },
       }),
       providesTags: ["Books"],
+      keepUnusedDataFor: 300,
     }),
   }),
 });

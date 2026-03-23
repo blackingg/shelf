@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { Folder, Collaborator } from "@/app/types/folder";
@@ -37,7 +38,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   className = "",
 }) => {
   const user = useSelector(selectCurrentUser);
-  const currentUser = user?.username || "Guest";
+  const currentUser = user?.username || "";
   const [activeMenuId, setActiveMenuId] = React.useState<string | null>(null);
 
   if (isLoading) {
@@ -148,7 +149,13 @@ export const FolderList: React.FC<FolderListProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <FiUser className="w-4 h-4 mr-2 text-gray-400 dark:text-neutral-500" />
-                      {folder.user?.username || "Guest"}
+                      <Link
+                        href={`/app/profile/${encodeURIComponent((folder.user?.username || "").replace(/\s+/g, ""))}`}
+                        className="underline-offset-2 hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {folder.user?.username}
+                      </Link>
                     </div>
                   </td>
                   {showActions && (

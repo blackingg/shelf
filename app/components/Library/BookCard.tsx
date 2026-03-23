@@ -99,11 +99,14 @@ export const BookCard: React.FC<BookCardProps> = ({
       </p>
       {donor?.username && (
         <Link
-          href={`/app/profile/${donor.username}`}
+          href={`/app/profile/${encodeURIComponent(donor.username.replace(/\s+/g, ""))}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-[10px] text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 mt-0.5 block truncate transition-colors"
+          className="text-[10px] text-gray-400 dark:text-neutral-500 mt-0.5 block truncate"
         >
-          Donated by <span className="hover:underline">{donor.username}</span>
+          Donated by
+          <span className="ml-1 underline-offset-2 hover:underline">
+            {donor.username}
+          </span>
         </Link>
       )}
     </div>
@@ -113,38 +116,10 @@ export const BookCard: React.FC<BookCardProps> = ({
 export function SingleBookCardSkeleton() {
   return (
     <div className="w-full">
-      <div className="relative h-64 md:h-72 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 overflow-hidden mb-3">
-        <motion.div
-          className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      <div className="h-64 md:h-72 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 mb-3 animate-pulse" />
       <div className="space-y-2">
-        <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded-md w-4/5 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.1,
-            }}
-          />
-        </div>
-        <div className="h-3 bg-gray-50 dark:bg-neutral-800/50 rounded-md w-2/5 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.2,
-            }}
-          />
-        </div>
+        <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded-md w-4/5 animate-pulse" />
+        <div className="h-3 bg-gray-50 dark:bg-neutral-800/50 rounded-md w-2/5 animate-pulse" />
       </div>
     </div>
   );

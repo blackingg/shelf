@@ -22,8 +22,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Use the "app-like" layout structure (h-screen, overflow-hidden)
-  // This prevents window scrolling and delegates scrolling to the content area
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-950 overflow-hidden">
       <Sidebar />

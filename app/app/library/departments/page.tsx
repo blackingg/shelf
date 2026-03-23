@@ -1,13 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiList, FiX } from "react-icons/fi";
-import { DepartmentCard } from "@/app/components/Library/DepartmentCard";
+import {
+  DepartmentCard,
+  DepartmentCardSkeleton,
+} from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { motion, AnimatePresence } from "motion/react";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function DepartmentsPage() {
   const router = useRouter();
@@ -23,6 +27,16 @@ export default function DepartmentsPage() {
   )?.slug;
 
   const [viewDepartments, setViewDepartments] = useState(false);
+  const [departmentSkeletonCount, setDepartmentSkeletonCount] = useState(10);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 3, lg: 5 },
+      setDepartmentSkeletonCount,
+      4,
+    );
+  }, []);
+
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (
@@ -63,12 +77,11 @@ export default function DepartmentsPage() {
               >
                 {isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
-                    {Array.from({ length: 10 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="h-40 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md animate-pulse"
-                      />
-                    ))}
+                    {Array.from({ length: departmentSkeletonCount }).map(
+                      (_, i) => (
+                        <DepartmentCardSkeleton key={i} />
+                      ),
+                    )}
                   </div>
                 ) : allDepartments.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
@@ -78,7 +91,7 @@ export default function DepartmentsPage() {
                         department={department}
                         onClick={() =>
                           router.push(
-                            `/app/library/departments/${department.id}`,
+                            `/app/library/departments/${department.slug}`,
                           )
                         }
                       />
@@ -97,7 +110,10 @@ export default function DepartmentsPage() {
 
           {userDepartment !== null && userDepartmentSlug && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
-              <UserDepartmentBooks departmentSlug={userDepartmentSlug} />
+              <UserDepartmentBooks
+                departmentSlug={userDepartmentSlug}
+                departmentName={userDepartment}
+              />
             </div>
           )}
         </div>

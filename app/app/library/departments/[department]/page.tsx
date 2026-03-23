@@ -7,12 +7,13 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiFilter, FiSearch } from "react-icons/fi";
 import {
-  useGetDepartmentBySlugQuery,
+  useGetDepartmentsQuery,
   useGetBooksByDepartmentQuery,
 } from "@/app/store/api/departmentsApi";
 import { BookPreview } from "@/app/types/book";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function DepartmentPage({
   params,
@@ -31,7 +32,15 @@ export default function DepartmentPage({
   );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
-  const pageSize = 15;
+  const [pageSize, setPageSize] = useState(15);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 4, lg: 5 },
+      setPageSize,
+      3,
+    );
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,8 +50,14 @@ export default function DepartmentPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: department, isLoading: isLoadingDept } =
-    useGetDepartmentBySlugQuery(slug);
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, order, slug]);
+
+  const { data: allDepartments = [], isLoading: isLoadingDept } =
+    useGetDepartmentsQuery();
+
+  const department = allDepartments.find((item) => item.slug === slug);
   const {
     data: booksResponse,
     isLoading: isLoadingBooks,
@@ -50,6 +65,7 @@ export default function DepartmentPage({
   } = useGetBooksByDepartmentQuery({
     slug,
     page,
+    limit: pageSize,
     sort_by: sortBy,
     order: order,
     q: debouncedSearch,
@@ -57,7 +73,7 @@ export default function DepartmentPage({
 
   const showSkeleton = isLoadingBooks || isFetchingBooks;
 
-  const books = booksResponse?.items || [];
+  const books = booksResponse?.books?.items || [];
 
   return (
     <div className="flex-1 flex flex-col">
@@ -93,7 +109,7 @@ export default function DepartmentPage({
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                   <div className="max-w-3xl">
                     <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
-                      {department.faculty || "General Faculty"}
+                      {department.faculty}
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
                       {department.name}
@@ -107,7 +123,7 @@ export default function DepartmentPage({
                   <div className="flex items-center gap-4">
                     <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
                       <span className="block text-3xl font-black text-emerald-600 dark:text-emerald-500 tracking-tighter">
-                        {booksResponse?.total || 0}
+                        {booksResponse?.books?.total || 0}
                       </span>
                       <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                         Resources
@@ -116,7 +132,7 @@ export default function DepartmentPage({
                     {department.school && (
                       <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
                         <span className="block text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
-                          {department.school.shortName || "Uni"}
+                          {department.school.shortName}
                         </span>
                         <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                           Institution
@@ -180,7 +196,7 @@ export default function DepartmentPage({
 
                   <Pagination
                     currentPage={page}
-                    totalPages={booksResponse?.totalPages || 1}
+                    totalPages={booksResponse?.books?.totalPages || 1}
                     onPageChange={setPage}
                     isLoading={isLoadingBooks}
                     className="mt-20"

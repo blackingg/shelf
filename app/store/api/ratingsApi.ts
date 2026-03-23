@@ -86,11 +86,21 @@ export const ratingsApi = baseApi.injectEndpoints({
     }),
     getBookReviews: builder.query<
       PaginatedResponse<ReviewResponse>,
-      { bookId: string; page?: number; pageSize?: number }
+      {
+        bookId: string;
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      }
     >({
-      query: ({ bookId, page = 1, pageSize = 20 }) => ({
+      query: ({ bookId, page = 1, limit, pageSize, max_limit }) => ({
         url: `/ratings/book/${bookId}`,
-        params: { page, pageSize },
+        params: {
+          page,
+          ...(max_limit ? { max_limit } : {}),
+          ...(limit || pageSize ? { limit: limit ?? pageSize } : { limit: 20 }),
+        },
       }),
       providesTags: (result, error, { bookId }) => [
         { type: "Ratings", id: bookId },

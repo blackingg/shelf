@@ -226,13 +226,13 @@ export default function BookDetailsPage() {
                         Contributor
                       </span>
                       <Link
-                        href={`/app/profile/${book.donor?.username}`}
-                        className="font-bold text-gray-900 dark:text-white hover:text-emerald-600 flex items-center gap-2 sm:gap-3 transition-colors min-w-0"
+                        href={`/app/profile/${encodeURIComponent((book.donor?.username || "").replace(/\s+/g, ""))}`}
+                        className="font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3 min-w-0"
                       >
                         <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold shrink-0">
                           {book.donor?.username?.charAt(0).toUpperCase()}
                         </div>
-                        <span className="truncate">
+                        <span className="truncate underline-offset-2 hover:underline">
                           @{book.donor?.username || "user"}
                         </span>
                       </Link>

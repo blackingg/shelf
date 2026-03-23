@@ -54,26 +54,67 @@ export const bookmarksApi = baseApi.injectEndpoints({
     getIsBookBookmarked: builder.query<BookmarkedStatus, string>({
       query: (id) => `/books/${id}/bookmarked`,
       providesTags: (result, error, id) => ["Bookmarks"],
+      keepUnusedDataFor: 120,
     }),
     getBookmarkedBooks: builder.query<
       PaginatedResponse<Book>,
-      { page?: number; pageSize?: number } | void
+      {
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      } | void
     >({
-      query: (params) => ({
-        url: "/bookmarks/books",
-        params: params || undefined,
-      }),
+      query: (params) => {
+        if (!params) {
+          return {
+            url: "/bookmarks/books",
+            params: undefined,
+          };
+        }
+
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/bookmarks/books",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Bookmarks"],
+      keepUnusedDataFor: 300,
     }),
     getBookmarkedFolders: builder.query<
       PaginatedResponse<Folder>,
-      { page?: number; pageSize?: number } | void
+      {
+        page?: number;
+        limit?: number;
+        max_limit?: number;
+        pageSize?: number;
+      } | void
     >({
-      query: (params) => ({
-        url: "/folders/bookmarked",
-        params: params || undefined,
-      }),
+      query: (params) => {
+        if (!params) {
+          return {
+            url: "/folders/bookmarked",
+            params: undefined,
+          };
+        }
+
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/folders/bookmarked",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Bookmarks"],
+      keepUnusedDataFor: 300,
     }),
     bookmarkFolder: builder.mutation<void, string>({
       query: (id) => ({
@@ -122,7 +163,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               (draft: any) => {
                 if (!draft?.items) return;
                 const folder = draft.items.find((f: any) => f.id === id);
-                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+                if (folder)
+                  folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
               },
             ),
           ),
@@ -136,7 +178,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               (draft: any) => {
                 if (!draft?.items) return;
                 const folder = draft.items.find((f: any) => f.id === id);
-                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+                if (folder)
+                  folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
               },
             ),
           ),
@@ -150,7 +193,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               (draft: any) => {
                 if (!draft?.items) return;
                 const folder = draft.items.find((f: any) => f.id === id);
-                if (folder) folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
+                if (folder)
+                  folder.bookmarksCount = (folder.bookmarksCount || 0) + 1;
               },
             ),
           ),
@@ -162,7 +206,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
               "getFolderById" as any,
               id,
               (draft: any) => {
-                if (draft) draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
+                if (draft)
+                  draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
               },
             ),
           ),
@@ -176,13 +221,13 @@ export const bookmarksApi = baseApi.injectEndpoints({
                 "getFolderBySlug" as any,
                 folderSlug,
                 (draft: any) => {
-                  if (draft) draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
+                  if (draft)
+                    draft.bookmarksCount = (draft.bookmarksCount || 0) + 1;
                 },
               ),
             ),
           );
         }
-
 
         if (folderToBookmark) {
           patchResults.push(
@@ -362,6 +407,7 @@ export const bookmarksApi = baseApi.injectEndpoints({
     getIsFolderBookmarked: builder.query<{ bookmarked: boolean }, string>({
       query: (id) => `/folders/${id}/bookmarked`,
       providesTags: (result, error, id) => ["Bookmarks"],
+      keepUnusedDataFor: 120,
     }),
   }),
   overrideExisting: true,

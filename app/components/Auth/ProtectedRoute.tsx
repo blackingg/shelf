@@ -2,51 +2,72 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "@/app/store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  logout,
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "@/app/store/authSlice";
 import { useGetMeQuery } from "@/app/store/api/usersApi";
 import { LoadingScreen } from "@/app/components/LoadingScreen";
 
-const PUBLIC_PATHS = ["/"];
+const PUBLIC_PATHS = ["/", "/docs/privacy", "/docs/terms"];
 
 export default function ProtectedRoute({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const currentUser = useSelector(selectCurrentUser);
   const [isChecking, setIsChecking] = useState(true);
+  const isPublicPath = pathname
+    ? PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/app/auth")
+    : true;
 
-  /*
-  useGetMeQuery(undefined, { skip: !isAuthenticated });
+  const { error: meError, isLoading: isLoadingMe } = useGetMeQuery(undefined, {
+    skip: !isAuthenticated || isPublicPath,
+  });
+
+  useEffect(() => {
+    const status = (meError as { status?: number } | undefined)?.status;
+    const detail = (meError as { data?: { detail?: string } } | undefined)?.data
+      ?.detail;
+
+    if (status === 401 || (status === 403 && detail === "Not authenticated")) {
+      dispatch(logout());
+      router.replace("/app/auth/login");
+    }
+  }, [meError, dispatch, router]);
 
   useEffect(() => {
     if (!pathname) return;
 
-    const isPublicPath =
-      PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/app/auth");
-
     if (!isAuthenticated && !isPublicPath) {
-      router.push("/app/auth/login");
+      router.replace("/app/auth/login");
     } else {
       setIsChecking(false);
     }
   }, [isAuthenticated, pathname, router]);
 
-  const isPublicPath = pathname
-    ? PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/app/auth")
-    : true;
-
   if (isPublicPath) {
     return <>{children}</>;
   }
 
-  if (isChecking || !isAuthenticated) {
+  if (isChecking) {
     return <LoadingScreen />;
   }
-*/
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (isLoadingMe && !currentUser) {
+    return <LoadingScreen />;
+  }
 
   return <>{children}</>;
 }

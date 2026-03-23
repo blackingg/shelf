@@ -7,10 +7,10 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiFilter, FiSearch, FiLayers } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
-import { useGetBooksQuery } from "@/app/store/api/booksApi";
-import { useGetCategoryBySlugQuery } from "@/app/store/api/categoriesApi";
+import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
+import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
 
 export default function CategoryPage({
   params,
@@ -26,7 +26,15 @@ export default function CategoryPage({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("rating");
-  const pageSize = 15;
+  const [pageSize, setPageSize] = useState(15);
+
+  useEffect(() => {
+    return watchResponsiveGridFetchLimit(
+      { base: 2, md: 4, lg: 5 },
+      setPageSize,
+      3,
+    );
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,21 +44,28 @@ export default function CategoryPage({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: category, isLoading: isLoadingCategory } =
-    useGetCategoryBySlugQuery(slug);
-  const {
-    data: booksResponse,
-    isLoading: isLoadingBooks,
-    isFetching: isFetchingBooks,
-  } = useGetBooksQuery({
+  const commonBooksParams = {
     q: debouncedSearch,
-    category: slug,
     page,
     pageSize,
     sort_by: sortBy as any,
-    order: "desc",
+    order: "desc" as const,
+  };
+
+  const {
+    data: categoryBooksResponse,
+    isLoading: isLoadingBooks,
+    isFetching: isFetchingBooks,
+  } = useGetBooksByCategoryQuery({
+    slug,
+    ...commonBooksParams,
   });
 
+  const booksResponse = categoryBooksResponse?.books;
+
+  const categoryView = categoryBooksResponse?.category || null;
+
+  const isLoadingCategory = isLoadingBooks;
   const showSkeleton = isLoadingBooks || isFetchingBooks;
 
   const books = booksResponse?.items || [];
@@ -68,7 +83,7 @@ export default function CategoryPage({
             <div className="">
               <CategorySkeleton />
             </div>
-          ) : !category ? (
+          ) : !categoryView ? (
             <div className="text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Category Not Found
@@ -93,11 +108,11 @@ export default function CategoryPage({
                       Community Library
                     </p>
                     <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
-                      {category.name}
+                      {categoryView.name}
                     </h1>
                     <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
-                      {category.description ||
-                        `Explore our extensive collection of community-curated resources for ${category.name}.`}
+                      {categoryView.description ||
+                        `Explore our extensive collection of community-curated resources for ${categoryView.name}.`}
                     </p>
                   </div>
 

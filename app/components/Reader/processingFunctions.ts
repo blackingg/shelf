@@ -1,5 +1,4 @@
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-import * as pdfjs from "pdfjs-dist";
 import { useState } from "react";
 
 export interface PdfSource {
@@ -20,7 +19,8 @@ export interface PdfPage {
 }
 
 export async function loadPdf(buffer: ArrayBuffer) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  const pdfjs = await import("pdfjs-dist");
+  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
   const loadingTask = pdfjs.getDocument({ data: buffer });
   return loadingTask.promise;
 }

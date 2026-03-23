@@ -279,9 +279,17 @@ export default function UploadPage() {
     if (!uploadedBookId) return;
 
     try {
+      const selectedDepartmentId = formData.department
+        ? departments.find(
+            (dept) =>
+              dept.id === formData.department ||
+              dept.slug === formData.department,
+          )?.id
+        : undefined;
+
       const payload = {
-        department: formData.department || "",
-        publisher: formData.publisher || "",
+        department: selectedDepartmentId,
+        publisher: formData.publisher || undefined,
         publishedYear: formData.publishedYear
           ? parseInt(formData.publishedYear)
           : 2000,
@@ -311,7 +319,7 @@ export default function UploadPage() {
   };
 
   const departmentOptions = departments.map((dept) => ({
-    value: dept.slug,
+    value: dept.id,
     label: dept.name,
   }));
   const categoryOptions = categoriesData.map((cat) => ({
@@ -345,7 +353,7 @@ export default function UploadPage() {
         <div className="flex items-center gap-4 mb-12">
           {[
             { n: "01", label: "Files & Essentials" },
-            { n: "02", label: "Details & Polish" },
+            { n: "02", label: "Details" },
           ].map(({ n, label }, i) => (
             <React.Fragment key={n}>
               {i > 0 && (
@@ -576,10 +584,10 @@ export default function UploadPage() {
                 <Button
                   type="submit"
                   isLoading={isUploading || isExtractingMetadata}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 whitespace-nowrap"
+                  icon={<FiArrowRight className="text-sm" />}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
                 >
-                  <span>Continue...</span>
-                  <FiArrowRight className="text-sm" />
+                  Continue...
                 </Button>
               </div>
             </motion.form>

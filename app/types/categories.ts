@@ -11,6 +11,8 @@ export interface Category {
 export interface CategoryBooksParams {
   q?: string;
   slug: string;
+  limit?: number;
+  max_limit?: number;
   sort_by?: string;
   order?: string;
   page?: number;

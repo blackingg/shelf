@@ -59,7 +59,7 @@ export const BookDetailPanel: React.FC<{
   const [updateFile] = useUpdateBookFileMutation();
   const [rateBook] = useRateBookMutation();
   const isBookmarked = bookmarkStatus?.bookmarked;
-  const userRating = myRatingData?.rating || 0;
+  const userRating = myRatingData?.rating ?? 0;
 
   const handleDelete = async (
     e: React.MouseEvent,
@@ -151,18 +151,18 @@ export const BookDetailPanel: React.FC<{
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full md:w-2/4 lg:w-2/8 bg-emerald-950 text-white p-6 md:p-8 flex flex-col border-l border-emerald-800 z-50"
+            className="fixed inset-x-0 top-0 bottom-0 h-full md:top-0 md:bottom-auto md:inset-x-auto md:right-0 md:h-full w-full md:w-lg max-w-full bg-emerald-950 text-white p-4 sm:p-6 md:p-8 flex flex-col border-t md:border-t-0 md:border-l border-emerald-800 z-50"
           >
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-md transition-colors duration-200 group"
+              className="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:bg-white/10 rounded-md transition-colors duration-200 group"
               aria-label="Close"
             >
               <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
             </button>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-12">
-              <div className="relative aspect-2/3 w-48 md:w-56 mx-auto rounded-lg overflow-hidden border border-emerald-700/50 mb-8 group">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-10 md:pt-12 pr-1">
+              <div className="relative aspect-2/3 w-36 sm:w-44 md:w-56 mx-auto rounded-md overflow-hidden border border-emerald-700/50 mb-6 md:mb-8 group">
                 <img
                   src={
                     book?.coverImage &&
@@ -172,31 +172,31 @@ export const BookDetailPanel: React.FC<{
                       : "/dummycover.png"
                   }
                   alt={book?.title || ""}
-                  className="object-cover transition-opacity duration-300 group-hover:opacity-90"
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
               </div>
 
-              <div className="text-center mb-10">
-                <h2 className="text-2xl font-bold leading-tight mb-2">
+              <div className="text-center mb-8 md:mb-10">
+                <h2 className="text-xl sm:text-2xl font-bold leading-tight mb-2 wrap-break-word px-2">
                   {book?.title}
                 </h2>
-                <p className="text-emerald-400 font-medium mb-2">
+                <p className="text-emerald-300 font-medium mb-2 text-sm sm:text-base px-2 wrap-break-word">
                   {book?.author}
                 </p>
                 {book?.donor?.username && (
                   <Link
-                    href={`/app/profile/${book.donor.username}`}
-                    className="text-emerald-100/60 text-sm hover:text-emerald-200 transition-colors group inline-block"
+                    href={`/app/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
+                    className="text-emerald-100/70 text-xs sm:text-sm inline-block"
                     onClick={() => onClose()}
                   >
                     Donated by{" "}
-                    <span className="text-white font-semibold hover:underline">
+                    <span className="text-white font-semibold underline-offset-2 hover:underline">
                       {book.donor.username}
                     </span>
                   </Link>
                 )}
 
-                <div className="mt-6 flex flex-col items-center">
+                <div className="mt-5 md:mt-6 flex flex-col items-center">
                   <p className="text-[10px] text-emerald-300/50 uppercase tracking-widest mb-3 font-bold">
                     Your Rating
                   </p>
@@ -209,7 +209,7 @@ export const BookDetailPanel: React.FC<{
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mb-10">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8 md:mb-10">
                 <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
                   <p className="text-lg font-bold text-white leading-none mb-1">
                     {book?.pages || "-"}
@@ -220,10 +220,12 @@ export const BookDetailPanel: React.FC<{
                 </div>
                 <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
                   <p className="text-lg font-bold text-white leading-none mb-1">
-                    {book?.publishedYear || "-"}
+                    {typeof book?.rating === "number"
+                      ? book.rating.toFixed(1)
+                      : "-"}
                   </p>
                   <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
-                    Year
+                    Rating
                   </p>
                 </div>
                 <div className="text-center bg-emerald-900/50 rounded-md py-4 px-2 border border-emerald-800/50">
@@ -236,39 +238,43 @@ export const BookDetailPanel: React.FC<{
                 </div>
               </div>
 
-              <div className="mb-12">
-                <h3 className="text-[10px] font-black text-gray-400 dark:text-neutral-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <div className="mb-10 md:mb-12">
+                <h3 className="text-[10px] font-black text-emerald-300/60 uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
                   <div className="w-4 h-px bg-current opacity-30" />
                   About this resource
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed font-medium">
+                <p className="text-sm text-emerald-50/80 leading-relaxed font-medium">
                   {book?.description}
                 </p>
               </div>
 
-              <div className="border-t border-gray-100 dark:border-neutral-900 pt-8 mb-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-[10px] font-black text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+              <div className="border-t border-emerald-800/70 pt-6 md:pt-8 mb-6 md:mb-8">
+                <div className="flex items-center justify-between gap-3 mb-6 md:mb-8">
+                  <h3 className="text-[10px] font-black text-emerald-300/60 uppercase tracking-widest">
                     Reviews & Discussion
                   </h3>
                   <Link
                     href={`/app/books/${book?.slug}`}
                     onClick={() => onClose()}
-                    className="text-[10px] font-black text-emerald-600 hover:text-emerald-500 uppercase tracking-widest transition-colors flex items-center gap-1"
+                    className="text-[10px] font-black text-emerald-300 hover:text-emerald-200 uppercase tracking-widest transition-colors flex items-center gap-1 shrink-0"
                   >
                     Expand Thread
                     <FiChevronDown className="-rotate-90 w-3 h-3" />
                   </Link>
                 </div>
-                <BookReviews bookId={book?.id || ""} limit={3} hideForm />
+                <BookReviews
+                  bookId={book?.id || ""}
+                  limit={3}
+                  hideForm
+                />
               </div>
             </div>
 
-            <div className="space-y-4 mt-auto pt-8">
+            <div className="space-y-3 sm:space-y-4 mt-auto pt-5 md:pt-8 pb-[max(env(safe-area-inset-bottom),0.25rem)]">
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push(`/app/books/${book?.slug}`)}
-                  className="flex-1 h-14 bg-white text-neutral-950 font-black text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex-1 h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <FiBookOpen className="w-4 h-4" />
                   <span>Read Now</span>
@@ -276,7 +282,7 @@ export const BookDetailPanel: React.FC<{
 
                 <button
                   onClick={handleBookmark}
-                  className={`w-14 h-14 rounded-md flex items-center justify-center transition-all duration-200 border ${
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md flex items-center justify-center transition-all duration-200 border ${
                     isBookmarked
                       ? "bg-emerald-600 border-emerald-600 text-white"
                       : "bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 hover:border-emerald-500 hover:text-emerald-600"
@@ -294,7 +300,7 @@ export const BookDetailPanel: React.FC<{
               >
                 <button
                   onClick={() => setShowFolderDropdown(!showFolderDropdown)}
-                  className="w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
+                  className="w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
                 >
                   <div className="flex items-center gap-3">
                     <FiBookmark

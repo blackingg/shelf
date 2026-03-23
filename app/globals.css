@@ -45,10 +45,17 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
-  /* user-select: none; */
-  /* -webkit-user-select: none; */
-  /* -webkit-tap-highlight-color: transparent; */
   overscroll-behavior-y: none;
+}
+
+::selection {
+  background: rgba(4, 76, 65, 0.2);
+  color: #111827;
+}
+
+.dark ::selection {
+  background: rgba(16, 185, 129, 0.28);
+  color: #f9fafb;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

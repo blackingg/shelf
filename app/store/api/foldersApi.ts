@@ -22,24 +22,50 @@ export const foldersApi = baseApi.injectEndpoints({
       {
         include_collaborated?: boolean;
         page?: number;
+        limit?: number;
+        max_limit?: number;
         pageSize?: number;
       } | void
     >({
-      query: (params) => ({
-        url: "/folders/me",
-        params: params || { include_collaborated: true },
-      }),
+      query: (params) => {
+        const safeParams = params || { include_collaborated: true };
+        const { pageSize, limit, ...rest } = safeParams;
+
+        return {
+          url: "/folders/me",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getPublicFolders: builder.query<
       PaginatedResponse<Folder>,
       FolderFilterParams | void
     >({
-      query: (params) => ({
-        url: "/folders/public",
-        params: params || undefined,
-      }),
+      query: (params) => {
+        if (!params) {
+          return {
+            url: "/folders/public",
+            params: undefined,
+          };
+        }
+
+        const { pageSize, limit, ...rest } = params;
+
+        return {
+          url: "/folders/public",
+          params: {
+            ...rest,
+            ...(limit || pageSize ? { limit: limit ?? pageSize } : {}),
+          },
+        };
+      },
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getRecommendedFolders: builder.query<
       RecommendedFoldersResponse,
@@ -50,14 +76,17 @@ export const foldersApi = baseApi.injectEndpoints({
         params: params || undefined,
       }),
       providesTags: ["Folders"],
+      keepUnusedDataFor: 300,
     }),
     getFolderById: builder.query<Folder, string>({
       query: (id) => `/folders/${id}`,
       providesTags: (result, error, id) => [{ type: "Folders", id }],
+      keepUnusedDataFor: 300,
     }),
     getFolderBySlug: builder.query<Folder, string>({
       query: (slug) => `/folders/slug/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Folders", id: slug }],
+      keepUnusedDataFor: 300,
     }),
     createFolder: builder.mutation<Folder, CreateFolderRequest>({
       query: (data) => ({
