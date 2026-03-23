@@ -353,7 +353,7 @@ export default function UploadPage() {
         <div className="flex items-center gap-4 mb-12">
           {[
             { n: "01", label: "Files & Essentials" },
-            { n: "02", label: "Details & Polish" },
+            { n: "02", label: "Details" },
           ].map(({ n, label }, i) => (
             <React.Fragment key={n}>
               {i > 0 && (
