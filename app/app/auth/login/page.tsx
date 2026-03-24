@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,6 +27,7 @@ interface FormData {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -36,6 +37,21 @@ export default function LoginPage() {
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
   const dispatch = useAppDispatch();
+
+  const redirectParam = searchParams.get("redirect");
+  const getPostLoginRoute = (onboardingCompleted: boolean) => {
+    if (!onboardingCompleted) return "/app/onboarding";
+
+    if (
+      redirectParam &&
+      redirectParam.startsWith("/") &&
+      !redirectParam.startsWith("/app/auth")
+    ) {
+      return redirectParam;
+    }
+
+    return "/app/discover";
+  };
 
   const handleGoogleSuccess = async (tokenResponse: any) => {
     try {
@@ -65,11 +81,7 @@ export default function LoginPage() {
       );
 
       addNotification("success", "Login successful! Welcome.");
-      if (result.user.onboardingCompleted) {
-        router.push("/app/discover");
-      } else {
-        router.push("/app/onboarding");
-      }
+      router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Google Auth Error:", error);
       addNotification(
@@ -135,12 +147,11 @@ export default function LoginPage() {
 
       addNotification("success", "Login successful! Welcome back.");
 
-      if (result.user.onboardingCompleted) {
-        router.push("/app/discover");
-      } else {
+      if (!result.user.onboardingCompleted) {
         addNotification("info", "Please complete the onboarding process.");
-        router.push("/app/onboarding");
       }
+
+      router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Login failed:", error);
       addNotification(
@@ -184,7 +195,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <Card className="!p-8">
+          <Card className="p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
