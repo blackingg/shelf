@@ -39,19 +39,23 @@ export default function ProtectedRoute({
 
     if (status === 401 || (status === 403 && detail === "Not authenticated")) {
       dispatch(logout());
-      router.replace("/app/auth/login");
+      router.replace(
+        `/app/auth/login?redirect=${encodeURIComponent(pathname ?? "/")}`,
+      );
     }
-  }, [meError, dispatch, router]);
+  }, [meError, dispatch, router, pathname]);
 
   useEffect(() => {
     if (!pathname) return;
 
     if (!isAuthenticated && !isPublicPath) {
-      router.replace("/app/auth/login");
+      router.replace(
+        `/app/auth/login?redirect=${encodeURIComponent(pathname)}`,
+      );
     } else {
       setIsChecking(false);
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, pathname, router, isPublicPath]);
 
   if (isPublicPath) {
     return <>{children}</>;

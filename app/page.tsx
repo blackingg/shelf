@@ -398,12 +398,20 @@ export default function ShelfLanding() {
               Terms
             </Link>
             <a
-              href="https://twitter.com/shelf"
+              href="https://x.com/shelfng_"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-emerald-600 transition-colors"
             >
-              Twitter
+              X (Twitter)
+            </a>
+            <a
+              href="https://www.instagram.com/shelf_ng"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-emerald-600 transition-colors"
+            >
+              Instagram
             </a>
           </div>
           <p className="text-[10px] text-gray-400">
