@@ -8,7 +8,7 @@ export default function PrivacyPage() {
   return (
     <>
       <AppHeader />
-      <PageContainer centered={false}>
+      <PageContainer centered={true}>
         <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">
           Privacy Policy
         </h1>
