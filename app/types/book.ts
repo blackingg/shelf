@@ -16,6 +16,8 @@ export interface Book {
   ratingsCount: number;
   pages: number;
   featured: boolean;
+  donatedAt: string;
+  updatedAt: string;
   description: string;
   fileUrl?: string | null;
   fileSize?: number | null;
@@ -53,7 +55,6 @@ export interface BookCardProps {
   donor?: { id: string; username: string };
   onClick?: () => void;
   className?: string;
-  deleteFunct?: () => void;
 }
 
 export interface BookFilterParams extends PaginationParams {

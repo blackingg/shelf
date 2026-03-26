@@ -36,7 +36,6 @@ export default function ReaderPage() {
           const buf = await response.arrayBuffer();
           setBuffer(buf);
           const derivedFileType = await fileTypeFromBuffer(buf);
-          console.log(derivedFileType?.ext);
           if (derivedFileType?.ext === "pdf") {
             setFileType("pdf");
           } else {

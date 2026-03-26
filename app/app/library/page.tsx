@@ -1,7 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
+import {
+  FiBook,
+  FiBookmark,
+  FiEdit2,
+  FiFolder,
+  FiHeart,
+  FiGrid,
+  FiList,
+} from "react-icons/fi";
 import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import {
   FolderCard,
@@ -28,6 +36,8 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useAppSelector } from "@/app/store/store";
 import { selectCurrentUser } from "@/app/store/authSlice";
+import { BookCardListView } from "@/app/components/Donation_ListView";
+import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 
@@ -54,6 +64,7 @@ export default function LibraryPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [viewState, updateViewState] = useState("grid");
 
   const pageSize = 8;
 
@@ -98,7 +109,6 @@ export default function LibraryPage() {
     { username: activeUser?.username || "", page: uploadPage, pageSize },
     { skip: activeTab !== "uploads" || !activeUser?.username },
   );
-
   // ── Bookmarks data ──
   const bookmarkedBooks = bookmarkedBooksResponse?.items || [];
   const totalBookmarkedBooks = bookmarkedBooksResponse?.total || 0;
@@ -260,7 +270,9 @@ export default function LibraryPage() {
 
             {bookmarkSubTab === "books" && (
               <div className="space-y-8">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                <div
+                  className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6`}
+                >
                   {showBooksSkeleton ? (
                     <BookCardSkeleton count={5} />
                   ) : bookmarkedBooks.length > 0 ? (
@@ -399,27 +411,53 @@ export default function LibraryPage() {
                 {myBooksResponse?.total !== 1 ? "s" : ""} donated
               </p>
               {(myBooksResponse?.total || 0) > 0 && (
-                <button
-                  onClick={() => router.push("/app/books/upload")}
-                  className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
-                >
-                  <FiHeart className="w-4 h-4" />
-                  <span>Donate Another</span>
-                </button>
+                <div className="flex md:gap-x-4 gap-x-2 items-center">
+                  <div className="flex gap-x-2">
+                    <FiGrid
+                      className="w-6 h-6"
+                      onClick={() => updateViewState("grid")}
+                    />
+                    <FiList
+                      className="w-6 h-6"
+                      onClick={() => updateViewState("list")}
+                    />
+                  </div>
+                  <button
+                    onClick={() => router.push("/app/books/upload")}
+                    className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
+                  >
+                    <FiHeart className="w-4 h-4" />
+                    <span>Donate Another</span>
+                  </button>
+                </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            <div
+              className={` ${viewState === "list" ? "block" : "grid"} grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6`}
+            >
               {showUploadsSkeleton ? (
                 <BookCardSkeleton count={5} />
               ) : myBooks.length > 0 ? (
-                myBooks.map((book) => (
-                  <BookCard
-                    key={book.id}
-                    {...book}
-                    onClick={() => setSelectedBook(book as BookPreview)}
-                  />
-                ))
+                viewState == "grid" ? (
+                  myBooks.map((book) => (
+                    <BookCard
+                      key={book.id}
+                      {...book}
+                      onClick={() => setSelectedBook(book as BookPreview)}
+                    />
+                  ))
+                ) : (
+                  myBooks.map((book) => (
+                    <BookCardListView
+                      book={book}
+                      key={book.id}
+                      deleteFunct={() => {
+                        setSelectedBook(book as BookPreview);
+                      }}
+                    />
+                  ))
+                )
               ) : (
                 <div className="col-span-full min-h-[50vh] flex items-center justify-center">
                   <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full max-w-lg">
@@ -457,11 +495,22 @@ export default function LibraryPage() {
         )}
       </div>
 
-      <BookDetailPanel
-        book={selectedBook!}
-        isOpen={!!selectedBook}
-        onClose={() => setSelectedBook(null)}
-      />
+      {viewState !== "list" && (
+        <BookDetailPanel
+          book={selectedBook!}
+          isOpen={!!selectedBook}
+          onClose={() => setSelectedBook(null)}
+          isDonationsPage={activeTab === "uploads"}
+        />
+      )}
+
+      {viewState === "list" && (
+        <DeleteModal
+          isOpen={!!selectedBook}
+          onClose={() => setSelectedBook(null)}
+          book={selectedBook!}
+        />
+      )}
 
       <CreateFolderModal
         isOpen={showCreateModal}

@@ -31,7 +31,6 @@ interface OptionType {
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
-  console.log(user);
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
