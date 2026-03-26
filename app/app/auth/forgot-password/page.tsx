@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoStacked } from "@/app/components/Logo";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
@@ -153,14 +153,7 @@ export default function ForgotPassword() {
               href="/"
               className="inline-block mb-8"
             >
-              <Image
-                src="/logo-stacked-1.png"
-                alt="Shelf"
-                width={120}
-                height={40}
-                className="h-8 w-auto"
-                priority
-              />
+              <LogoStacked className="w-28 h-8 text-[#072c0b] dark:text-[#D0FDC2]" />
             </Link>
           </div>
 

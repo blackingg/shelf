@@ -13,7 +13,7 @@ import {
   FiStar,
   FiZap,
 } from "react-icons/fi";
-import Image from "next/image";
+import { LogoStacked } from "@/app/components/Logo";
 import Link from "next/link";
 
 export default function ShelfLanding() {
@@ -89,14 +89,7 @@ export default function ShelfLanding() {
               href="/"
               className="flex items-center"
             >
-              <Image
-                src="/logo-stacked-1.png"
-                alt="Shelf"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
-                priority
-              />
+              <LogoStacked className="w-32 h-10 text-[#072c0b] dark:text-[#D0FDC2]" />
             </Link>
 
             <div className="flex items-center space-x-2">
@@ -184,13 +177,7 @@ export default function ShelfLanding() {
               <div className="relative z-10">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
                   <div>
-                    <Image
-                      src="/logo-stacked-1.png"
-                      alt="Shelf"
-                      width={120}
-                      height={38}
-                      className="h-8 w-auto mb-3"
-                    />
+                    <LogoStacked className="w-28 h-8 mb-3 text-[#072c0b] dark:text-[#D0FDC2]" />
                     <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/60 font-medium">
                       Everywhere, Always
                     </div>
@@ -372,13 +359,7 @@ export default function ShelfLanding() {
             href="/"
             className="inline-flex items-center mb-6"
           >
-            <Image
-              src="/logo-stacked-1.png"
-              alt="Shelf"
-              width={100}
-              height={32}
-              className="h-6 w-auto"
-            />
+            <LogoStacked className="w-20 h-6 text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
             Building the future of digital libraries. Knowledge for students and

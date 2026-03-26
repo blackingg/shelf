@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FiX, FiShare, FiDownload, FiPlusSquare } from "react-icons/fi";
 import { usePWAInstall } from "@/app/helpers/usePWAInstall";
-import Image from "next/image";
+import { Logo } from "@/app/components/Logo";
 
 export const PWAInstallPrompt: React.FC = () => {
   const {
@@ -66,14 +66,7 @@ export const PWAInstallPrompt: React.FC = () => {
               </button>
 
               <div className="w-17 h-17 relative mb-4 ">
-                <Image
-                  src="/logo.png"
-                  alt="Shelf Logo"
-                  width={60}
-                  height={60}
-                  className="w-full h-full object-contain"
-                  priority
-                />
+                <Logo className="w-full h-full object-contain text-[#072c0b]" />
               </div>
 
               <h3 className="text-2xl font-black bg-clip-text text-transparent bg-linear-to-br from-neutral-900 to-neutral-600 dark:from-white dark:to-neutral-400">

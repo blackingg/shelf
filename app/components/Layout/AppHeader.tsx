@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { LogoStacked } from "@/app/components/Logo";
 import Link from "next/link";
 
 export const AppHeader: React.FC<{
@@ -12,14 +12,7 @@ export const AppHeader: React.FC<{
           href={"/"}
           className="flex items-center gap-2"
         >
-          <Image
-            src="/logo-stacked-1.png"
-            alt="Shelf"
-            width={112}
-            height={36}
-            className="h-9 w-auto"
-            priority
-          />
+          <LogoStacked className="w-24 h-9 text-[#072c0b] dark:text-[#D0FDC2]" />
         </Link>
         {rightContent}
       </div>
