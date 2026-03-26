@@ -54,7 +54,7 @@ export const PWAInstallPrompt: React.FC = () => {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: "100%", opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 260, damping: 25 }}
-            className="w-full max-w-sm bg-white dark:bg-neutral-900 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-neutral-100 dark:border-neutral-800 overflow-hidden pointer-events-auto"
+            className="w-full max-w-sm bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 overflow-hidden pointer-events-auto"
           >
             <div className="relative pt-8 pb-4 px-6 flex flex-col items-center">
               <button
@@ -65,21 +65,21 @@ export const PWAInstallPrompt: React.FC = () => {
                 <FiX className="w-5 h-5" />
               </button>
 
-              <div className="w-17 h-17 relative mb-4 ">
-                <Logo className="w-full h-full object-contain text-[#072c0b]" />
+              <div className="w-16 h-16 relative mb-4 ">
+                <Logo className="w-full h-full object-contain text-[#072c0b] dark:text-[#D0FDC2]" />
               </div>
 
-              <h3 className="text-2xl font-black bg-clip-text text-transparent bg-linear-to-br from-neutral-900 to-neutral-600 dark:from-white dark:to-neutral-400">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">
                 Install Shelf
               </h3>
-              <p className="mt-2 text-center text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed max-w-60">
+              <p className="mt-2 text-center text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-60">
                 Add to your home screen for a faster, fullscreen experience.
               </p>
             </div>
 
             <div className="px-6 pb-8">
               {isIOS ? (
-                <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-3xl p-5 border border-neutral-100 dark:border-neutral-800">
+                <div className="bg-neutral-50 dark:bg-neutral-900 rounded-md p-5 border border-gray-100 dark:border-white/10">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-4 opacity-70">
                     How to Setup
                   </p>
@@ -121,7 +121,7 @@ export const PWAInstallPrompt: React.FC = () => {
             </div>
 
             {/* Bottom Accent */}
-            <div className="h-1.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+            <div className="h-1.5 bg-linear-to-r from-transparent via-primary/30 to-transparent" />
           </motion.div>
         </div>
       </div>
