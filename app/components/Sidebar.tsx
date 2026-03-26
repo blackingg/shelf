@@ -86,12 +86,12 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       <aside className="hidden lg:flex w-56 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col">
-        <div className="px-5 py-5 border-b border-gray-100 dark:border-neutral-800">
+        <div className="px-5 py-8">
           <Link
             href={"/app/discover"}
             className="flex items-center space-x-2"
           >
-            <LogoStacked className="w-20 h-8 text-[#072c0b] dark:text-[#D0FDC2]" />
+            <LogoStacked className="w-22 h-auto text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
         </div>
 
