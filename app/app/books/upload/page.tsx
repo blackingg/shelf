@@ -26,13 +26,16 @@ import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
+import MultipleUploadForm from "@/app/components/MultipleUploadForm";
 
-interface PDFJSInfo {
+export interface PDFJSInfo {
   Title: string;
   Author: string;
 }
 
-async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractPdfCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const { parsePdf, getPdfPage } =
       await import("@/app/components/Reader/processingFunctions");
@@ -61,7 +64,9 @@ async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
   }
 }
 
-async function extractEpubCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractEpubCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const bookDetails = Epub(fileBuffer.slice(0) as any);
     await bookDetails.ready;
@@ -86,6 +91,10 @@ export default function UploadPage() {
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
   const [isExtractingMetadata, setIsExtractingMetadata] = useState(false);
+
+  //stateful values for tracking multiple files
+  const [bookCount, updateBookCount] = useState(1);
+  const [multiplesList, updateMultiplesList] = useState<FileList | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -146,8 +155,13 @@ export default function UploadPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActiveBook(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetBookFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files) {
+      if (e.dataTransfer.files.length === 1) {
+        validateAndSetBookFile(e.dataTransfer.files[0]);
+      } else {
+        updateMultiplesList(e.dataTransfer.files);
+        updateBookCount(e.dataTransfer.files.length);
+      }
     }
   };
 
@@ -219,8 +233,13 @@ export default function UploadPage() {
   };
 
   const handleBookFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      validateAndSetBookFile(e.target.files[0]);
+    if (e.target.files) {
+      if (e.target.files.length == 1) {
+        validateAndSetBookFile(e.target.files[0]);
+      } else {
+        updateMultiplesList(e.target.files);
+        updateBookCount(e.target.files?.length);
+      }
     }
   };
 
@@ -333,19 +352,19 @@ export default function UploadPage() {
     </label>
   );
 
-  return (
+  return bookCount <= 1 ? (
     <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
       <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-8 w-1 bg-emerald-500"></div>
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
-              {step === 1 ? "Upload Resource" : "Refine Metadata"}
+              Upload Resources
             </h1>
           </div>
           <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
             {step === 1
-              ? "Upload your document — we'll automatically extract the title, author, and cover image from the file."
+              ? "Upload your document(s) — we'll automatically extract the title, author, and cover image from the file."
               : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
           </p>
         </div>
@@ -397,6 +416,7 @@ export default function UploadPage() {
                       className="hidden"
                       onChange={handleBookFileChange}
                       accept=".pdf,.epub"
+                      multiple={true}
                     />
                     <div
                       onDragOver={handleDrag}
@@ -588,6 +608,8 @@ export default function UploadPage() {
                   className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
                 >
                   Continue...
+                  <span>Continue...</span>
+                  <FiArrowRight className="text-sm inline" />
                 </Button>
               </div>
             </motion.form>
@@ -735,6 +757,16 @@ export default function UploadPage() {
           )}
         </AnimatePresence>
       </main>
+    </div>
+  ) : (
+    <div className="grid bg-inherit py-2">
+      <button
+        className="justify-self-end grid p-1 my-2 text-xl rounded-xl bg-red-600"
+        onClick={() => updateBookCount(0)}
+      >
+        Clear Books
+      </button>
+      <MultipleUploadForm files={multiplesList} />
     </div>
   );
 }

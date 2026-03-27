@@ -271,10 +271,7 @@ function LoginPageContent() {
 
             <Divider text="or sign in with" />
 
-            <SocialLoginButton
-              provider="google"
-              onClick={handleGoogleAuth}
-            />
+            <SocialLoginButton provider="google" onClick={handleGoogleAuth} />
           </Card>
 
           <p className="mt-8 text-center text-sm text-gray-500">
