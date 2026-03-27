@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FiCheck, FiTrash, FiUploadCloud } from "react-icons/fi";
+import { FiCheck, FiTrash, FiTrash2, FiUploadCloud } from "react-icons/fi";
 import {
   metadataParse,
   prepareForUpload,
@@ -147,7 +147,7 @@ export default function MultipleUploadForm({
               </div>
               <div className="justify-center grid">
                 <FiTrash
-                  className="inline text-2xl hover:bg-red-600 hover:rounded-2xl"
+                  className="inline text-2xl hover:bg-red-600 hover:cursor-pointer"
                   title="Delete Book"
                   onClick={() => {
                     const excludesFile = filesToBeUploaded.filter(

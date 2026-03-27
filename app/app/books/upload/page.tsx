@@ -749,9 +749,9 @@ export default function UploadPage() {
       </main>
     </div>
   ) : (
-    <div className="grid bg-inherit">
+    <div className="grid bg-inherit py-2">
       <button
-        className="justify-self-end grid p-2 text-xl uppercase rounded-xl bg-red-600"
+        className="justify-self-end grid p-1 my-2 text-xl rounded-xl bg-red-600"
         onClick={() => updateBookCount(0)}
       >
         Clear Books
