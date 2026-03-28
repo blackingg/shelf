@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import { LogoStacked, Logo } from "@/app/components/Logo";
 import {
   FiBook,
   FiSettings,
@@ -86,18 +86,12 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       <aside className="hidden lg:flex w-56 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col">
-        <div className="px-5 py-5 border-b border-gray-100 dark:border-neutral-800">
+        <div className="px-5 py-8">
           <Link
             href={"/app/discover"}
             className="flex items-center space-x-2"
           >
-            <Image
-              width={120}
-              height={40}
-              src="/logo-stacked-1.png"
-              className="h-auto w-14"
-              alt="Shelf Logo"
-            />
+            <LogoStacked className="w-22 h-auto text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
         </div>
 
@@ -170,12 +164,7 @@ export const Sidebar: React.FC = () => {
       >
         <div className="px-5 py-5 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
           <div className="flex items-center space-x-2.5">
-            <Image
-              width={24}
-              height={24}
-              src="/logo.png"
-              alt="Shelf Logo"
-            />
+            <Logo className="w-8 h-8 text-[#072c0b] dark:text-[#D0FDC2]" />
             <span className="text-xl font-semibold text-gray-900 dark:text-white">
               Shelf
             </span>

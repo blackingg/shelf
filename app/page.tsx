@@ -1,5 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/app/store/store";
+import { selectIsAuthenticated } from "@/app/store/authSlice";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   FiBook,
@@ -13,7 +16,7 @@ import {
   FiStar,
   FiZap,
 } from "react-icons/fi";
-import Image from "next/image";
+import { LogoStacked } from "@/app/components/Logo";
 import Link from "next/link";
 
 export default function ShelfLanding() {
@@ -75,6 +78,9 @@ export default function ShelfLanding() {
     { value: "100%", label: "Free to Start", icon: <FiZap /> },
   ];
 
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-white dark:bg-black overflow-hidden font-onest">
       <motion.nav
@@ -89,30 +95,32 @@ export default function ShelfLanding() {
               href="/"
               className="flex items-center"
             >
-              <Image
-                src="/logo-stacked-1.png"
-                alt="Shelf"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
-                priority
-              />
+              <LogoStacked className="w-32 h-10 text-[#072c0b] dark:text-[#D0FDC2]" />
             </Link>
 
-            <div className="flex items-center space-x-2">
+            {isAuthenticated ? (
               <button
-                onClick={() => (window.location.href = "/app/auth/login")}
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 transition-colors"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => (window.location.href = "/app/auth/register")}
+                onClick={() => router.push("/app/discover")}
                 className="px-6 py-2 bg-emerald-600 text-white rounded-sm text-sm font-medium hover:bg-emerald-700 transition-colors"
               >
-                Get Started
+                Go to App
               </button>
-            </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => router.push("/app/auth/login")}
+                  className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 transition-colors"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => router.push("/app/auth/register")}
+                  className="px-6 py-2 bg-emerald-600 text-white rounded-sm text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
+                  Get Started
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </motion.nav>
@@ -131,7 +139,7 @@ export default function ShelfLanding() {
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-medium mb-8 leading-[1] tracking-tighter text-gray-900 dark:text-white">
+            <h1 className="text-6xl md:text-8xl font-medium mb-8 leading-none tracking-tighter text-gray-900 dark:text-white">
               Knowledge <br />
               for Students <br />
               <span className="text-emerald-600">& Readers</span>
@@ -156,22 +164,34 @@ export default function ShelfLanding() {
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => (window.location.href = "/app/auth/register")}
-                className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
-              >
-                <span>Start Reading Free</span>
-                <FiArrowRight className="w-5 h-5" />
-              </button>
+            {isAuthenticated ? (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/app/discover")}
+                  className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <span>Go to App</span>
+                  <FiArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/app/auth/register")}
+                  className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <span>Start Reading</span>
+                  <FiArrowRight className="w-5 h-5" />
+                </button>
 
-              <button
-                onClick={() => (window.location.href = "/app/auth/login")}
-                className="px-8 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-sm font-medium text-base hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-              >
-                Sign In
-              </button>
-            </div>
+                <button
+                  onClick={() => router.push("/app/auth/login")}
+                  className="px-8 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-sm font-medium text-base hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -184,13 +204,7 @@ export default function ShelfLanding() {
               <div className="relative z-10">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
                   <div>
-                    <Image
-                      src="/logo-stacked-1.png"
-                      alt="Shelf"
-                      width={120}
-                      height={38}
-                      className="h-8 w-auto mb-3"
-                    />
+                    <LogoStacked className="w-28 h-8 mb-3 text-[#072c0b] dark:text-[#D0FDC2]" />
                     <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/60 font-medium">
                       Everywhere, Always
                     </div>
@@ -285,7 +299,7 @@ export default function ShelfLanding() {
                 key={index}
                 className="flex items-start space-x-6 py-8 group transition-colors"
               >
-                <div className="w-6 h-6 rounded-sm bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-6 h-6 rounded-sm bg-emerald-500/10 flex items-center justify-center shrink-0 mt-1">
                   <FiCheck className="w-4 h-4 text-emerald-600" />
                 </div>
                 <p className="text-lg text-gray-700 dark:text-gray-300 font-medium leading-tight">
@@ -372,13 +386,7 @@ export default function ShelfLanding() {
             href="/"
             className="inline-flex items-center mb-6"
           >
-            <Image
-              src="/logo-stacked-1.png"
-              alt="Shelf"
-              width={100}
-              height={32}
-              className="h-6 w-auto"
-            />
+            <LogoStacked className="w-20 h-6 text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
             Building the future of digital libraries. Knowledge for students and

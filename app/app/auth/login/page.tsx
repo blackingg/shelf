@@ -19,6 +19,7 @@ import { setCredentials } from "@/app/store/authSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useGoogleAuthMutation } from "@/app/store/api/authApi";
 import { getErrorMessage } from "@/app/helpers/error";
+import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 
 interface FormData {
   email: string;
@@ -262,8 +263,9 @@ function LoginPageContent() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoginLoading}
+                isLoading={isLoginLoading || isGoogleLoading}
                 className="py-4"
+                loader={<SpinnerLoader />}
               >
                 Log In
               </Button>
@@ -271,7 +273,12 @@ function LoginPageContent() {
 
             <Divider text="or sign in with" />
 
-            <SocialLoginButton provider="google" onClick={handleGoogleAuth} />
+            <SocialLoginButton
+              provider="google"
+              onClick={handleGoogleAuth}
+              isLoading={isGoogleLoading}
+              loader={<SpinnerLoader />}
+            />
           </Card>
 
           <p className="mt-8 text-center text-sm text-gray-500">

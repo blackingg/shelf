@@ -5,7 +5,7 @@ import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
 import { PdfViewer } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
-import { LoadingScreen } from "@/app/components/LoadingScreen";
+import { LoadingScreen } from "@/app/components/Loader/LoadingScreen";
 import { fileTypeFromBuffer } from "file-type";
 
 export default function ReaderPage() {

@@ -14,6 +14,7 @@ import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 import {
   useRegisterMutation,
   useGoogleAuthMutation,
@@ -312,8 +313,9 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isRegisterLoading}
+                isLoading={isRegisterLoading || isGoogleLoading}
                 className="py-4"
+                loader={<SpinnerLoader />}
               >
                 Create Account
               </Button>
@@ -321,7 +323,12 @@ export default function SignupPage() {
 
             <Divider text="or sign up with" />
 
-            <SocialLoginButton provider="google" onClick={handleGoogleAuth} />
+            <SocialLoginButton
+              provider="google"
+              onClick={handleGoogleAuth}
+              isLoading={isGoogleLoading}
+              loader={<SpinnerLoader />}
+            />
           </Card>
 
           <p className="mt-8 text-center text-sm text-gray-500">

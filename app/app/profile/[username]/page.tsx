@@ -38,7 +38,7 @@ export async function generateMetadata({
   const description =
     user.bio ||
     `Check out ${user.fullName}'s book collections and donations on Shelf.`;
-  const image = user.avatar || "/logo-stacked-1.png";
+  const image = user.avatar || "/logo.png";
 
   return {
     title,

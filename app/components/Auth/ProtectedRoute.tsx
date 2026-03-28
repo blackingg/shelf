@@ -9,7 +9,7 @@ import {
   selectIsAuthenticated,
 } from "@/app/store/authSlice";
 import { useGetMeQuery } from "@/app/store/api/usersApi";
-import { LoadingScreen } from "@/app/components/LoadingScreen";
+import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = ["/", "/docs/privacy", "/docs/terms"];
 
