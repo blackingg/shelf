@@ -12,7 +12,10 @@ import { FiBook } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
-import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
+import {
+  useGetCategoriesQuery,
+  useGetBooksByCategoryQuery,
+} from "@/app/store/api/categoriesApi";
 import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
 import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
 import {
@@ -31,7 +34,14 @@ export default function DiscoverPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const { data: categories = [] } = useGetCategoriesQuery();
+
+  useEffect(() => {
+    if (categories.length > 0 && !activeCategory) {
+      setActiveCategory(categories[0].slug);
+    }
+  }, [categories, activeCategory]);
   const [categoryFetchLimit, setCategoryFetchLimit] = useState(10);
   const [departmentDisplayLimit, setDepartmentDisplayLimit] = useState(8);
   const [publicFoldersFetchLimit, setPublicFoldersFetchLimit] = useState(8);
@@ -106,14 +116,15 @@ export default function DiscoverPage() {
     slug: activeCategory,
     page: 1,
     limit: categoryFetchLimit,
-  });
+  }, { skip: !activeCategory });
 
   const categoryBooksResponse = categoryBooksResult?.books;
 
   const categoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =
-    categoryBooks.length === 0 &&
-    (isLoadingCategoryBooks || isFetchingCategoryBooks);
+    !activeCategory ||
+    (categoryBooks.length === 0 &&
+      (isLoadingCategoryBooks || isFetchingCategoryBooks));
   const hasMoreCategoryBooks =
     !!categoryBooksResponse?.hasNext ||
     (categoryBooksResponse?.total || 0) > categoryBooks.length;
