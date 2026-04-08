@@ -46,7 +46,7 @@ export const Sidebar: React.FC = () => {
       href: "/app/library/departments",
     },
     { label: "Viewer", icon: <FiBookOpen />, href: "/app/upload-and-read" },
-    { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
+    // { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
 
     // { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
   ];

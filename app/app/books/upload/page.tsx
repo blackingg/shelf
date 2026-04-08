@@ -9,6 +9,8 @@ import {
   FiImage,
   FiLayout,
   FiBookOpen,
+  FiEye,
+  FiEyeOff,
 } from "react-icons/fi";
 import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
@@ -26,6 +28,7 @@ import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUpload } from "@/app/hooks/useUpload";
 
 interface PDFJSInfo {
   Title: string;
@@ -86,6 +89,15 @@ export default function UploadPage() {
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
   const [isExtractingMetadata, setIsExtractingMetadata] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const {
+    isAuthorized,
+    isLoading: isAuthLoading,
+    authorize,
+    password,
+    setPassword,
+    error: authError,
+  } = useUpload();
 
   useEffect(() => {
     setMounted(true);
@@ -338,6 +350,13 @@ export default function UploadPage() {
     }
   };
 
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authorize()) {
+      addNotification("error", authError || "Incorrect access password.");
+    }
+  };
+
   const departmentOptions = departments.map((dept) => ({
     value: dept.id,
     label: dept.name,
@@ -361,6 +380,75 @@ export default function UploadPage() {
       {children}
     </label>
   );
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+            Verifying Access
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-sm p-8"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-1 bg-emerald-500"></div>
+            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+              Administrative Access
+            </h1>
+          </div>
+          <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
+            Please enter the authorization password to continue to the document
+            upload pipeline.
+          </p>
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label>Access Password</Label>
+              <div className="relative group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
+                    authError
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-neutral-800"
+                  } text-sm outline-none focus:border-emerald-500 transition-all`}
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
+                >
+                  {showPassword ? (
+                    <FiEyeOff className="text-lg" />
+                  ) : (
+                    <FiEye className="text-lg" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+              Continue
+            </Button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
