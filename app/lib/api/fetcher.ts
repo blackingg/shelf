@@ -1,171 +1,133 @@
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { store } from "../../store/store";
-
 import { logout, updateTokens } from "../../store/authSlice";
 import { Mutex } from "async-mutex";
+import { getErrorMessage } from "../../helpers/error";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const mutex = new Mutex();
 
-export interface FetchOptions extends RequestInit {
-  params?: Record<string, any>;
-}
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-const isValidToken = (token: string | null | undefined): token is string =>
-  !!token && token !== "undefined" && token !== "null";
+// Request Interceptor: Inject Bearer Token
+axiosInstance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const state = store.getState();
+    const token = state.auth.accessToken;
 
-export const fetcher = async <T>(
-  url: string,
-  { params, ...options }: FetchOptions = {},
-): Promise<T> => {
-  const state = store.getState();
-  const { accessToken, refreshToken, expiresAt } = state.auth;
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
-  // 1. Proactive Refresh Check
-  if (isValidToken(refreshToken) && expiresAt) {
-    const now = Date.now();
-    const expirationBuffer = 60 * 1000; // 1 minute
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-    if (now > expiresAt - expirationBuffer) {
-      if (!mutex.isLocked()) {
-        const release = await mutex.acquire();
-        try {
-          const currentState = store.getState();
-          if (
-            currentState.auth.expiresAt &&
-            now > currentState.auth.expiresAt - expirationBuffer
-          ) {
-            const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ refreshToken }),
-            });
+// Response Interceptor: Handle Success and Errors (including 401 Refresh)
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-            if (refreshRes.ok) {
-              const data = await refreshRes.json();
-              store.dispatch(
-                updateTokens({
-                  accessToken: data.accessToken,
-                  refreshToken: data.refreshToken,
-                  expiresIn: data.expiresIn,
-                }),
-              );
-            } else {
-              store.dispatch(logout());
-            }
-          }
-        } finally {
-          release();
-        }
-      } else {
+    // 1. Handle 401: Unauthorized (Token Expired)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // If we are already refreshing, wait for the mutex to unlock and retry with new token
+      if (mutex.isLocked()) {
         await mutex.waitForUnlock();
+        const newState = store.getState();
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newState.auth.accessToken}`;
+        }
+        return axiosInstance(originalRequest);
       }
-    }
-  }
 
-  const performFetch = async (currentOptions: FetchOptions) => {
-    const currentState = store.getState();
-    const currentToken = currentState.auth.accessToken;
-
-    const urlWithParams = new URL(
-      `${API_BASE_URL}${url.startsWith("/") ? url : `/${url}`}`,
-    );
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined)
-          urlWithParams.searchParams.append(key, String(value));
-      });
-    }
-
-    const headers = new Headers(currentOptions.headers);
-    if (currentToken) headers.set("Authorization", `Bearer ${currentToken}`);
-    if (
-      !headers.has("Content-Type") &&
-      !(currentOptions.body instanceof FormData)
-    ) {
-      headers.set("Content-Type", "application/json");
-    }
-
-    return fetch(urlWithParams.toString(), {
-      ...currentOptions,
-      headers,
-    });
-  };
-
-  let response = await performFetch(options);
-
-  // 2. Reactive Refresh (on 401)
-  if (response.status === 401) {
-    if (!mutex.isLocked()) {
+      originalRequest._retry = true;
       const release = await mutex.acquire();
+
       try {
-        const currentRefreshToken = store.getState().auth.refreshToken;
-        if (isValidToken(currentRefreshToken)) {
-          const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refreshToken: currentRefreshToken }),
+        const state = store.getState();
+        const refreshToken = state.auth.refreshToken;
+
+        if (refreshToken) {
+          // Use base axios to avoid infinite interceptor loops
+          const refreshRes = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+            refreshToken,
           });
 
-          if (refreshRes.ok) {
-            const data = await refreshRes.json();
+          if (refreshRes.status === 200) {
+            const { accessToken, refreshToken: newRefreshToken, expiresIn } = refreshRes.data;
+            
             store.dispatch(
               updateTokens({
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken,
-                expiresIn: data.expiresIn,
-              }),
+                accessToken,
+                refreshToken: newRefreshToken,
+                expiresIn,
+              })
             );
-            response = await performFetch(options);
-          } else {
-            store.dispatch(logout());
+
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            }
+            return axiosInstance(originalRequest);
           }
-        } else {
-          store.dispatch(logout());
         }
+        
+        // No refresh token or refresh failed
+        store.dispatch(logout());
+        return Promise.reject(error);
+      } catch (refreshError) {
+        store.dispatch(logout());
+        return Promise.reject(refreshError);
       } finally {
         release();
       }
-    } else {
-      await mutex.waitForUnlock();
-      response = await performFetch(options);
     }
-  }
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-
-    // Force logout on specific "Not authenticated" errors
-    if (response.status === 403 && errorData.detail === "Not authenticated") {
+    // 2. Handle 403: Specific "Not authenticated" check
+    const errorData = error.response?.data as any;
+    if (error.response?.status === 403 && errorData?.detail === "Not authenticated") {
       store.dispatch(logout());
     }
 
-    throw new Error(
-      errorData.detail || errorData.message || `API error: ${response.status}`,
-    );
+    // 3. Process Error Message using helper
+    // axiosError.response is passed to getErrorMessage which expects { data: ... }
+    const meaningfulMessage = getErrorMessage(error.response);
+    
+    // Create a new error with the meaningful message but keep original status
+    const customError = new Error(meaningfulMessage);
+    (customError as any).status = error.response?.status;
+    (customError as any).data = error.response?.data;
+    (customError as any).originalError = error;
+
+    return Promise.reject(customError);
   }
+);
 
-  const contentType = response.headers.get("Content-Type");
-  if (contentType?.includes("application/json")) return response.json();
-  return {} as T;
-};
-
+/**
+ * Standardized API interface for the application
+ */
 export const api = {
-  get: <T>(url: string, options?: FetchOptions) =>
-    fetcher<T>(url, { ...options, method: "GET" }),
+  get: <T>(url: string, config?: any) =>
+    axiosInstance.get<T>(url, config).then((res) => res.data),
 
-  post: <T>(url: string, body?: any, options?: FetchOptions) =>
-    fetcher<T>(url, { ...options, method: "POST", body: JSON.stringify(body) }),
+  post: <T>(url: string, data?: any, config?: any) =>
+    axiosInstance.post<T>(url, data, config).then((res) => res.data),
 
-  put: <T>(url: string, body?: any, options?: FetchOptions) =>
-    fetcher<T>(url, { ...options, method: "PUT", body: JSON.stringify(body) }),
+  put: <T>(url: string, data?: any, config?: any) =>
+    axiosInstance.put<T>(url, data, config).then((res) => res.data),
 
-  patch: <T>(url: string, body?: any, options?: FetchOptions) =>
-    fetcher<T>(url, {
-      ...options,
-      method: "PATCH",
-      body: JSON.stringify(body),
-    }),
+  patch: <T>(url: string, data?: any, config?: any) =>
+    axiosInstance.patch<T>(url, data, config).then((res) => res.data),
 
-  delete: <T>(url: string, options?: FetchOptions) =>
-    fetcher<T>(url, { ...options, method: "DELETE" }),
+  delete: <T>(url: string, config?: any) =>
+    axiosInstance.delete<T>(url, config).then((res) => res.data),
 };
+
+// Also export the instance for complex cases
+export default axiosInstance;
