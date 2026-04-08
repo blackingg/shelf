@@ -1,13 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
-import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
+import { useCategories } from "@/app/services/categories/hooks";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
-import { FiArrowLeft, FiTag } from "react-icons/fi";
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const { data: categories = [], isLoading } = useGetCategoriesQuery();
+  const { categories, isLoading } = useCategories();
 
   return (
     <div className="flex-1 flex flex-col">

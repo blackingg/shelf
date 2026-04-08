@@ -9,171 +9,15 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 import { UserNotification } from "@/app/types/notification";
+import { useUserNotifications } from "@/app/services/notifications/hooks";
 
 export const NotificationPanel: React.FC = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<UserNotification[]>([
-    // {
-    //   id: "0",
-    //   title: "New Uploads in Department",
-    //   message: "3 new books were added to 'Clinical Pharmacology' department",
-    //   timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    //   read: false,
-    //   type: "department_new_uploads",
-    //   resourceType: "department",
-    //   resourceId: "dept-1",
-    //   resourceSlug: "clinical-pharmacology-basic-clinical-sciences-unilag",
-    // },
-    // {
-    //   id: "1",
-    //   title: "Book Saved",
-    //   message:
-    //     "You saved 'The Great Gatsby' to your 'ENG 203 - American Literature' folder",
-    //   timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    //   read: false,
-    //   type: "book_added_to_folder",
-    //   resourceType: "book",
-    //   resourceId: "1",
-    //   resourceSlug: "the-great-gatsby",
-    // },
-    // {
-    //   id: "2",
-    //   title: "Book Saved",
-    //   message:
-    //     "You saved 'Things Fall Apart' to your public folder 'African Classics'",
-    //   timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    //   read: false,
-    //   type: "book_added_to_folder",
-    //   resourceType: "book",
-    //   resourceId: "2",
-    //   resourceSlug: "things-fall-apart",
-    // },
-    // {
-    //   id: "3",
-    //   title: "Folder Created",
-    //   message: "Your folder 'ENG 203 - American Literature' is ready",
-    //   timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    //   read: false,
-    //   type: "folder_created",
-    //   resourceType: "folder",
-    //   resourceId: "3",
-    //   resourceSlug: "eng-203-american-literature",
-    // },
-    // {
-    //   id: "7",
-    //   title: "Added to Your Folder",
-    //   message:
-    //     "@ada_lovelace added 'Computer Networks' to your folder 'ENG 203 - American Literature'",
-    //   timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    //   read: false,
-    //   type: "book_added_to_folder",
-    //   resourceType: "folder",
-    //   resourceId: "7",
-    //   resourceSlug: "eng-203-american-literature",
-    //   actor: {
-    //     id: "user-ada-lovelace",
-    //     username: "ada_lovelace",
-    //     fullName: "Ada Lovelace",
-    //     avatar: null,
-    //   },
-    // },
-    // {
-    //   id: "4",
-    //   title: "Invited to Folder",
-    //   message:
-    //     "@prof_smith invited you to collaborate on 'POL 302 - Governance & Policy'",
-    //   timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    //   read: false,
-    //   type: "folder_invite",
-    //   resourceType: "folder",
-    //   resourceId: "4",
-    //   resourceSlug: "pol-302-governance-policy",
-    //   actor: {
-    //     id: "user-prof-smith",
-    //     username: "prof_smith",
-    //     fullName: "Prof Smith",
-    //     avatar: null,
-    //   },
-    // },
-    // {
-    //   id: "8",
-    //   title: "Invite Accepted",
-    //   message:
-    //     "@student_jane accepted your invite to 'ENG 203 - American Literature'",
-    //   timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000),
-    //   read: false,
-    //   type: "collab_accepted",
-    //   resourceType: "folder",
-    //   resourceId: "8",
-    //   resourceSlug: "eng-203-american-literature",
-    //   actor: {
-    //     id: "user-student-jane",
-    //     username: "student_jane",
-    //     fullName: "Student Jane",
-    //     avatar: null,
-    //   },
-    // },
-    // {
-    //   id: "9",
-    //   title: "Invite Rejected",
-    //   message: "@sam_okafor declined your invite to 'CPE 310 Group Folder'",
-    //   timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
-    //   read: true,
-    //   type: "collab_rejected",
-    //   resourceType: "folder",
-    //   resourceId: "9",
-    //   resourceSlug: "cpe-310-group-folder",
-    //   actor: {
-    //     id: "user-sam-okafor",
-    //     username: "sam_okafor",
-    //     fullName: "Sam Okafor",
-    //     avatar: null,
-    //   },
-    // },
-    // {
-    //   id: "5",
-    //   title: "Reading Reminder",
-    //   message: "Time to continue reading 'Atomic Habits",
-    //   timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    //   read: true,
-    //   type: "book_review",
-    //   resourceType: "book",
-    //   resourceId: "5",
-    //   resourceSlug: "atomic-habits",
-    // },
-    // {
-    //   id: "6",
-    //   title: "Book Added to Folder",
-    //   message:
-    //     "A new book 'Digital Design and Computer Architecture' was added to 'CPE 310 Group Folder'",
-    //   timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    //   read: true,
-    //   type: "book_added_to_folder",
-    //   resourceType: "book",
-    //   resourceId: "6",
-    //   resourceSlug: "digital-design-computer-architecture",
-    // },
-  ]);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-    }
-  };
+  const { notifications, unreadCount, actions, isLoading } = useUserNotifications();
 
   const handleNotificationClick = (notification: UserNotification) => {
-    handleMarkAsRead(notification.id);
+    actions.markAsRead(notification.id);
 
     if (notification.resourceType === "book") {
       router.push(`/app/books/${notification.resourceSlug}`);
@@ -270,7 +114,7 @@ export const NotificationPanel: React.FC = () => {
                 </div>
                 {unreadCount > 0 && (
                   <button
-                    onClick={handleMarkAllAsRead}
+                    onClick={() => actions.markAllAsRead()}
                     className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-emerald-600 uppercase tracking-widest transition-colors"
                   >
                     Mark All as Read

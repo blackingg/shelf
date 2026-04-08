@@ -12,10 +12,9 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { Folder, Collaborator } from "@/app/types/folder";
 import {
-  useBookmarkFolderMutation,
-  useUnbookmarkFolderMutation,
-  useGetIsFolderBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
+  useIsFolderBookmarked,
+  useBookmarkFolderActions,
+} from "@/app/services/bookmarks/hooks";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
@@ -68,22 +67,12 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
 
-  const { data: bookmarkStatus } = useGetIsFolderBookmarkedQuery(folder.id, {
-    skip: !folder.id,
-  });
-
-  const isBookmarked = bookmarkStatus?.bookmarked || false;
-
-  const [bookmarkFolder] = useBookmarkFolderMutation();
-  const [unbookmarkFolder] = useUnbookmarkFolderMutation();
+  const { isBookmarked } = useIsFolderBookmarked(folder.id);
+  const { toggleBookmark } = useBookmarkFolderActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isBookmarked) {
-      await unbookmarkFolder(folder.id);
-    } else {
-      await bookmarkFolder(folder.id);
-    }
+    await toggleBookmark(folder.id, isBookmarked);
   };
 
   const coverImage = folder.coverImage;

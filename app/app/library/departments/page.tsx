@@ -7,7 +7,7 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
+import { useDepartments } from "@/app/services/departments/hooks";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { motion, AnimatePresence } from "motion/react";
@@ -17,13 +17,13 @@ export default function DepartmentsPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
 
-  const { data: allDepartments = [], isLoading } = useGetDepartmentsQuery(
+  const { departments: allDepartments, isLoading } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
 
   const userDepartment = user?.department?.name || null;
   const userDepartmentSlug = allDepartments.find(
-    (d) => d.id === user?.department?.id,
+    (d: any) => d.id === user?.department?.id,
   )?.slug;
 
   const [viewDepartments, setViewDepartments] = useState(false);

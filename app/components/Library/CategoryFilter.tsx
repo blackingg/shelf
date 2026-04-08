@@ -1,7 +1,6 @@
 "use client";
 
-import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
-import { FiGrid } from "react-icons/fi";
+import { useCategories } from "@/app/services/categories/hooks";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
 
 interface CategoryFilterProps {
@@ -13,7 +12,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   activeCategory,
   onCategoryChange,
 }) => {
-  const { data: categories = [], isLoading } = useGetCategoriesQuery();
+  const { categories, isLoading } = useCategories();
 
   return (
     <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar">
@@ -24,7 +23,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
               className="h-10 w-24 rounded-md"
             />
           ))
-        : categories.map((category) => (
+        : categories.map((category: any) => (
             <button
               key={category.id}
               onClick={() => onCategoryChange(category.slug)}

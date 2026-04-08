@@ -22,26 +22,22 @@ import {
 } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
+import { useUser, useUserByUsername } from "@/app/services/user/hooks";
+import { useUserBooks } from "@/app/services/books/hooks";
 import {
-  useGetUserByUsernameQuery,
-  useGetUserBooksQuery,
-  useGetUserFoldersQuery,
-  useUploadAvatarMutation,
-} from "@/app/store/api/usersApi";
+  useUserFolders,
+  useMeFolders,
+  useFolderActions,
+} from "@/app/services/folders/hooks";
 import {
-  useGetMeFoldersQuery,
-  useCreateFolderMutation,
-} from "@/app/store/api/foldersApi";
-import {
-  useGetBookmarkedBooksQuery,
-  useGetBookmarkedFoldersQuery,
-} from "@/app/store/api/bookmarksApi";
+  useBookmarkedBooks,
+  useBookmarkedFolders,
+} from "@/app/services/bookmarks/hooks";
+import { useNotifications } from "@/app/context/NotificationContext";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility } from "@/app/types/folder";
 
@@ -66,87 +62,76 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const isOwner = currentUser?.username === username;
   const { addNotification } = useNotifications();
 
-  const [uploadAvatar, { isLoading: isUploadingAvatar }] =
-    useUploadAvatarMutation();
-  const [createFolder] = useCreateFolderMutation();
+  const { actions: userActions } = useUser();
+  const { actions: folderActions } = useFolderActions();
 
-  const { data: user, isLoading: isLoadingUser } =
-    useGetUserByUsernameQuery(username);
+  const { user, isLoading: isLoadingUser } = useUserByUsername(username);
 
   const {
-    data: booksResponse,
+    books,
+    totalPages,
+    total: booksTotal,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetUserBooksQuery({ username, page, pageSize });
+  } = useUserBooks({ username, page, limit: pageSize });
 
-  // Use getMeFolders if owner to see private ones
   const {
-    data: publicFolders,
+    folders: publicFolders,
+    total: publicFoldersTotal,
+    totalPages: publicFoldersTotalPages,
     isLoading: isLoadingPublicFolders,
     isFetching: isFetchingPublicFolders,
-  } = useGetUserFoldersQuery(
-    { username, page: folderPage, pageSize },
-    { skip: isOwner || activeTab !== "folders" },
-  );
+  } = useUserFolders({ username, page: folderPage, limit: pageSize });
+
   const {
-    data: ownerFoldersResponse,
+    folders: ownerFolders,
+    total: ownerFoldersTotal,
+    totalPages: ownerFoldersTotalPages,
     isLoading: isLoadingOwnerFolders,
     isFetching: isFetchingOwnerFolders,
-  } = useGetMeFoldersQuery(
-    { include_collaborated: true, page: folderPage, pageSize },
-    { skip: !isOwner || activeTab !== "folders" },
-  );
+  } = useMeFolders({
+    include_collaborated: true,
+    page: folderPage,
+    limit: pageSize,
+  });
 
-  const folders = isOwner ? ownerFoldersResponse?.items : publicFolders?.items;
+  const folders = isOwner ? ownerFolders : publicFolders;
   const isLoadingFolders =
     (isOwner ? isLoadingOwnerFolders : isLoadingPublicFolders) ||
     (isOwner ? isFetchingOwnerFolders : isFetchingPublicFolders);
 
   const {
-    data: bookmarkedBooks,
+    books: bookmarkedBooksItems,
+    total: bookmarkedBooksTotal,
+    totalPages: bookmarkedBooksTotalPages,
     isLoading: isLoadingBookmarkedBooks,
     isFetching: isFetchingBookmarkedBooks,
-  } = useGetBookmarkedBooksQuery(
-    { page: bookmarkBooksPage, pageSize },
-    {
-      skip: !isOwner || activeTab !== "bookmarks",
-    },
-  );
+  } = useBookmarkedBooks({ page: bookmarkBooksPage, limit: pageSize });
+
   const {
-    data: bookmarkedFolders,
+    folders: bookmarkedFoldersItems,
+    total: bookmarkedFoldersTotal,
+    totalPages: bookmarkedFoldersTotalPages,
     isLoading: isLoadingBookmarkedFolders,
     isFetching: isFetchingBookmarkedFolders,
-  } = useGetBookmarkedFoldersQuery(
-    { page: bookmarkFoldersPage, pageSize },
-    {
-      skip: !isOwner || activeTab !== "bookmarks",
-    },
-  );
+  } = useBookmarkedFolders({ page: bookmarkFoldersPage, limit: pageSize });
 
-  const books = booksResponse?.items || [];
-  const totalPages = booksResponse?.totalPages || 1;
-  const foldersTotalPages =
-    (isOwner ? ownerFoldersResponse?.totalPages : publicFolders?.totalPages) ||
-    1;
-  const bookmarkedBooksTotalPages = bookmarkedBooks?.totalPages || 1;
-  const bookmarkedFoldersTotalPages = bookmarkedFolders?.totalPages || 1;
+  const foldersTotalPages = isOwner
+    ? ownerFoldersTotalPages
+    : publicFoldersTotalPages;
 
   const tabs = [
     {
       id: "donated",
       label: "Donated",
       icon: FiUploadCloud,
-      count: isOwner
-        ? booksResponse?.total || 0
-        : user?.counts.donatedBooks || 0,
+      count: isOwner ? booksTotal : user?.counts.donatedBooks || 0,
     },
     {
       id: "folders",
       label: "Folders",
       icon: FiFolder,
-      count: isOwner
-        ? ownerFoldersResponse?.total || 0
-        : user?.counts.publicFolders || 0,
+      count: isOwner ? ownerFoldersTotal : user?.counts.publicFolders || 0,
     },
     ...(isOwner
       ? [
@@ -154,8 +139,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             id: "bookmarks",
             label: "Bookmarks",
             icon: FiBookmark,
-            count:
-              (bookmarkedBooks?.total || 0) + (bookmarkedFolders?.total || 0),
+            count: bookmarkedBooksTotal + bookmarkedFoldersTotal,
           },
         ]
       : []),
@@ -168,15 +152,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     const formData = new FormData();
     formData.append("file", file);
 
-    try {
-      await uploadAvatar(formData).unwrap();
-      addNotification("success", "Profile picture updated successfully");
-    } catch (err) {
-      addNotification(
-        "error",
-        getErrorMessage(err, "Failed to update profile picture"),
-      );
-    }
+    await userActions.uploadAvatar(formData);
   };
 
   const handleCreateFolder = async (
@@ -184,13 +160,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     visibility: FolderVisibility,
     description?: string,
   ) => {
-    try {
-      await createFolder({ name, visibility, description }).unwrap();
-      addNotification("success", "Folder created successfully!");
-      setShowCreateFolderModal(false);
-    } catch (err: any) {
-      addNotification("error", getErrorMessage(err, "Failed to create folder"));
-    }
+    await folderActions.createFolder({ name, visibility, description });
+    setShowCreateFolderModal(false);
   };
 
   const handleShare = () => {
@@ -212,7 +183,6 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           throw new Error("Clipboard API unavailable");
         }
       } catch (err) {
-        // Fallback for non-secure contexts or failed API
         try {
           const textArea = document.createElement("textarea");
           textArea.value = url;
@@ -299,9 +269,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                         className="hidden"
                         accept="image/*"
                         onChange={handleAvatarUpload}
-                        disabled={isUploadingAvatar}
+                        disabled={userActions.isUpdating}
                       />
-                      {isUploadingAvatar ? (
+                      {userActions.isUpdating ? (
                         <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
                       ) : (
                         <FiCamera className="w-4 h-4" />
@@ -383,9 +353,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner
-                      ? booksResponse?.total || 0
-                      : user.counts.donatedBooks}
+                    {isOwner ? booksTotal : user.counts.donatedBooks}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Donations
@@ -393,9 +361,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner
-                      ? ownerFoldersResponse?.total || 0
-                      : user.counts.publicFolders}
+                    {isOwner ? ownerFoldersTotal : user.counts.publicFolders}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Folders
@@ -543,8 +509,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     Array.from({ length: pageSize }).map((_, i) => (
                       <BookCardSkeleton key={i} />
                     ))
-                  ) : bookmarkedBooks?.items?.length ? (
-                    bookmarkedBooks.items.map((book: any) => (
+                  ) : bookmarkedBooksItems?.length ? (
+                    bookmarkedBooksItems.map((book: any) => (
                       <BookCard
                         key={book.id}
                         {...book}
@@ -560,7 +526,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   )}
                 </div>
 
-                {!!bookmarkedBooks?.items?.length &&
+                {!!bookmarkedBooksItems?.length &&
                   bookmarkedBooksTotalPages > 1 && (
                     <Pagination
                       currentPage={bookmarkBooksPage}
@@ -585,8 +551,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     Array.from({ length: pageSize }).map((_, i) => (
                       <FolderCardSkeleton key={i} />
                     ))
-                  ) : bookmarkedFolders?.items?.length ? (
-                    bookmarkedFolders.items.map((folder: any) => (
+                  ) : bookmarkedFoldersItems?.length ? (
+                    bookmarkedFoldersItems.map((folder: any) => (
                       <FolderCard
                         key={folder.id}
                         folder={folder}
@@ -604,7 +570,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   )}
                 </div>
 
-                {!!bookmarkedFolders?.items?.length &&
+                {!!bookmarkedFoldersItems?.length &&
                   bookmarkedFoldersTotalPages > 1 && (
                     <Pagination
                       currentPage={bookmarkFoldersPage}

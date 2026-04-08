@@ -12,9 +12,9 @@ import {
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import {
-  useGetBookmarkedBooksQuery,
-  useGetBookmarkedFoldersQuery,
-} from "@/app/store/api/bookmarksApi";
+  useBookmarkedBooks,
+  useBookmarkedFolders,
+} from "@/app/services/bookmarks/hooks";
 import { Pagination } from "@/app/components/Library/Pagination";
 
 export default function BookmarksPage() {
@@ -23,23 +23,23 @@ export default function BookmarksPage() {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [folderPage, setFolderPage] = useState(1);
-  const pageSize = 8;
+  const limit = 8;
 
   const {
-    data: booksResponse,
+    books,
+    total: totalBooksCount,
+    totalPages: booksTotalPages,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetBookmarkedBooksQuery({ page, pageSize });
+  } = useBookmarkedBooks({ page, limit });
+
   const {
-    data: foldersResponse,
+    folders,
+    total: totalFoldersCount,
+    totalPages: foldersTotalPages,
     isLoading: isLoadingFolders,
     isFetching: isFetchingFolders,
-  } = useGetBookmarkedFoldersQuery({ page: folderPage, pageSize });
-
-  const books = booksResponse?.items || [];
-  const totalBooksCount = booksResponse?.total || 0;
-  const folders = foldersResponse?.items || [];
-  const totalFoldersCount = foldersResponse?.total || 0;
+  } = useBookmarkedFolders({ page: folderPage, limit });
 
   const showBooksSkeleton = isLoadingBooks || isFetchingBooks;
   const showFoldersSkeleton = isLoadingFolders || isFetchingFolders;
@@ -141,7 +141,7 @@ export default function BookmarksPage() {
               {books.length > 0 && (
                 <Pagination
                   currentPage={page}
-                  totalPages={booksResponse?.totalPages || 1}
+                  totalPages={booksTotalPages}
                   onPageChange={setPage}
                   isLoading={showBooksSkeleton}
                 />
@@ -185,16 +185,14 @@ export default function BookmarksPage() {
                 )}
               </div>
 
-              {folders.length > 0 &&
-                foldersResponse &&
-                foldersResponse.totalPages > 1 && (
-                  <Pagination
-                    currentPage={folderPage}
-                    totalPages={foldersResponse.totalPages}
-                    onPageChange={setFolderPage}
-                    isLoading={showFoldersSkeleton}
-                  />
-                )}
+              {folders.length > 0 && foldersTotalPages > 1 && (
+                <Pagination
+                  currentPage={folderPage}
+                  totalPages={foldersTotalPages}
+                  onPageChange={setFolderPage}
+                  isLoading={showFoldersSkeleton}
+                />
+              )}
             </div>
           )}
         </div>

@@ -2,14 +2,11 @@ import { useState, useEffect } from "react";
 import { FiFolder, FiPlus, FiCheck, FiAlertCircle, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 
-import {
-  useGetMeFoldersQuery,
-  useCreateFolderMutation,
-  useAddBookToFolderMutation,
-  useRemoveBookFromFolderMutation,
-} from "@/app/store/api/foldersApi";
+import { 
+  useMeFolders, 
+  useFolderActions 
+} from "@/app/services/folders/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
 
 export const FolderDropdown: React.FC<{
   isOpen: boolean;
@@ -22,19 +19,8 @@ export const FolderDropdown: React.FC<{
   const [savedFolderIds, setSavedFolderIds] = useState<string[]>([]);
   const { addNotification } = useNotifications();
 
-  const {
-    data: foldersData,
-    isLoading,
-    isError,
-  } = useGetMeFoldersQuery(undefined, {
-    skip: !isOpen,
-  });
-
-  const folders = foldersData?.items || [];
-
-  const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
-  const [addBookToFolder] = useAddBookToFolderMutation();
-  const [removeBookFromFolder] = useRemoveBookFromFolderMutation();
+  const { folders, isLoading, isError } = useMeFolders();
+  const { actions, isUpdating: isCreating } = useFolderActions();
 
   useEffect(() => {
     if (bookId) {
@@ -46,46 +32,23 @@ export const FolderDropdown: React.FC<{
 
   const handleCreateFolder = async () => {
     if (newFolderName.trim() && !isCreating) {
-      try {
-        await createFolder({ name: newFolderName.trim() }).unwrap();
-        setNewFolderName("");
-        setIsCreatingNew(false);
-        addNotification(
-          "success",
-          `Folder "${newFolderName.trim()}" created successfully`,
-        );
-      } catch (error) {
-        addNotification(
-          "error",
-          getErrorMessage(error, `Failed to create folder "${newFolderName.trim()}"`),
-        );
-      }
+      await actions.createFolder({ name: newFolderName.trim() });
+      setNewFolderName("");
+      setIsCreatingNew(false);
     }
   };
 
   const handleSaveToggle = async (folderId: string) => {
     if (!bookId) return;
 
-    try {
-      if (savedFolderIds.includes(folderId)) {
-        await removeBookFromFolder({ id: folderId, bookId }).unwrap();
-        setSavedFolderIds((prev) => prev.filter((id) => id !== folderId));
-        addNotification("success", "Book removed from folder");
-      } else {
-        await addBookToFolder({
-          id: folderId,
-          data: { bookId },
-        }).unwrap();
-        setSavedFolderIds((prev) => [...prev, folderId]);
-        addNotification("success", "Book added to folder");
-      }
-      onClose();
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update folder"),
-      );
+    if (savedFolderIds.includes(folderId)) {
+      await actions.removeBookFromFolder(folderId, bookId);
+      setSavedFolderIds((prev) => prev.filter((id) => id !== folderId));
+    } else {
+      await actions.addBookToFolder(folderId, bookId);
+      setSavedFolderIds((prev) => [...prev, folderId]);
     }
+    onClose();
   };
 
   return (

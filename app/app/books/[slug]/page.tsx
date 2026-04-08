@@ -9,30 +9,19 @@ import Link from "next/link";
 import { Button } from "@/app/components/Form/Button";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
-import { useNotifications } from "@/app/context/NotificationContext";
-import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
-import {
-  useGetMyRatingQuery,
-  useRateBookMutation,
-} from "@/app/store/api/ratingsApi";
+import { useBookBySlug } from "@/app/services/books/hooks";
+import { useRatings } from "@/app/services/ratings/hooks";
 import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
-import { getErrorMessage } from "@/app/helpers/error";
 import BookDetailSkeleton from "@/app/components/Skeletons/BookDetailSkeleton";
 
 export default function BookDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const bookSlug = params.slug as string;
-  const { addNotification } = useNotifications();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
-  const { data: book, isLoading: isLoadingBook } = useGetBookBySlugQuery(
-    bookSlug,
-    {
-      skip: !bookSlug,
-    },
-  );
+  const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
 
   useEffect(() => {
     if (book?.id) {
@@ -42,17 +31,10 @@ export default function BookDetailsPage() {
 
   const actualBookId = book?.id || "";
 
-  const { data: myRatingData } = useGetMyRatingQuery(actualBookId, {
-    skip: !actualBookId,
-  });
-  const [rateBook] = useRateBookMutation();
+  const { myRating, actions: ratingActions } = useRatings(actualBookId);
 
   const handleRate = async (newRating: number) => {
-    try {
-      await rateBook({ bookId: actualBookId, rating: newRating }).unwrap();
-    } catch (error) {
-      addNotification("error", getErrorMessage(error, "Failed to rate book"));
-    }
+    await ratingActions.rateBook(newRating);
   };
 
   return (
@@ -254,7 +236,7 @@ export default function BookDetailsPage() {
                       </span>
                       <div className="pt-1">
                         <StarRating
-                          rating={myRatingData?.rating || 0}
+                          rating={myRating || 0}
                           interactive
                           onRate={handleRate}
                           size={22}

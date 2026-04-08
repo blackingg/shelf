@@ -15,19 +15,16 @@ import {
   FiLock,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import {
-  useGetFolderBySlugQuery,
-  useUploadFolderCoverMutation,
-  useRemoveBookFromFolderMutation,
-} from "@/app/store/api/foldersApi";
+  useFolderBySlug,
+  useFolderActions,
+} from "@/app/services/folders/hooks";
 import {
-  useBookmarkFolderMutation,
-  useUnbookmarkFolderMutation,
-  useGetIsFolderBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
+  useIsFolderBookmarked,
+  useBookmarkFolderActions,
+} from "@/app/services/bookmarks/hooks";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 
 export default function FolderDetailsPage() {
@@ -36,26 +33,20 @@ export default function FolderDetailsPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
-  const [uploadFolderCover, { isLoading: isUploadingCover }] =
-    useUploadFolderCoverMutation();
 
-  const { data: folder, isLoading, error } = useGetFolderBySlugQuery(slug);
+  const { folder, isLoading, error } = useFolderBySlug(slug);
+  const {
+    actions,
+    isUploadingCover,
+    isRemoving: isRemovingBook,
+  } = useFolderActions();
+  const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
+  const { toggleBookmark } = useBookmarkFolderActions();
+
   const user = useSelector(selectCurrentUser);
   const currentUser = user?.username || "Guest";
 
-  // Check if error is a 403 Forbidden
   const isForbidden = (error as any)?.status === 403;
-
-  const { data: bookmarkData } = useGetIsFolderBookmarkedQuery(
-    folder?.id || "",
-    {
-      skip: !folder?.id,
-    },
-  );
-  const isBookmarked = bookmarkData?.bookmarked || false;
-
-  const [bookmarkFolder] = useBookmarkFolderMutation();
-  const [unbookmarkFolder] = useUnbookmarkFolderMutation();
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -70,44 +61,22 @@ export default function FolderDetailsPage() {
     const formData = new FormData();
     formData.append("coverImage", file);
 
-    try {
-      await uploadFolderCover({ id: folder.id, data: formData }).unwrap();
-      addNotification("success", "Folder cover updated successfully");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update folder cover"),
-      );
-    }
+    await actions.uploadCover(folder.id, formData);
   };
 
   const handleToggleBookmark = async () => {
     if (!folder) return;
-
-    try {
-      if (isBookmarked) {
-        await unbookmarkFolder(folder.id).unwrap();
-        addNotification("success", "Removed from bookmarks");
-      } else {
-        await bookmarkFolder(folder.id).unwrap();
-        addNotification("success", "Added to bookmarks");
-      }
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update bookmark"),
-      );
-    }
+    await toggleBookmark(folder.id, isBookmarked);
   };
 
-  const books = folder?.items?.map((item) => item.book) || [];
+  const books = folder?.items?.map((item: any) => item.book) || [];
 
   const isOwner = folder?.user?.username === currentUser;
   const isCollaborator = !!folder?.collaborators?.some(
-    (c) => c.user.username === currentUser,
+    (c: any) => c.user.username === currentUser,
   );
   const userCollaborator = folder?.collaborators?.find(
-    (c) => c.user.username === currentUser,
+    (c: any) => c.user.username === currentUser,
   );
   const isEditor = userCollaborator?.role === "EDITOR";
 
@@ -118,21 +87,9 @@ export default function FolderDetailsPage() {
 
   const hasMenuActions = canEdit || canDelete || canSeeShare;
 
-  const [removeBookFromFolder, { isLoading: isRemovingBook }] =
-    useRemoveBookFromFolderMutation();
-
   const handleRemoveBook = async (bookId: string) => {
     if (!folder) return;
-
-    try {
-      await removeBookFromFolder({ id: folder.id, bookId }).unwrap();
-      addNotification("success", "Book removed from folder");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to remove book from folder"),
-      );
-    }
+    await actions.removeBookFromFolder(folder.id, bookId);
   };
 
   return (

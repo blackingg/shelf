@@ -6,6 +6,7 @@ import StoreProvider from "./store/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
+import { QueryProvider } from "./provider/QueryProvider";
 import { BufferProvider } from "./context/FileBufferContext";
 
 const inter = Inter({
@@ -95,11 +96,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StoreProvider>
-            <BufferProvider>
-              <ErrorBoundaryWithNotification>
-                <ProtectedRoute>{children}</ProtectedRoute>
-              </ErrorBoundaryWithNotification>
-            </BufferProvider>
+            <QueryProvider>
+              <BufferProvider>
+                <ErrorBoundaryWithNotification>
+                  <ProtectedRoute>{children}</ProtectedRoute>
+                </ErrorBoundaryWithNotification>
+              </BufferProvider>
+            </QueryProvider>
           </StoreProvider>
         </ThemeProvider>
       </body>

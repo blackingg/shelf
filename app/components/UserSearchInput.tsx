@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiSearch, FiUser } from "react-icons/fi";
-import { useGetUserByUsernameQuery } from "@/app/store/api/usersApi";
+import { useGetUserByUsernameQuery } from "@/app/services/user/hooks";
 import { UserMinimal } from "@/app/types/user";
 
 interface UserSearchInputProps {
@@ -38,7 +38,7 @@ export default function UserSearchInput({
     isFetching,
     isError,
   } = useGetUserByUsernameQuery(debouncedQuery, {
-    skip: debouncedQuery.length < 2,
+    enabled: debouncedQuery.length >= 2,
   });
 
   const isExcluded = foundUser ? excludeUserIds.includes(foundUser.id) : false;

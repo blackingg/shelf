@@ -4,7 +4,7 @@ import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { FiBookOpen } from "react-icons/fi";
-import { useGetBooksByDepartmentQuery } from "@/app/store/api/departmentsApi";
+import { useGetBooksByDepartmentQuery } from "@/app/services/departments/hooks";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
@@ -37,8 +37,7 @@ export default function UserDepartmentBooks({
     data: booksResponse,
     isLoading,
     isFetching,
-  } = useGetBooksByDepartmentQuery({
-    slug: departmentSlug,
+  } = useGetBooksByDepartmentQuery(departmentSlug, {
     page,
     limit: pageSize,
     sort_by: sortBy,
@@ -85,7 +84,7 @@ export default function UserDepartmentBooks({
       ) : books.length > 0 ? (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-            {books.map((book) => (
+            {books.map((book: any) => (
               <BookCard
                 key={book.id}
                 {...book}

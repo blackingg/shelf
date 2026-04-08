@@ -1,0 +1,85 @@
+import { useMutation } from "@tanstack/react-query";
+import { api } from "../../lib/api/fetcher";
+import {
+  LoginRequest,
+  RegisterRequest,
+  AuthResponse,
+  GoogleOAuthRequest,
+} from "../../types/auth";
+import { useAppDispatch } from "../../store/store";
+import { setCredentials, logout } from "../../store/authSlice";
+import { useNotifications } from "../../context/NotificationContext";
+
+export const useAuthActions = () => {
+  const dispatch = useAppDispatch();
+  const { addNotification } = useNotifications();
+
+  const loginMutation = useMutation({
+    mutationFn: (credentials: LoginRequest) =>
+      api.post<AuthResponse>("/auth/login", credentials),
+    onSuccess: (data, variables) => {
+      dispatch(
+        setCredentials({
+          user: data.user,
+          accessToken: data.tokens.accessToken,
+          refreshToken: data.tokens.refreshToken,
+          expiresIn: data.tokens.expiresIn,
+          rememberMe: variables.rememberMe,
+        }),
+      );
+      addNotification("success", "Welcome back!");
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: (data: RegisterRequest) =>
+      api.post<AuthResponse>("/auth/register", data),
+    onSuccess: (data) => {
+      dispatch(
+        setCredentials({
+          user: data.user,
+          accessToken: data.tokens.accessToken,
+          refreshToken: data.tokens.refreshToken,
+          expiresIn: data.tokens.expiresIn,
+        }),
+      );
+      addNotification("success", "Account created successfully!");
+    },
+  });
+
+  const googleAuthMutation = useMutation({
+    mutationFn: (data: GoogleOAuthRequest) =>
+      api.post<AuthResponse>("/auth/google", data),
+    onSuccess: (data) => {
+      dispatch(
+        setCredentials({
+          user: data.user,
+          accessToken: data.tokens.accessToken,
+          refreshToken: data.tokens.refreshToken,
+          expiresIn: data.tokens.expiresIn,
+          rememberMe: true,
+        }),
+      );
+      addNotification("success", "Signed in with Google");
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: () => api.post("/auth/logout", {}),
+    onSettled: () => {
+      dispatch(logout());
+    },
+  });
+
+  return {
+    login: loginMutation.mutateAsync,
+    register: registerMutation.mutateAsync,
+    googleAuth: googleAuthMutation.mutateAsync,
+    logout: logoutMutation.mutateAsync,
+    isLoading:
+      loginMutation.isPending ||
+      registerMutation.isPending ||
+      googleAuthMutation.isPending,
+    isLoggingOut: logoutMutation.isPending,
+  };
+};

@@ -17,15 +17,10 @@ import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
   useGetBookmarkedBooksQuery,
   useGetBookmarkedFoldersQuery,
-} from "@/app/store/api/bookmarksApi";
-import {
-  useGetMeFoldersQuery,
-  useCreateFolderMutation,
-  useDeleteFolderMutation,
-} from "@/app/store/api/foldersApi";
-import { useGetUserBooksQuery } from "@/app/store/api/usersApi";
+} from "@/app/services/bookmarks/hooks";
+import { useMeFolders, useFolderActions } from "@/app/services/folders/hooks";
+import { useGetUserBooksQuery } from "@/app/services/user/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
 import { useAppSelector } from "@/app/store/store";
 import { selectCurrentUser } from "@/app/store/authSlice";
 
@@ -57,14 +52,13 @@ export default function LibraryPage() {
 
   const pageSize = 8;
 
-  // ── Bookmarks queries ──
   const {
     data: bookmarkedBooksResponse,
     isLoading: isLoadingBookmarkedBooks,
     isFetching: isFetchingBookmarkedBooks,
   } = useGetBookmarkedBooksQuery(
-    { page: bookmarkPage, pageSize },
-    { skip: activeTab !== "bookmarks" || bookmarkSubTab !== "books" },
+    { page: bookmarkPage, limit: pageSize },
+    { enabled: activeTab === "bookmarks" && bookmarkSubTab === "books" },
   );
 
   const {
@@ -72,22 +66,24 @@ export default function LibraryPage() {
     isLoading: isLoadingBookmarkedFolders,
     isFetching: isFetchingBookmarkedFolders,
   } = useGetBookmarkedFoldersQuery(
-    { page: bookmarkFolderPage, pageSize },
-    { skip: activeTab !== "bookmarks" || bookmarkSubTab !== "folders" },
+    { page: bookmarkFolderPage, limit: pageSize },
+    { enabled: activeTab === "bookmarks" && bookmarkSubTab === "folders" },
   );
 
   // ── Folders queries ──
   const {
-    data: myFoldersResponse,
+    folders: myFolders,
+    total: totalMyFolders,
+    totalPages: myFoldersTotalPages,
     isLoading: isLoadingMyFolders,
     isFetching: isFetchingMyFolders,
-  } = useGetMeFoldersQuery(
-    { page: folderPage, pageSize },
-    { skip: activeTab !== "folders" },
-  );
+  } = useMeFolders({
+    page: folderPage,
+    limit: pageSize,
+    enabled: activeTab === "folders",
+  });
 
-  const [createFolder] = useCreateFolderMutation();
-  const [deleteFolderMutation] = useDeleteFolderMutation();
+  const { actions: folderActions } = useFolderActions();
 
   // ── Uploads queries ──
   const {
@@ -95,8 +91,8 @@ export default function LibraryPage() {
     isLoading: isLoadingMyBooks,
     isFetching: isFetchingMyBooks,
   } = useGetUserBooksQuery(
-    { username: activeUser?.username || "", page: uploadPage, pageSize },
-    { skip: activeTab !== "uploads" || !activeUser?.username },
+    { username: activeUser?.username || "", page: uploadPage, limit: pageSize },
+    { enabled: activeTab === "uploads" && !!activeUser?.username },
   );
 
   // ── Bookmarks data ──
@@ -107,12 +103,10 @@ export default function LibraryPage() {
   const showBooksSkeleton =
     !bookmarkedBooksResponse &&
     (isLoadingBookmarkedBooks || isFetchingBookmarkedBooks);
+
   const showFoldersSkeleton =
     !bookmarkedFoldersResponse &&
     (isLoadingBookmarkedFolders || isFetchingBookmarkedFolders);
-
-  // ── Folders data ──
-  const myFolders = myFoldersResponse?.items || [];
 
   // ── Uploads data ──
   const myBooks = myBooksResponse?.items || [];
@@ -126,11 +120,10 @@ export default function LibraryPage() {
     description?: string,
   ) => {
     try {
-      await createFolder({ name, visibility, description }).unwrap();
-      addNotification("success", "Folder created successfully!");
+      await folderActions.createFolder({ name, visibility, description });
       setShowCreateModal(false);
     } catch (err: any) {
-      addNotification("error", getErrorMessage(err, "Failed to create folder"));
+      // handled in actions
     }
   };
 
@@ -146,13 +139,9 @@ export default function LibraryPage() {
   const confirmDelete = async () => {
     if (folderToDelete) {
       try {
-        await deleteFolderMutation(folderToDelete.id).unwrap();
-        addNotification("success", "Folder deleted successfully!");
+        await folderActions.deleteFolder(folderToDelete.id);
       } catch (err: any) {
-        addNotification(
-          "error",
-          getErrorMessage(err, "Failed to delete folder"),
-        );
+        // handled in actions
       }
     }
     setShowDeleteModal(false);
@@ -264,7 +253,7 @@ export default function LibraryPage() {
                   {showBooksSkeleton ? (
                     <BookCardSkeleton count={5} />
                   ) : bookmarkedBooks.length > 0 ? (
-                    bookmarkedBooks.map((book) => (
+                    bookmarkedBooks.map((book: any) => (
                       <BookCard
                         key={book.id}
                         {...book}
@@ -309,7 +298,7 @@ export default function LibraryPage() {
                   {showFoldersSkeleton ? (
                     <FolderCardSkeleton count={4} />
                   ) : bookmarkedFolders && bookmarkedFolders.length > 0 ? (
-                    bookmarkedFolders.map((folder) => (
+                    bookmarkedFolders.map((folder: any) => (
                       <FolderCard
                         key={folder.id}
                         folder={folder}
@@ -378,10 +367,10 @@ export default function LibraryPage() {
               className={isFetchingMyFolders ? "opacity-50" : ""}
             />
 
-            {myFoldersResponse && myFoldersResponse.totalPages > 1 && (
+            {myFoldersTotalPages > 1 && (
               <Pagination
                 currentPage={folderPage}
-                totalPages={myFoldersResponse.totalPages}
+                totalPages={myFoldersTotalPages}
                 onPageChange={setFolderPage}
                 isLoading={isFetchingMyFolders}
                 className="mt-8"

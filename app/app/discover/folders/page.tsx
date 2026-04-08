@@ -7,7 +7,7 @@ import {
 } from "@/app/components/Folders/FolderCard";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiSearch, FiFolder } from "react-icons/fi";
-import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
+import { useFolders } from "@/app/services/folders/hooks";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { FolderSortBy, SortOrder } from "@/app/types/common";
@@ -43,11 +43,7 @@ export default function DiscoverFoldersPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const {
-    data: foldersResponse,
-    isLoading,
-    isFetching,
-  } = useGetPublicFoldersQuery({
+  const { folders, total, totalPages, isLoading, isFetching } = useFolders({
     page,
     limit: pageSize,
     sort_by: sortBy,
@@ -56,9 +52,6 @@ export default function DiscoverFoldersPage() {
   });
 
   const showSkeleton = isLoading || isFetching;
-
-  const folders = foldersResponse?.items || [];
-  const totalPages = foldersResponse?.totalPages || 1;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -92,7 +85,7 @@ export default function DiscoverFoldersPage() {
                 </div>
                 <div>
                   <span className="block text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-                    {foldersResponse?.total || 0}
+                    {total}
                   </span>
                   <span className="text-[10px] font-bold uppercase text-gray-400 dark:text-neutral-600 tracking-widest">
                     Collections

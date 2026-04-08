@@ -11,13 +11,13 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiBook } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
-import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
 import {
-  useGetCategoriesQuery,
-  useGetBooksByCategoryQuery,
-} from "@/app/store/api/categoriesApi";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
-import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
+  useDiscoverFeed,
+  useCategories,
+  useBooksByCategory,
+} from "@/app/services/discover/hooks";
+import { useDepartments } from "@/app/services/departments/hooks";
+import { useFolders } from "@/app/services/folders/hooks";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
@@ -35,7 +35,8 @@ export default function DiscoverPage() {
   const user = useSelector(selectCurrentUser);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
-  const { data: categories = [] } = useGetCategoriesQuery();
+
+  const { categories } = useCategories();
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
@@ -72,24 +73,26 @@ export default function DiscoverPage() {
     };
   }, []);
 
-  const { data: recommendations, isLoading: isLoadingRecommendations } =
-    useGetDiscoverFeedQuery();
+  const { recommendations, isLoading: isLoadingRecommendations } =
+    useDiscoverFeed();
 
   const {
-    data: departments = [],
+    departments,
     isLoading: isLoadingDepartments,
     isFetching: isFetchingDepartments,
-  } = useGetDepartmentsQuery(
-    user?.school?.id ? { school_id: user.school.id } : undefined,
-  );
+  } = useDepartments(user?.school?.id ? { school_id: user.school.id } : {});
 
-  const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
-    useGetPublicFoldersQuery({
-      page: 1,
-      limit: publicFoldersFetchLimit,
-      sort_by: "createdAt",
-      order: "desc",
-    });
+  const {
+    folders: displayFolders,
+    total: publicFoldersTotal,
+    isFetching: isFetchingPublicFolders,
+    isLoading: isLoadingPublicFolders,
+  } = useFolders({
+    page: 1,
+    limit: publicFoldersFetchLimit,
+    sort_by: "createdAt",
+    order: "desc",
+  });
 
   const displayDepartments = useMemo(
     () =>
@@ -103,31 +106,25 @@ export default function DiscoverPage() {
     [departments, departmentDisplayLimit],
   );
   const hasMoreDepartments = departments.length > displayDepartments.length;
-  const displayFolders = publicFoldersResponse?.items || [];
-  const hasMorePublicFolders =
-    !!publicFoldersResponse?.hasNext ||
-    (publicFoldersResponse?.total || 0) > displayFolders.length;
+
+  const hasMorePublicFolders = publicFoldersTotal > displayFolders.length;
 
   const {
-    currentData: categoryBooksResult,
+    books: categoryBooks,
+    total: categoryBooksTotal,
+    hasNext: hasMoreCategoryBooks,
     isLoading: isLoadingCategoryBooks,
     isFetching: isFetchingCategoryBooks,
-  } = useGetBooksByCategoryQuery({
-    slug: activeCategory,
+  } = useBooksByCategory(activeCategory, {
     page: 1,
     limit: categoryFetchLimit,
-  }, { skip: !activeCategory });
+  });
 
-  const categoryBooksResponse = categoryBooksResult?.books;
-
-  const categoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =
     !activeCategory ||
     (categoryBooks.length === 0 &&
       (isLoadingCategoryBooks || isFetchingCategoryBooks));
-  const hasMoreCategoryBooks =
-    !!categoryBooksResponse?.hasNext ||
-    (categoryBooksResponse?.total || 0) > categoryBooks.length;
+
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
@@ -135,13 +132,14 @@ export default function DiscoverPage() {
   };
 
   if (recommendations) {
-    const folders = recommendations.items
-      .filter((item) => item.type === "folder")
-      .map((item) => ({ ...item.data, type: "folder" as const }));
+    const items = recommendations.items || [];
+    const folders = items
+      .filter((item: any) => item.type === "folder")
+      .map((item: any) => ({ ...item.data, type: "folder" as const }));
 
-    const books = recommendations.items
-      .filter((item) => item.type === "book")
-      .map((item) => ({ ...item.data, type: "book" as const }));
+    const books = items
+      .filter((item: any) => item.type === "book")
+      .map((item: any) => ({ ...item.data, type: "book" as const }));
 
     const maxLength = Math.max(folders.length, books.length);
     for (let i = 0; i < maxLength; i++) {
@@ -231,11 +229,11 @@ export default function DiscoverPage() {
             ) : categoryBooks.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mt-12">
-                  {categoryBooks.map((book) => (
+                  {categoryBooks.map((book: BookPreview) => (
                     <BookCard
                       key={book.id}
                       {...book}
-                      onClick={() => setSelectedBook(book as BookPreview)}
+                      onClick={() => setSelectedBook(book)}
                     />
                   ))}
                 </div>

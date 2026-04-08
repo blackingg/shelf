@@ -8,7 +8,7 @@ import {
   useUpdateMeMutation,
   useChangePasswordMutation,
   useDeleteMeMutation,
-} from "@/app/store/api/usersApi";
+} from "@/app/services/user/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useRouter } from "next/navigation";
@@ -20,10 +20,9 @@ export default function AccountSettingsPage() {
   const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
-  const [updateMe, { isLoading: isUpdatingEmail }] = useUpdateMeMutation();
-  const [changePassword, { isLoading: isChangingPassword }] =
-    useChangePasswordMutation();
-  const [deleteMe, { isLoading: isDeletingAccount }] = useDeleteMeMutation();
+  const updateMe = useUpdateMeMutation();
+  const changePassword = useChangePasswordMutation();
+  const deleteMe = useDeleteMeMutation();
 
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
@@ -43,7 +42,7 @@ export default function AccountSettingsPage() {
 
   const handleSaveEmail = async () => {
     try {
-      await updateMe({ email }).unwrap();
+      await updateMe.mutateAsync({ email });
       addNotification("success", "Email updated successfully!");
       setIsEditingEmail(false);
     } catch (error) {
@@ -60,10 +59,10 @@ export default function AccountSettingsPage() {
       return;
     }
     try {
-      await changePassword({
+      await changePassword.mutateAsync({
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
-      }).unwrap();
+      });
       addNotification("success", "Password changed successfully!");
       setIsEditingPassword(false);
       setPasswordData({
@@ -81,7 +80,7 @@ export default function AccountSettingsPage() {
 
   const handleDeleteAccount = async () => {
     try {
-      await deleteMe().unwrap();
+      await deleteMe.mutateAsync();
       addNotification("success", "Account deleted successfully");
       dispatch(logout());
       router.push("/app/auth/login");
@@ -139,7 +138,7 @@ export default function AccountSettingsPage() {
                   </button>
                   <Button
                     onClick={handleSaveEmail}
-                    isLoading={isUpdatingEmail}
+                    isLoading={updateMe.isPending}
                     className="w-auto py-2 px-6 text-sm"
                   >
                     Save
@@ -246,7 +245,7 @@ export default function AccountSettingsPage() {
                   </button>
                   <Button
                     onClick={handleSavePassword}
-                    isLoading={isChangingPassword}
+                    isLoading={changePassword.isPending}
                     className="w-auto py-2 px-6 text-sm"
                   >
                     Update Password
@@ -294,10 +293,10 @@ export default function AccountSettingsPage() {
             </div>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              disabled={isDeletingAccount}
+              disabled={deleteMe.isPending}
               className="px-5 py-2.5 bg-white dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
             >
-              {isDeletingAccount ? "Deleting..." : "Delete Account"}
+              {deleteMe.isPending ? "Deleting..." : "Delete Account"}
             </button>
           </div>
         </section>
@@ -311,7 +310,7 @@ export default function AccountSettingsPage() {
         message="Are you sure you want to delete your account? This action is permanent and will remove all your data, including folders."
         confirmText="Delete Account"
         isDanger={true}
-        isLoading={isDeletingAccount}
+        isLoading={deleteMe.isPending}
       />
     </div>
   );

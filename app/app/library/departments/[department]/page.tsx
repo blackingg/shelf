@@ -7,9 +7,10 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiFilter, FiSearch } from "react-icons/fi";
 import {
-  useGetDepartmentsQuery,
-  useGetBooksByDepartmentQuery,
-} from "@/app/store/api/departmentsApi";
+  useDepartments,
+  useBooksByDepartment,
+  useDepartmentBySlug,
+} from "@/app/services/departments/hooks";
 import { BookPreview } from "@/app/types/book";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
@@ -54,16 +55,14 @@ export default function DepartmentPage({
     setPage(1);
   }, [sortBy, order, slug]);
 
-  const { data: allDepartments = [], isLoading: isLoadingDept } =
-    useGetDepartmentsQuery();
-
-  const department = allDepartments.find((item) => item.slug === slug);
+  const { department, isLoading: isLoadingDept } = useDepartmentBySlug(slug);
   const {
-    data: booksResponse,
+    books,
+    totalPages,
+    total: totalBooks,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useGetBooksByDepartmentQuery({
-    slug,
+  } = useBooksByDepartment(slug, {
     page,
     limit: pageSize,
     sort_by: sortBy,
@@ -72,8 +71,6 @@ export default function DepartmentPage({
   });
 
   const showSkeleton = isLoadingBooks || isFetchingBooks;
-
-  const books = booksResponse?.books?.items || [];
 
   return (
     <div className="flex-1 flex flex-col">
@@ -123,7 +120,7 @@ export default function DepartmentPage({
                   <div className="flex items-center gap-4">
                     <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
                       <span className="block text-3xl font-black text-emerald-600 dark:text-emerald-500 tracking-tighter">
-                        {booksResponse?.books?.total || 0}
+                        {totalBooks || 0}
                       </span>
                       <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
                         Resources
@@ -185,7 +182,7 @@ export default function DepartmentPage({
               ) : books.length > 0 ? (
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-                    {books.map((book) => (
+                    {books.map((book: any) => (
                       <BookCard
                         key={book.id}
                         {...book}
@@ -196,7 +193,7 @@ export default function DepartmentPage({
 
                   <Pagination
                     currentPage={page}
-                    totalPages={booksResponse?.books?.totalPages || 1}
+                    totalPages={totalPages}
                     onPageChange={setPage}
                     isLoading={isLoadingBooks}
                     className="mt-20"

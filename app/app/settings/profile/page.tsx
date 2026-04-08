@@ -5,16 +5,16 @@ import { SingleValue } from "react-select";
 import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { selectCurrentUser, setUser } from "@/app/store/authSlice";
 import {
   useUpdateMeMutation,
   useUploadAvatarMutation,
-} from "@/app/store/api/usersApi";
+} from "@/app/services/user/hooks";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
-} from "@/app/store/api/onboardingApi";
+} from "@/app/services/onboarding/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";
@@ -28,19 +28,10 @@ interface OptionType {
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
   const user = useSelector(selectCurrentUser);
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
-
-  const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
-
-  const [uploadAvatar, { isLoading: isUploadingAvatar }] =
-    useUploadAvatarMutation();
+  const updateMe = useUpdateMeMutation();
+  const uploadAvatar = useUploadAvatarMutation();
 
   const [schoolSearch, setSchoolSearch] = useState("");
   const { data: schools = [], isLoading: isLoadingSchools } =
@@ -56,9 +47,7 @@ export default function SettingsProfilePage() {
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetOnboardingDepartmentsQuery(formData.schoolId, {
-      skip: !formData.schoolId,
-    });
+    useGetOnboardingDepartmentsQuery(formData.schoolId);
 
   useEffect(() => {
     if (user) {
@@ -103,7 +92,7 @@ export default function SettingsProfilePage() {
     setFormData((prev) => ({
       ...prev,
       schoolId: option?.value || "",
-      departmentId: "", // Reset department when school changes
+      departmentId: "",
     }));
   };
 
@@ -117,13 +106,14 @@ export default function SettingsProfilePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const updatedUser = await updateMe({
+      const updatedUser = await updateMe.mutateAsync({
         fullName: formData.name,
         username: formData.username,
         bio: formData.bio,
         schoolId: formData.schoolId,
         departmentId: formData.departmentId,
-      }).unwrap();
+      });
+      dispatch(setUser(updatedUser));
       addNotification("success", "Profile updated successfully!");
     } catch (error) {
       addNotification(
@@ -137,11 +127,12 @@ export default function SettingsProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const avatarPayload = new FormData();
+    avatarPayload.append("file", file);
 
     try {
-      await uploadAvatar(formData).unwrap();
+      const updatedUser = await uploadAvatar.mutateAsync(avatarPayload);
+      dispatch(setUser(updatedUser));
       addNotification("success", "Avatar updated successfully!");
     } catch (error) {
       addNotification(
@@ -164,10 +155,7 @@ export default function SettingsProfilePage() {
 
       <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
         <div className="p-6 md:p-8">
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-8"
-          >
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-4">
                 Profile Photo
@@ -199,9 +187,9 @@ export default function SettingsProfilePage() {
                       className="hidden"
                       accept="image/*"
                       onChange={handleAvatarChange}
-                      disabled={isUploadingAvatar}
+                      disabled={uploadAvatar.isPending}
                     />
-                    {isUploadingAvatar ? (
+                    {uploadAvatar.isPending ? (
                       <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
                     ) : (
                       <FiCamera className="w-4 h-4" />
@@ -293,7 +281,7 @@ export default function SettingsProfilePage() {
             <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
               <Button
                 type="submit"
-                isLoading={isUpdating}
+                isLoading={updateMe.isPending}
                 disabled={!isDirty}
                 className="w-auto px-8"
               >

@@ -5,10 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { FiStar, FiBookmark } from "react-icons/fi";
 import {
-  useBookmarkBookMutation,
-  useUnbookmarkBookMutation,
-  useGetIsBookBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
+  useIsBookBookmarked,
+  useBookBookmarkActions,
+} from "@/app/services/bookmarks/hooks";
 import { BookCardProps } from "@/app/types/book";
 
 export const BookCard: React.FC<BookCardProps> = ({
@@ -21,21 +20,13 @@ export const BookCard: React.FC<BookCardProps> = ({
   onClick,
   className = "",
 }) => {
-  const [bookmarkBook] = useBookmarkBookMutation();
-  const [unbookmarkBook] = useUnbookmarkBookMutation();
-  const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(id || "", {
-    skip: !id,
-  });
-  const isBookmarked = bookmarkStatus?.bookmarked;
+  const { isBookmarked } = useIsBookBookmarked(id || "");
+  const { toggleBookmark } = useBookBookmarkActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;
-    if (isBookmarked) {
-      await unbookmarkBook(id);
-    } else {
-      await bookmarkBook(id);
-    }
+    await toggleBookmark(id, isBookmarked);
   };
 
   return (

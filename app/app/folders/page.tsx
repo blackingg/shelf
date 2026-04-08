@@ -9,15 +9,13 @@ import { ConfirmModal } from "@/app/components/ConfirmModal";
 import { FiGrid, FiList } from "react-icons/fi";
 import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
-  useGetMeFoldersQuery,
-  useGetPublicFoldersQuery,
-  useCreateFolderMutation,
-  useDeleteFolderMutation,
-} from "@/app/store/api/foldersApi";
-import { useGetBookmarkedFoldersQuery } from "@/app/store/api/bookmarksApi";
+  useMeFolders,
+  useFolders,
+  useFolderActions,
+} from "@/app/services/folders/hooks";
+import { useBookmarkedFolders } from "@/app/services/bookmarks/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { Pagination } from "@/app/components/Library/Pagination";
-import { getErrorMessage } from "@/app/helpers/error";
 
 export default function FoldersPage() {
   const router = useRouter();
@@ -41,51 +39,35 @@ export default function FoldersPage() {
 
   // API Queries
   const {
-    data: myFoldersResponse,
+    folders: myFolders,
     isLoading: isLoadingMyFolders,
     isFetching: isFetchingMyFolders,
-  } = useGetMeFoldersQuery(
-    { page, pageSize },
-    {
-      skip: activeTab !== "private",
-    },
-  );
+    totalPages: myTotalPages,
+  } = useMeFolders({ page, limit: pageSize });
+
   const {
-    data: publicFoldersResponse,
+    folders: publicFolders,
     isLoading: isLoadingPublicFolders,
     isFetching: isFetchingPublic,
-  } = useGetPublicFoldersQuery(
-    { page, pageSize },
-    {
-      skip: activeTab !== "public",
-    },
-  );
+    totalPages: publicTotalPages,
+  } = useFolders({ page, limit: pageSize });
+
   const {
-    data: bookmarkedFoldersResponse,
+    folders: bookmarkedFolders,
     isLoading: isLoadingBookmarked,
     isFetching: isFetchingBookmarked,
-  } = useGetBookmarkedFoldersQuery(
-    { page, pageSize },
-    {
-      skip: activeTab !== "bookmarked",
-    },
-  );
+    totalPages: bookmarkedTotalPages,
+  } = useBookmarkedFolders({ page, limit: pageSize });
 
-  const [createFolder] = useCreateFolderMutation();
-  const [deleteFolderMutation] = useDeleteFolderMutation();
+  const { actions, isCreating, isDeleting } = useFolderActions();
 
   const handleCreateFolder = async (
     name: string,
     visibility: FolderVisibility,
     description?: string,
   ) => {
-    try {
-      await createFolder({ name, visibility, description }).unwrap();
-      addNotification("success", "Folder created successfully!");
-      setShowCreateModal(false);
-    } catch (err: any) {
-      addNotification("error", getErrorMessage(err, "Failed to create folder"));
-    }
+    await actions.createFolder({ name, visibility, description });
+    setShowCreateModal(false);
   };
 
   const handleFolderClick = (folder: Folder) => {
@@ -103,15 +85,7 @@ export default function FoldersPage() {
 
   const confirmDelete = async () => {
     if (folderToDelete) {
-      try {
-        await deleteFolderMutation(folderToDelete.id).unwrap();
-        addNotification("success", "Folder deleted successfully!");
-      } catch (err: any) {
-        addNotification(
-          "error",
-          getErrorMessage(err, "Failed to delete folder"),
-        );
-      }
+      await actions.deleteFolder(folderToDelete.id);
     }
     setShowDeleteModal(false);
     setFolderToDelete(null);
@@ -119,17 +93,17 @@ export default function FoldersPage() {
 
   const displayedFolders: Folder[] =
     activeTab === "private"
-      ? myFoldersResponse?.items || []
+      ? myFolders
       : activeTab === "public"
-        ? publicFoldersResponse?.items || []
-        : bookmarkedFoldersResponse?.items || [];
+        ? publicFolders
+        : bookmarkedFolders;
 
-  const currentResponse =
+  const totalPages =
     activeTab === "private"
-      ? myFoldersResponse
+      ? myTotalPages
       : activeTab === "public"
-        ? publicFoldersResponse
-        : bookmarkedFoldersResponse;
+        ? publicTotalPages
+        : bookmarkedTotalPages;
 
   const isLoading =
     (activeTab === "private" && isLoadingMyFolders) ||
@@ -226,10 +200,10 @@ export default function FoldersPage() {
             />
           )}
 
-          {currentResponse && currentResponse.totalPages > 1 && (
+          {totalPages > 1 && (
             <Pagination
               currentPage={page}
-              totalPages={currentResponse.totalPages}
+              totalPages={totalPages}
               onPageChange={setPage}
               isLoading={isFetching}
               className="mt-8"

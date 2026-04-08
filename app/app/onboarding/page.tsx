@@ -1,7 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { FiHeart, FiBook, FiBriefcase } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
@@ -12,15 +11,14 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
+import { useAppDispatch, useAppSelector } from "@/app/store/store";
+import { setOnboardingStatus, selectCurrentUser } from "@/app/store/authSlice";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
   useGetInterestsQuery,
-  useCompleteOnboardingMutation,
-} from "@/app/store/api/onboardingApi";
-import { useAppDispatch, useAppSelector } from "@/app/store/store";
-import { setOnboardingStatus, selectCurrentUser } from "@/app/store/authSlice";
-import { getErrorMessage } from "@/app/helpers/error";
+  useOnboarding,
+} from "@/app/services/onboarding/hooks";
 
 interface OptionType {
   value: string;
@@ -37,16 +35,9 @@ export default function Onboarding() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const dispatch = useAppDispatch();
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
-  const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
-
-  const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     schoolId: "",
     departmentId: "",
@@ -55,6 +46,15 @@ export default function Onboarding() {
   const [schoolSearch, setSchoolSearch] = useState("");
 
   const user = useAppSelector(selectCurrentUser);
+
+  const { data: schools = [], isLoading: isLoadingSchools } =
+    useGetSchoolsQuery(schoolSearch);
+  const { data: departments = [], isLoading: isLoadingDepartments } =
+    useGetOnboardingDepartmentsQuery(formData.schoolId);
+  const { data: interestsResponse = {}, isLoading: isLoadingInterests } =
+    useGetInterestsQuery();
+  const { actions: onboardingActions, isCompleting: onboardingLoading } =
+    useOnboarding();
 
   // Redirect if already completed
   useEffect(() => {
@@ -67,40 +67,26 @@ export default function Onboarding() {
   useEffect(() => {
     const savedStep = storage.get("onboarding_step");
     const savedData = storage.get("onboarding_data");
-    if (savedStep) setCurrentStep(parseInt(savedStep));
+    if (savedStep) setCurrentStepIndex(parseInt(savedStep));
     if (savedData) setFormData(JSON.parse(savedData));
   }, []);
 
   // Save session data on change
   useEffect(() => {
-    storage.set("onboarding_step", currentStep.toString());
+    storage.set("onboarding_step", currentStepIndex.toString());
     storage.set("onboarding_data", JSON.stringify(formData));
-  }, [currentStep, formData]);
+  }, [currentStepIndex, formData]);
+
+  const currentStep = currentStepIndex;
 
   const steps = ["School", "Department", "Interests"];
 
-  // API Hooks
-  const { data: schools = [], isLoading: isLoadingSchools } =
-    useGetSchoolsQuery(schoolSearch);
-  const { data: departments = [], isLoading: isLoadingDepartments } =
-    useGetOnboardingDepartmentsQuery(formData.schoolId, {
-      skip: !formData.schoolId,
-    });
-  const {
-    data: interestsResponse,
-    isLoading: isLoadingInterests,
-    isError: isInterestError,
-    refetch: refetchInterests,
-  } = useGetInterestsQuery();
-  const [completeOnboarding, { isLoading: isSubmitting }] =
-    useCompleteOnboardingMutation();
-
-  const schoolOptions: OptionType[] = schools.map((school) => ({
+  const schoolOptions: OptionType[] = schools.map((school: any) => ({
     value: school.id,
     label: school.name,
   }));
 
-  const departmentOptions: OptionType[] = departments.map((dept) => ({
+  const departmentOptions: OptionType[] = departments.map((dept: any) => ({
     value: dept.id,
     label: dept.name,
   }));
@@ -122,19 +108,15 @@ export default function Onboarding() {
 
   const handleFinish = async (): Promise<void> => {
     try {
-      await completeOnboarding({
+      await onboardingActions.completeOnboarding({
         schoolId: formData.schoolId,
         departmentId: formData.departmentId,
         interestIds: formData.interestIds,
-      }).unwrap();
+      });
 
       dispatch(setOnboardingStatus(true));
       storage.remove("onboarding_step");
       storage.remove("onboarding_data");
-      addNotification(
-        "success",
-        "Welcome to Shelf! Your profile is now set up.",
-      );
       router.push("/app/discover");
     } catch (error: any) {
       console.error("Onboarding failed:", error);
@@ -147,14 +129,6 @@ export default function Onboarding() {
         router.push("/app/discover");
         return;
       }
-
-      addNotification(
-        "error",
-        getErrorMessage(
-          error,
-          "Failed to complete onboarding. Please try again.",
-        ),
-      );
     }
   };
 
@@ -178,15 +152,15 @@ export default function Onboarding() {
       return;
     }
 
-    if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex((prev) => prev + 1);
     } else {
       handleFinish();
     }
   };
 
   const handleBack = () => {
-    setCurrentStep((prev) => Math.max(0, prev - 1));
+    setCurrentStepIndex((prev) => Math.max(0, prev - 1));
   };
 
   const toggleInterest = (interestId: string) => {
@@ -322,44 +296,38 @@ export default function Onboarding() {
                         </div>
                       ))}
                     </div>
-                  ) : isInterestError || !interestsResponse ? (
+                  ) : !interestsResponse ? (
                     <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-gray-100 dark:border-white/5 rounded-sm">
                       <p className="text-sm text-gray-500 mb-4">
                         Failed to load interests
                       </p>
-                      <button
-                        onClick={() => refetchInterests()}
-                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium font-onest uppercase tracking-widest"
-                      >
-                        Try Again
-                      </button>
                     </div>
                   ) : (
-                    Object.entries(interestsResponse).map(
-                      ([category, list]) => (
-                        <div
-                          key={category}
-                          className="mb-8 last:mb-0"
-                        >
-                          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-                            {formatCategory(category)}
-                          </h3>
-                          <div className="grid grid-cols-2 gap-3">
-                            {list.map((interest) => (
-                              <InterestButton
-                                key={interest.id}
-                                name={interest.name}
-                                icon={getIconComponent(interest.icon)}
-                                isSelected={formData.interestIds.includes(
-                                  interest.id,
-                                )}
-                                onClick={() => toggleInterest(interest.id)}
-                              />
-                            ))}
-                          </div>
+                    Object.entries(
+                      interestsResponse as Record<string, any[]>,
+                    ).map(([category, list]) => (
+                      <div
+                        key={category}
+                        className="mb-8 last:mb-0"
+                      >
+                        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
+                          {formatCategory(category)}
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3">
+                          {list.map((interest: any) => (
+                            <InterestButton
+                              key={interest.id}
+                              name={interest.name}
+                              icon={getIconComponent(interest.icon)}
+                              isSelected={formData.interestIds.includes(
+                                interest.id,
+                              )}
+                              onClick={() => toggleInterest(interest.id)}
+                            />
+                          ))}
                         </div>
-                      ),
-                    )
+                      </div>
+                    ))
                   )}
                 </div>
               )}
@@ -371,7 +339,7 @@ export default function Onboarding() {
               canGoBack={currentStep > 0}
               canProceed={canProceedResult}
               isLastStep={currentStep === steps.length - 1}
-              isLoading={isSubmitting}
+              isLoading={onboardingLoading}
             />
           </Card>
         </div>

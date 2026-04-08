@@ -14,7 +14,7 @@ import {
   ProfileCardSkeleton,
 } from "@/app/components/Search/ProfileCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { useSearchQuery } from "@/app/store/api/searchApi";
+import { useSearchQuery } from "@/app/services/search/hooks";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { SearchResultItem } from "@/app/types/search";
@@ -51,10 +51,10 @@ function SearchContent() {
     {
       q: query,
       page,
-      pageSize,
+      limit: pageSize,
       type: filterType === "all" ? undefined : filterType,
     },
-    { skip: !query },
+    { enabled: !!query },
   );
 
   const items = searchResponse?.items || [];
