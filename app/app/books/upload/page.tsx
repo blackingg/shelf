@@ -251,11 +251,6 @@ export default function UploadPage() {
 
     try {
       const formValues = new FormData();
-      formValues.append("title", formData.title);
-      formValues.append("author", formData.author);
-      formValues.append("description", formData.description);
-      formValues.append("category", formData.category);
-      formValues.append("pages", formData.pages);
       formValues.append("book_file", bookFile);
       formValues.append("cover_image", coverFile);
 
@@ -277,6 +272,31 @@ export default function UploadPage() {
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadedBookId) return;
+
+    if (!formData.title.trim()) {
+      addNotification("error", "Title is required.");
+      return;
+    }
+
+    if (!formData.author.trim()) {
+      addNotification("error", "Author is required.");
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      addNotification("error", "Description is required.");
+      return;
+    }
+
+    if (!formData.category.trim()) {
+      addNotification("error", "Category is required.");
+      return;
+    }
+
+    if (!formData.pages || Number(formData.pages) <= 0) {
+      addNotification("error", "Pages must be greater than 0.");
+      return;
+    }
 
     try {
       const selectedDepartmentId = formData.department
@@ -327,6 +347,15 @@ export default function UploadPage() {
     label: cat.name,
   }));
 
+  const isStep2FormComplete =
+    !!uploadedBookId &&
+    !!formData.title.trim() &&
+    !!formData.author.trim() &&
+    !!formData.description.trim() &&
+    !!formData.category.trim() &&
+    !!formData.pages &&
+    Number(formData.pages) > 0;
+
   const Label = ({ children }: { children: React.ReactNode }) => (
     <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
       {children}
@@ -345,7 +374,7 @@ export default function UploadPage() {
           </div>
           <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
             {step === 1
-              ? "Upload your document — we'll automatically extract the title, author, and cover image from the file."
+              ? "Upload your document and cover image to start the donation flow."
               : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
           </p>
         </div>
@@ -387,115 +416,134 @@ export default function UploadPage() {
               onSubmit={handleStep1Submit}
               className="space-y-12"
             >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <Label>Document File (.pdf, .epub)</Label>
-                    <input
-                      ref={bookInputRef}
-                      type="file"
-                      className="hidden"
-                      onChange={handleBookFileChange}
-                      accept=".pdf,.epub"
-                    />
-                    <div
-                      onDragOver={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDrop={handleDrop}
-                      onClick={() => bookInputRef.current?.click()}
-                      className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
-                        dragActiveBook
-                          ? "border-emerald-500 bg-emerald-50/20"
-                          : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
-                      }`}
-                    >
-                      {isExtractingMetadata ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Extracting metadata…
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <Label>Document File (.pdf, .epub)</Label>
+                  <input
+                    ref={bookInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleBookFileChange}
+                    accept=".pdf,.epub"
+                  />
+                  <div
+                    onDragOver={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDrop={handleDrop}
+                    onClick={() => bookInputRef.current?.click()}
+                    className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      dragActiveBook
+                        ? "border-emerald-500 bg-emerald-50/20"
+                        : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                    }`}
+                  >
+                    {isExtractingMetadata ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                          Processing file…
+                        </p>
+                      </div>
+                    ) : bookFile ? (
+                      <div className="flex items-center gap-4 px-6 text-center">
+                        <FiCheck className="text-emerald-500 text-xl" />
+                        <div className="text-left">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                            {bookFile.name}
+                          </p>
+                          <p className="text-[10px] text-gray-400 uppercase">
+                            {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
                           </p>
                         </div>
-                      ) : bookFile ? (
-                        <div className="flex items-center gap-4 px-6 text-center">
-                          <FiCheck className="text-emerald-500 text-xl" />
-                          <div className="text-left">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
-                              {bookFile.name}
-                            </p>
-                            <p className="text-[10px] text-gray-400 uppercase">
-                              {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
-                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Click or Drag File
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label>Cover Image</Label>
-                      {coverFile && (
-                        <button
-                          type="button"
-                          onClick={() => coverInputRef.current?.click()}
-                          className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
-                        >
-                          Replace
-                        </button>
-                      )}
-                    </div>
-                    <input
-                      ref={coverInputRef}
-                      type="file"
-                      className="hidden"
-                      onChange={handleCoverFileChange}
-                      accept="image/*"
-                    />
-                    <div
-                      onClick={() =>
-                        !coverFile && coverInputRef.current?.click()
-                      }
-                      className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
-                        !coverFile
-                          ? "cursor-pointer hover:border-emerald-500"
-                          : ""
-                      }`}
-                    >
-                      {coverPreviewUrl ? (
-                        <img
-                          src={coverPreviewUrl}
-                          className="w-full h-full object-cover"
-                          alt="Cover preview"
-                        />
-                      ) : isExtractingMetadata ? (
-                        <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
-                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
-                          <p className="text-[11px] font-medium uppercase tracking-tighter">
-                            Extracting cover…
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
-                          <FiImage className="text-2xl mb-1" />
-                          <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
-                            {bookFile
-                              ? "No cover found — click to upload"
-                              : "Auto-extracted from file"}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <>
+                        <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
+                        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                          Click or Drag File
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Cover Image</Label>
+                    {coverFile && (
+                      <button
+                        type="button"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
+                      >
+                        Replace
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleCoverFileChange}
+                    accept="image/*"
+                  />
+                  <div
+                    onClick={() => !coverFile && coverInputRef.current?.click()}
+                    className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
+                      !coverFile
+                        ? "cursor-pointer hover:border-emerald-500"
+                        : ""
+                    }`}
+                  >
+                    {coverPreviewUrl ? (
+                      <img
+                        src={coverPreviewUrl}
+                        className="w-full h-full object-cover"
+                        alt="Cover preview"
+                      />
+                    ) : isExtractingMetadata ? (
+                      <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
+                        <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-[11px] font-medium uppercase tracking-tighter">
+                          Extracting cover…
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
+                        <FiImage className="text-2xl mb-1" />
+                        <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
+                          {bookFile
+                            ? "No cover found — click to upload"
+                            : "Upload cover image"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+                <Button
+                  type="submit"
+                  isLoading={isUploading}
+                  disabled={isExtractingMetadata || !bookFile || !coverFile}
+                  icon={<FiArrowRight className="text-sm" />}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
+                >
+                  Continue...
+                </Button>
+              </div>
+            </motion.form>
+          ) : (
+            <motion.form
+              key="step2"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              onSubmit={handleStep2Submit}
+              className="space-y-12"
+            >
+              <div className="grid md:grid-cols-2 gap-10">
                 <div className="space-y-6">
                   <div className="space-y-1.5">
                     <Label>Title</Label>
@@ -571,37 +619,6 @@ export default function UploadPage() {
                     />
                   </div>
 
-                  {bookFile && !isExtractingMetadata && (
-                    <p className="text-[10px] text-gray-400 dark:text-neutral-600 flex items-center gap-1.5 italic">
-                      <FiCheck className="text-emerald-500 shrink-0" />
-                      Fields prefilled from file — edit freely.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
-                <Button
-                  type="submit"
-                  isLoading={isUploading || isExtractingMetadata}
-                  icon={<FiArrowRight className="text-sm" />}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
-                >
-                  Continue...
-                </Button>
-              </div>
-            </motion.form>
-          ) : (
-            <motion.form
-              key="step2"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              onSubmit={handleStep2Submit}
-              className="space-y-12"
-            >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-6">
                   <FormSelect<any, false>
                     label="Department"
                     icon={<FiBookOpen />}
@@ -725,6 +742,7 @@ export default function UploadPage() {
                   <Button
                     type="submit"
                     isLoading={isUpdating}
+                    disabled={!isStep2FormComplete}
                     className="px-12 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest"
                   >
                     Confirm Donation
