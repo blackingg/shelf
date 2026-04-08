@@ -10,7 +10,7 @@ export const ratingKeys = {
 export const useGetMyRatingQuery = (bookId: string) => {
   return useQuery<{ rating: number }>({
     queryKey: ratingKeys.mine(bookId),
-    queryFn: () => api.get<{ rating: number }>(`/books/${bookId}/my-rating`),
+    queryFn: () => api.get<{ rating: number }>(`/ratings/book/${bookId}/my-rating`),
     enabled: !!bookId,
   });
 };
@@ -19,7 +19,7 @@ export const useRateBookMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ bookId, rating }: { bookId: string; rating: number }) =>
-      api.post(`/books/${bookId}/rate`, { rating }),
+      api.post(`/ratings/rate`, { bookId, rating }),
     onSuccess: (_, { bookId }) => {
       queryClient.invalidateQueries({ queryKey: ratingKeys.mine(bookId) });
       queryClient.invalidateQueries({ queryKey: ["books", "detail", bookId] });

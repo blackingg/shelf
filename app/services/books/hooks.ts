@@ -70,8 +70,8 @@ export const useUpdateBookCoverMutation = () => {
   return useMutation({
     mutationFn: ({ id, file }: { id: string; file: File }) => {
       const formData = new FormData();
-      formData.append("coverImage", file);
-      return api.post<Book>(`/books/${id}/cover`, formData);
+      formData.append("cover_image", file);
+      return api.patch<Book>(`/books/${id}/cover`, formData);
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: bookKeys.detail(id) });
@@ -85,8 +85,8 @@ export const useUpdateBookFileMutation = () => {
   return useMutation({
     mutationFn: ({ id, file }: { id: string; file: File }) => {
       const formData = new FormData();
-      formData.append("file", file);
-      return api.post<Book>(`/books/${id}/file`, formData);
+      formData.append("book_file", file);
+      return api.patch<Book>(`/books/${id}/file`, formData);
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: bookKeys.detail(id) });

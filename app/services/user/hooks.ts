@@ -46,7 +46,7 @@ export const useUploadAvatarMutation = () => {
 
 export const useChangePasswordMutation = () => {
   return useMutation({
-    mutationFn: (data: any) => api.post("/users/me/change-password", data),
+    mutationFn: (data: any) => api.post("/users/me/password", data),
   });
 };
 

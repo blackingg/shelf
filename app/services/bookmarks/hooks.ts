@@ -59,7 +59,7 @@ export const useGetIsBookBookmarkedQuery = (bookId: string) => {
   return useQuery<{ bookmarked: boolean }>({
     queryKey: [...bookmarkKeys.all, "book", bookId, "status"],
     queryFn: () =>
-      api.get<{ bookmarked: boolean }>(`/books/${bookId}/bookmarked/status`),
+      api.get<{ bookmarked: boolean }>(`/books/${bookId}/bookmarked`),
     enabled: !!bookId,
   });
 };
@@ -69,7 +69,7 @@ export const useGetIsFolderBookmarkedQuery = (folderId: string) => {
     queryKey: [...bookmarkKeys.all, "folder", folderId, "status"],
     queryFn: () =>
       api.get<{ bookmarked: boolean }>(
-        `/folders/${folderId}/bookmarked/status`,
+        `/folders/${folderId}/bookmarked`,
       ),
     enabled: !!folderId,
   });

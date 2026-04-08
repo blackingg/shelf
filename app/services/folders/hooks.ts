@@ -113,7 +113,7 @@ export const useDeleteFolderMutation = () => {
 export const useGetCollaboratorsQuery = (id: string) => {
   return useQuery<Collaborator[]>({
     queryKey: folderKeys.collaborators(id),
-    queryFn: () => api.get<Collaborator[]>(`/folders/${id}/collaborators`),
+    queryFn: () => api.get<Collaborator[]>(`/collaboration/folders/${id}/collaborators`),
     enabled: !!id,
   });
 };
@@ -122,7 +122,7 @@ export const useInviteCollaboratorMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: { userId: string; role: string } }) =>
-      api.post(`/folders/${id}/collaborators`, data),
+      api.post(`/collaboration/folders/${id}/invite`, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(id) });
     },
@@ -133,7 +133,7 @@ export const useRemoveCollaboratorMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ folderId, collaboratorId }: { folderId: string; collaboratorId: string }) =>
-      api.delete(`/folders/${folderId}/collaborators/${collaboratorId}`),
+      api.delete(`/collaboration/folders/${folderId}/collaborators/${collaboratorId}`),
     onSuccess: (_, { folderId }) => {
       queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(folderId) });
     },
@@ -144,7 +144,7 @@ export const useUpdateCollaborationSettingsMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: { allowCollaboration: boolean; requireApproval: boolean } }) =>
-      api.patch(`/folders/${id}/collaboration-settings`, data),
+      api.patch(`/folders/${id}/collaboration`, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
     },
