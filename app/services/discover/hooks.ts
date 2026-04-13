@@ -1,5 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
+import { Category } from "../../types/categories";
+import { DiscoveryFeedResponse } from "../../types/recommendations";
+import { Book } from "../../types/book";
+import { PaginatedResponse } from "../../types/common";
 
 export const discoverKeys = {
   all: ["discover"] as const,
@@ -8,24 +12,33 @@ export const discoverKeys = {
   categoryBooks: (slug: string, params?: any) => [...discoverKeys.all, "categoryBooks", slug, params] as const,
 };
 
+interface CategoryBooksResponse {
+  category: Category;
+  books: PaginatedResponse<Book>;
+}
+
 export const useGetDiscoverFeedQuery = () => {
-  return useQuery<any>({
+  return useQuery<DiscoveryFeedResponse>({
     queryKey: discoverKeys.recommendations(),
-    queryFn: () => api.get<any>("/recommendations/discover"),
+    queryFn: () => api.get<DiscoveryFeedResponse>("/recommendations/discover"),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
 export const useGetCategoriesQuery = () => {
-  return useQuery<any[]>({
+  return useQuery<Category[]>({
     queryKey: discoverKeys.categories(),
-    queryFn: () => api.get<any[]>("/categories"),
+    queryFn: () => api.get<Category[]>("/categories"),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
 export const useGetBooksByCategoryQuery = (slug: string, params?: any) => {
-  return useQuery<any>({
+  return useQuery<CategoryBooksResponse>({
     queryKey: discoverKeys.categoryBooks(slug, params),
-    queryFn: () => api.get<any>(`/categories/${slug}/books`, { params }),
+    queryFn: () => api.get<CategoryBooksResponse>(`/categories/${slug}/books`, { params }),
     enabled: !!slug,
   });
 };
