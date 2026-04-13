@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
 import { useNotifications } from "../../context/NotificationContext";
+import {
+  School,
+  Department,
+  InterestsResponse,
+  OnboardingCompleteRequest,
+  OnboardingCompleteResponse,
+} from "../../types/onboarding";
 
 export const onboardingKeys = {
   all: ["onboarding"] as const,
@@ -10,31 +17,38 @@ export const onboardingKeys = {
 };
 
 export const useGetSchoolsQuery = (search?: string) => {
-  return useQuery<any[]>({
+  return useQuery<School[]>({
     queryKey: onboardingKeys.schools(search),
-    queryFn: () => api.get<any[]>("/onboarding/schools", { params: { q: search } }),
+    queryFn: () => api.get<School[]>("/onboarding/schools", { params: { q: search } }),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
 export const useGetOnboardingDepartmentsQuery = (schoolId: string) => {
-  return useQuery<any[]>({
+  return useQuery<Department[]>({
     queryKey: onboardingKeys.departments(schoolId),
-    queryFn: () => api.get<any[]>(`/onboarding/departments/${schoolId}`),
+    queryFn: () => api.get<Department[]>(`/onboarding/departments/${schoolId}`),
     enabled: !!schoolId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
 export const useGetInterestsQuery = () => {
-  return useQuery<Record<string, any[]>>({
+  return useQuery<InterestsResponse>({
     queryKey: onboardingKeys.interests(),
-    queryFn: () => api.get<Record<string, any[]>>("/onboarding/interests"),
+    queryFn: () => api.get<InterestsResponse>("/onboarding/interests"),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
 export const useCompleteOnboardingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: any) => api.post("/onboarding/complete", data),
+    mutationFn: (data: OnboardingCompleteRequest) =>
+      api.post<OnboardingCompleteResponse>("/onboarding/complete", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", "me"] });
     },
@@ -45,7 +59,7 @@ export const useOnboarding = () => {
   const { addNotification } = useNotifications();
   const completeMutation = useCompleteOnboardingMutation();
 
-  const completeOnboarding = async (data: any) => {
+  const completeOnboarding = async (data: OnboardingCompleteRequest) => {
     try {
       await completeMutation.mutateAsync(data);
       addNotification("success", "Onboarding completed! Welcome to Shelf.");
