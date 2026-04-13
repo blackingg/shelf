@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import StoreProvider from "./store/StoreProvider";
+import StoreProvider from "./provider/StoreProvider";
 import { ErrorBoundaryWithNotification } from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
