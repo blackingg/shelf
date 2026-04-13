@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
 import {
   FiFolder,
   FiUploadCloud,
@@ -15,11 +14,6 @@ import {
   FiShare2,
 } from "react-icons/fi";
 import { BackButton } from "@/app/components/Layout/BackButton";
-import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
-import {
-  FolderCard,
-  FolderCardSkeleton,
-} from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { useUser, useUserByUsername } from "@/app/services/user/hooks";
@@ -35,7 +29,9 @@ import {
 } from "@/app/services/bookmarks/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
-import { Pagination } from "@/app/components/Library/Pagination";
+import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
+import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
+import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTab";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
@@ -96,29 +92,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   });
 
   const folders = isOwner ? ownerFolders : publicFolders;
-  const isLoadingFolders =
-    (isOwner ? isLoadingOwnerFolders : isLoadingPublicFolders) ||
-    (isOwner ? isFetchingOwnerFolders : isFetchingPublicFolders);
+  const isFetchingFoldersCount = isOwner ? isFetchingOwnerFolders : isFetchingPublicFolders;
+  const foldersTotalPages = isOwner ? ownerFoldersTotalPages : publicFoldersTotalPages;
 
-  const {
-    books: bookmarkedBooksItems,
-    total: bookmarkedBooksTotal,
-    totalPages: bookmarkedBooksTotalPages,
-    isLoading: isLoadingBookmarkedBooks,
-    isFetching: isFetchingBookmarkedBooks,
-  } = useBookmarkedBooks({ page: bookmarkBooksPage, limit: pageSize });
-
-  const {
-    folders: bookmarkedFoldersItems,
-    total: bookmarkedFoldersTotal,
-    totalPages: bookmarkedFoldersTotalPages,
-    isLoading: isLoadingBookmarkedFolders,
-    isFetching: isFetchingBookmarkedFolders,
-  } = useBookmarkedFolders({ page: bookmarkFoldersPage, limit: pageSize });
-
-  const foldersTotalPages = isOwner
-    ? ownerFoldersTotalPages
-    : publicFoldersTotalPages;
 
   const tabs = [
     {
@@ -139,7 +115,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             id: "bookmarks",
             label: "Bookmarks",
             icon: FiBookmark,
-            count: bookmarkedBooksTotal + bookmarkedFoldersTotal,
+            count: 0, // Simplified count for bookmarks
           },
         ]
       : []),
@@ -408,184 +384,65 @@ export default function ProfileClient({ username }: ProfileClientProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         <div key={activeTab}>
           {activeTab === "donated" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                {isLoadingBooks || isFetchingBooks ? (
-                  Array.from({ length: pageSize }).map((_, i) => (
-                    <BookCardSkeleton key={i} />
-                  ))
-                ) : books.length > 0 ? (
-                  books.map((book: any) => (
-                    <BookCard
-                      key={book.id}
-                      {...book}
-                      onClick={() => setSelectedBook(book)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-full min-h-[50vh] text-center flex flex-col items-center justify-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md">
-                    <p className="text-gray-500 dark:text-neutral-400 mb-6">
-                      No books donated yet.
-                    </p>
-                    {isOwner && (
-                      <button
-                        onClick={() => router.push("/app/books/upload")}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
-                      >
-                        <FiPlus className="w-4 h-4" />
-                        Upload Your First Book
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {books.length > 0 && (
-                <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                  isLoading={isFetchingBooks}
-                />
-              )}
-            </div>
+            <PaginatedBookGrid
+              books={books}
+              isLoading={isFetchingBooks}
+              totalPages={totalPages}
+              currentPage={page}
+              onPageChange={setPage}
+              onBookClick={(book) => setSelectedBook(book)}
+              pageSize={pageSize}
+              emptyMessage="No books donated yet."
+              emptyAction={
+                isOwner && (
+                  <button
+                    onClick={() => router.push("/app/books/upload")}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+                  >
+                    <FiPlus className="w-4 h-4" />
+                    Upload Your First Book
+                  </button>
+                )
+              }
+            />
           )}
 
           {activeTab === "folders" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {isLoadingFolders ? (
-                  Array.from({ length: pageSize }).map((_, i) => (
-                    <FolderCardSkeleton key={i} />
-                  ))
-                ) : folders && folders.length > 0 ? (
-                  folders.map((folder: any) => (
-                    <FolderCard
-                      key={folder.id}
-                      folder={folder}
-                      onClick={() => router.push(`/app/folders/${folder.slug}`)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
-                    <p className="text-gray-500 dark:text-neutral-400 mb-6">
-                      No folders yet.
-                    </p>
-                    {isOwner && (
-                      <button
-                        onClick={() => setShowCreateFolderModal(true)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
-                      >
-                        <FiPlus className="w-4 h-4" />
-                        Create Your First Folder
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {!!folders?.length && foldersTotalPages > 1 && (
-                <Pagination
-                  currentPage={folderPage}
-                  totalPages={foldersTotalPages}
-                  onPageChange={setFolderPage}
-                  isLoading={isLoadingFolders}
-                />
-              )}
-            </div>
+            <PaginatedFolderGrid
+              folders={folders}
+              isLoading={isFetchingFoldersCount}
+              totalPages={foldersTotalPages}
+              currentPage={folderPage}
+              onPageChange={setFolderPage}
+              onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+              pageSize={pageSize}
+              emptyMessage="No folders yet."
+              emptyAction={
+                isOwner && (
+                  <button
+                    onClick={() => setShowCreateFolderModal(true)}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+                  >
+                    <FiPlus className="w-4 h-4" />
+                    Create Your First Folder
+                  </button>
+                )
+              }
+            />
           )}
 
           {activeTab === "bookmarks" && isOwner && (
-            <div className="space-y-12">
-              <section>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                    Bookmarked Books
-                  </h3>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  {isLoadingBookmarkedBooks || isFetchingBookmarkedBooks ? (
-                    Array.from({ length: pageSize }).map((_, i) => (
-                      <BookCardSkeleton key={i} />
-                    ))
-                  ) : bookmarkedBooksItems?.length ? (
-                    bookmarkedBooksItems.map((book: any) => (
-                      <BookCard
-                        key={book.id}
-                        {...book}
-                        onClick={() => setSelectedBook(book)}
-                      />
-                    ))
-                  ) : (
-                    <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
-                      <p className="text-gray-400 text-xs">
-                        No books bookmarked.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {!!bookmarkedBooksItems?.length &&
-                  bookmarkedBooksTotalPages > 1 && (
-                    <Pagination
-                      currentPage={bookmarkBooksPage}
-                      totalPages={bookmarkedBooksTotalPages}
-                      onPageChange={setBookmarkBooksPage}
-                      isLoading={
-                        isLoadingBookmarkedBooks || isFetchingBookmarkedBooks
-                      }
-                    />
-                  )}
-              </section>
-
-              <section>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                    Bookmarked Folders
-                  </h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                  {isLoadingBookmarkedFolders || isFetchingBookmarkedFolders ? (
-                    Array.from({ length: pageSize }).map((_, i) => (
-                      <FolderCardSkeleton key={i} />
-                    ))
-                  ) : bookmarkedFoldersItems?.length ? (
-                    bookmarkedFoldersItems.map((folder: any) => (
-                      <FolderCard
-                        key={folder.id}
-                        folder={folder}
-                        onClick={() =>
-                          router.push(`/app/folders/${folder.slug}`)
-                        }
-                      />
-                    ))
-                  ) : (
-                    <div className="col-span-full min-h-[50vh] text-center border border-dashed border-gray-100 dark:border-neutral-800 rounded-md flex flex-col items-center justify-center">
-                      <p className="text-gray-400 text-xs">
-                        No folders bookmarked.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {!!bookmarkedFoldersItems?.length &&
-                  bookmarkedFoldersTotalPages > 1 && (
-                    <Pagination
-                      currentPage={bookmarkFoldersPage}
-                      totalPages={bookmarkedFoldersTotalPages}
-                      onPageChange={setBookmarkFoldersPage}
-                      isLoading={
-                        isLoadingBookmarkedFolders ||
-                        isFetchingBookmarkedFolders
-                      }
-                    />
-                  )}
-              </section>
-            </div>
+            <ProfileBookmarksTab
+              pageSize={pageSize}
+              bookmarkBooksPage={bookmarkBooksPage}
+              setBookmarkBooksPage={setBookmarkBooksPage}
+              bookmarkFoldersPage={bookmarkFoldersPage}
+              setBookmarkFoldersPage={setBookmarkFoldersPage}
+              setSelectedBook={setSelectedBook}
+            />
           )}
         </div>
+
       </div>
 
       <BookDetailPanel
