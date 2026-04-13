@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
 import { Book, UpdateBookRequest } from "../../types/book";
+import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 
 export const bookKeys = {
@@ -13,9 +14,9 @@ export const bookKeys = {
 };
 
 export const useGetBooksQuery = (params: any) => {
-  return useQuery<any>({
+  return useQuery<PaginatedResponse<Book>>({
     queryKey: bookKeys.lists(params),
-    queryFn: () => api.get<any>("/books/", { params }),
+    queryFn: () => api.get<PaginatedResponse<Book>>("/books/", { params }),
   });
 };
 
@@ -34,12 +35,16 @@ export const useGetRecommendedBooksQuery = (params: any) => {
   });
 };
 
-export const useGetUserBooksQuery = (params: { username: string; page?: number; limit?: number }) => {
+export const useGetUserBooksQuery = (
+  params: { username: string; page?: number; limit?: number },
+  options?: { enabled?: boolean },
+) => {
   const { username, ...queryParams } = params;
-  return useQuery<any>({
+  return useQuery<PaginatedResponse<Book>>({
     queryKey: bookKeys.user(username, queryParams),
-    queryFn: () => api.get<any>(`/users/${username}/books`, { params: queryParams }),
-    enabled: !!username,
+    queryFn: () => api.get<PaginatedResponse<Book>>(`/users/${username}/books`, { params: queryParams }),
+    enabled: (options?.enabled ?? true) && !!username,
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -128,8 +133,11 @@ export const useRecommendedBooks = (limit?: number) => {
   };
 };
 
-export const useUserBooks = (params: { username: string; page?: number; limit?: number }) => {
-  const { data, isLoading, isFetching, error } = useGetUserBooksQuery(params);
+export const useUserBooks = (
+  params: { username: string; page?: number; limit?: number },
+  options?: { enabled?: boolean },
+) => {
+  const { data, isLoading, isFetching, error } = useGetUserBooksQuery(params, options);
   
   return {
     books: data?.items || [],
