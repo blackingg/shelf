@@ -11,7 +11,7 @@ import { useDepartments } from "@/app/services/departments/hooks";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { motion, AnimatePresence } from "motion/react";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 export default function DepartmentsPage() {
   const router = useRouter();
@@ -27,15 +27,7 @@ export default function DepartmentsPage() {
   )?.slug;
 
   const [viewDepartments, setViewDepartments] = useState(false);
-  const [departmentSkeletonCount, setDepartmentSkeletonCount] = useState(10);
-
-  useEffect(() => {
-    return watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 5 },
-      setDepartmentSkeletonCount,
-      4,
-    );
-  }, []);
+  const departmentSkeletonCount = useResponsiveLimit({ base: 2, md: 3, lg: 5 }, 4, 10);
 
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
