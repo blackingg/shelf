@@ -21,6 +21,8 @@ export const useGetMeQuery = (options?: { enabled?: boolean }) => {
     queryKey: userKeys.me(),
     queryFn: () => api.get<User>("/users/me"),
     enabled: options?.enabled ?? true,
+    staleTime: 5 * 60 * 1000, // 5 minutes — user profile rarely changes mid-session
+    gcTime: 30 * 60 * 1000,
   });
 };
 
