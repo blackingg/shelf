@@ -1,20 +1,18 @@
 "use client";
 import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import DepartmentSkeleton from "@/app/components/Skeletons/DepartmentSkeleton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
-import { FiFilter, FiSearch } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import {
-  useDepartments,
   useBooksByDepartment,
   useDepartmentBySlug,
 } from "@/app/services/departments/hooks";
 import { BookPreview } from "@/app/types/book";
-import { Pagination } from "@/app/components/Library/Pagination";
+import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 export default function DepartmentPage({
   params,
@@ -33,15 +31,7 @@ export default function DepartmentPage({
   );
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
-
-  useEffect(() => {
-    return watchResponsiveGridFetchLimit(
-      { base: 2, md: 4, lg: 5 },
-      setPageSize,
-      3,
-    );
-  }, []);
+  const pageSize = useResponsiveLimit({ base: 2, md: 4, lg: 5 }, 3, 15);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -60,7 +50,6 @@ export default function DepartmentPage({
     books,
     totalPages,
     total: totalBooks,
-    isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
   } = useBooksByDepartment(slug, {
     page,
@@ -69,8 +58,6 @@ export default function DepartmentPage({
     order: order,
     q: debouncedSearch,
   });
-
-  const showSkeleton = isLoadingBooks || isFetchingBooks;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -175,40 +162,16 @@ export default function DepartmentPage({
                 </div>
               </div>
 
-              {showSkeleton ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                  <BookCardSkeleton count={pageSize || 10} />
-                </div>
-              ) : books.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-                    {books.map((book: any) => (
-                      <BookCard
-                        key={book.id}
-                        {...book}
-                        onClick={() => setSelectedBook(book as BookPreview)}
-                      />
-                    ))}
-                  </div>
-
-                  <Pagination
-                    currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={setPage}
-                    isLoading={isLoadingBooks}
-                    className="mt-20"
-                  />
-                </>
-              ) : (
-                <div className="h-[30vh] text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
-                  <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
-                    <FiSearch className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
-                  </div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                    No resources found matching your search.
-                  </p>
-                </div>
-              )}
+              <PaginatedBookGrid
+                books={books}
+                isLoading={isFetchingBooks}
+                totalPages={totalPages}
+                currentPage={page}
+                onPageChange={setPage}
+                onBookClick={(book) => setSelectedBook(book)}
+                pageSize={pageSize}
+                emptyMessage="No resources found matching your search."
+              />
             </>
           )}
         </div>

@@ -1,17 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  FolderCard,
-  FolderCardSkeleton,
-} from "@/app/components/Folders/FolderCard";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiSearch, FiFolder } from "react-icons/fi";
 import { useFolders } from "@/app/services/folders/hooks";
-import { Pagination } from "@/app/components/Library/Pagination";
+import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { FolderSortBy, SortOrder } from "@/app/types/common";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 export default function DiscoverFoldersPage() {
   const router = useRouter();
@@ -21,15 +17,7 @@ export default function DiscoverFoldersPage() {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<FolderSortBy>("createdAt");
   const [order, setOrder] = useState<SortOrder>("desc");
-  const [pageSize, setPageSize] = useState(8);
-
-  useEffect(() => {
-    return watchResponsiveGridFetchLimit(
-      { base: 2, lg: 3, xl: 4 },
-      setPageSize,
-      2,
-    );
-  }, []);
+  const pageSize = useResponsiveLimit({ base: 2, lg: 3, xl: 4 }, 2, 8);
 
   useEffect(() => {
     setPage(1);
@@ -43,15 +31,13 @@ export default function DiscoverFoldersPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { folders, total, totalPages, isLoading, isFetching } = useFolders({
+  const { folders, total, totalPages, isFetching } = useFolders({
     page,
     limit: pageSize,
     sort_by: sortBy,
     order,
     q: debouncedSearch,
   });
-
-  const showSkeleton = isLoading || isFetching;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -130,40 +116,17 @@ export default function DiscoverFoldersPage() {
             </div>
           </div>
 
-          {showSkeleton ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              <FolderCardSkeleton count={pageSize} />
-            </div>
-          ) : folders.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {folders.map((folder) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onClick={() => router.push(`/app/folders/${folder.slug}`)}
-                  />
-                ))}
-              </div>
-
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-                isLoading={isLoading}
-                className="mt-20"
-              />
-            </>
-          ) : (
-            <div className="h-[30vh] text-center py-32 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-dashed border-gray-200 dark:border-neutral-800">
-              <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
-                <FiSearch className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
-              </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                No folders found matching your search.
-              </p>
-            </div>
-          )}
+          <PaginatedFolderGrid
+            folders={folders}
+            isLoading={isFetching}
+            totalPages={totalPages}
+            currentPage={page}
+            onPageChange={setPage}
+            onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+            pageSize={pageSize}
+            emptyMessage="No folders found matching your search."
+            className="mt-0"
+          />
         </div>
       </main>
     </div>

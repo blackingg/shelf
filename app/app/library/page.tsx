@@ -2,24 +2,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
-import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
-import {
-  FolderCard,
-  FolderCardSkeleton,
-} from "@/app/components/Folders/FolderCard";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
+import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
+import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { Pagination } from "@/app/components/Library/Pagination";
 import { BookPreview } from "@/app/types/book";
 import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
-  useGetBookmarkedBooksQuery,
-  useGetBookmarkedFoldersQuery,
+  useBookmarkedBooks,
+  useBookmarkedFolders,
 } from "@/app/services/bookmarks/hooks";
 import { useMeFolders, useFolderActions } from "@/app/services/folders/hooks";
-import { useGetUserBooksQuery } from "@/app/services/user/hooks";
+import { useUserBooks } from "@/app/services/books/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useAppSelector } from "@/app/store/store";
 import { selectCurrentUser } from "@/app/store/authSlice";
@@ -53,19 +50,23 @@ export default function LibraryPage() {
   const pageSize = 8;
 
   const {
-    data: bookmarkedBooksResponse,
+    books: bookmarkedBooks,
+    total: totalBookmarkedBooks,
+    totalPages: bookmarkedBooksTotalPages,
     isLoading: isLoadingBookmarkedBooks,
     isFetching: isFetchingBookmarkedBooks,
-  } = useGetBookmarkedBooksQuery(
+  } = useBookmarkedBooks(
     { page: bookmarkPage, limit: pageSize },
     { enabled: activeTab === "bookmarks" && bookmarkSubTab === "books" },
   );
 
   const {
-    data: bookmarkedFoldersResponse,
+    folders: bookmarkedFolders,
+    total: totalBookmarkedFolders,
+    totalPages: bookmarkedFoldersTotalPages,
     isLoading: isLoadingBookmarkedFolders,
     isFetching: isFetchingBookmarkedFolders,
-  } = useGetBookmarkedFoldersQuery(
+  } = useBookmarkedFolders(
     { page: bookmarkFolderPage, limit: pageSize },
     { enabled: activeTab === "bookmarks" && bookmarkSubTab === "folders" },
   );
@@ -87,31 +88,17 @@ export default function LibraryPage() {
 
   // ── Uploads queries ──
   const {
-    data: myBooksResponse,
+    books: myBooks,
+    total: myBooksTotal,
+    totalPages: myBooksTotalPages,
     isLoading: isLoadingMyBooks,
     isFetching: isFetchingMyBooks,
-  } = useGetUserBooksQuery(
+  } = useUserBooks(
     { username: activeUser?.username || "", page: uploadPage, limit: pageSize },
     { enabled: activeTab === "uploads" && !!activeUser?.username },
   );
 
-  // ── Bookmarks data ──
-  const bookmarkedBooks = bookmarkedBooksResponse?.items || [];
-  const totalBookmarkedBooks = bookmarkedBooksResponse?.total || 0;
-  const bookmarkedFolders = bookmarkedFoldersResponse?.items || [];
-  const totalBookmarkedFolders = bookmarkedFoldersResponse?.total || 0;
-  const showBooksSkeleton =
-    !bookmarkedBooksResponse &&
-    (isLoadingBookmarkedBooks || isFetchingBookmarkedBooks);
-
-  const showFoldersSkeleton =
-    !bookmarkedFoldersResponse &&
-    (isLoadingBookmarkedFolders || isFetchingBookmarkedFolders);
-
-  // ── Uploads data ──
-  const myBooks = myBooksResponse?.items || [];
-  const showUploadsSkeleton =
-    !myBooksResponse && (isLoadingMyBooks || isFetchingMyBooks);
+  // ── Simplified loading helpers ──
 
   // ── Handlers ──
   const handleCreateFolder = async (
@@ -248,93 +235,42 @@ export default function LibraryPage() {
             </div>
 
             {bookmarkSubTab === "books" && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  {showBooksSkeleton ? (
-                    <BookCardSkeleton count={5} />
-                  ) : bookmarkedBooks.length > 0 ? (
-                    bookmarkedBooks.map((book: any) => (
-                      <BookCard
-                        key={book.id}
-                        {...book}
-                        onClick={() => setSelectedBook(book as BookPreview)}
-                      />
-                    ))
-                  ) : (
-                    <div className="col-span-full min-h-[50vh] flex items-center justify-center">
-                      <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full">
-                        <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                          <FiBookmark className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                          No bookmarked books
-                        </h3>
-                        <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                          Books you bookmark will appear here.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {bookmarkedBooks.length > 0 && (
-                  <Pagination
-                    currentPage={bookmarkPage}
-                    totalPages={bookmarkedBooksResponse?.totalPages || 1}
-                    onPageChange={setBookmarkPage}
-                    isLoading={showBooksSkeleton}
-                  />
-                )}
-              </div>
+              <PaginatedBookGrid
+                books={bookmarkedBooks}
+                isLoading={isFetchingBookmarkedBooks}
+                totalPages={bookmarkedBooksTotalPages}
+                currentPage={bookmarkPage}
+                onPageChange={setBookmarkPage}
+                onBookClick={(book) => setSelectedBook(book)}
+                pageSize={pageSize}
+                emptyTitle="No bookmarked books"
+                emptyMessage="Books you bookmark will appear here."
+                emptyIcon={
+                  <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                    <FiBookmark className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                  </div>
+                }
+              />
             )}
 
             {bookmarkSubTab === "folders" && (
-              <div className="space-y-8">
-                <div
-                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 ${
-                    showFoldersSkeleton ? "opacity-50" : ""
-                  }`}
-                >
-                  {showFoldersSkeleton ? (
-                    <FolderCardSkeleton count={4} />
-                  ) : bookmarkedFolders && bookmarkedFolders.length > 0 ? (
-                    bookmarkedFolders.map((folder: any) => (
-                      <FolderCard
-                        key={folder.id}
-                        folder={folder}
-                        onClick={() =>
-                          router.push(`/app/folders/${folder.slug}`)
-                        }
-                      />
-                    ))
-                  ) : (
-                    <div className="col-span-full min-h-[50vh] flex items-center justify-center">
-                      <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full">
-                        <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                          <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                          No bookmarked folders
-                        </h3>
-                        <p className="text-gray-500 dark:text-neutral-400 font-medium">
-                          Folders you bookmark will appear here.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {bookmarkedFolders.length > 0 &&
-                  bookmarkedFoldersResponse &&
-                  bookmarkedFoldersResponse.totalPages > 1 && (
-                    <Pagination
-                      currentPage={bookmarkFolderPage}
-                      totalPages={bookmarkedFoldersResponse.totalPages}
-                      onPageChange={setBookmarkFolderPage}
-                      isLoading={showFoldersSkeleton}
-                    />
-                  )}
-              </div>
+              <PaginatedFolderGrid
+                folders={bookmarkedFolders}
+                isLoading={isFetchingBookmarkedFolders}
+                totalPages={bookmarkedFoldersTotalPages}
+                currentPage={bookmarkFolderPage}
+                onPageChange={setBookmarkFolderPage}
+                onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+                pageSize={pageSize}
+                gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                emptyTitle="No bookmarked folders"
+                emptyMessage="Folders you bookmark will appear here."
+                emptyIcon={
+                  <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                    <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
+                  </div>
+                }
+              />
             )}
           </div>
         )}
@@ -384,10 +320,10 @@ export default function LibraryPage() {
           <div className="space-y-8">
             <div className="flex items-center justify-between mb-8">
               <p className="text-sm text-gray-500 dark:text-neutral-400">
-                {myBooksResponse?.total || 0} book
-                {myBooksResponse?.total !== 1 ? "s" : ""} donated
+                {myBooksTotal || 0} book
+                {myBooksTotal !== 1 ? "s" : ""} donated
               </p>
-              {(myBooksResponse?.total || 0) > 0 && (
+              {(myBooksTotal || 0) > 0 && (
                 <button
                   onClick={() => router.push("/app/books/upload")}
                   className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
@@ -398,50 +334,31 @@ export default function LibraryPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-              {showUploadsSkeleton ? (
-                <BookCardSkeleton count={5} />
-              ) : myBooks.length > 0 ? (
-                myBooks.map((book) => (
-                  <BookCard
-                    key={book.id}
-                    {...book}
-                    onClick={() => setSelectedBook(book as BookPreview)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full min-h-[50vh] flex items-center justify-center">
-                  <div className="py-20 text-center flex flex-col items-center border border-dashed border-gray-200 dark:border-neutral-800 rounded-lg w-full max-w-lg">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
-                      <FiHeart className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                      No Donated Books
-                    </h3>
-                    <p className="text-gray-500 dark:text-neutral-400 font-medium mb-6 max-w-xs">
-                      Books you upload and donate to the community will appear
-                      here.
-                    </p>
-                    <button
-                      onClick={() => router.push("/app/books/upload")}
-                      className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-md font-medium transition-colors duration-150"
-                    >
-                      <FiHeart className="w-4 h-4" />
-                      <span>Donate a Book</span>
-                    </button>
-                  </div>
+            <PaginatedBookGrid
+              books={myBooks}
+              isLoading={isFetchingMyBooks}
+              totalPages={myBooksTotalPages}
+              currentPage={uploadPage}
+              onPageChange={setUploadPage}
+              onBookClick={(book) => setSelectedBook(book)}
+              pageSize={pageSize}
+              emptyTitle="No Donated Books"
+              emptyMessage="Books you upload and donate to the community will appear here."
+              emptyIcon={
+                <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-4">
+                  <FiHeart className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
                 </div>
-              )}
-            </div>
-
-            {myBooks.length > 0 && (
-              <Pagination
-                currentPage={uploadPage}
-                totalPages={myBooksResponse?.totalPages || 1}
-                onPageChange={setUploadPage}
-                isLoading={showUploadsSkeleton}
-              />
-            )}
+              }
+              emptyAction={
+                <button
+                  onClick={() => router.push("/app/books/upload")}
+                  className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-md font-medium transition-colors duration-150"
+                >
+                  <FiHeart className="w-4 h-4" />
+                  <span>Donate a Book</span>
+                </button>
+              }
+            />
           </div>
         )}
       </div>

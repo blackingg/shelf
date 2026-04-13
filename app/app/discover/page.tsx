@@ -24,7 +24,7 @@ import {
 } from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -43,35 +43,9 @@ export default function DiscoverPage() {
       setActiveCategory(categories[0].slug);
     }
   }, [categories, activeCategory]);
-  const [categoryFetchLimit, setCategoryFetchLimit] = useState(10);
-  const [departmentDisplayLimit, setDepartmentDisplayLimit] = useState(8);
-  const [publicFoldersFetchLimit, setPublicFoldersFetchLimit] = useState(8);
-
-  useEffect(() => {
-    const stopCategoryWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 5 },
-      setCategoryFetchLimit,
-      2,
-    );
-
-    const stopDepartmentWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 4 },
-      setDepartmentDisplayLimit,
-      2,
-    );
-
-    const stopPublicFoldersWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 4 },
-      setPublicFoldersFetchLimit,
-      2,
-    );
-
-    return () => {
-      stopCategoryWatch();
-      stopDepartmentWatch();
-      stopPublicFoldersWatch();
-    };
-  }, []);
+  const categoryFetchLimit = useResponsiveLimit({ base: 2, md: 3, lg: 5 }, 2, 10);
+  const departmentDisplayLimit = useResponsiveLimit({ base: 2, md: 3, lg: 4 }, 2, 8);
+  const publicFoldersFetchLimit = useResponsiveLimit({ base: 2, md: 3, lg: 4 }, 2, 8);
 
   const { recommendations, isLoading: isLoadingRecommendations } =
     useDiscoverFeed();

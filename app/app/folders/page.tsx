@@ -171,7 +171,7 @@ export default function FoldersPage() {
               onFolderEdit={handleFolderEdit}
               onFolderDelete={handleFolderDelete}
               showActions={true}
-              isLoading={isLoading}
+              isLoading={isFetching}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
@@ -179,7 +179,6 @@ export default function FoldersPage() {
                     ? "No bookmarked folders yet."
                     : "No public folders available to explore."
               }
-              className={isFetching ? "opacity-50" : ""}
             />
           ) : (
             <FolderList
@@ -188,7 +187,7 @@ export default function FoldersPage() {
               onFolderEdit={handleFolderEdit}
               onFolderDelete={handleFolderDelete}
               showActions={true}
-              isLoading={isLoading}
+              isLoading={isFetching}
               emptyMessage={
                 activeTab === "private"
                   ? "No folders found. Create your first folder!"
@@ -196,7 +195,6 @@ export default function FoldersPage() {
                     ? "No bookmarked folders yet."
                     : "No public folders available to explore."
               }
-              className={isFetching ? "opacity-50" : ""}
             />
           )}
 
@@ -205,7 +203,6 @@ export default function FoldersPage() {
               currentPage={page}
               totalPages={totalPages}
               onPageChange={setPage}
-              isLoading={isFetching}
               className="mt-8"
             />
           )}

@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { FiBookOpen } from "react-icons/fi";
-import { useGetBooksByDepartmentQuery } from "@/app/services/departments/hooks";
+import { useBooksByDepartment } from "@/app/services/departments/hooks";
 import { SortFilter } from "@/app/components/Library/SortFilter";
-import { Pagination } from "@/app/components/Library/Pagination";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
@@ -23,102 +22,62 @@ export default function UserDepartmentBooks({
     "createdAt",
   );
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  useEffect(() => {
-    return watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 4, xl: 5 },
-      setPageSize,
-      2,
-    );
-  }, []);
+  const pageSize = useResponsiveLimit({ base: 2, md: 3, lg: 4, xl: 5 }, 2, 10);
 
   const {
-    data: booksResponse,
-    isLoading,
+    books,
+    totalPages,
     isFetching,
-  } = useGetBooksByDepartmentQuery(departmentSlug, {
+  } = useBooksByDepartment(departmentSlug, {
     page,
     limit: pageSize,
     sort_by: sortBy,
   });
 
-  const showSkeleton = isLoading || isFetching;
-  const books = booksResponse?.books?.items || [];
-
   useEffect(() => {
     setPage(1);
-  }, [sortBy, departmentSlug]);
-
-  const sortOptions = [
-    { value: "createdAt", label: "New Arrivals" },
-    { value: "rating", label: "Top Rated" },
-    { value: "title", label: "Alphabetical" },
-  ];
+  }, [sortBy, departmentSlug, pageSize]);
 
   return (
-    <div className="py-2">
-      <div className="flex items-center justify-between mb-10 flex-wrap gap-6">
-        <div>
-          <p className="text-[11px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-            Quick access to your department resources
-          </p>
-          {departmentName && (
-            <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-neutral-200">
-              {departmentName}
-            </p>
-          )}
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            {departmentName
+              ? `Books in ${departmentName}`
+              : "Department Books"}
+          </h2>
         </div>
-
         <SortFilter
           value={sortBy}
-          onValueChange={(val) => setSortBy(val as any)}
-          options={sortOptions}
+          onValueChange={(val) =>
+            setSortBy(val as "createdAt" | "rating" | "title")
+          }
+          options={[
+            { value: "createdAt", label: "Recently Added" },
+            { value: "rating", label: "Top Rated" },
+            { value: "title", label: "Alphabetical" },
+          ]}
         />
       </div>
 
-      {showSkeleton ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          <BookCardSkeleton count={pageSize} />
-        </div>
-      ) : books.length > 0 ? (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-            {books.map((book: any) => (
-              <BookCard
-                key={book.id}
-                {...book}
-                onClick={() => setSelectedBook(book as BookPreview)}
-              />
-            ))}
-          </div>
+      <PaginatedBookGrid
+        books={books}
+        isLoading={isFetching}
+        totalPages={totalPages}
+        currentPage={page}
+        onPageChange={setPage}
+        onBookClick={(book) => setSelectedBook(book)}
+        pageSize={pageSize}
+        emptyMessage="No books available in this department yet."
+      />
 
-          <Pagination
-            currentPage={page}
-            totalPages={booksResponse?.books?.totalPages || 1}
-            onPageChange={setPage}
-            isLoading={isLoading || isFetching}
-            className="mt-12"
-          />
-        </>
-      ) : (
-        <div className="min-h-144 md:min-h-176 flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-20 rounded-md text-center border border-gray-100 dark:border-neutral-800/50">
-          <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
-            <FiBookOpen className="w-6 h-6 text-gray-300 dark:text-neutral-600" />
-          </div>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-            No books added to your department yet.
-          </p>
-        </div>
-      )}
-
-      {selectedBook && (
-        <BookDetailPanel
-          book={selectedBook}
-          isOpen={!!selectedBook}
-          onClose={() => setSelectedBook(null)}
-        />
-      )}
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
     </div>
   );
 }
