@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
 import { Folder, CreateFolderRequest, Collaborator } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
@@ -18,6 +18,7 @@ export const useGetMeFoldersQuery = (params: any) => {
   return useQuery<PaginatedResponse<Folder>>({
     queryKey: folderKeys.me(params),
     queryFn: () => api.get<PaginatedResponse<Folder>>("/folders/me", { params }),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -25,6 +26,7 @@ export const useGetPublicFoldersQuery = (params: any) => {
   return useQuery<PaginatedResponse<Folder>>({
     queryKey: folderKeys.public(params),
     queryFn: () => api.get<PaginatedResponse<Folder>>("/folders/public", { params }),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -185,7 +187,7 @@ export const useFolderBySlug = (slug: string) => {
 };
 
 export const useFolders = (params: any = {}) => {
-  const { data, isLoading, isFetching, isError, error } = useGetPublicFoldersQuery(params);
+  const { data, isLoading, isFetching, isError, error, isPlaceholderData } = useGetPublicFoldersQuery(params);
   
   return {
     folders: data?.items || [],
@@ -193,6 +195,7 @@ export const useFolders = (params: any = {}) => {
     totalPages: data?.totalPages || 1,
     isLoading,
     isFetching,
+    isPlaceholderData,
     isError,
     error,
   };
