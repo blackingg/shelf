@@ -8,6 +8,15 @@ type GridColumnsByBreakpoint = {
   xl?: number;
 };
 
+/**
+ * A hook that dynamically calculates and updates the number of items to fetch
+ * based on responsive grid breakpoints and the desired number of rows.
+ *
+ * @param columns - An object defining the number of columns for different breakpoints (base, md, lg, xl).
+ * @param rows - The number of rows to calculate the limit for. Defaults to 1.
+ * @param initialLimit - The initial limit used before responsive calculation. Defaults to 10.
+ * @returns The calculated limit (columns * rows).
+ */
 export function useResponsiveLimit(
   columns: GridColumnsByBreakpoint,
   rows: number = 1,
