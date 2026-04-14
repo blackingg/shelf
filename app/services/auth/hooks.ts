@@ -76,6 +76,9 @@ export const useAuthActions = () => {
     register: registerMutation.mutateAsync,
     googleAuth: googleAuthMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
+    isLoginPending: loginMutation.isPending,
+    isRegisterPending: registerMutation.isPending,
+    isGooglePending: googleAuthMutation.isPending,
     isLoading:
       loginMutation.isPending ||
       registerMutation.isPending ||

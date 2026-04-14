@@ -36,7 +36,13 @@ export default function SignupPage() {
     confirmPassword: "",
   });
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
-  const { register: performRegister, googleAuth, isLoading } = useAuthActions();
+  const {
+    register: performRegister,
+    googleAuth,
+    isLoading,
+    isRegisterPending,
+    isGooglePending,
+  } = useAuthActions();
 
   const handleGoogleSuccess = async (tokenResponse: any) => {
     try {
@@ -265,7 +271,8 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoading}
+                isLoading={isRegisterPending}
+                disabled={isLoading}
                 className="py-4"
                 loader={<SpinnerLoader />}
               >
@@ -278,7 +285,8 @@ export default function SignupPage() {
             <SocialLoginButton
               provider="google"
               onClick={handleGoogleAuth}
-              isLoading={isLoading}
+              isLoading={isGooglePending}
+              disabled={isLoading}
               loader={<SpinnerLoader />}
             />
           </Card>

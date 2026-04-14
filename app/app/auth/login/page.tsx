@@ -41,7 +41,13 @@ function LoginPageContent() {
     password: "",
   });
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const { login: performLogin, googleAuth, isLoading } = useAuthActions();
+  const {
+    login: performLogin,
+    googleAuth,
+    isLoading,
+    isLoginPending,
+    isGooglePending,
+  } = useAuthActions();
 
   const redirectParam = searchParams.get("redirect");
   const getPostLoginRoute = (onboardingCompleted: boolean) => {
@@ -222,7 +228,8 @@ function LoginPageContent() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoading}
+                isLoading={isLoginPending}
+                disabled={isLoading}
                 className="py-4"
                 loader={<SpinnerLoader />}
               >
@@ -235,7 +242,8 @@ function LoginPageContent() {
             <SocialLoginButton
               provider="google"
               onClick={handleGoogleAuth}
-              isLoading={isLoading}
+              isLoading={isGooglePending}
+              disabled={isLoading}
               loader={<SpinnerLoader />}
             />
           </Card>
