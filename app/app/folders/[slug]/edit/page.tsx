@@ -26,7 +26,7 @@ import {
   useFolderBySlug,
   useCollaborators,
   useFolderActions,
-} from "@/app/services/folders/hooks";
+} from "@/app/services";
 import { Switch } from "@/app/components/Form/Switch";
 import FolderEditSkeleton from "@/app/components/Skeletons/FolderEditSkeleton";
 

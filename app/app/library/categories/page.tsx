@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
-import { useCategories } from "@/app/services/categories/hooks";
+import { useCategories } from "@/app/services";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
 
 export default function CategoriesPage() {

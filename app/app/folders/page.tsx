@@ -12,8 +12,8 @@ import {
   useMeFolders,
   useFolders,
   useFolderActions,
-} from "@/app/services/folders/hooks";
-import { useBookmarkedFolders } from "@/app/services/bookmarks/hooks";
+  useBookmarkedFolders,
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { Pagination } from "@/app/components/Library/Pagination";
 

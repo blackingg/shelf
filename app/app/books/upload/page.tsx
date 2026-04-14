@@ -19,9 +19,11 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
-import { useBookActions } from "@/app/services/books/hooks";
-import { useDepartments } from "@/app/services/departments/hooks";
-import { useCategories } from "@/app/services/discover/hooks";
+import {
+  useBookActions,
+  useDepartments,
+  useDiscoverCategories,
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
@@ -113,7 +115,7 @@ export default function UploadPage() {
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
   const { categories: categoriesData, isLoading: isLoadingCategories } =
-    useCategories();
+    useDiscoverCategories();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);

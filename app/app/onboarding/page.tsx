@@ -18,7 +18,7 @@ import {
   useGetOnboardingDepartmentsQuery,
   useGetInterestsQuery,
   useOnboarding,
-} from "@/app/services/onboarding/hooks";
+} from "@/app/services";
 
 interface OptionType {
   value: string;

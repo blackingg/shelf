@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiSearch, FiUser } from "react-icons/fi";
-import { useGetUserByUsernameQuery } from "@/app/services/user/hooks";
+import { useGetUserByUsernameQuery } from "@/app/services";
 import { UserMinimal } from "@/app/types/user";
 
 interface UserSearchInputProps {

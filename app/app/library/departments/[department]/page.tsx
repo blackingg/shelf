@@ -8,7 +8,7 @@ import { FiSearch } from "react-icons/fi";
 import {
   useBooksByDepartment,
   useDepartmentBySlug,
-} from "@/app/services/departments/hooks";
+} from "@/app/services";
 import { BookPreview } from "@/app/types/book";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";

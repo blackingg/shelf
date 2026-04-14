@@ -8,7 +8,7 @@ import {
   selectCurrentUser,
   selectIsAuthenticated,
 } from "@/app/store/authSlice";
-import { useGetMeQuery } from "@/app/services/user/hooks";
+import { useGetMeQuery } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = ["/", "/docs/privacy", "/docs/terms"];

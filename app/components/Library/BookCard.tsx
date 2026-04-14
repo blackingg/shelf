@@ -7,7 +7,7 @@ import { FiStar, FiBookmark } from "react-icons/fi";
 import {
   useIsBookBookmarked,
   useBookBookmarkActions,
-} from "@/app/services/bookmarks/hooks";
+} from "@/app/services";
 import { BookCardProps } from "@/app/types/book";
 
 export const BookCard: React.FC<BookCardProps> = ({

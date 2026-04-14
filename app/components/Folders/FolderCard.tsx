@@ -14,7 +14,7 @@ import { Folder, Collaborator } from "@/app/types/folder";
 import {
   useIsFolderBookmarked,
   useBookmarkFolderActions,
-} from "@/app/services/bookmarks/hooks";
+} from "@/app/services";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };

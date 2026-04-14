@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiSearch, FiFolder } from "react-icons/fi";
-import { useFolders } from "@/app/services/folders/hooks";
+import { useFolders } from "@/app/services";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { FolderSortBy, SortOrder } from "@/app/types/common";

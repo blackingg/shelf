@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRatings } from "@/app/services/ratings/hooks";
+import { useRatings } from "@/app/services";
 import { FiTrash2, FiSend } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";

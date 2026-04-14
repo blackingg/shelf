@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 import { UserNotification } from "@/app/types/notification";
-import { useUserNotifications } from "@/app/services/notifications/hooks";
+import { useUserNotifications } from "@/app/services";
 
 export const NotificationPanel: React.FC = () => {
   const router = useRouter();

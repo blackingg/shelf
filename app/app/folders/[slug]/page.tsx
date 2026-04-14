@@ -20,11 +20,9 @@ import { selectCurrentUser } from "@/app/store/authSlice";
 import {
   useFolderBySlug,
   useFolderActions,
-} from "@/app/services/folders/hooks";
-import {
   useIsFolderBookmarked,
   useBookmarkFolderActions,
-} from "@/app/services/bookmarks/hooks";
+} from "@/app/services";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 
 export default function FolderDetailsPage() {

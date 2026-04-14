@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   useMeFolders, 
   useFolderActions 
-} from "@/app/services/folders/hooks";
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 
 export const FolderDropdown: React.FC<{

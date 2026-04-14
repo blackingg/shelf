@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
 import { FiBookOpen } from "react-icons/fi";
-import { useBooksByDepartment } from "@/app/services/departments/hooks";
+import { useBooksByDepartment } from "@/app/services";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";

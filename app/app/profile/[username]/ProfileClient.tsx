@@ -16,17 +16,16 @@ import {
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BookPreview } from "@/app/types/book";
-import { useUser, useUserByUsername } from "@/app/services/user/hooks";
-import { useUserBooks } from "@/app/services/books/hooks";
 import {
+  useUser,
+  useUserByUsername,
+  useUserBooks,
   useUserFolders,
   useMeFolders,
   useFolderActions,
-} from "@/app/services/folders/hooks";
-import {
   useBookmarkedBooks,
   useBookmarkedFolders,
-} from "@/app/services/bookmarks/hooks";
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";

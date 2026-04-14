@@ -18,13 +18,11 @@ import { BookPreview } from "@/app/types/book";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { 
   useIsBookBookmarked, 
-  useBookBookmarkActions 
-} from "@/app/services/bookmarks/hooks";
-import { useBookActions } from "@/app/services/books/hooks";
-import { 
+  useBookBookmarkActions,
+  useBookActions,
   useMyRating, 
   useRatingActions 
-} from "@/app/services/ratings/hooks";
+} from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
 

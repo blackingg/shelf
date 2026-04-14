@@ -13,7 +13,7 @@ import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useAuthActions } from "@/app/services/auth/hooks";
+import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 

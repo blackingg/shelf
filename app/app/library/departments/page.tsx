@@ -7,7 +7,7 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
-import { useDepartments } from "@/app/services/departments/hooks";
+import { useDepartments } from "@/app/services";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 import { motion, AnimatePresence } from "motion/react";

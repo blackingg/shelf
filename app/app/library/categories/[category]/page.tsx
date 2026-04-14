@@ -6,7 +6,7 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiSearch, FiLayers } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
-import { useBooksByCategory } from "@/app/services/categories/hooks";
+import { useBooksByCategory } from "@/app/services";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";

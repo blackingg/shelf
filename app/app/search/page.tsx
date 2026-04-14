@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
 import { FiSearch, FiArrowLeft, FiGrid, FiList } from "react-icons/fi";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { useSearchQuery } from "@/app/services/search/hooks";
+import { useSearchQuery } from "@/app/services";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { PaginatedSearchResults } from "@/app/components/Search/PaginatedSearchResults";
 

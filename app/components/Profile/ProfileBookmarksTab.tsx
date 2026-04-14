@@ -6,7 +6,7 @@ import { BookPreview } from "@/app/types/book";
 import {
   useBookmarkedBooks,
   useBookmarkedFolders,
-} from "@/app/services/bookmarks/hooks";
+} from "@/app/services";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 

@@ -14,9 +14,10 @@ import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
   useBookmarkedBooks,
   useBookmarkedFolders,
-} from "@/app/services/bookmarks/hooks";
-import { useMeFolders, useFolderActions } from "@/app/services/folders/hooks";
-import { useUserBooks } from "@/app/services/books/hooks";
+  useMeFolders,
+  useFolderActions,
+  useUserBooks,
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useAppSelector } from "@/app/store/store";
 import { selectCurrentUser } from "@/app/store/authSlice";

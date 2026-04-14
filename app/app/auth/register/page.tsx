@@ -15,7 +15,7 @@ import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
-import { useAuthActions } from "@/app/services/auth/hooks";
+import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getErrorMessage } from "@/app/helpers/error";
 

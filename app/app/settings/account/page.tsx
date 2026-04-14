@@ -8,7 +8,7 @@ import {
   useUpdateMeMutation,
   useChangePasswordMutation,
   useDeleteMeMutation,
-} from "@/app/services/user/hooks";
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useRouter } from "next/navigation";

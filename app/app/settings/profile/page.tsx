@@ -10,11 +10,9 @@ import { selectCurrentUser, setUser } from "@/app/store/authSlice";
 import {
   useUpdateMeMutation,
   useUploadAvatarMutation,
-} from "@/app/services/user/hooks";
-import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
-} from "@/app/services/onboarding/hooks";
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";

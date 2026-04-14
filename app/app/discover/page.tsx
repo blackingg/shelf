@@ -13,11 +13,11 @@ import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 import {
   useDiscoverFeed,
-  useCategories,
-  useBooksByCategory,
-} from "@/app/services/discover/hooks";
-import { useDepartments } from "@/app/services/departments/hooks";
-import { useFolders } from "@/app/services/folders/hooks";
+  useDiscoverCategories,
+  useDiscoverBooksByCategory,
+  useDepartments,
+  useFolders,
+} from "@/app/services";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
@@ -36,7 +36,7 @@ export default function DiscoverPage() {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
 
-  const { categories } = useCategories();
+  const { categories } = useDiscoverCategories();
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
@@ -89,7 +89,7 @@ export default function DiscoverPage() {
     hasNext: hasMoreCategoryBooks,
     isLoading: isLoadingCategoryBooks,
     isFetching: isFetchingCategoryBooks,
-  } = useBooksByCategory(activeCategory, {
+  } = useDiscoverBooksByCategory(activeCategory, {
     page: 1,
     limit: categoryFetchLimit,
   });

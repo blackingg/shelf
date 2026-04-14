@@ -1,6 +1,6 @@
 "use client";
 
-import { useCategories } from "@/app/services/categories/hooks";
+import { useCategories } from "@/app/services";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
 
 interface CategoryFilterProps {
