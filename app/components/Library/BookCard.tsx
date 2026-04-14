@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiStar, FiBookmark } from "react-icons/fi";
+import { FiStar, FiBookmark, FiMoreVertical } from "react-icons/fi";
+import { useState } from "react";
 import {
   useIsBookBookmarked,
   useBookBookmarkActions,
@@ -18,10 +19,14 @@ export const BookCard: React.FC<BookCardProps> = ({
   rating,
   donor,
   onClick,
+  showActions = false,
+  onEdit,
+  onDelete,
   className = "",
 }) => {
   const { isBookmarked } = useIsBookBookmarked(id || "");
   const { toggleBookmark } = useBookBookmarkActions();
+  const [showMenu, setShowMenu] = useState(false);
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,7 +37,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`group cursor-pointer transition-colors duration-200 ${className}`}
+      className={`group cursor-pointer transition-colors duration-200 ${className} relative`}
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <img
@@ -59,20 +64,73 @@ export const BookCard: React.FC<BookCardProps> = ({
           </div>
         )}
 
-        {id && (
-          <button
-            onClick={handleBookmark}
-            className={`absolute top-2 left-2 p-1.5 rounded-md transition-all duration-200 ${
-              isBookmarked
-                ? "bg-emerald-600 text-white opacity-100"
-                : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-emerald-600"
-            }`}
-          >
-            <FiBookmark
-              className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`}
-            />
-          </button>
-        )}
+        <div className="absolute top-2 left-2 flex items-center space-x-1.5">
+          {id && (
+            <button
+              onClick={handleBookmark}
+              className={`p-1.5 rounded-md transition-all duration-200 ${
+                isBookmarked
+                  ? "bg-emerald-600 text-white opacity-100"
+                  : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-emerald-600"
+              }`}
+            >
+              <FiBookmark
+                className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`}
+              />
+            </button>
+          )}
+
+          {showActions && id && (
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className={`p-1.5 rounded-md transition-all duration-200 ${
+                  showMenu
+                    ? "bg-white text-gray-900 border border-gray-200 opacity-100"
+                    : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-white hover:text-gray-900"
+                }`}
+              >
+                <FiMoreVertical className="w-4 h-4" />
+              </button>
+              {showMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
+                  />
+                  <div className="absolute left-0 mt-1 w-32 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(id);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(id);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm line-clamp-1 mb-0.5">
         {title}

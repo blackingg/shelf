@@ -13,6 +13,8 @@ interface PaginatedBookGridProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   onBookClick: (book: BookPreview) => void;
+  onBookEdit?: (book: BookPreview) => void;
+  onBookDelete?: (book: BookPreview) => void;
   pageSize?: number;
   emptyIcon?: ReactNode;
   emptyTitle?: string;
@@ -29,6 +31,8 @@ export const PaginatedBookGrid: React.FC<PaginatedBookGridProps> = ({
   currentPage,
   onPageChange,
   onBookClick,
+  onBookEdit,
+  onBookDelete,
   pageSize = 10,
   emptyIcon,
   emptyTitle = "No results found",
@@ -50,6 +54,9 @@ export const PaginatedBookGrid: React.FC<PaginatedBookGridProps> = ({
               key={book.id}
               {...book}
               onClick={() => onBookClick(book)}
+              showActions={!!onBookEdit || !!onBookDelete}
+              onEdit={() => onBookEdit?.(book)}
+              onDelete={() => onBookDelete?.(book)}
             />
           ))}
         </div>
