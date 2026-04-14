@@ -123,6 +123,7 @@ export default function DiscoverFoldersPage() {
             currentPage={page}
             onPageChange={setPage}
             onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+            showActions={true}
             pageSize={pageSize}
             emptyMessage="No folders found matching your search."
             className="mt-0"

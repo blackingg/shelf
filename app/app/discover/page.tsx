@@ -158,6 +158,7 @@ export default function DiscoverPage() {
                     {item.type === "folder" ? (
                       <FolderCard
                         folder={item}
+                        showActions={true}
                         onClick={() => router.push(`/app/folders/${item.slug}`)}
                       />
                     ) : (
@@ -304,6 +305,7 @@ export default function DiscoverPage() {
                     <FolderCard
                       key={folder.id}
                       folder={folder}
+                      showActions={true}
                       onClick={() => router.push(`/app/folders/${folder.slug}`)}
                     />
                   ))}
