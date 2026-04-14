@@ -35,6 +35,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility } from "@/app/types/folder";
+import { shareContent } from "@/app/helpers/share";
 
 interface ProfileClientProps {
   username: string;
@@ -139,44 +140,15 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     setShowCreateFolderModal(false);
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    if (!url) return;
+    if (!url || !user) return;
 
-    const shareData = {
-      title: `${user?.fullName} (@${user?.username}) | Shelf`,
-      text: `Check out ${user?.fullName}'s book collections and library on Shelf.`,
+    await shareContent({
+      title: `${user.fullName} (@${user.username}) | Shelf`,
+      text: `Check out ${user.fullName}'s book collections and library on Shelf.`,
       url: url,
-    };
-
-    const copyToClipboard = async () => {
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(url);
-          addNotification("success", "Profile link copied to clipboard!");
-        } else {
-          throw new Error("Clipboard API unavailable");
-        }
-      } catch (err) {
-        try {
-          const textArea = document.createElement("textarea");
-          textArea.value = url;
-          document.body.appendChild(textArea);
-          textArea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textArea);
-          addNotification("success", "Profile link copied to clipboard!");
-        } catch (fallbackErr) {
-          addNotification("error", "Failed to copy link");
-        }
-      }
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData).catch(() => copyToClipboard());
-    } else {
-      copyToClipboard();
-    }
+    });
   };
 
   return (

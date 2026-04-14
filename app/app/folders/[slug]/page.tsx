@@ -24,6 +24,7 @@ import {
   useBookmarkFolderActions,
 } from "@/app/services";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
+import { shareContent } from "@/app/helpers/share";
 
 export default function FolderDetailsPage() {
   const params = useParams();
@@ -46,9 +47,14 @@ export default function FolderDetailsPage() {
 
   const isForbidden = (error as any)?.status === 403;
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    addNotification("success", "Folder link copied to clipboard!");
+  const handleShare = async () => {
+    if (!folder) return;
+    
+    await shareContent({
+      title: folder.name,
+      text: `Check out the "${folder.name}" folder on Shelf.`,
+      url: window.location.href,
+    });
     setShowMenu(false);
   };
 
