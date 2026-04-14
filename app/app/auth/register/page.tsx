@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
-import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { FormInput } from "@/app/components/Form/FormInput";
 import { Button } from "@/app/components/Form/Button";
@@ -17,7 +15,6 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
-import { getErrorMessage } from "@/app/helpers/error";
 
 interface FormData {
   fullName: string;
@@ -37,7 +34,7 @@ export default function SignupPage() {
   });
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
   const {
-    register: performRegister,
+    register,
     googleAuth,
     isLoading,
     isRegisterPending,
@@ -140,7 +137,7 @@ export default function SignupPage() {
     }
 
     try {
-      await performRegister({
+      await register({
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
