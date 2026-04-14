@@ -25,17 +25,34 @@ const BooksTable = ({
   canEdit = false,
 }: BooksTableProps) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setActiveMenuId(null);
+        setMenuPosition(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleMenuToggle = (e: React.MouseEvent<HTMLButtonElement>, bookId: string) => {
+    e.stopPropagation();
+    if (activeMenuId === bookId) {
+      setActiveMenuId(null);
+      setMenuPosition(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + window.scrollY + 4,
+      right: window.innerWidth - rect.right,
+    });
+    setActiveMenuId(bookId);
+  };
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/5">
@@ -105,62 +122,75 @@ const BooksTable = ({
                     {book.pages}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right relative">
+                <td className="px-6 py-4 whitespace-nowrap text-right">
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveMenuId(
-                        activeMenuId === book.id ? null : book.id,
-                      );
-                    }}
+                    onClick={(e) => handleMenuToggle(e, book.id)}
                     className="p-1.5 hover:bg-white dark:hover:bg-neutral-800 rounded-md transition-colors text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-500 border border-transparent hover:border-gray-100 dark:hover:border-white/10"
                   >
                     <FiMoreVertical className="w-4 h-4" />
                   </button>
-
-                  {activeMenuId === book.id && (
-                    <div
-                      ref={menuRef}
-                      className="absolute right-0 top-10 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-md py-1.5 z-[100] text-left shadow-none"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        onClick={() => onBookClick(book.id)}
-                        className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
-                      >
-                        <FiBookOpen className="w-3.5 h-3.5" />
-                        <span>Read Book</span>
-                      </button>
-                      <Link
-                        href={`/app/books/${book.slug}`}
-                        className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
-                      >
-                        <FiInfo className="w-3.5 h-3.5" />
-                        <span>View Details</span>
-                      </Link>
-                      {canEdit && onRemoveBook && (
-                        <>
-                          <div className="border-t border-gray-50 dark:border-white/5 my-1" />
-                          <button
-                            onClick={() => {
-                              onRemoveBook(book.id);
-                              setActiveMenuId(null);
-                            }}
-                            className="w-full px-4 py-2 text-[12px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
-                          >
-                            <FiTrash2 className="w-3.5 h-3.5" />
-                            <span>Remove from Folder</span>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {activeMenuId && menuPosition && (
+        <div
+          ref={menuRef}
+          style={{
+            position: "fixed",
+            top: menuPosition.top,
+            right: menuPosition.right,
+          }}
+          className="w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-md py-1.5 z-[200] shadow-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {(() => {
+            const book = books.find((b) => b.id === activeMenuId);
+            if (!book) return null;
+            return (
+              <>
+                <button
+                  onClick={() => {
+                    onBookClick(book.id);
+                    setActiveMenuId(null);
+                  }}
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                >
+                  <FiBookOpen className="w-3.5 h-3.5" />
+                  <span>Read Book</span>
+                </button>
+                <Link
+                  href={`/app/books/${book.slug}`}
+                  onClick={() => setActiveMenuId(null)}
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                >
+                  <FiInfo className="w-3.5 h-3.5" />
+                  <span>View Details</span>
+                </Link>
+                {canEdit && onRemoveBook && (
+                  <>
+                    <div className="border-t border-gray-50 dark:border-white/5 my-1" />
+                    <button
+                      onClick={() => {
+                        onRemoveBook(book.id);
+                        setActiveMenuId(null);
+                        setMenuPosition(null);
+                      }}
+                      className="w-full px-4 py-2 text-[12px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
+                    >
+                      <FiTrash2 className="w-3.5 h-3.5" />
+                      <span>Remove from Folder</span>
+                    </button>
+                  </>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      )}
     </div>
   );
 };
