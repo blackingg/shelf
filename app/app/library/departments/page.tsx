@@ -18,13 +18,10 @@ export default function DepartmentsPage() {
   const user = useSelector(selectCurrentUser);
 
   const { departments: allDepartments, isLoading } = useDepartments(
-    user?.school?.id ? { school_id: user.school.id } : undefined,
+    user?.school?.id ? { school_id: user.school.id } : {},
   );
 
   const userDepartment = user?.department?.name || null;
-  const userDepartmentSlug = allDepartments.find(
-    (d: any) => d.id === user?.department?.id,
-  )?.slug;
 
   const [viewDepartments, setViewDepartments] = useState(false);
   const departmentSkeletonCount = useResponsiveLimit({ base: 2, md: 3, lg: 5 }, 4, 10);
@@ -100,11 +97,10 @@ export default function DepartmentsPage() {
             )}
           </AnimatePresence>
 
-          {userDepartment !== null && userDepartmentSlug && (
+          {userDepartment !== null && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
               <UserDepartmentBooks
-                departmentSlug={userDepartmentSlug}
-                departmentName={userDepartment}
+                departmentSlug={userDepartment}
               />
             </div>
           )}

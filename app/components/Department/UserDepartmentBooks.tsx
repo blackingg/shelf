@@ -10,12 +10,10 @@ import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 interface UserDepartmentBooksProps {
   departmentSlug: string;
-  departmentName?: string;
 }
 
 export default function UserDepartmentBooks({
   departmentSlug,
-  departmentName,
 }: UserDepartmentBooksProps) {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [sortBy, setSortBy] = useState<"createdAt" | "rating" | "title">(
@@ -44,9 +42,7 @@ export default function UserDepartmentBooks({
         <div className="flex items-center gap-3">
           <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            {departmentName
-              ? `Books in ${departmentName}`
-              : "Department Books"}
+            {departmentSlug ? `Books in ${departmentSlug}` : "Department Books"}
           </h2>
         </div>
         <SortFilter
