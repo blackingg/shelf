@@ -6,7 +6,8 @@ import { PaginatedResponse } from "../../types/common";
 
 export const departmentKeys = {
   all: ["departments"] as const,
-  detail: (slug: string) => [...departmentKeys.all, "detail", slug] as const,
+  detail: (slug: string | null) =>
+    [...departmentKeys.all, "detail", slug] as const,
 };
 
 interface DepartmentBooksResponse {
@@ -23,7 +24,7 @@ export const useGetDepartmentsQuery = (params?: any) => {
   });
 };
 
-export const useGetDepartmentBySlugQuery = (slug: string) => {
+export const useGetDepartmentBySlugQuery = (slug: string | null) => {
   return useQuery<Department>({
     queryKey: departmentKeys.detail(slug),
     queryFn: () => api.get<Department>(`/departments/${slug}`),
@@ -38,7 +39,10 @@ export const useDepartments = (params?: any) => {
   return { departments, isLoading, isFetching, error };
 };
 
-export const useGetBooksByDepartmentQuery = (slug: string, params: any) => {
+export const useGetBooksByDepartmentQuery = (
+  slug: string | null,
+  params: any,
+) => {
   return useQuery<DepartmentBooksResponse>({
     queryKey: [...departmentKeys.all, "books", slug, params],
     queryFn: () => api.get<DepartmentBooksResponse>(`/departments/${slug}/books`, { params }),
@@ -47,7 +51,7 @@ export const useGetBooksByDepartmentQuery = (slug: string, params: any) => {
   });
 };
 
-export const useBooksByDepartment = (slug: string, params: any) => {
+export const useBooksByDepartment = (slug: string | null, params: any) => {
   const { data, isLoading, isFetching, error } = useGetBooksByDepartmentQuery(slug, params);
   
   return {
@@ -61,7 +65,7 @@ export const useBooksByDepartment = (slug: string, params: any) => {
   };
 };
 
-export const useDepartmentBySlug = (slug: string) => {
+export const useDepartmentBySlug = (slug: string | null) => {
   const { data: department, isLoading, error } = useGetDepartmentBySlugQuery(slug);
   return { department, isLoading, error };
 };

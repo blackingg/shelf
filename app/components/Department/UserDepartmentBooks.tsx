@@ -9,11 +9,13 @@ import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 interface UserDepartmentBooksProps {
-  departmentSlug: string;
+  departmentSlug: string | null;
+  departmentName?: string;
 }
 
 export default function UserDepartmentBooks({
   departmentSlug,
+  departmentName,
 }: UserDepartmentBooksProps) {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [sortBy, setSortBy] = useState<"createdAt" | "rating" | "title">(
@@ -42,7 +44,7 @@ export default function UserDepartmentBooks({
         <div className="flex items-center gap-3">
           <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            {departmentSlug ? `Books in ${departmentSlug}` : "Department Books"}
+            {departmentName ? `Books in ${departmentName}` : "Department Books"}
           </h2>
         </div>
         <SortFilter
@@ -60,7 +62,7 @@ export default function UserDepartmentBooks({
 
       <PaginatedBookGrid
         books={books}
-        isLoading={isFetching}
+        isLoading={isFetching || !departmentSlug}
         totalPages={totalPages}
         currentPage={page}
         onPageChange={setPage}
