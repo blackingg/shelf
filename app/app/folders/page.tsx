@@ -234,6 +234,7 @@ export default function FoldersPage() {
         confirmText="Yes, Delete"
         cancelText="Cancel"
         isDanger={true}
+        isLoading={isDeleting}
       />
     </>
   );

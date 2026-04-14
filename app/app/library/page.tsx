@@ -95,8 +95,8 @@ export default function LibraryPage() {
     enabled: activeTab === "folders",
   });
 
-  const { actions: folderActions } = useFolderActions();
-  const { actions: bookActions } = useBookActions();
+  const { actions: folderActions, isDeleting: isDeletingFolder } = useFolderActions();
+  const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
   // ── Uploads queries ──
   const {
@@ -432,6 +432,7 @@ export default function LibraryPage() {
         confirmText="Yes, Delete"
         cancelText="Cancel"
         isDanger={true}
+        isLoading={isDeletingFolder}
       />
 
       <ConfirmModal
@@ -453,6 +454,7 @@ export default function LibraryPage() {
         confirmText="Yes, Delete"
         cancelText="Cancel"
         isDanger={true}
+        isLoading={isDeletingBook}
       />
     </>
   );
