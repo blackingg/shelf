@@ -9,7 +9,7 @@ import {
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { useDepartments } from "@/app/services";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 

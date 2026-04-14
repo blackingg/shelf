@@ -4,7 +4,7 @@ import { FiTrash2, FiSend } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 
 interface BookReviewsProps {
   bookId: string;

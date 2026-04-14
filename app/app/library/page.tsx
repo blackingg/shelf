@@ -19,8 +19,7 @@ import {
   useUserBooks,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useAppSelector } from "@/app/store/store";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { useAppSelector, selectCurrentUser } from "@/app/store";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 

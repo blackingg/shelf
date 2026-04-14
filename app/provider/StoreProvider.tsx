@@ -1,7 +1,7 @@
 "use client";
 
 import { Provider } from "react-redux";
-import { store } from "../store/store";
+import { store } from "@/app/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { NotificationProvider } from "../context/NotificationContext";
 import TokenRefresher from "../components/Auth/TokenRefresher";

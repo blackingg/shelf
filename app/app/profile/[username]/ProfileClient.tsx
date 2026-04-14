@@ -32,7 +32,7 @@ import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTab";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility } from "@/app/types/folder";
 

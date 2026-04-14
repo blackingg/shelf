@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, setUser } from "@/app/store/authSlice";
+import { selectCurrentUser, setUser } from "@/app/store";
 import {
   useUpdateMeMutation,
   useUploadAvatarMutation,

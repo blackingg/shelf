@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
 import {
   useIsFolderBookmarked,

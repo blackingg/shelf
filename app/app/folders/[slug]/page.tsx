@@ -16,7 +16,7 @@ import {
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import {
   useFolderBySlug,
   useFolderActions,

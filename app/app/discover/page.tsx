@@ -23,7 +23,7 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 type RecommendedItem =

@@ -11,8 +11,12 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
-import { useAppDispatch, useAppSelector } from "@/app/store/store";
-import { setOnboardingStatus, selectCurrentUser } from "@/app/store/authSlice";
+import {
+  useAppDispatch,
+  useAppSelector,
+  setOnboardingStatus,
+  selectCurrentUser,
+} from "@/app/store";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,

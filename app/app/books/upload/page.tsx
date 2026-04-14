@@ -18,7 +18,7 @@ import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import {
   useBookActions,
   useDepartments,

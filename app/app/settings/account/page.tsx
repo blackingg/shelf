@@ -12,8 +12,7 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useRouter } from "next/navigation";
-import { selectCurrentUser, logout } from "@/app/store/authSlice";
-import { useAppDispatch } from "@/app/store/store";
+import { selectCurrentUser, logout, useAppDispatch } from "@/app/store";
 
 export default function AccountSettingsPage() {
   const router = useRouter();

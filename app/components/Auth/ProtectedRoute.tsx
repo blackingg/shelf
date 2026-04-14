@@ -7,7 +7,7 @@ import {
   logout,
   selectCurrentUser,
   selectIsAuthenticated,
-} from "@/app/store/authSlice";
+} from "@/app/store";
 import { useGetMeQuery } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
