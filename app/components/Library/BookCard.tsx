@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiStar, FiBookmark, FiMoreVertical } from "react-icons/fi";
+import { FiStar, FiBookmark, FiMoreVertical, FiShare2 } from "react-icons/fi";
+import { shareContent } from "@/app/helpers/share";
 import { useState } from "react";
 import {
   useIsBookBookmarked,
@@ -56,26 +57,27 @@ export const BookCard: React.FC<BookCardProps> = ({
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
 
         {rating && (
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1">
+          <div className="absolute top-2 left-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-10">
+            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
               <FiStar className="w-3 h-3 text-yellow-400 fill-yellow-400" />
               <span className="text-xs text-white font-medium">{rating}</span>
             </div>
           </div>
         )}
 
-        <div className="absolute top-2 left-2 flex items-center space-x-1.5">
+        <div className="absolute top-1.5 right-1.5 flex items-center space-x-1.5 z-20">
           {id && (
             <button
               onClick={handleBookmark}
               className={`p-1.5 rounded-md transition-all duration-200 ${
                 isBookmarked
-                  ? "bg-emerald-600 text-white opacity-100"
-                  : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-emerald-600"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
               }`}
+              title={isBookmarked ? "Remove Bookmark" : "Bookmark Book"}
             >
               <FiBookmark
-                className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`}
+                className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
               />
             </button>
           )}
@@ -87,13 +89,9 @@ export const BookCard: React.FC<BookCardProps> = ({
                   e.stopPropagation();
                   setShowMenu(!showMenu);
                 }}
-                className={`p-1.5 rounded-md transition-all duration-200 ${
-                  showMenu
-                    ? "bg-white text-gray-900 border border-gray-200 opacity-100"
-                    : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-white hover:text-gray-900"
-                }`}
+                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
               >
-                <FiMoreVertical className="w-4 h-4" />
+                <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
               </button>
               {showMenu && (
                 <>
@@ -104,7 +102,7 @@ export const BookCard: React.FC<BookCardProps> = ({
                       setShowMenu(false);
                     }}
                   />
-                  <div className="absolute left-0 mt-1 w-32 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                  <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -125,6 +123,22 @@ export const BookCard: React.FC<BookCardProps> = ({
                     >
                       Delete
                     </button>
+                    {/* <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!id) return;
+                        await shareContent({
+                          title: title,
+                          text: `Check out "${title}" by ${author} on Shelf.`,
+                          url: `${window.location.origin}/app/books/${id}`,
+                        });
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                    >
+                      <FiShare2 className="w-3 h-3" />
+                      <span>Share</span>
+                    </button> */}
                   </div>
                 </>
               )}
