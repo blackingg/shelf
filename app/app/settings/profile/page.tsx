@@ -141,59 +141,60 @@ export default function SettingsProfilePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
           Profile Settings
         </h1>
-        <p className="text-gray-500 dark:text-neutral-400 mt-1">
-          Update your photo and academic details here.
+        <p className="text-gray-500 dark:text-neutral-400 mt-1.5 md:text-lg">
+          Update your personal details and academic affiliation.
         </p>
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
-        <div className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-4">
-                Profile Photo
-              </label>
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-900/40 overflow-hidden border border-gray-200 dark:border-neutral-700">
-                    {user?.avatar ? (
-                      <img
-                        src={user.avatar}
-                        alt={formData.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-2xl font-medium text-emerald-600 dark:text-emerald-400 uppercase">
-                        {user?.fullName?.charAt(0) ||
-                          user?.username?.charAt(0) ||
-                          "?"}
-                      </div>
-                    )}
-                  </div>
-                  <label
-                    htmlFor="avatar-upload"
-                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-white dark:bg-neutral-800 rounded-full border border-gray-200 dark:border-neutral-700 shadow-sm flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                  >
-                    <input
-                      type="file"
-                      id="avatar-upload"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      disabled={uploadAvatar.isPending}
+        <div className="p-5 md:p-8 lg:p-10">
+          <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
+              <div className="relative group">
+                <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={formData.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    {uploadAvatar.isPending ? (
-                      <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
-                    ) : (
-                      <FiCamera className="w-4 h-4" />
-                    )}
-                  </label>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                      {user?.fullName?.charAt(0) ||
+                        user?.username?.charAt(0) ||
+                        "?"}
+                    </div>
+                  )}
                 </div>
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-600 dark:bg-emerald-500 rounded-xl border-4 border-white dark:border-neutral-900 shadow-lg flex items-center justify-center text-white hover:bg-emerald-700 dark:hover:bg-emerald-400 transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95"
+                >
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    disabled={uploadAvatar.isPending}
+                  />
+                  {uploadAvatar.isPending ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <FiCamera className="w-5 h-5" />
+                  )}
+                </label>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">Profile Photo</h4>
+                <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-xs">
+                  Upload a professional photo to help others recognize you. JPG, GIF or PNG. Max size 2MB.
+                </p>
               </div>
             </div>
 
@@ -276,12 +277,12 @@ export default function SettingsProfilePage() {
               />
             </div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 flex justify-end">
+            <div className="pt-8 border-t border-gray-100 dark:border-neutral-800/50 flex justify-end">
               <Button
                 type="submit"
                 isLoading={updateMe.isPending}
                 disabled={!isDirty}
-                className="w-auto px-8"
+                className="w-full sm:w-auto px-10 py-3 text-base font-bold rounded-xl shadow-lg shadow-emerald-900/10 active:scale-95 transition-all"
               >
                 Save Changes
               </Button>

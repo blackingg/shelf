@@ -145,23 +145,23 @@ export default function AccountSettingsPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <div className="p-2.5 md:p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
                     <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
                       Email Address
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-neutral-400">
+                    <div className="text-sm text-gray-500 dark:text-neutral-400 truncate">
                       {user?.email}
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={handleStartEditingEmail}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-md transition-colors"
+                  className="px-3 md:px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-all duration-200 flex-shrink-0"
                 >
                   Edit
                 </button>
@@ -252,13 +252,13 @@ export default function AccountSettingsPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <div className="p-2.5 md:p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
                     <FiLock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
                       Password
                     </div>
                     <div className="text-sm text-gray-500 dark:text-neutral-400">
@@ -268,7 +268,7 @@ export default function AccountSettingsPage() {
                 </div>
                 <button
                   onClick={() => setIsEditingPassword(true)}
-                  className="px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-md transition-colors"
+                  className="px-3 md:px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-all duration-200 flex-shrink-0"
                 >
                   Change
                 </button>
@@ -278,22 +278,22 @@ export default function AccountSettingsPage() {
         </section>
 
         <section>
-          <h3 className="text-lg font-semibold text-red-600 dark:text-red-500 mb-4">
-            Danger Zone
+          <h3 className="text-lg font-bold text-red-600 dark:text-red-500 mb-4 flex items-center space-x-2">
+            <span>Danger Zone</span>
           </h3>
-          <div className="bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/20 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="font-medium text-red-900 dark:text-red-400">
+          <div className="bg-red-50/50 dark:bg-red-950/10 rounded-2xl border border-red-100 dark:border-red-900/20 p-5 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <div className="font-bold text-red-900 dark:text-red-400">
                 Delete Account
               </div>
-              <div className="text-sm text-red-600/80 dark:text-red-400/70 mt-1">
-                Permanently remove your account and all associated data.
+              <div className="text-sm text-red-600/80 dark:text-red-400/70 max-w-md">
+                Permanently remove your account and all associated data. This action cannot be undone.
               </div>
             </div>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
               disabled={deleteMe.isPending}
-              className="px-5 py-2.5 bg-white dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors shadow-sm whitespace-nowrap text-sm disabled:opacity-50"
+              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all duration-200 shadow-sm shadow-red-200 dark:shadow-none whitespace-nowrap text-sm disabled:opacity-50 active:scale-[0.98]"
             >
               {deleteMe.isPending ? "Deleting..." : "Delete Account"}
             </button>
