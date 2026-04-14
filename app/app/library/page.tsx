@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
@@ -9,6 +9,7 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { Pagination } from "@/app/components/Library/Pagination";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 import { BookPreview } from "@/app/types/book";
 import { Folder, FolderVisibility } from "@/app/types/folder";
 import {
@@ -17,6 +18,7 @@ import {
   useMeFolders,
   useFolderActions,
   useUserBooks,
+  useBookActions,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useAppSelector, selectCurrentUser } from "@/app/store";
@@ -33,6 +35,8 @@ export default function LibraryPage() {
 
   // Uploads state
   const [uploadPage, setUploadPage] = useState(1);
+  const [showBookDeleteModal, setShowBookDeleteModal] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState<BookPreview | null>(null);
 
   // Bookmarks state
   const [bookmarkPage, setBookmarkPage] = useState(1);
@@ -47,7 +51,14 @@ export default function LibraryPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
 
-  const pageSize = 8;
+  const pageSize = useResponsiveLimit({ base: 2, md: 4, lg: 5 }, 2, 8);
+
+  useEffect(() => {
+    setUploadPage(1);
+    setBookmarkPage(1);
+    setBookmarkFolderPage(1);
+    setFolderPage(1);
+  }, [pageSize]);
 
   const {
     books: bookmarkedBooks,
@@ -85,6 +96,7 @@ export default function LibraryPage() {
   });
 
   const { actions: folderActions } = useFolderActions();
+  const { actions: bookActions } = useBookActions();
 
   // ── Uploads queries ──
   const {
@@ -133,6 +145,28 @@ export default function LibraryPage() {
     }
     setShowDeleteModal(false);
     setFolderToDelete(null);
+  };
+
+  const handleBookEdit = (book: BookPreview) => {
+    router.push(`/app/books/${book.slug}/edit`);
+  };
+
+  const handleBookDelete = (book: BookPreview) => {
+    setBookToDelete(book);
+    setShowBookDeleteModal(true);
+  };
+
+  const confirmBookDelete = async () => {
+    if (bookToDelete) {
+      try {
+        await bookActions.deleteBook(bookToDelete.id);
+        addNotification("success", "Resource deleted successfully");
+      } catch (err: any) {
+        // handled in actions
+      }
+    }
+    setShowBookDeleteModal(false);
+    setBookToDelete(null);
   };
 
   // ── Tabs config ──
@@ -260,7 +294,9 @@ export default function LibraryPage() {
                 totalPages={bookmarkedFoldersTotalPages}
                 currentPage={bookmarkFolderPage}
                 onPageChange={setBookmarkFolderPage}
-                onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+                onFolderClick={(folder) =>
+                  router.push(`/app/folders/${folder.slug}`)
+                }
                 pageSize={pageSize}
                 gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 emptyTitle="No bookmarked folders"
@@ -341,6 +377,8 @@ export default function LibraryPage() {
               currentPage={uploadPage}
               onPageChange={setUploadPage}
               onBookClick={(book) => setSelectedBook(book)}
+              onBookEdit={handleBookEdit}
+              onBookDelete={handleBookDelete}
               pageSize={pageSize}
               emptyTitle="No Donated Books"
               emptyMessage="Books you upload and donate to the community will appear here."
@@ -388,6 +426,27 @@ export default function LibraryPage() {
                 &quot;{folderToDelete.name}&quot;
               </span>
               ?
+            </p>
+          )
+        }
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDanger={true}
+      />
+
+      <ConfirmModal
+        isOpen={showBookDeleteModal}
+        onClose={() => setShowBookDeleteModal(false)}
+        onConfirm={confirmBookDelete}
+        title="Delete Resource?"
+        message={
+          bookToDelete && (
+            <p className="text-gray-600 text-left">
+              Are you sure you want to delete{" "}
+              <span className="font-bold text-gray-600 dark:text-gray-300">
+                &quot;{bookToDelete.title}&quot;
+              </span>
+              ? This action cannot be undone.
             </p>
           )
         }
