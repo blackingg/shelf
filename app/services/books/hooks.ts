@@ -54,6 +54,8 @@ export const useCreateBookMutation = () => {
     mutationFn: (data: FormData) => api.post<Book>("/books/upload", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bookKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
@@ -66,6 +68,8 @@ export const useUpdateBookMutation = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: bookKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: bookKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
@@ -81,6 +85,8 @@ export const useUpdateBookCoverMutation = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: bookKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: bookKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
@@ -96,6 +102,20 @@ export const useUpdateBookFileMutation = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: bookKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: bookKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+};
+
+export const useDeleteBookMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete<{ success: boolean; message: string; deletedId: string }>(`/books/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bookKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
@@ -155,6 +175,7 @@ export const useBookActions = () => {
   const updateMutation = useUpdateBookMutation();
   const updateCoverMutation = useUpdateBookCoverMutation();
   const updateFileMutation = useUpdateBookFileMutation();
+  const deleteMutation = useDeleteBookMutation();
   
   return {
     actions: {
@@ -190,10 +211,19 @@ export const useBookActions = () => {
           throw err;
         }
       },
+      deleteBook: async (id: string) => {
+        try {
+          return await deleteMutation.mutateAsync(id);
+        } catch (err: any) {
+          addNotification("error", err.message || "Failed to delete book");
+          throw err;
+        }
+      },
     },
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isUpdatingCover: updateCoverMutation.isPending,
     isUpdatingFile: updateFileMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 };
