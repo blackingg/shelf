@@ -72,32 +72,6 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
   });
 };
 
-export const useGetUserBooksQuery = (params: {
-  username: string;
-  page?: number;
-  limit?: number;
-}, options?: any) => {
-  const { username, ...queryParams } = params;
-  return useQuery<PaginatedResponse<Book>>({
-    queryKey: [...userKeys.books(username), queryParams],
-    queryFn: () => api.get<PaginatedResponse<Book>>(`/users/${username}/books`, { params: queryParams }),
-    enabled: !!username && (options?.enabled ?? true),
-    ...options,
-  });
-};
-
-export const useGetUserFoldersQuery = (params: {
-  username: string;
-  page?: number;
-  limit?: number;
-}) => {
-  const { username, ...queryParams } = params;
-  return useQuery<PaginatedResponse<Folder>>({
-    queryKey: [...userKeys.folders(username), queryParams],
-    queryFn: () => api.get<PaginatedResponse<Folder>>(`/users/${username}/folders`, { params: queryParams }),
-    enabled: !!username,
-  });
-};
 
 export const useUser = () => {
   const { addNotification } = useNotifications();

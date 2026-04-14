@@ -26,7 +26,7 @@ export const useGetDiscoverFeedQuery = () => {
   });
 };
 
-export const useGetCategoriesQuery = () => {
+export const useGetDiscoverCategoriesQuery = () => {
   return useQuery<Category[]>({
     queryKey: discoverKeys.categories(),
     queryFn: () => api.get<Category[]>("/categories"),
@@ -35,7 +35,7 @@ export const useGetCategoriesQuery = () => {
   });
 };
 
-export const useGetBooksByCategoryQuery = (slug: string, params?: any) => {
+export const useGetDiscoverBooksByCategoryQuery = (slug: string, params?: any) => {
   return useQuery<CategoryBooksResponse>({
     queryKey: discoverKeys.categoryBooks(slug, params),
     queryFn: () => api.get<CategoryBooksResponse>(`/categories/${slug}/books`, { params }),
@@ -55,8 +55,8 @@ export const useDiscoverFeed = () => {
   };
 };
 
-export const useCategories = () => {
-  const { data: categories, isLoading } = useGetCategoriesQuery();
+export const useDiscoverCategories = () => {
+  const { data: categories, isLoading } = useGetDiscoverCategoriesQuery();
   
   return {
     categories: categories || [],
@@ -64,8 +64,8 @@ export const useCategories = () => {
   };
 };
 
-export const useBooksByCategory = (slug: string, params?: any) => {
-  const { data, isLoading, isFetching, error } = useGetBooksByCategoryQuery(slug, params);
+export const useDiscoverBooksByCategory = (slug: string, params?: any) => {
+  const { data, isLoading, isFetching, error } = useGetDiscoverBooksByCategoryQuery(slug, params);
   
   return {
     books: data?.books?.items || [],
