@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/app/store/store";
-import { selectIsAuthenticated } from "@/app/store/authSlice";
+import { useAppSelector, selectIsAuthenticated } from "@/app/store";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   FiBook,

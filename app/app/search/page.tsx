@@ -4,21 +4,10 @@ import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
 import { FiSearch, FiArrowLeft, FiGrid, FiList } from "react-icons/fi";
-import { BookCard, BookCardSkeleton } from "@/app/components/Library/BookCard";
-import {
-  FolderCard,
-  FolderCardSkeleton,
-} from "@/app/components/Folders/FolderCard";
-import {
-  ProfileCard,
-  ProfileCardSkeleton,
-} from "@/app/components/Search/ProfileCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { useSearchQuery } from "@/app/store/api/searchApi";
-import { Pagination } from "@/app/components/Library/Pagination";
+import { useSearchQuery } from "@/app/services";
 import { SortFilter } from "@/app/components/Library/SortFilter";
-import { SearchResultItem } from "@/app/types/search";
-import { SearchList } from "@/app/components/Search/SearchList";
+import { PaginatedSearchResults } from "@/app/components/Search/PaginatedSearchResults";
 
 const searchTypeOptions = [
   { value: "all", label: "All" },
@@ -51,37 +40,15 @@ function SearchContent() {
     {
       q: query,
       page,
-      pageSize,
+      limit: pageSize,
       type: filterType === "all" ? undefined : filterType,
     },
-    { skip: !query },
+    { enabled: !!query },
   );
 
   const items = searchResponse?.items || [];
   const totalPages = searchResponse?.totalPages || 1;
   const totalResults = searchResponse?.total || 0;
-
-  const handleBookClick = (book: BookPreview) => {
-    setSelectedBook(book);
-  };
-
-  const handleFolderClick = (slug: string) => {
-    router.push(`/app/folders/${slug}`);
-  };
-
-  const renderGridSkeleton = () => {
-    if (filterType === "book") return <BookCardSkeleton count={10} />;
-    if (filterType === "folder") return <FolderCardSkeleton count={10} />;
-    if (filterType === "user") return <ProfileCardSkeleton count={10} />;
-
-    return (
-      <>
-        <BookCardSkeleton count={4} />
-        <FolderCardSkeleton count={3} />
-        <ProfileCardSkeleton count={3} />
-      </>
-    );
-  };
 
   if (!query) {
     return (
@@ -128,7 +95,6 @@ function SearchContent() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* View Toggle */}
               <div className="flex items-center bg-gray-50 dark:bg-neutral-800/50 p-1 rounded-md border border-gray-100 dark:border-neutral-800">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -165,141 +131,34 @@ function SearchContent() {
             />
           </div>
 
-          {isLoading || isFetching ? (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-                  : "flex flex-col border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden"
-              }
-            >
-              {viewMode === "grid"
-                ? renderGridSkeleton()
-                : Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-4 py-4 px-6 animate-pulse border-b border-gray-50 dark:border-neutral-800/50 last:border-0"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-gray-200 dark:bg-neutral-700" />
-                      <div className="flex-1 h-4 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
-                      <div className="hidden sm:block w-24 h-3 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
-                    </div>
-                  ))}
-            </div>
-          ) : items.length > 0 ? (
-            <>
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-                  {items.map((item: SearchResultItem, idx: number) => {
-                    if (item.type === "book") {
-                      return (
-                        <BookCard
-                          key={`grid-book-${item.data.id}-${idx}`}
-                          {...(item.data as BookPreview)}
-                          onClick={() =>
-                            handleBookClick(item.data as BookPreview)
-                          }
-                        />
-                      );
-                    } else if (item.type === "folder") {
-                      return (
-                        <FolderCard
-                          key={`grid-folder-${item.data.id}-${idx}`}
-                          folder={item.data}
-                          onClick={() => handleFolderClick(item.data.slug)}
-                        />
-                      );
-                    } else if (item.type === "user") {
-                      return (
-                        <ProfileCard
-                          key={`grid-user-${item.data.id}-${idx}`}
-                          user={item.data}
-                          onClick={() =>
-                            router.push(`/app/profile/${item.data.username}`)
-                          }
-                        />
-                      );
-                    }
-
-                    return null;
-                  })}
-                </div>
-              ) : (
-                <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden">
-                  <SearchList
-                    items={items}
-                    onBookClick={(item: SearchResultItem) =>
-                      handleBookClick(item.data as BookPreview)
-                    }
-                    onFolderClick={handleFolderClick}
-                    onUserClick={(username) =>
-                      router.push(`/app/profile/${username}`)
-                    }
-                  />
-                </div>
-              )}
-
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-                isLoading={isFetching}
-                className="mt-12"
-              />
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-              <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6 border border-gray-100 dark:border-neutral-800">
-                <FiSearch className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
-              </div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                No results found
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium leading-relaxed">
-                We couldn&apos;t find any matches for &quot;{query}&quot;. Try
-                broadening your keywords.
-              </p>
-            </div>
-          )}
+          <PaginatedSearchResults
+            items={items}
+            isLoading={isFetching}
+            totalPages={totalPages}
+            currentPage={page}
+            onPageChange={setPage}
+            viewMode={viewMode}
+            onBookClick={(book) => setSelectedBook(book)}
+            onFolderClick={(slug) => router.push(`/app/folders/${slug}`)}
+            onUserClick={(username) => router.push(`/app/profile/${username}`)}
+            filterType={filterType}
+            pageSize={pageSize}
+          />
         </div>
       </main>
 
-      {selectedBook && (
-        <BookDetailPanel
-          book={selectedBook}
-          isOpen={!!selectedBook}
-          onClose={() => setSelectedBook(null)}
-        />
-      )}
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
     </>
   );
 }
 
 export default function SearchPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
-          <div className="p-4 md:p-8 animate-pulse">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-9 h-9 bg-gray-100 dark:bg-neutral-800 rounded-md" />
-              <div className="h-5 w-40 bg-gray-100 dark:bg-neutral-800 rounded" />
-            </div>
-            <div className="flex flex-col gap-0 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-4 py-4 px-6 border-b border-gray-50 dark:border-neutral-800/50 last:border-0"
-                >
-                  <div className="w-2 h-2 rounded-full bg-gray-200 dark:bg-neutral-700" />
-                  <div className="flex-1 h-4 bg-gray-100 dark:bg-neutral-800 rounded-sm" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-      }
-    >
+    <Suspense>
       <SearchContent />
     </Suspense>
   );

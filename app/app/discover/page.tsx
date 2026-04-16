@@ -11,17 +11,20 @@ import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { FiBook } from "react-icons/fi";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
-import { useGetDiscoverFeedQuery } from "@/app/store/api/recommendationsApi";
-import { useGetBooksByCategoryQuery } from "@/app/store/api/categoriesApi";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
-import { useGetPublicFoldersQuery } from "@/app/store/api/foldersApi";
+import {
+  useDiscoverFeed,
+  useDiscoverCategories,
+  useDiscoverBooksByCategory,
+  useDepartments,
+  useFolders,
+} from "@/app/services";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { selectCurrentUser } from "@/app/store";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -31,55 +34,39 @@ export default function DiscoverPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [categoryFetchLimit, setCategoryFetchLimit] = useState(10);
-  const [departmentDisplayLimit, setDepartmentDisplayLimit] = useState(8);
-  const [publicFoldersFetchLimit, setPublicFoldersFetchLimit] = useState(8);
+  const [activeCategory, setActiveCategory] = useState<string>("");
+
+  const { categories } = useDiscoverCategories();
 
   useEffect(() => {
-    const stopCategoryWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 5 },
-      setCategoryFetchLimit,
-      2,
-    );
+    if (categories.length > 0 && !activeCategory) {
+      setActiveCategory(categories[0].slug);
+    }
+  }, [categories, activeCategory]);
+  const categoryFetchLimit = useResponsiveLimit({ base: 2, md: 3, lg: 5 }, 2, 10);
+  const departmentDisplayLimit = useResponsiveLimit({ base: 2, md: 3, lg: 4 }, 2, 8);
+  const publicFoldersFetchLimit = useResponsiveLimit({ base: 2, md: 3, lg: 4 }, 2, 8);
 
-    const stopDepartmentWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 4 },
-      setDepartmentDisplayLimit,
-      2,
-    );
-
-    const stopPublicFoldersWatch = watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 4 },
-      setPublicFoldersFetchLimit,
-      2,
-    );
-
-    return () => {
-      stopCategoryWatch();
-      stopDepartmentWatch();
-      stopPublicFoldersWatch();
-    };
-  }, []);
-
-  const { data: recommendations, isLoading: isLoadingRecommendations } =
-    useGetDiscoverFeedQuery();
+  const { recommendations, isLoading: isLoadingRecommendations } =
+    useDiscoverFeed();
 
   const {
-    data: departments = [],
+    departments,
     isLoading: isLoadingDepartments,
     isFetching: isFetchingDepartments,
-  } = useGetDepartmentsQuery(
-    user?.school?.id ? { school_id: user.school.id } : undefined,
-  );
+  } = useDepartments(user?.school?.id ? { school_id: user.school.id } : {});
 
-  const { data: publicFoldersResponse, isLoading: isLoadingPublicFolders } =
-    useGetPublicFoldersQuery({
-      page: 1,
-      limit: publicFoldersFetchLimit,
-      sort_by: "createdAt",
-      order: "desc",
-    });
+  const {
+    folders: displayFolders,
+    total: publicFoldersTotal,
+    isFetching: isFetchingPublicFolders,
+    isLoading: isLoadingPublicFolders,
+  } = useFolders({
+    page: 1,
+    limit: publicFoldersFetchLimit,
+    sort_by: "createdAt",
+    order: "desc",
+  });
 
   const displayDepartments = useMemo(
     () =>
@@ -93,30 +80,25 @@ export default function DiscoverPage() {
     [departments, departmentDisplayLimit],
   );
   const hasMoreDepartments = departments.length > displayDepartments.length;
-  const displayFolders = publicFoldersResponse?.items || [];
-  const hasMorePublicFolders =
-    !!publicFoldersResponse?.hasNext ||
-    (publicFoldersResponse?.total || 0) > displayFolders.length;
+
+  const hasMorePublicFolders = publicFoldersTotal > displayFolders.length;
 
   const {
-    currentData: categoryBooksResult,
+    books: categoryBooks,
+    total: categoryBooksTotal,
+    hasNext: hasMoreCategoryBooks,
     isLoading: isLoadingCategoryBooks,
     isFetching: isFetchingCategoryBooks,
-  } = useGetBooksByCategoryQuery({
-    slug: activeCategory,
+  } = useDiscoverBooksByCategory(activeCategory, {
     page: 1,
     limit: categoryFetchLimit,
   });
 
-  const categoryBooksResponse = categoryBooksResult?.books;
-
-  const categoryBooks = categoryBooksResponse?.items || [];
   const isCategoryLoading =
-    categoryBooks.length === 0 &&
-    (isLoadingCategoryBooks || isFetchingCategoryBooks);
-  const hasMoreCategoryBooks =
-    !!categoryBooksResponse?.hasNext ||
-    (categoryBooksResponse?.total || 0) > categoryBooks.length;
+    !activeCategory ||
+    (categoryBooks.length === 0 &&
+      (isLoadingCategoryBooks || isFetchingCategoryBooks));
+
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
@@ -124,13 +106,14 @@ export default function DiscoverPage() {
   };
 
   if (recommendations) {
-    const folders = recommendations.items
-      .filter((item) => item.type === "folder")
-      .map((item) => ({ ...item.data, type: "folder" as const }));
+    const items = recommendations.items || [];
+    const folders = items
+      .filter((item: any) => item.type === "folder")
+      .map((item: any) => ({ ...item.data, type: "folder" as const }));
 
-    const books = recommendations.items
-      .filter((item) => item.type === "book")
-      .map((item) => ({ ...item.data, type: "book" as const }));
+    const books = items
+      .filter((item: any) => item.type === "book")
+      .map((item: any) => ({ ...item.data, type: "book" as const }));
 
     const maxLength = Math.max(folders.length, books.length);
     for (let i = 0; i < maxLength; i++) {
@@ -175,6 +158,7 @@ export default function DiscoverPage() {
                     {item.type === "folder" ? (
                       <FolderCard
                         folder={item}
+                        showActions={true}
                         onClick={() => router.push(`/app/folders/${item.slug}`)}
                       />
                     ) : (
@@ -220,11 +204,11 @@ export default function DiscoverPage() {
             ) : categoryBooks.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mt-12">
-                  {categoryBooks.map((book) => (
+                  {categoryBooks.map((book: BookPreview) => (
                     <BookCard
                       key={book.id}
                       {...book}
-                      onClick={() => setSelectedBook(book as BookPreview)}
+                      onClick={() => setSelectedBook(book)}
                     />
                   ))}
                 </div>
@@ -321,6 +305,7 @@ export default function DiscoverPage() {
                     <FolderCard
                       key={folder.id}
                       folder={folder}
+                      showActions={true}
                       onClick={() => router.push(`/app/folders/${folder.slug}`)}
                     />
                   ))}

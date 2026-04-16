@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
 import { PdfViewer } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
-import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
+import { useGetBookBySlugQuery } from "@/app/services";
 import { LoadingScreen } from "@/app/components/Loader/LoadingScreen";
 import { fileTypeFromBuffer } from "file-type";
 

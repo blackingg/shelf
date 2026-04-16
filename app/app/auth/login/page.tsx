@@ -13,12 +13,8 @@ import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useLoginMutation } from "@/app/store/api/authApi";
-import { useAppDispatch } from "@/app/store/store";
-import { setCredentials } from "@/app/store/authSlice";
+import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useGoogleAuthMutation } from "@/app/store/api/authApi";
-import { getErrorMessage } from "@/app/helpers/error";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 
 interface FormData {
@@ -45,9 +41,13 @@ function LoginPageContent() {
     password: "",
   });
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
-  const dispatch = useAppDispatch();
+  const {
+    login: performLogin,
+    googleAuth,
+    isLoading,
+    isLoginPending,
+    isGooglePending,
+  } = useAuthActions();
 
   const redirectParam = searchParams.get("redirect");
   const getPostLoginRoute = (onboardingCompleted: boolean) => {
@@ -74,31 +74,16 @@ function LoginPageContent() {
       );
       const userInfo = await userInfoRes.json();
 
-      const result = await googleLogin({
+      const result = await googleAuth({
         googleId: userInfo.sub,
         email: userInfo.email,
         fullName: userInfo.name,
         avatar: userInfo.picture,
-      }).unwrap();
+      });
 
-      dispatch(
-        setCredentials({
-          user: result.user,
-          accessToken: result.tokens.accessToken,
-          refreshToken: result.tokens.refreshToken,
-          expiresIn: result.tokens.expiresIn,
-          rememberMe: true, // Google login is usually remembered
-        }),
-      );
-
-      addNotification("success", "Login successful! Welcome.");
       router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Google Auth Error:", error);
-      addNotification(
-        "error",
-        getErrorMessage(error, "Google login failed. Please try again."),
-      );
     }
   };
 
@@ -140,35 +125,15 @@ function LoginPageContent() {
     }
 
     try {
-      const result = await login({
+      const result = await performLogin({
         email: formData.email,
         password: formData.password,
         rememberMe,
-      }).unwrap();
-
-      dispatch(
-        setCredentials({
-          user: result.user,
-          accessToken: result.tokens.accessToken,
-          refreshToken: result.tokens.refreshToken,
-          expiresIn: result.tokens.expiresIn,
-          rememberMe,
-        }),
-      );
-
-      addNotification("success", "Login successful! Welcome back.");
-
-      if (!result.user.onboardingCompleted) {
-        addNotification("info", "Please complete the onboarding process.");
-      }
+      });
 
       router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Login failed:", error);
-      addNotification(
-        "error",
-        getErrorMessage(error, "Invalid email or password. Please try again."),
-      );
     }
   };
 
@@ -263,7 +228,8 @@ function LoginPageContent() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isLoginLoading || isGoogleLoading}
+                isLoading={isLoginPending}
+                disabled={isLoading}
                 className="py-4"
                 loader={<SpinnerLoader />}
               >
@@ -276,7 +242,8 @@ function LoginPageContent() {
             <SocialLoginButton
               provider="google"
               onClick={handleGoogleAuth}
-              isLoading={isGoogleLoading}
+              isLoading={isGooglePending}
+              disabled={isLoading}
               loader={<SpinnerLoader />}
             />
           </Card>

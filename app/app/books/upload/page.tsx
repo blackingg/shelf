@@ -18,13 +18,12 @@ import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import {
-  useUploadBookMutation,
-  useUpdateBookMutation,
-} from "@/app/store/api/booksApi";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
-import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
+  useBookActions,
+  useDepartments,
+  useDiscoverCategories,
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
@@ -105,17 +104,18 @@ export default function UploadPage() {
 
   const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
 
-  const [uploadBook, { isLoading: isUploading }] = useUploadBookMutation();
-  const [updateBook, { isLoading: isUpdating }] = useUpdateBookMutation();
-
+  const {
+    actions: bookActions,
+    isCreating: isUploading,
+    isUpdating,
+  } = useBookActions();
   const user = useSelector(selectCurrentUser);
 
-  const { data: departments = [], isLoading: isLoadingDepts } =
-    useGetDepartmentsQuery(
-      user?.school?.id ? { school_id: user.school.id } : undefined,
-    );
-  const { data: categoriesData = [], isLoading: isLoadingCategories } =
-    useGetCategoriesQuery();
+  const { departments, isLoading: isLoadingDepts } = useDepartments(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
+  const { categories: categoriesData, isLoading: isLoadingCategories } =
+    useDiscoverCategories();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -266,7 +266,7 @@ export default function UploadPage() {
       formValues.append("book_file", bookFile);
       formValues.append("cover_image", coverFile);
 
-      const result = await uploadBook(formValues).unwrap();
+      const result = await bookActions.createBook(formValues);
       setUploadedBookId(result.id);
       setStep(2);
       addNotification(
@@ -339,7 +339,7 @@ export default function UploadPage() {
         pages: parseInt(formData.pages) || 0,
       };
 
-      await updateBook({ id: uploadedBookId, data: payload }).unwrap();
+      await bookActions.updateBook(uploadedBookId, payload);
       addNotification("success", "Book details updated and donation complete!");
       router.push("/app/discover");
     } catch (error) {
@@ -412,7 +412,10 @@ export default function UploadPage() {
             Please enter the authorization password to continue to the document
             upload pipeline.
           </p>
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="space-y-6"
+          >
             <div className="space-y-2">
               <Label>Access Password</Label>
               <div className="relative group">
@@ -441,7 +444,10 @@ export default function UploadPage() {
                 </button>
               </div>
             </div>
-            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+            <Button
+              type="submit"
+              icon={<FiArrowRight className="text-sm" />}
+            >
               Continue
             </Button>
           </form>

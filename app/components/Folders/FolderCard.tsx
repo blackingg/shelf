@@ -5,17 +5,18 @@ import {
   FiMoreVertical,
   FiBook,
   FiBookmark,
+  FiShare2,
 } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
+import { shareContent } from "@/app/helpers/share";
 import {
-  useBookmarkFolderMutation,
-  useUnbookmarkFolderMutation,
-  useGetIsFolderBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
+  useIsFolderBookmarked,
+  useBookmarkFolderActions,
+} from "@/app/services";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
@@ -68,22 +69,12 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
 
-  const { data: bookmarkStatus } = useGetIsFolderBookmarkedQuery(folder.id, {
-    skip: !folder.id,
-  });
-
-  const isBookmarked = bookmarkStatus?.bookmarked || false;
-
-  const [bookmarkFolder] = useBookmarkFolderMutation();
-  const [unbookmarkFolder] = useUnbookmarkFolderMutation();
+  const { isBookmarked } = useIsFolderBookmarked(folder.id);
+  const { toggleBookmark } = useBookmarkFolderActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isBookmarked) {
-      await unbookmarkFolder(folder.id);
-    } else {
-      await bookmarkFolder(folder.id);
-    }
+    await toggleBookmark(folder.id, isBookmarked);
   };
 
   const coverImage = folder.coverImage;
@@ -158,6 +149,21 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       Delete
                     </button>
                   )}
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      await shareContent({
+                        title: folder.name,
+                        text: `Check out the "${folder.name}" folder on Shelf.`,
+                        url: `${window.location.origin}/app/folders/${folder.slug}`,
+                      });
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                  >
+                    <FiShare2 className="w-3 h-3" />
+                    <span>Share</span>
+                  </button>
                 </div>
               </>
             )}

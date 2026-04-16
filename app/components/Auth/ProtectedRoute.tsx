@@ -7,8 +7,8 @@ import {
   logout,
   selectCurrentUser,
   selectIsAuthenticated,
-} from "@/app/store/authSlice";
-import { useGetMeQuery } from "@/app/store/api/usersApi";
+} from "@/app/store";
+import { useGetMeQuery } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = ["/", "/docs/privacy", "/docs/terms"];
@@ -24,18 +24,21 @@ export default function ProtectedRoute({
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const currentUser = useSelector(selectCurrentUser);
   const [isChecking, setIsChecking] = useState(true);
+
   const isPublicPath = pathname
     ? PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/app/auth")
     : true;
 
-  const { error: meError, isLoading: isLoadingMe } = useGetMeQuery(undefined, {
-    skip: !isAuthenticated || isPublicPath,
+  const shouldFetchMe = isAuthenticated && !isPublicPath;
+  const { error: meError, isLoading: isLoadingMe } = useGetMeQuery({
+    enabled: shouldFetchMe,
   });
 
+  // Handle 401/403 — token is expired or invalid, force logout
   useEffect(() => {
-    const status = (meError as { status?: number } | undefined)?.status;
-    const detail = (meError as { data?: { detail?: string } } | undefined)?.data
-      ?.detail;
+    if (!meError) return;
+    const status = (meError as { status?: number })?.status;
+    const detail = (meError as { data?: { detail?: string } })?.data?.detail;
 
     if (status === 401 || (status === 403 && detail === "Not authenticated")) {
       dispatch(logout());
@@ -45,10 +48,14 @@ export default function ProtectedRoute({
     }
   }, [meError, dispatch, router, pathname]);
 
+  // Redirect unauthenticated users away from protected routes
   useEffect(() => {
     if (!pathname) return;
-
-    if (!isAuthenticated && !isPublicPath) {
+    if (isPublicPath) {
+      setIsChecking(false);
+      return;
+    }
+    if (!isAuthenticated) {
       router.replace(
         `/app/auth/login?redirect=${encodeURIComponent(pathname)}`,
       );
@@ -57,21 +64,10 @@ export default function ProtectedRoute({
     }
   }, [isAuthenticated, pathname, router, isPublicPath]);
 
-  if (isPublicPath) {
-    return <>{children}</>;
-  }
-
-  if (isChecking) {
-    return <LoadingScreen />;
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  if (isLoadingMe && !currentUser) {
-    return <LoadingScreen />;
-  }
+  if (isPublicPath) return <>{children}</>;
+  if (isChecking) return <LoadingScreen />;
+  if (!isAuthenticated) return null;
+  if (isLoadingMe && !currentUser) return <LoadingScreen />;
 
   return <>{children}</>;
 }

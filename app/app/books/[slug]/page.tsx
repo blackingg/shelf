@@ -2,37 +2,26 @@
 import React, { useState, useEffect } from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
-import { FiFileText, FiFolderPlus, FiPlay } from "react-icons/fi";
+import { FiFileText, FiFolderPlus, FiPlay, FiShare2 } from "react-icons/fi";
 import processDescription from "../../../helpers/processDescription";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/app/components/Form/Button";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FolderDropdown } from "@/app/components/Library/FolderDropdown";
-import { useNotifications } from "@/app/context/NotificationContext";
-import { useGetBookBySlugQuery } from "@/app/store/api/booksApi";
-import {
-  useGetMyRatingQuery,
-  useRateBookMutation,
-} from "@/app/store/api/ratingsApi";
+import { useBookBySlug, useRatings } from "@/app/services";
 import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
-import { getErrorMessage } from "@/app/helpers/error";
 import BookDetailSkeleton from "@/app/components/Skeletons/BookDetailSkeleton";
+import { shareContent } from "@/app/helpers/share";
 
 export default function BookDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const bookSlug = params.slug as string;
-  const { addNotification } = useNotifications();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
-  const { data: book, isLoading: isLoadingBook } = useGetBookBySlugQuery(
-    bookSlug,
-    {
-      skip: !bookSlug,
-    },
-  );
+  const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
 
   useEffect(() => {
     if (book?.id) {
@@ -42,25 +31,34 @@ export default function BookDetailsPage() {
 
   const actualBookId = book?.id || "";
 
-  const { data: myRatingData } = useGetMyRatingQuery(actualBookId, {
-    skip: !actualBookId,
-  });
-  const [rateBook] = useRateBookMutation();
+  const { myRating, actions: ratingActions } = useRatings(actualBookId);
 
   const handleRate = async (newRating: number) => {
-    try {
-      await rateBook({ bookId: actualBookId, rating: newRating }).unwrap();
-    } catch (error) {
-      addNotification("error", getErrorMessage(error, "Failed to rate book"));
-    }
+    await ratingActions.rateBook(newRating);
+  };
+
+  const handleShare = async () => {
+    if (!book) return;
+    await shareContent({
+      title: `${book.title} | Shelf`,
+      text: `Check out "${book.title}" by ${book.author} on Shelf.`,
+      url: window.location.href,
+    });
   };
 
   return (
     <div className="flex min-h-full bg-white dark:bg-neutral-900 w-full">
       <div className="flex-1 flex flex-col">
         <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 flex justify-between items-start">
             <BackButton />
+            <button
+              onClick={handleShare}
+              className="p-2 sm:p-2.5 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-500 dark:text-neutral-400 rounded-md transition-colors border border-gray-100 dark:border-neutral-700/50 shadow-xs"
+              title="Share Resource"
+            >
+              <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
           </div>
 
           {isLoadingBook ? (
@@ -254,7 +252,7 @@ export default function BookDetailsPage() {
                       </span>
                       <div className="pt-1">
                         <StarRating
-                          rating={myRatingData?.rating || 0}
+                          rating={myRating || 0}
                           interactive
                           onRate={handleRate}
                           size={22}
