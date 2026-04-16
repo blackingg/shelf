@@ -38,7 +38,7 @@ export default function CategoryPage({
   const commonBooksParams = {
     q: debouncedSearch,
     page,
-    pageSize,
+    limit: pageSize,
     sort_by: sortBy as any,
     order: "desc" as const,
   };
