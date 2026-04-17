@@ -265,13 +265,25 @@ export default function UploadPage() {
       const formValues = new FormData();
       formValues.append("book_file", bookFile);
       formValues.append("cover_image", coverFile);
+      formValues.append("title", formData.title);
+      formValues.append("author", formData.author);
+      formValues.append("category", formData.category);
+      formValues.append("pages", formData.pages);
+      formValues.append("description", formData.description);
+
+      if (formData.department) {
+        const selectedId = departments.find(
+          (d) => d.id === formData.department || d.slug === formData.department,
+        )?.id;
+        if (selectedId) formValues.append("department", selectedId);
+      }
 
       const result = await bookActions.createBook(formValues);
       setUploadedBookId(result.id);
       setStep(2);
       addNotification(
         "success",
-        "Files uploaded successfully! Now refine the details.",
+        "Files and essentials uploaded! Now refine the details.",
       );
     } catch (error) {
       addNotification(
@@ -400,7 +412,7 @@ export default function UploadPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm p-8"
+          className="w-full max-sm p-8"
         >
           <div className="flex items-center gap-3 mb-8">
             <div className="h-8 w-1 bg-emerald-500"></div>
@@ -511,134 +523,115 @@ export default function UploadPage() {
               className="space-y-12"
             >
               <div className="space-y-8">
-                <div className="space-y-4">
-                  <Label>Document File (.pdf, .epub)</Label>
-                  <input
-                    ref={bookInputRef}
-                    type="file"
-                    className="hidden"
-                    onChange={handleBookFileChange}
-                    accept=".pdf,.epub"
-                  />
-                  <div
-                    onDragOver={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={() => bookInputRef.current?.click()}
-                    className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
-                      dragActiveBook
-                        ? "border-emerald-500 bg-emerald-50/20"
-                        : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
-                    }`}
-                  >
-                    {isExtractingMetadata ? (
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                          Processing file…
-                        </p>
-                      </div>
-                    ) : bookFile ? (
-                      <div className="flex items-center gap-4 px-6 text-center">
-                        <FiCheck className="text-emerald-500 text-xl" />
-                        <div className="text-left">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
-                            {bookFile.name}
-                          </p>
-                          <p className="text-[10px] text-gray-400 uppercase">
-                            {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <Label>Document File (.pdf, .epub)</Label>
+                    <input
+                      ref={bookInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={handleBookFileChange}
+                      accept=".pdf,.epub"
+                    />
+                    <div
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                      onClick={() => bookInputRef.current?.click()}
+                      className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        dragActiveBook
+                          ? "border-emerald-500 bg-emerald-50/20"
+                          : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                      }`}
+                    >
+                      {isExtractingMetadata ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                            Processing file…
                           </p>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
-                        <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                          Click or Drag File
-                        </p>
-                      </>
-                    )}
+                      ) : bookFile ? (
+                        <div className="flex items-center gap-4 px-6 text-center">
+                          <FiCheck className="text-emerald-500 text-xl" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                              {bookFile.name}
+                            </p>
+                            <p className="text-[10px] text-gray-400 uppercase">
+                              {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
+                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                            Click or Drag File
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Cover Image</Label>
+                      {coverFile && (
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
+                        >
+                          Replace
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={handleCoverFileChange}
+                      accept="image/*"
+                    />
+                    <div
+                      onClick={() =>
+                        !coverFile && coverInputRef.current?.click()
+                      }
+                      className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
+                        !coverFile
+                          ? "cursor-pointer hover:border-emerald-500"
+                          : ""
+                      }`}
+                    >
+                      {coverPreviewUrl ? (
+                        <img
+                          src={coverPreviewUrl}
+                          className="w-full h-full object-cover"
+                          alt="Cover preview"
+                        />
+                      ) : isExtractingMetadata ? (
+                        <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
+                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-[11px] font-medium uppercase tracking-tighter">
+                            Extracting cover…
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
+                          <FiImage className="text-2xl mb-1" />
+                          <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
+                            {bookFile
+                              ? "No cover found — click to upload"
+                              : "Upload cover image"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Cover Image</Label>
-                    {coverFile && (
-                      <button
-                        type="button"
-                        onClick={() => coverInputRef.current?.click()}
-                        className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
-                      >
-                        Replace
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    ref={coverInputRef}
-                    type="file"
-                    className="hidden"
-                    onChange={handleCoverFileChange}
-                    accept="image/*"
-                  />
-                  <div
-                    onClick={() => !coverFile && coverInputRef.current?.click()}
-                    className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
-                      !coverFile
-                        ? "cursor-pointer hover:border-emerald-500"
-                        : ""
-                    }`}
-                  >
-                    {coverPreviewUrl ? (
-                      <img
-                        src={coverPreviewUrl}
-                        className="w-full h-full object-cover"
-                        alt="Cover preview"
-                      />
-                    ) : isExtractingMetadata ? (
-                      <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
-                        <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
-                        <p className="text-[11px] font-medium uppercase tracking-tighter">
-                          Extracting cover…
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
-                        <FiImage className="text-2xl mb-1" />
-                        <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
-                          {bookFile
-                            ? "No cover found — click to upload"
-                            : "Upload cover image"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
-                <Button
-                  type="submit"
-                  isLoading={isUploading}
-                  disabled={isExtractingMetadata || !bookFile || !coverFile}
-                  icon={<FiArrowRight className="text-sm" />}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
-                >
-                  Continue...
-                </Button>
-              </div>
-            </motion.form>
-          ) : (
-            <motion.form
-              key="step2"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              onSubmit={handleStep2Submit}
-              className="space-y-12"
-            >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
                   <div className="space-y-1.5">
                     <Label>Title</Label>
                     <input
@@ -663,56 +656,24 @@ export default function UploadPage() {
                       className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormSelect<any, false>
-                      label="Category"
-                      icon={<FiLayout />}
-                      options={categoryOptions}
-                      isLoading={isLoadingCategories}
-                      placeholder="Select..."
-                      onChange={(opt: any) =>
-                        setFormData({
-                          ...formData,
-                          category: opt?.value || "",
-                        })
-                      }
-                      value={
-                        categoryOptions.find(
-                          (opt) => opt.value === formData.category,
-                        ) || null
-                      }
-                    />
-                    <div className="space-y-1.5">
-                      <Label>Pages</Label>
-                      <input
-                        type="number"
-                        value={formData.pages}
-                        onChange={(e) =>
-                          setFormData({ ...formData, pages: e.target.value })
-                        }
-                        placeholder="0"
-                        required
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Short Description</Label>
-                    <textarea
-                      rows={3}
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      placeholder="Brief summary..."
-                      required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
-                    />
-                  </div>
-
+                  <FormSelect<any, false>
+                    label="Category"
+                    icon={<FiLayout />}
+                    options={categoryOptions}
+                    isLoading={isLoadingCategories}
+                    placeholder="Select Category"
+                    onChange={(opt: any) =>
+                      setFormData({
+                        ...formData,
+                        category: opt?.value || "",
+                      })
+                    }
+                    value={
+                      categoryOptions.find(
+                        (opt) => opt.value === formData.category,
+                      ) || null
+                    }
+                  />
                   <FormSelect<any, false>
                     label="Department"
                     icon={<FiBookOpen />}
@@ -732,17 +693,85 @@ export default function UploadPage() {
                     }
                   />
                   <div className="space-y-1.5">
-                    <Label>Publisher</Label>
+                    <Label>Pages</Label>
                     <input
-                      value={formData.publisher}
+                      type="number"
+                      value={formData.pages}
                       onChange={(e) =>
-                        setFormData({ ...formData, publisher: e.target.value })
+                        setFormData({ ...formData, pages: e.target.value })
                       }
-                      placeholder="e.g. Pearson, O'Reilly"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      placeholder="0"
+                      required
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-1.5 pt-4">
+                  <Label>Short Description</Label>
+                  <textarea
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Provide a brief summary of the book (min. 10 characters)..."
+                    required
+                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+                <Button
+                  type="submit"
+                  isLoading={isUploading}
+                  disabled={
+                    isExtractingMetadata ||
+                    !bookFile ||
+                    !coverFile ||
+                    !formData.title ||
+                    !formData.author ||
+                    !formData.category ||
+                    !formData.pages ||
+                    formData.description.length < 10
+                  }
+                  icon={<FiArrowRight className="text-sm" />}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
+                >
+                  Confirm Essentials & Upload
+                </Button>
+              </div>
+            </motion.form>
+          ) : (
+            <motion.form
+              key="step2"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              onSubmit={handleStep2Submit}
+              className="space-y-12"
+            >
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Publisher</Label>
+                      <input
+                        value={formData.publisher}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            publisher: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. Pearson"
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
                     <div className="space-y-1.5">
                       <Label>Published Year</Label>
                       <input
@@ -758,18 +787,20 @@ export default function UploadPage() {
                         className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <Label>ISBN</Label>
-                      <input
-                        value={formData.isbn}
-                        onChange={(e) =>
-                          setFormData({ ...formData, isbn: e.target.value })
-                        }
-                        placeholder="Optional"
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                      />
-                    </div>
                   </div>
+
+                  <div className="space-y-1.5">
+                    <Label>ISBN</Label>
+                    <input
+                      value={formData.isbn}
+                      onChange={(e) =>
+                        setFormData({ ...formData, isbn: e.target.value })
+                      }
+                      placeholder="Optional"
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+
                   <div className="space-y-1.5">
                     <Label>Tags (Comma separated)</Label>
                     <input
