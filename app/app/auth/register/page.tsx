@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
-import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { FormInput } from "@/app/components/Form/FormInput";
 import { Button } from "@/app/components/Form/Button";
@@ -15,14 +13,8 @@ import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
 import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
-import {
-  useRegisterMutation,
-  useGoogleAuthMutation,
-} from "@/app/store/api/authApi";
-import { useAppDispatch } from "@/app/store/store";
-import { setCredentials } from "@/app/store/authSlice";
+import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
-import { getErrorMessage } from "@/app/helpers/error";
 
 interface FormData {
   fullName: string;
@@ -41,9 +33,13 @@ export default function SignupPage() {
     confirmPassword: "",
   });
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
-  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleAuthMutation();
-  const dispatch = useAppDispatch();
+  const {
+    register,
+    googleAuth,
+    isLoading,
+    isRegisterPending,
+    isGooglePending,
+  } = useAuthActions();
 
   const handleGoogleSuccess = async (tokenResponse: any) => {
     try {
@@ -55,27 +51,12 @@ export default function SignupPage() {
       );
       const userInfo = await userInfoRes.json();
 
-      const result = await googleLogin({
+      const result = await googleAuth({
         googleId: userInfo.sub,
         email: userInfo.email,
         fullName: userInfo.name,
         avatar: userInfo.picture,
-      }).unwrap();
-
-      dispatch(
-        setCredentials({
-          user: result.user,
-          accessToken: result.tokens.accessToken,
-          refreshToken: result.tokens.refreshToken,
-          expiresIn: result.tokens.expiresIn,
-          rememberMe: true,
-        }),
-      );
-
-      addNotification(
-        "success",
-        "Account created successfully! Welcome aboard.",
-      );
+      });
 
       if (result.user.onboardingCompleted) {
         router.push("/app/discover");
@@ -84,10 +65,6 @@ export default function SignupPage() {
       }
     } catch (error: any) {
       console.error("Google Auth Error:", error);
-      addNotification(
-        "error",
-        getErrorMessage(error, "Google registration failed. Please try again."),
-      );
     }
   };
 
@@ -160,38 +137,16 @@ export default function SignupPage() {
     }
 
     try {
-      const result = await register({
+      await register({
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
         agreeToTerms: acceptTerms,
-      }).unwrap();
-
-      dispatch(
-        setCredentials({
-          user: result.user,
-          accessToken: result.tokens.accessToken,
-          refreshToken: result.tokens.refreshToken,
-          expiresIn: result.tokens.expiresIn,
-          rememberMe: true,
-        }),
-      );
-
-      addNotification(
-        "success",
-        "Account created successfully! Welcome aboard.",
-      );
+      });
 
       router.push("/app/onboarding");
     } catch (error: any) {
       console.error("Signup failed:", error);
-      addNotification(
-        "error",
-        getErrorMessage(
-          error,
-          "An error occurred during signup. Please try again.",
-        ),
-      );
     }
   };
 
@@ -313,7 +268,8 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isRegisterLoading || isGoogleLoading}
+                isLoading={isRegisterPending}
+                disabled={isLoading}
                 className="py-4"
                 loader={<SpinnerLoader />}
               >
@@ -326,7 +282,8 @@ export default function SignupPage() {
             <SocialLoginButton
               provider="google"
               onClick={handleGoogleAuth}
-              isLoading={isGoogleLoading}
+              isLoading={isGooglePending}
+              disabled={isLoading}
               loader={<SpinnerLoader />}
             />
           </Card>

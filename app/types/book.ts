@@ -55,6 +55,9 @@ export interface BookCardProps {
   donor?: { id: string; username: string };
   onClick?: () => void;
   className?: string;
+  showActions?: boolean;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 export interface BookFilterParams extends PaginationParams {

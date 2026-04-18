@@ -4,8 +4,9 @@ export const SocialLoginButton: React.FC<{
   provider: "google";
   onClick?: () => void;
   isLoading?: boolean;
+  disabled?: boolean;
   loader?: React.ReactNode;
-}> = ({ provider, onClick, isLoading = false, loader }) => {
+}> = ({ provider, onClick, isLoading = false, disabled = false, loader }) => {
   const icons = {
     google: <FcGoogle className="w-5 h-5 mr-3" />,
   };
@@ -17,8 +18,8 @@ export const SocialLoginButton: React.FC<{
   return (
     <button
       onClick={onClick}
-      className="w-full inline-flex justify-center items-center py-3 px-4 rounded-sm border border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-sm font-medium text-gray-700 dark:text-neutral-200 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors duration-200 cursor-pointer"
-      disabled={isLoading}
+      className={`w-full inline-flex justify-center items-center py-3 px-4 rounded-sm border border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-sm font-medium text-gray-700 dark:text-neutral-200 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+      disabled={isLoading || disabled}
     >
       {isLoading && loader ? (
         <span className="mr-2">{loader}</span>

@@ -80,7 +80,14 @@ export const ConfirmModal = ({
                     : "bg-emerald-600 hover:bg-emerald-700"
                 }`}
               >
-                {isLoading ? <span>Wait...</span> : <span>{confirmText}</span>}
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Loading...</span>
+                  </>
+                ) : (
+                  <span>{confirmText}</span>
+                )}
               </button>
             </div>
           </motion.div>

@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import {
-  useGetBookReviewsQuery,
-  useCreateReviewMutation,
-  useDeleteReviewMutation,
-} from "@/app/store/api/ratingsApi";
-import { useNotifications } from "@/app/context/NotificationContext";
-import { FiMessageSquare, FiTrash2, FiSend } from "react-icons/fi";
+import { useRatings } from "@/app/services";
+import { FiTrash2, FiSend } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 
 interface BookReviewsProps {
   bookId: string;
@@ -22,10 +17,8 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
   limit,
   hideForm = false,
 }) => {
-  const { data: reviewsData, isLoading } = useGetBookReviewsQuery({ bookId });
-  const [createReview, { isLoading: isSubmitting }] = useCreateReviewMutation();
-  const [deleteReview] = useDeleteReviewMutation();
-  const { addNotification } = useNotifications();
+  const { reviews, isLoading, actions: ratingActions } = useRatings(bookId);
+
   const currentUser = useSelector(selectCurrentUser);
   const [newReview, setNewReview] = useState("");
 
@@ -33,20 +26,12 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
     e.preventDefault();
     if (!newReview.trim()) return;
 
-    try {
-      await createReview({ bookId, content: newReview }).unwrap();
-      setNewReview("");
-    } catch (err) {
-      // Error handled by optimistic update undo
-    }
+    await ratingActions.createReview(newReview);
+    setNewReview("");
   };
 
   const handleDelete = async (reviewId: string) => {
-    try {
-      await deleteReview({ id: reviewId, bookId }).unwrap();
-    } catch (err) {
-      // Error handled by optimistic update undo
-    }
+    await ratingActions.deleteReview(reviewId);
   };
 
   if (isLoading)
@@ -56,11 +41,8 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
       </div>
     );
 
-  let reviews = reviewsData?.items || [];
   const totalReviews = reviews.length;
-  if (limit) {
-    reviews = reviews.slice(0, limit);
-  }
+  const displayReviews = limit ? reviews.slice(0, limit) : reviews;
 
   return (
     <div className="space-y-6">
@@ -77,7 +59,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
           />
           <button
             type="submit"
-            disabled={isSubmitting || !newReview.trim()}
+            disabled={ratingActions.isSubmittingReview || !newReview.trim()}
             className="absolute bottom-3 right-3 p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors disabled:opacity-50"
           >
             <FiSend className="w-4 h-4" />
@@ -86,12 +68,12 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
       )}
 
       <div className="space-y-3">
-        {reviews.length === 0 ? (
+        {displayReviews.length === 0 ? (
           <div className="text-center py-6 text-gray-400 dark:text-emerald-100/30 text-xs italic font-medium">
             No reviews yet.
           </div>
         ) : (
-          reviews.map((review) => (
+          displayReviews.map((review: any) => (
             <div
               key={review.id}
               className="bg-white dark:bg-emerald-900/10 rounded-md p-4 border border-gray-100 dark:border-emerald-800/30"

@@ -120,19 +120,6 @@ const authSlice = createSlice({
       storage.remove("rememberMe");
     },
   },
-  extraReducers: (builder) => {
-    builder.addMatcher(
-      (action) =>
-        action.type.endsWith("/fulfilled") &&
-        ["getMe", "updateMe", "uploadAvatar"].includes(
-          action.meta?.arg?.endpointName,
-        ),
-      (state, action: PayloadAction<User>) => {
-        state.user = action.payload;
-        storage.set("user", JSON.stringify(action.payload));
-      },
-    );
-  },
 });
 
 export const {

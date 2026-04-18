@@ -13,7 +13,7 @@ import {
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import {
   FolderVisibility,
   FolderRoles,
@@ -23,15 +23,10 @@ import { UserMinimal } from "@/app/types/user";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 import UserSearchInput from "@/app/components/UserSearchInput";
 import {
-  useGetFolderBySlugQuery,
-  useUpdateFolderMutation,
-  useDeleteFolderMutation,
-  useGetCollaboratorsQuery,
-  useInviteCollaboratorMutation,
-  useRemoveCollaboratorMutation,
-  useUpdateCollaborationSettingsMutation,
-} from "@/app/store/api/foldersApi";
-import { getErrorMessage } from "@/app/helpers/error";
+  useFolderBySlug,
+  useCollaborators,
+  useFolderActions,
+} from "@/app/services";
 import { Switch } from "@/app/components/Form/Switch";
 import FolderEditSkeleton from "@/app/components/Skeletons/FolderEditSkeleton";
 
@@ -45,23 +40,12 @@ export default function EditFolderPage() {
   const currentUser = user?.username || "";
 
   // API Hooks
-  const {
-    data: folder,
-    isLoading: isFolderLoading,
-    isError,
-  } = useGetFolderBySlugQuery(slug, { skip: !slug });
-
-  const { data: collaborators = [], isLoading: isCollaboratorsLoading } =
-    useGetCollaboratorsQuery(folder?.id || "", {
-      skip: !folder?.id,
-    });
-
-  const [updateFolder, { isLoading: isUpdating }] = useUpdateFolderMutation();
-  const [updateCollaborationSettings, { isLoading: isUpdatingSettings }] =
-    useUpdateCollaborationSettingsMutation();
-  const [deleteFolder, { isLoading: isDeleting }] = useDeleteFolderMutation();
-  const [inviteCollaborator] = useInviteCollaboratorMutation();
-  const [removeCollaborator] = useRemoveCollaboratorMutation();
+  const { folder, isLoading: isFolderLoading, isError } = useFolderBySlug(slug);
+  const { collaborators, isLoading: isCollaboratorsLoading } = useCollaborators(
+    folder?.id || "",
+  );
+  const { actions, isUpdating, isUpdatingSettings, isDeleting, isInviting } =
+    useFolderActions();
 
   // Form State
   const [name, setName] = useState("");
@@ -79,7 +63,7 @@ export default function EditFolderPage() {
   // Permissions
   const isOwner = folder?.user?.username === currentUser;
   const userCollaboration = collaborators.find(
-    (c) => c.user?.username === currentUser,
+    (c: any) => c.user?.username === currentUser,
   );
   const isEditor = userCollaboration?.role === "EDITOR";
   const canEdit = isOwner || isEditor;
@@ -152,42 +136,13 @@ export default function EditFolderPage() {
 
   const handleInvite = async () => {
     if (!selectedUser || !folder) return;
-
-    try {
-      await inviteCollaborator({
-        id: folder.id,
-        data: {
-          userId: selectedUser.id,
-          role: inviteRole,
-        },
-      }).unwrap();
-      addNotification(
-        "success",
-        `Invited @${selectedUser.username} as ${inviteRole}`,
-      );
-      setSelectedUser(null);
-    } catch (err) {
-      addNotification(
-        "error",
-        getErrorMessage(err, "Failed to invite collaborator"),
-      );
-    }
+    await actions.inviteCollaborator(folder.id, selectedUser.id, inviteRole);
+    setSelectedUser(null);
   };
 
   const handleRemoveCollaborator = async (collaborator: Collaborator) => {
     if (!folder) return;
-    try {
-      await removeCollaborator({
-        folderId: folder.id,
-        collaboratorId: collaborator.id,
-      }).unwrap();
-      addNotification("success", "Collaborator removed");
-    } catch (err) {
-      addNotification(
-        "error",
-        getErrorMessage(err, "Failed to remove collaborator"),
-      );
-    }
+    await actions.removeCollaborator(folder.id, collaborator.id);
   };
 
   const handleDelete = () => {
@@ -196,36 +151,21 @@ export default function EditFolderPage() {
 
   const confirmDelete = async () => {
     if (!folder) return;
-    try {
-      await deleteFolder(folder.id).unwrap();
-      addNotification("success", "Folder deleted successfully");
-      setShowDeleteModal(false);
-      router.push("/app/folders");
-    } catch (err) {
-      addNotification("error", getErrorMessage(err, "Failed to delete folder"));
-      setShowDeleteModal(false);
-    }
+    await actions.deleteFolder(folder.id);
+    setShowDeleteModal(false);
+    router.push("/app/folders");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folder) return;
 
-    try {
-      await updateFolder({
-        id: folder.id,
-        data: {
-          name,
-          description,
-          visibility,
-        },
-      }).unwrap();
-
-      addNotification("success", "Folder updated successfully");
-      router.push(`/app/folders/${folder.slug}`);
-    } catch (err) {
-      addNotification("error", getErrorMessage(err, "Failed to update folder"));
-    }
+    await actions.updateFolder(folder.id, {
+      name,
+      description,
+      visibility,
+    });
+    router.push(`/app/folders/${folder.slug}`);
   };
 
   const handleCollaborationSettingChange = async (
@@ -241,16 +181,12 @@ export default function EditFolderPage() {
     }
 
     try {
-      await updateCollaborationSettings({
-        id: folder.id,
-        data: {
-          allowCollaboration:
-            setting === "allowCollaboration" ? value : allowCollaboration,
-          requireApproval:
-            setting === "requireApproval" ? value : requireApproval,
-        },
-      }).unwrap();
-      addNotification("success", "Settings updated");
+      await actions.updateSettings(folder.id, {
+        allowCollaboration:
+          setting === "allowCollaboration" ? value : allowCollaboration,
+        requireApproval:
+          setting === "requireApproval" ? value : requireApproval,
+      });
     } catch (err) {
       // Rollback on error
       if (setting === "allowCollaboration") {
@@ -258,10 +194,6 @@ export default function EditFolderPage() {
       } else {
         setRequireApproval(!value);
       }
-      addNotification(
-        "error",
-        getErrorMessage(err, "Failed to update settings"),
-      );
     }
   };
 

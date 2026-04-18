@@ -9,10 +9,8 @@ export interface User {
   booksCount: number;
   foldersCount: number;
   onboardingCompleted: boolean;
-  schoolId: string | null;
-  departmentId: string | null;
-  school: any | null;
-  department: any | null;
+  school: { id: string; name: string; shortName: string } | null;
+  department: { id: string; name: string } | null;
   createdAt: string;
   updatedAt: string;
 }

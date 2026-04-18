@@ -7,35 +7,32 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
+import { useDepartments } from "@/app/services";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
-import { watchResponsiveGridFetchLimit } from "@/app/helpers/responsive";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 export default function DepartmentsPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
 
-  const { data: allDepartments = [], isLoading } = useGetDepartmentsQuery(
-    user?.school?.id ? { school_id: user.school.id } : undefined,
+  const { departments: allDepartments, isLoading } = useDepartments(
+    user?.school?.id ? { school_id: user.school.id } : {},
   );
 
-  const userDepartment = user?.department?.name || null;
-  const userDepartmentSlug = allDepartments.find(
+  const userDepartment = allDepartments.find(
     (d) => d.id === user?.department?.id,
-  )?.slug;
+  );
+  const userDepartmentName = user?.department?.name;
+  const userDepartmentSlug = userDepartment?.slug || null;
 
   const [viewDepartments, setViewDepartments] = useState(false);
-  const [departmentSkeletonCount, setDepartmentSkeletonCount] = useState(10);
-
-  useEffect(() => {
-    return watchResponsiveGridFetchLimit(
-      { base: 2, md: 3, lg: 5 },
-      setDepartmentSkeletonCount,
-      4,
-    );
-  }, []);
+  const departmentSkeletonCount = useResponsiveLimit(
+    { base: 2, md: 3, lg: 5 },
+    4,
+    10,
+  );
 
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
@@ -108,11 +105,11 @@ export default function DepartmentsPage() {
             )}
           </AnimatePresence>
 
-          {userDepartment !== null && userDepartmentSlug && (
+          {userDepartmentName && (
             <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
               <UserDepartmentBooks
                 departmentSlug={userDepartmentSlug}
-                departmentName={userDepartment}
+                departmentName={userDepartmentName}
               />
             </div>
           )}

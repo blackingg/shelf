@@ -3,12 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiStar, FiBookmark } from "react-icons/fi";
-import {
-  useBookmarkBookMutation,
-  useUnbookmarkBookMutation,
-  useGetIsBookBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
+import { FiStar, FiBookmark, FiMoreVertical, FiShare2 } from "react-icons/fi";
+import { shareContent } from "@/app/helpers/share";
+import { useState } from "react";
+import { useIsBookBookmarked, useBookBookmarkActions } from "@/app/services";
 import { BookCardProps } from "@/app/types/book";
 import { motion } from "motion/react";
 import { useSelector } from "react-redux";
@@ -23,30 +21,26 @@ export const BookCard: React.FC<BookCardProps> = ({
   rating,
   donor,
   onClick,
+  showActions = false,
+  onEdit,
+  onDelete,
   className = "",
 }) => {
   const { addNotification } = useNotifications();
-  const [bookmarkBook] = useBookmarkBookMutation();
-  const [unbookmarkBook] = useUnbookmarkBookMutation();
+  const { isBookmarked } = useIsBookBookmarked(id || "");
 
-  const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(id || "", {
-    skip: !id,
-  });
-  const isBookmarked = bookmarkStatus?.bookmarked;
+  const { toggleBookmark } = useBookBookmarkActions();
+  const [showMenu, setShowMenu] = useState(false);
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;
-    if (isBookmarked) {
-      await unbookmarkBook(id);
-    } else {
-      await bookmarkBook(id);
-    }
+    await toggleBookmark(id, isBookmarked);
   };
 
   return (
     <div
       onClick={onClick}
-      className={`group cursor-pointer transition-colors duration-200 ${className}`}
+      className={`group cursor-pointer transition-colors duration-200 ${className} relative`}
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <img
@@ -65,28 +59,94 @@ export const BookCard: React.FC<BookCardProps> = ({
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
 
         {rating && (
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1">
+          <div className="absolute top-2 left-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-10">
+            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
               <FiStar className="w-3 h-3 text-yellow-400 fill-yellow-400" />
               <span className="text-xs text-white font-medium">{rating}</span>
             </div>
           </div>
         )}
 
-        {id && (
-          <button
-            onClick={handleBookmark}
-            className={`absolute top-2 left-2 p-1.5 rounded-md transition-all duration-200 ${
-              isBookmarked
-                ? "bg-emerald-600 text-white opacity-100"
-                : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-emerald-600"
-            }`}
-          >
-            <FiBookmark
-              className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`}
-            />
-          </button>
-        )}
+        <div className="absolute top-1.5 right-1.5 flex items-center space-x-1.5 z-20">
+          {id && (
+            <button
+              onClick={handleBookmark}
+              className={`p-1.5 rounded-md transition-all duration-200 ${
+                isBookmarked
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
+              }`}
+              title={isBookmarked ? "Remove Bookmark" : "Bookmark Book"}
+            >
+              <FiBookmark
+                className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
+              />
+            </button>
+          )}
+
+          {showActions && id && (
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+              >
+                <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
+              </button>
+              {showMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
+                  />
+                  <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(id);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(id);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    >
+                      Delete
+                    </button>
+                    {/* <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!id) return;
+                        await shareContent({
+                          title: title,
+                          text: `Check out "${title}" by ${author} on Shelf.`,
+                          url: `${window.location.origin}/app/books/${id}`,
+                        });
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                    >
+                      <FiShare2 className="w-3 h-3" />
+                      <span>Share</span>
+                    </button> */}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm line-clamp-1 mb-0.5">
         {title}

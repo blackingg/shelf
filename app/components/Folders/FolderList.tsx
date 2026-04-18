@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
 import {
   FiFolder,

@@ -21,25 +21,14 @@ import { FolderDropdown } from "./FolderDropdown";
 import { BookPreview } from "@/app/types/book";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
-  useBookmarkBookMutation,
-  useUnbookmarkBookMutation,
-  useGetIsBookBookmarkedQuery,
-} from "@/app/store/api/bookmarksApi";
-import processDescription from "@/app/app/books/[slug]/processDesc";
-import { DeleteModal } from "./DeleteConfirmationModal";
-import {
-  useGetBookByIdQuery,
-  useGetBookBySlugQuery,
-  useUpdateBookCoverMutation,
-  useUpdateBookFileMutation,
-} from "@/app/store/api/booksApi";
-import { getErrorMessage } from "@/app/helpers/error";
+  useIsBookBookmarked,
+  useBookBookmarkActions,
+  useBookActions,
+  useMyRating,
+  useRatingActions,
+} from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
-import {
-  useGetMyRatingQuery,
-  useRateBookMutation,
-} from "@/app/store/api/ratingsApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store/authSlice";
 
@@ -55,29 +44,11 @@ export const BookDetailPanel: React.FC<{
   }
   const { addNotification } = useNotifications();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
-  const { data: bookmarkStatus } = useGetIsBookBookmarkedQuery(book?.id || "", {
-    skip: !book?.id,
-  });
-  const { data: myRatingData } = useGetMyRatingQuery(book?.id || "", {
-    skip: !book?.id,
-  });
-  const { data: moreBookDetails } = useGetBookByIdQuery(String(book?.id));
-  let donatedDate, updatedDate;
-
-  if (moreBookDetails) {
-    donatedDate = new Date(moreBookDetails?.donatedAt).toDateString();
-    updatedDate = new Date(moreBookDetails?.updatedAt).toDateString();
-  }
-  const [bookDeleteOverlayState, showBookDeleteOverlay] = useState(false);
-  const user = useSelector(selectCurrentUser);
-  const [bookmarkBook] = useBookmarkBookMutation();
-
-  const [unbookmarkBook] = useUnbookmarkBookMutation();
-  const [updateCover] = useUpdateBookCoverMutation();
-  const [updateFile] = useUpdateBookFileMutation();
-  const [rateBook] = useRateBookMutation();
-  const isBookmarked = bookmarkStatus?.bookmarked;
-  const userRating = myRatingData?.rating ?? 0;
+  const { isBookmarked } = useIsBookBookmarked(book?.id || "");
+  const { toggleBookmark } = useBookBookmarkActions();
+  const { rating: userRating } = useMyRating(book?.id || "");
+  const { rateBook } = useRatingActions();
+  const { actions } = useBookActions();
 
   useEffect(() => {
     if (book?.id) {
@@ -87,52 +58,25 @@ export const BookDetailPanel: React.FC<{
 
   const handleRate = async (newRating: number) => {
     if (!book?.id) return;
-    try {
-      await rateBook({ bookId: book.id, rating: newRating }).unwrap();
-    } catch (error) {
-      // Error handled by optimistic update undo
-    }
+    await rateBook(book.id, newRating);
   };
 
   const handleBookmark = async () => {
     if (!book?.id) return;
-    try {
-      if (isBookmarked) {
-        await unbookmarkBook(book.id).unwrap();
-        addNotification("success", "Book removed from bookmarks");
-      } else {
-        await bookmarkBook(book.id).unwrap();
-        addNotification("success", "Book bookmarked");
-      }
-    } catch (err) {
-      addNotification("error", "Failed to update bookmark");
-    }
+    await toggleBookmark(book.id, !!isBookmarked);
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && book?.id) {
-      try {
-        await updateCover({ id: book.id, file }).unwrap();
-        addNotification("success", "Cover updated successfully");
-      } catch (err) {
-        addNotification(
-          "error",
-          getErrorMessage(err, "Failed to update cover"),
-        );
-      }
+      await actions.updateCover(book.id, file);
     }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && book?.id) {
-      try {
-        await updateFile({ id: book.id, file }).unwrap();
-        addNotification("success", "File updated successfully");
-      } catch (err) {
-        addNotification("error", getErrorMessage(err, "Failed to update file"));
-      }
+      await actions.updateFile(book.id, file);
     }
   };
 

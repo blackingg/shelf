@@ -9,6 +9,8 @@ import {
   FiImage,
   FiLayout,
   FiBookOpen,
+  FiEye,
+  FiEyeOff,
 } from "react-icons/fi";
 import Epub from "epubjs";
 import { Button } from "@/app/components/Form/Button";
@@ -16,16 +18,16 @@ import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
+import { selectCurrentUser } from "@/app/store";
 import {
-  useUploadBookMutation,
-  useUpdateBookMutation,
-} from "@/app/store/api/booksApi";
-import { useGetDepartmentsQuery } from "@/app/store/api/departmentsApi";
-import { useGetCategoriesQuery } from "@/app/store/api/categoriesApi";
+  useBookActions,
+  useDepartments,
+  useDiscoverCategories,
+} from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUpload } from "@/app/hooks/useUpload";
 import MultipleUploadForm from "@/app/components/MultipleUploadForm";
 
 export interface PDFJSInfo {
@@ -95,6 +97,15 @@ export default function UploadPage() {
   //stateful values for tracking multiple files
   const [bookCount, updateBookCount] = useState(1);
   const [multiplesList, updateMultiplesList] = useState<FileList | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const {
+    isAuthorized,
+    isLoading: isAuthLoading,
+    authorize,
+    password,
+    setPassword,
+    error: authError,
+  } = useUpload();
 
   useEffect(() => {
     setMounted(true);
@@ -102,17 +113,18 @@ export default function UploadPage() {
 
   const isDark = mounted && (resolvedTheme === "dark" || theme === "dark");
 
-  const [uploadBook, { isLoading: isUploading }] = useUploadBookMutation();
-  const [updateBook, { isLoading: isUpdating }] = useUpdateBookMutation();
-
+  const {
+    actions: bookActions,
+    isCreating: isUploading,
+    isUpdating,
+  } = useBookActions();
   const user = useSelector(selectCurrentUser);
 
-  const { data: departments = [], isLoading: isLoadingDepts } =
-    useGetDepartmentsQuery(
-      user?.school?.id ? { school_id: user.school.id } : undefined,
-    );
-  const { data: categoriesData = [], isLoading: isLoadingCategories } =
-    useGetCategoriesQuery();
+  const { departments, isLoading: isLoadingDepts } = useDepartments(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
+  const { categories: categoriesData, isLoading: isLoadingCategories } =
+    useDiscoverCategories();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -270,20 +282,27 @@ export default function UploadPage() {
 
     try {
       const formValues = new FormData();
-      formValues.append("title", formData.title);
-      formValues.append("author", formData.author);
-      formValues.append("description", formData.description);
-      formValues.append("category", formData.category);
-      formValues.append("pages", formData.pages);
       formValues.append("book_file", bookFile);
       formValues.append("cover_image", coverFile);
+      formValues.append("title", formData.title);
+      formValues.append("author", formData.author);
+      formValues.append("category", formData.category);
+      formValues.append("pages", formData.pages);
+      formValues.append("description", formData.description);
 
-      const result = await uploadBook(formValues).unwrap();
+      if (formData.department) {
+        const selectedId = departments.find(
+          (d) => d.id === formData.department || d.slug === formData.department,
+        )?.id;
+        if (selectedId) formValues.append("department", selectedId);
+      }
+
+      const result = await bookActions.createBook(formValues);
       setUploadedBookId(result.id);
       setStep(2);
       addNotification(
         "success",
-        "Files uploaded successfully! Now refine the details.",
+        "Files and essentials uploaded! Now refine the details.",
       );
     } catch (error) {
       addNotification(
@@ -296,6 +315,31 @@ export default function UploadPage() {
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadedBookId) return;
+
+    if (!formData.title.trim()) {
+      addNotification("error", "Title is required.");
+      return;
+    }
+
+    if (!formData.author.trim()) {
+      addNotification("error", "Author is required.");
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      addNotification("error", "Description is required.");
+      return;
+    }
+
+    if (!formData.category.trim()) {
+      addNotification("error", "Category is required.");
+      return;
+    }
+
+    if (!formData.pages || Number(formData.pages) <= 0) {
+      addNotification("error", "Pages must be greater than 0.");
+      return;
+    }
 
     try {
       const selectedDepartmentId = formData.department
@@ -326,7 +370,7 @@ export default function UploadPage() {
         pages: parseInt(formData.pages) || 0,
       };
 
-      await updateBook({ id: uploadedBookId, data: payload }).unwrap();
+      await bookActions.updateBook(uploadedBookId, payload);
       addNotification("success", "Book details updated and donation complete!");
       router.push("/app/discover");
     } catch (error) {
@@ -334,6 +378,13 @@ export default function UploadPage() {
         "error",
         getErrorMessage(error, "Failed to update book details."),
       );
+    }
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authorize()) {
+      addNotification("error", authError || "Incorrect access password.");
     }
   };
 
@@ -346,11 +397,158 @@ export default function UploadPage() {
     label: cat.name,
   }));
 
+  const isStep2FormComplete =
+    !!uploadedBookId &&
+    !!formData.title.trim() &&
+    !!formData.author.trim() &&
+    !!formData.description.trim() &&
+    !!formData.category.trim() &&
+    !!formData.pages &&
+    Number(formData.pages) > 0;
+
   const Label = ({ children }: { children: React.ReactNode }) => (
     <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
       {children}
     </label>
   );
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+            Verifying Access
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-sm p-8"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-1 bg-emerald-500"></div>
+            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+              Administrative Access
+            </h1>
+          </div>
+          <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
+            Please enter the authorization password to continue to the document
+            upload pipeline.
+          </p>
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label>Access Password</Label>
+              <div className="relative group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
+                    authError
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-neutral-800"
+                  } text-sm outline-none focus:border-emerald-500 transition-all`}
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
+                >
+                  {showPassword ? (
+                    <FiEyeOff className="text-lg" />
+                  ) : (
+                    <FiEye className="text-lg" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+              Continue
+            </Button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+            Verifying Access
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-sm p-8"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-1 bg-emerald-500"></div>
+            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+              Administrative Access
+            </h1>
+          </div>
+          <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
+            Please enter the authorization password to continue to the document
+            upload pipeline.
+          </p>
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label>Access Password</Label>
+              <div className="relative group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
+                    authError
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-neutral-800"
+                  } text-sm outline-none focus:border-emerald-500 transition-all`}
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
+                >
+                  {showPassword ? (
+                    <FiEyeOff className="text-lg" />
+                  ) : (
+                    <FiEye className="text-lg" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+              Continue
+            </Button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
 
   return bookCount <= 1 ? (
     <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
@@ -406,8 +604,8 @@ export default function UploadPage() {
               onSubmit={handleStep1Submit}
               className="space-y-12"
             >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-8">
+              <div className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <Label>Document File (.pdf, .epub)</Label>
                     <input
@@ -433,7 +631,7 @@ export default function UploadPage() {
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
                           <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Extracting metadata…
+                            Processing file…
                           </p>
                         </div>
                       ) : bookFile ? (
@@ -508,7 +706,7 @@ export default function UploadPage() {
                           <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
                             {bookFile
                               ? "No cover found — click to upload"
-                              : "Auto-extracted from file"}
+                              : "Upload cover image"}
                           </p>
                         </div>
                       )}
@@ -516,7 +714,7 @@ export default function UploadPage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
                   <div className="space-y-1.5">
                     <Label>Title</Label>
                     <input
@@ -541,89 +739,24 @@ export default function UploadPage() {
                       className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormSelect<any, false>
-                      label="Category"
-                      icon={<FiLayout />}
-                      options={categoryOptions}
-                      isLoading={isLoadingCategories}
-                      placeholder="Select..."
-                      onChange={(opt: any) =>
-                        setFormData({
-                          ...formData,
-                          category: opt?.value || "",
-                        })
-                      }
-                      value={
-                        categoryOptions.find(
-                          (opt) => opt.value === formData.category,
-                        ) || null
-                      }
-                    />
-                    <div className="space-y-1.5">
-                      <Label>Pages</Label>
-                      <input
-                        type="number"
-                        value={formData.pages}
-                        onChange={(e) =>
-                          setFormData({ ...formData, pages: e.target.value })
-                        }
-                        placeholder="0"
-                        required
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Short Description</Label>
-                    <textarea
-                      rows={3}
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      placeholder="Brief summary..."
-                      required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
-                    />
-                  </div>
-
-                  {bookFile && !isExtractingMetadata && (
-                    <p className="text-[10px] text-gray-400 dark:text-neutral-600 flex items-center gap-1.5 italic">
-                      <FiCheck className="text-emerald-500 shrink-0" />
-                      Fields prefilled from file — edit freely.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
-                <Button
-                  type="submit"
-                  isLoading={isUploading || isExtractingMetadata}
-                  icon={<FiArrowRight className="text-sm" />}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
-                >
-                  Continue...
-                  <span>Continue...</span>
-                  <FiArrowRight className="text-sm inline" />
-                </Button>
-              </div>
-            </motion.form>
-          ) : (
-            <motion.form
-              key="step2"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              onSubmit={handleStep2Submit}
-              className="space-y-12"
-            >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-6">
+                  <FormSelect<any, false>
+                    label="Category"
+                    icon={<FiLayout />}
+                    options={categoryOptions}
+                    isLoading={isLoadingCategories}
+                    placeholder="Select Category"
+                    onChange={(opt: any) =>
+                      setFormData({
+                        ...formData,
+                        category: opt?.value || "",
+                      })
+                    }
+                    value={
+                      categoryOptions.find(
+                        (opt) => opt.value === formData.category,
+                      ) || null
+                    }
+                  />
                   <FormSelect<any, false>
                     label="Department"
                     icon={<FiBookOpen />}
@@ -643,17 +776,87 @@ export default function UploadPage() {
                     }
                   />
                   <div className="space-y-1.5">
-                    <Label>Publisher</Label>
+                    <Label>Pages</Label>
                     <input
-                      value={formData.publisher}
+                      type="number"
+                      value={formData.pages}
                       onChange={(e) =>
-                        setFormData({ ...formData, publisher: e.target.value })
+                        setFormData({ ...formData, pages: e.target.value })
                       }
-                      placeholder="e.g. Pearson, O'Reilly"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      placeholder="0"
+                      required
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-1.5 pt-4">
+                  <Label>Short Description</Label>
+                  <textarea
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Provide a brief summary of the book (min. 10 characters)..."
+                    required
+                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+                <Button
+                  type="submit"
+                  isLoading={isUploading}
+                  disabled={
+                    isExtractingMetadata ||
+                    !bookFile ||
+                    !coverFile ||
+                    !formData.title ||
+                    !formData.author ||
+                    !formData.category ||
+                    !formData.pages ||
+                    formData.description.length < 10
+                  }
+                  icon={<FiArrowRight className="text-sm" />}
+                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
+                >
+                  Confirm Essentials & Upload
+                  <span>Continue...</span>
+                  <FiArrowRight className="text-sm inline" />
+                </Button>
+              </div>
+            </motion.form>
+          ) : (
+            <motion.form
+              key="step2"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              onSubmit={handleStep2Submit}
+              className="space-y-12"
+            >
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Publisher</Label>
+                      <input
+                        value={formData.publisher}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            publisher: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. Pearson"
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
                     <div className="space-y-1.5">
                       <Label>Published Year</Label>
                       <input
@@ -669,18 +872,20 @@ export default function UploadPage() {
                         className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <Label>ISBN</Label>
-                      <input
-                        value={formData.isbn}
-                        onChange={(e) =>
-                          setFormData({ ...formData, isbn: e.target.value })
-                        }
-                        placeholder="Optional"
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                      />
-                    </div>
                   </div>
+
+                  <div className="space-y-1.5">
+                    <Label>ISBN</Label>
+                    <input
+                      value={formData.isbn}
+                      onChange={(e) =>
+                        setFormData({ ...formData, isbn: e.target.value })
+                      }
+                      placeholder="Optional"
+                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+
                   <div className="space-y-1.5">
                     <Label>Tags (Comma separated)</Label>
                     <input
@@ -747,6 +952,7 @@ export default function UploadPage() {
                   <Button
                     type="submit"
                     isLoading={isUpdating}
+                    disabled={!isStep2FormComplete}
                     className="px-12 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest"
                   >
                     Confirm Donation
