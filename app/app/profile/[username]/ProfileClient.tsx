@@ -36,7 +36,6 @@ import { selectCurrentUser } from "@/app/store";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility } from "@/app/types/folder";
 import { shareContent } from "@/app/helpers/share";
-import { useDeleteBookMutation } from "@/app/store/api/booksApi";
 
 interface ProfileClientProps {
   username: string;

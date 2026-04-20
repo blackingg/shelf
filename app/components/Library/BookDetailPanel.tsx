@@ -26,9 +26,12 @@ import {
   useBookActions,
   useMyRating,
   useRatingActions,
+  useGetBookBySlugQuery,
 } from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
+import processDescription from "@/app/helpers/processDescription";
+import { DeleteModal } from "./DeleteConfirmationModal";
 
 export const BookDetailPanel: React.FC<{
   book: BookPreview | null;
@@ -40,7 +43,8 @@ export const BookDetailPanel: React.FC<{
   if (!isDonationsPage) {
     isDonationsPage = false;
   }
-  const { addNotification } = useNotifications();
+  const { data: bookDetails } = useGetBookBySlugQuery(String(book?.slug));
+  const [bookDeleteOverlayState, showBookDeleteOverlay] = useState(false);
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const { isBookmarked } = useIsBookBookmarked(book?.id || "");
   const { toggleBookmark } = useBookBookmarkActions();
@@ -210,7 +214,7 @@ export const BookDetailPanel: React.FC<{
                     About this resource
                   </h3>
                   <p className="text-sm indent-6 text-emerald-50/80 max-h-60 text-ellipsis overflow-clip whitespace-normal text-justify leading-relaxed font-medium">
-                    BOOK DETAILS
+                    {processDescription(String(bookDetails?.description))}
                   </p>
                 </div>
 
@@ -253,7 +257,12 @@ export const BookDetailPanel: React.FC<{
                         <span>Edit Book Details</span>
                       </button>
 
-                      <button className="flex-1 h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:text-red-600 hover:border hover:border-red-600">
+                      <button
+                        className="flex-1 h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:text-red-600 hover:border hover:border-red-600"
+                        onClick={() => {
+                          showBookDeleteOverlay(true);
+                        }}
+                      >
                         <FiDelete className="w-4 h-4" />
                         <span>Delete Book</span>
                       </button>
@@ -303,6 +312,11 @@ export const BookDetailPanel: React.FC<{
           </>
         )}
       </AnimatePresence>
+      <DeleteModal
+        isOpen={bookDeleteOverlayState}
+        book={book}
+        onClose={() => showBookDeleteOverlay(false)}
+      />
     </>
   );
 };
