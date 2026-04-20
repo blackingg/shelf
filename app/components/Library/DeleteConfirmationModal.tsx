@@ -1,25 +1,26 @@
 "use client";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useDeleteBookMutation } from "@/app/store/api/booksApi";
 import { Book, BookPreview } from "@/app/types/book";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiTrash, FiX } from "react-icons/fi";
+import { useBookActions } from "@/app/services";
+import { SpinnerLoader } from "../Loader/SpinnerLoader";
 
 export const DeleteModal: React.FC<{
   isOpen: boolean;
   book: BookPreview | null;
   onClose: () => void;
 }> = ({ isOpen, book, onClose }) => {
-  const [deleteBook, { isLoading: isDeleting }] = useDeleteBookMutation();
+  const { actions: bookActions, isDeleting } = useBookActions();
   const [inputSlug, updateInputSlug] = useState("");
   const { addNotification } = useNotifications();
   const router = useRouter();
 
   const deleteHandler = async (id: string) => {
     if (inputSlug === book?.slug) {
-      await deleteBook(id).unwrap();
+      await bookActions.deleteBook(id);
       addNotification("success", "Book Deleted Successfully");
       onClose();
       router.push("/app/library");
@@ -60,7 +61,7 @@ export const DeleteModal: React.FC<{
           <div className="md:my-4">
             <p className="text-xl">
               Are you sure you want to permanently delete{" "}
-              <span className="font-bold">{book.title}</span> from Shelf?
+              <span className="font-bold">{book?.title}</span> from Shelf?
             </p>
             <p className="text-sm font-light my-1">
               Once taken, this action cannot be reversed
@@ -68,7 +69,7 @@ export const DeleteModal: React.FC<{
           </div>
           <p>
             Please enter the following slug to confirm:
-            <span className="font-bold block">{book.slug} </span>
+            <span className="font-bold block">{book?.slug} </span>
           </p>
           <input
             type="text"
@@ -81,14 +82,11 @@ export const DeleteModal: React.FC<{
           >
             {isDeleting ? (
               <>
-                <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
-                <p>Deleting...</p>
+                <SpinnerLoader />
+                Deleting...
               </>
             ) : (
-              <>
-                <FiTrash className="inline h-6 w-6" />
-                <span>Delete Book</span>
-              </>
+              <span>Delete Item</span>
             )}
           </button>
         </motion.div>

@@ -29,8 +29,6 @@ import {
 } from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
 
 export const BookDetailPanel: React.FC<{
   book: BookPreview | null;
@@ -171,8 +169,6 @@ export const BookDetailPanel: React.FC<{
                         <p className="underline">Book Details</p>
                         <p>Category: {book?.category}</p>
                         <p>Pages: {book?.pages}</p>
-                        <p>Date Donated: {donatedDate} </p>
-                        <p>Date Modified: {updatedDate}</p>
                       </div>
                     )}
                   </div>
@@ -214,8 +210,7 @@ export const BookDetailPanel: React.FC<{
                     About this resource
                   </h3>
                   <p className="text-sm indent-6 text-emerald-50/80 max-h-60 text-ellipsis overflow-clip whitespace-normal text-justify leading-relaxed font-medium">
-                    {moreBookDetails &&
-                      processDescription(moreBookDetails.description)}
+                    BOOK DETAILS
                   </p>
                 </div>
 
@@ -258,13 +253,7 @@ export const BookDetailPanel: React.FC<{
                         <span>Edit Book Details</span>
                       </button>
 
-                      <button
-                        className="flex-1 h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:text-red-600 hover:border hover:border-red-600"
-                        onClick={() => {
-                          showBookDeleteOverlay(true);
-                          console.log(bookDeleteOverlayState);
-                        }}
-                      >
+                      <button className="flex-1 h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:text-red-600 hover:border hover:border-red-600">
                         <FiDelete className="w-4 h-4" />
                         <span>Delete Book</span>
                       </button>
@@ -288,17 +277,13 @@ export const BookDetailPanel: React.FC<{
                   )}
                 </div>
 
-                <div
-                  className={`relative ${user?.username == book?.donor?.username ? "gap-x-4" : ""}`}
-                >
+                <div>
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
                     className=" w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
                   >
                     <div className="flex items-center gap-3">
-                      <FiFolderPlus
-                        className={`${user?.username == book?.donor?.username ? `w-8 h-8` : `w-4 h-4`}`}
-                      />
+                      <FiFolderPlus />
                       <span>Add to Folder</span>
                     </div>
                     <FiChevronDown
@@ -318,11 +303,6 @@ export const BookDetailPanel: React.FC<{
           </>
         )}
       </AnimatePresence>
-      <DeleteModal
-        isOpen={bookDeleteOverlayState}
-        book={book}
-        onClose={() => showBookDeleteOverlay(false)}
-      />
     </>
   );
 };

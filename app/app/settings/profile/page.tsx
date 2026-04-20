@@ -18,6 +18,7 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";
 import { FormSelect } from "@/app/components/Form/FormSelect";
+import { useCompleteOnboardingMutation } from "@/app/services";
 
 interface OptionType {
   value: string;
@@ -61,7 +62,7 @@ export default function SettingsProfilePage() {
     }
   }, [user]);
 
-  const schoolOptions: OptionType[] = schools?.map((school) => ({
+  const schoolOptions: OptionType[] = schools?.map((school: any) => ({
     value: school.id,
     label: school.name,
   }));
@@ -105,17 +106,12 @@ export default function SettingsProfilePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const updatedUser = await updateMe
-        .mutateAsync({
-          fullName: formData.name,
-          username: formData.username,
-          bio: formData.bio,
-        })
-        .unwrap();
-      await completeOnboarding({
-        schoolId: formData.schoolId,
-        departmentId: formData.departmentId,
+      const updatedUser = await updateMe.mutateAsync({
+        fullName: formData.name,
+        username: formData.username,
+        bio: formData.bio,
       });
+      await useCompleteOnboardingMutation();
       dispatch(setUser(updatedUser));
       addNotification("success", "Profile updated successfully!");
     } catch (error) {
@@ -161,7 +157,7 @@ export default function SettingsProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
-                <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
+                <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
                   {user?.avatar ? (
                     <img
                       src={user.avatar}

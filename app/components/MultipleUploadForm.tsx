@@ -4,9 +4,11 @@ import {
   metadataParse,
   prepareForUpload,
 } from "../app/books/upload/documentHandlingFunctions";
-import { useUploadBookMutation } from "../store/api/booksApi";
+
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
+import { useUpload } from "../hooks/useUpload";
+import { useBookActions } from "../services";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
@@ -18,13 +20,18 @@ export default function MultipleUploadForm({
 }: {
   files: FileList | null;
 }) {
+  const {
+    actions: bookActions,
+    isCreating: isUploading,
+    isUpdating,
+  } = useBookActions();
   const inputRef = useRef<HTMLInputElement>(null);
   let filesNew = files ? Array.from(files) : null;
   const [filesToBeUploaded, updateFilesToBeUploaded] = useState<File[] | null>(
     filesNew,
   );
   const [isLoading, updateLoadingState] = useState(false);
-  const [uploadBook] = useUploadBookMutation();
+
   const { addNotification } = useNotifications();
   const router = useRouter();
 
@@ -46,7 +53,7 @@ export default function MultipleUploadForm({
       if (shapeReal.cover_image) {
         formValues.append("cover_image", shapeReal.cover_image);
       }
-      await uploadBook(formValues).unwrap();
+      await bookActions.createBook(formValues);
     } catch (error) {
       console.error(error);
     }

@@ -292,7 +292,8 @@ export default function UploadPage() {
 
       if (formData.department) {
         const selectedId = departments.find(
-          (d) => d.id === formData.department || d.slug === formData.department,
+          (d: any) =>
+            d.id === formData.department || d.slug === formData.department,
         )?.id;
         if (selectedId) formValues.append("department", selectedId);
       }
@@ -344,7 +345,7 @@ export default function UploadPage() {
     try {
       const selectedDepartmentId = formData.department
         ? departments.find(
-            (dept) =>
+            (dept: any) =>
               dept.id === formData.department ||
               dept.slug === formData.department,
           )?.id
@@ -388,11 +389,11 @@ export default function UploadPage() {
     }
   };
 
-  const departmentOptions = departments.map((dept) => ({
+  const departmentOptions = departments.map((dept: any) => ({
     value: dept.id,
     label: dept.name,
   }));
-  const categoryOptions = categoriesData.map((cat) => ({
+  const categoryOptions = categoriesData.map((cat: any) => ({
     value: cat.name,
     label: cat.name,
   }));
@@ -425,61 +426,61 @@ export default function UploadPage() {
     );
   }
 
-  if (!isAuthorized) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-sm p-8"
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
-              Administrative Access
-            </h1>
-          </div>
-          <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
-            Please enter the authorization password to continue to the document
-            upload pipeline.
-          </p>
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label>Access Password</Label>
-              <div className="relative group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
-                    authError
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-neutral-800"
-                  } text-sm outline-none focus:border-emerald-500 transition-all`}
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-                >
-                  {showPassword ? (
-                    <FiEyeOff className="text-lg" />
-                  ) : (
-                    <FiEye className="text-lg" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
-              Continue
-            </Button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
+  // if (!isAuthorized) {
+  //   return (
+  //     <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+  //       <motion.div
+  //         initial={{ opacity: 0, y: 20 }}
+  //         animate={{ opacity: 1, y: 0 }}
+  //         className="w-full max-sm p-8"
+  //       >
+  //         <div className="flex items-center gap-3 mb-8">
+  //           <div className="h-8 w-1 bg-emerald-500"></div>
+  //           <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+  //             Administrative Access
+  //           </h1>
+  //         </div>
+  //         <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
+  //           Please enter the authorization password to continue to the document
+  //           upload pipeline.
+  //         </p>
+  //         <form onSubmit={handlePasswordSubmit} className="space-y-6">
+  //           <div className="space-y-2">
+  //             <Label>Access Password</Label>
+  //             <div className="relative group">
+  //               <input
+  //                 type={showPassword ? "text" : "password"}
+  //                 value={password}
+  //                 onChange={(e) => setPassword(e.target.value)}
+  //                 className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
+  //                   authError
+  //                     ? "border-red-500"
+  //                     : "border-gray-200 dark:border-neutral-800"
+  //                 } text-sm outline-none focus:border-emerald-500 transition-all`}
+  //                 placeholder="••••••••"
+  //                 required
+  //               />
+  //               <button
+  //                 type="button"
+  //                 onClick={() => setShowPassword(!showPassword)}
+  //                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
+  //               >
+  //                 {showPassword ? (
+  //                   <FiEyeOff className="text-lg" />
+  //                 ) : (
+  //                   <FiEye className="text-lg" />
+  //                 )}
+  //               </button>
+  //             </div>
+  //           </div>
+  //           <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+  //             Continue
+  //           </Button>
+  //         </form>
+  //       </motion.div>
+  //     </div>
+  //   );
+  // }
 
   if (isAuthLoading) {
     return (
@@ -494,61 +495,61 @@ export default function UploadPage() {
     );
   }
 
-  if (!isAuthorized) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-sm p-8"
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
-              Administrative Access
-            </h1>
-          </div>
-          <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
-            Please enter the authorization password to continue to the document
-            upload pipeline.
-          </p>
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label>Access Password</Label>
-              <div className="relative group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
-                    authError
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-neutral-800"
-                  } text-sm outline-none focus:border-emerald-500 transition-all`}
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-                >
-                  {showPassword ? (
-                    <FiEyeOff className="text-lg" />
-                  ) : (
-                    <FiEye className="text-lg" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
-              Continue
-            </Button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
+  // if (!isAuthorized) {
+  //   return (
+  //     <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+  //       <motion.div
+  //         initial={{ opacity: 0, y: 20 }}
+  //         animate={{ opacity: 1, y: 0 }}
+  //         className="w-full max-sm p-8"
+  //       >
+  //         <div className="flex items-center gap-3 mb-8">
+  //           <div className="h-8 w-1 bg-emerald-500"></div>
+  //           <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+  //             Administrative Access
+  //           </h1>
+  //         </div>
+  //         <p className="text-gray-500 dark:text-neutral-500 text-sm mb-10 leading-relaxed">
+  //           Please enter the authorization password to continue to the document
+  //           upload pipeline.
+  //         </p>
+  //         <form onSubmit={handlePasswordSubmit} className="space-y-6">
+  //           <div className="space-y-2">
+  //             <Label>Access Password</Label>
+  //             <div className="relative group">
+  //               <input
+  //                 type={showPassword ? "text" : "password"}
+  //                 value={password}
+  //                 onChange={(e) => setPassword(e.target.value)}
+  //                 className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
+  //                   authError
+  //                     ? "border-red-500"
+  //                     : "border-gray-200 dark:border-neutral-800"
+  //                 } text-sm outline-none focus:border-emerald-500 transition-all`}
+  //                 placeholder="••••••••"
+  //                 required
+  //               />
+  //               <button
+  //                 type="button"
+  //                 onClick={() => setShowPassword(!showPassword)}
+  //                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
+  //               >
+  //                 {showPassword ? (
+  //                   <FiEyeOff className="text-lg" />
+  //                 ) : (
+  //                   <FiEye className="text-lg" />
+  //                 )}
+  //               </button>
+  //             </div>
+  //           </div>
+  //           <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+  //             Continue
+  //           </Button>
+  //         </form>
+  //       </motion.div>
+  //     </div>
+  //   );
+  // }
 
   return bookCount <= 1 ? (
     <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
@@ -753,7 +754,7 @@ export default function UploadPage() {
                     }
                     value={
                       categoryOptions.find(
-                        (opt) => opt.value === formData.category,
+                        (opt: any) => opt.value === formData.category,
                       ) || null
                     }
                   />
@@ -771,7 +772,7 @@ export default function UploadPage() {
                     }
                     value={
                       departmentOptions.find(
-                        (opt) => opt.value === formData.department,
+                        (opt: any) => opt.value === formData.department,
                       ) || null
                     }
                   />
@@ -970,7 +971,7 @@ export default function UploadPage() {
         className="justify-self-end grid p-1 my-2 text-xl rounded-xl bg-red-600"
         onClick={() => updateBookCount(0)}
       >
-        Clear Books
+        CLEAR BOOKS
       </button>
       <MultipleUploadForm files={multiplesList} />
     </div>
