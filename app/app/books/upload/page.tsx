@@ -679,7 +679,7 @@ export default function UploadPage() {
                     icon={<FiBookOpen />}
                     options={departmentOptions}
                     isLoading={isLoadingDepts}
-                    placeholder="Academic Department"
+                    placeholder="Department"
                     onChange={(opt: any) =>
                       setFormData({
                         ...formData,
@@ -845,10 +845,6 @@ export default function UploadPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="pt-4 mt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center gap-2 text-[10px] text-gray-500 italic">
-                    <FiAlertCircle className="text-xs shrink-0" />
-                    <span>You can still edit core fields here.</span>
-                  </div>
                 </div>
               </div>
 
@@ -861,9 +857,6 @@ export default function UploadPage() {
                   <FiArrowLeft className="text-sm" /> Back to Upload
                 </button>
                 <div className="flex items-center gap-4">
-                  <div className="hidden md:flex items-center gap-2 text-[10px] font-medium uppercase text-gray-400 tracking-tighter mr-4">
-                    <FiAlertCircle /> Final Review
-                  </div>
                   <Button
                     type="submit"
                     isLoading={isUpdating}
