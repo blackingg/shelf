@@ -9,9 +9,6 @@ const mutex = new Mutex();
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Request Interceptor: Inject Bearer Token
