@@ -351,9 +351,9 @@ export default function UploadPage() {
         pages: parseInt(formData.pages) || 0,
       };
 
-      await bookActions.updateBook(uploadedBookId, payload);
+      const result = await bookActions.updateBook(uploadedBookId, payload);
       addNotification("success", "Book details updated and donation complete!");
-      router.push("/app/discover");
+      router.push(`/app/books/${result.slug}`);
     } catch (error) {
       addNotification(
         "error",
