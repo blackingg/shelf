@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
+import { FolderIcon } from "./FolderIcon";
 import { shareContent } from "@/app/helpers/share";
 import {
   useIsFolderBookmarked,
@@ -76,13 +77,6 @@ export const FolderCard: React.FC<FolderCardProps> = ({
     e.stopPropagation();
     await toggleBookmark(folder.id, isBookmarked);
   };
-
-  const coverImage = folder.coverImage;
-  const hasCover =
-    coverImage &&
-    (coverImage.startsWith("/") ||
-      coverImage.startsWith("http://") ||
-      coverImage.startsWith("https://"));
 
   return (
     <div
@@ -172,32 +166,10 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       </div>
 
       <div className="relative">
-        {hasCover && (
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70%] z-0">
-            <div className="relative w-full h-16 sm:h-20 -top-2 rounded-t-md overflow-hidden border border-gray-100 dark:border-white/10">
-              <Image
-                src={coverImage}
-                alt="Folder cover"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`relative z-10 transition-opacity duration-200 ${
-            hasCover ? "mt-4" : ""
-          }`}
-        >
-          <Image
-            src="/folder.svg"
-            alt="Folder"
-            width={278}
-            height={194}
-            className={`w-full h-auto transition-all duration-300 ${
-              !isPublic ? "grayscale-[50%] opacity-85 dark:opacity-75" : ""
-            }`}
+        <div className="relative z-10 transition-opacity duration-200">
+          <FolderIcon
+            visibility={folder.visibility}
+            booksCount={folder.booksCount}
           />
         </div>
       </div>
@@ -229,7 +201,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
               </div>
             )}
           </div>
-          <span className="truncate max-w-[80px]">
+          <span className="truncate max-w-20">
             {folder.user?.username || "User"}
           </span>
         </div>

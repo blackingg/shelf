@@ -336,7 +336,6 @@ export default function LibraryPage() {
               showActions={true}
               isLoading={isLoadingMyFolders}
               emptyMessage="No folders found. Create your first folder!"
-              className={isFetchingMyFolders ? "opacity-50" : ""}
             />
 
             {myFoldersTotalPages > 1 && (
