@@ -1,5 +1,5 @@
+import { FiFolder } from "react-icons/fi";
 import { FolderCard, FolderCardSkeleton } from "./FolderCard";
-import { FolderIcon } from "./FolderIcon";
 import { Folder, Collaborator } from "@/app/types/folder";
 
 interface FolderGridProps {
@@ -41,11 +41,8 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
         className={`min-h-[50vh] flex items-center justify-center ${className}`}
       >
         <div className="text-center py-16">
-          <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-            <FolderIcon
-              visibility="PUBLIC"
-              booksCount={0}
-            />
+          <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden text-gray-400 dark:text-neutral-500">
+            <FiFolder className="w-8 h-8" />
           </div>
           <p className="text-gray-500 dark:text-neutral-400 text-lg">
             {emptyMessage}
