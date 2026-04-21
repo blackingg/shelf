@@ -13,6 +13,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import FolderListSkeleton from "@/app/components/Skeletons/FolderListSkeleton";
+import { FolderIcon } from "./FolderIcon";
 
 interface FolderListProps {
   folders: (Folder & { collaborator?: Collaborator })[];
@@ -104,13 +105,12 @@ export const FolderList: React.FC<FolderListProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-4">
                       <div
-                        className={`w-10 h-10 rounded-md flex items-center justify-center border border-gray-100 dark:border-neutral-800 ${
-                          folder.visibility === "PUBLIC"
-                            ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
-                            : "bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
-                        }`}
+                        className="w-10 h-10 rounded-md flex items-center justify-center overflow-hidden"
                       >
-                        <FiFolder className="w-5 h-5" />
+                        <FolderIcon
+                          visibility={folder.visibility}
+                          booksCount={folder.booksCount}
+                        />
                       </div>
                       <div>
                         <div className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
