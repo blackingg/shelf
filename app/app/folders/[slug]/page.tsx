@@ -10,7 +10,6 @@ import {
   FiEdit2,
   FiTrash2,
   FiShare2,
-  FiCamera,
   FiBookmark,
   FiLock,
 } from "react-icons/fi";
@@ -23,6 +22,7 @@ import {
   useIsFolderBookmarked,
   useBookmarkFolderActions,
 } from "@/app/services";
+import { FolderIcon } from "@/app/components/Folders/FolderIcon";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
 
@@ -36,7 +36,6 @@ export default function FolderDetailsPage() {
   const { folder, isLoading, error } = useFolderBySlug(slug);
   const {
     actions,
-    isUploadingCover,
     isRemoving: isRemovingBook,
   } = useFolderActions();
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
@@ -58,15 +57,6 @@ export default function FolderDetailsPage() {
     setShowMenu(false);
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !folder) return;
-
-    const formData = new FormData();
-    formData.append("coverImage", file);
-
-    await actions.uploadCover(folder.id, formData);
-  };
 
   const handleToggleBookmark = async () => {
     if (!folder) return;
@@ -154,40 +144,12 @@ export default function FolderDetailsPage() {
           <div className="space-y-6 md:space-y-10">
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
               <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
-                <div className="relative group/cover">
-                  <div
-                    className={`w-20 h-20 md:w-24 md:h-24 rounded-md shrink-0 flex items-center justify-center overflow-hidden border transition-all duration-300 ${
-                      folder.visibility === "PUBLIC"
-                        ? "bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border-gray-100 dark:border-white/5"
-                        : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-500 border-gray-200 dark:border-neutral-700/50 grayscale-50 opacity-90"
-                    }`}
-                  >
-                    {folder.coverImage ? (
-                      <img
-                        src={folder.coverImage}
-                        alt={folder.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <FiFolder className="w-10 h-10" />
-                    )}
-                  </div>
-                  {canEdit && (
-                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-md opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer text-white">
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleCoverUpload}
-                        disabled={isUploadingCover}
-                      />
-                      {isUploadingCover ? (
-                        <div className="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <FiCamera className="w-6 h-6" />
-                      )}
-                    </label>
-                  )}
+                <div className="shrink-0">
+                  <FolderIcon
+                    visibility={folder.visibility}
+                    booksCount={folder.booksCount}
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-md overflow-hidden"
+                  />
                 </div>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">
