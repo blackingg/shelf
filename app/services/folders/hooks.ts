@@ -220,8 +220,9 @@ export const useFolderActions = () => {
 
   const createFolder = async (data: CreateFolderRequest) => {
     try {
-      await createMutation.mutateAsync(data);
+      const folder = await createMutation.mutateAsync(data);
       addNotification("success", "Folder created successfully");
+      return folder;
     } catch (err: any) {
       addNotification("error", err.message || "Failed to create folder");
     }
