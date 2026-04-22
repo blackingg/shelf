@@ -10,7 +10,9 @@ import {
   useIsBookBookmarked,
   useBookBookmarkActions,
 } from "@/app/services";
-import { BookCardProps } from "@/app/types/book";
+import { BookCardProps, BookPreview } from "@/app/types/book";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "@/app/store";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -25,7 +27,8 @@ export const BookCard: React.FC<BookCardProps> = ({
   onDelete,
   className = "",
 }) => {
-  const { isBookmarked } = useIsBookBookmarked(id || "");
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isBookmarked } = useIsBookBookmarked(id || "", { enabled: isAuthenticated });
   const { toggleBookmark } = useBookBookmarkActions();
   const [showMenu, setShowMenu] = useState(false);
 
@@ -59,7 +62,7 @@ export const BookCard: React.FC<BookCardProps> = ({
         )}
 
         <div className="absolute top-1.5 right-1.5 flex items-center space-x-1.5 z-20">
-          {id && (
+          {isAuthenticated && id && (
             <button
               onClick={handleBookmark}
               className={`p-1.5 rounded-md transition-all duration-200 ${
