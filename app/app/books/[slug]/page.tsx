@@ -44,9 +44,7 @@ export async function generateMetadata({
   }
 
   const title = `${book.title} by ${book.author}`;
-  const description = book.description
-    ? book.description.slice(0, 160)
-    : `Read ${book.title} by ${book.author} on Shelf — a community-driven book library.`;
+  const description = book.description;
   const image = book.coverImage || "/logo.png";
 
   return {
