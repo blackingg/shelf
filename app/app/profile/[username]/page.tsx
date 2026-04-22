@@ -25,9 +25,22 @@ export async function generateMetadata({
   const user = await getUser(username);
 
   if (!user) {
+    const title = "User Not Found";
+    const description = "This profile could not be found.";
     return {
-      title: "User Not Found",
-      description: "This profile could not be found.",
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: ["/logo.png"],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: ["/logo.png"],
+      },
     };
   }
 

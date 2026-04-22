@@ -58,7 +58,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const isOwner = currentUser?.username === username;
   const { addNotification } = useNotifications();
 
-  const { actions: userActions } = useUser();
+  const { actions: userActions } = useUser({ enabled: !!currentUser });
   const { actions: folderActions } = useFolderActions();
 
   const { user, isLoading: isLoadingUser } = useUserByUsername(username);

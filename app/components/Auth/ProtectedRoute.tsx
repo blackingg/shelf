@@ -3,11 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  logout,
-  selectCurrentUser,
-  selectIsAuthenticated,
-} from "@/app/store";
+import { logout, selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { useGetMeQuery } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
@@ -45,7 +41,7 @@ export default function ProtectedRoute({
 
   // Handle 401/403 — token is expired or invalid, force logout
   useEffect(() => {
-    if (!meError) return;
+    if (!meError || isPublicPath) return;
     const status = (meError as { status?: number })?.status;
     const detail = (meError as { data?: { detail?: string } })?.data?.detail;
 

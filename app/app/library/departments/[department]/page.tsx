@@ -24,9 +24,22 @@ export async function generateMetadata({
   const department = await getDepartment(slug);
 
   if (!department) {
+    const title = "Department Not Found";
+    const description = "This department could not be found.";
     return {
-      title: "Department Not Found",
-      description: "This department could not be found.",
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: ["/logo.png"],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: ["/logo.png"],
+      },
     };
   }
 
