@@ -17,12 +17,13 @@ interface CategoryBooksResponse {
   books: PaginatedResponse<Book>;
 }
 
-export const useGetDiscoverFeedQuery = () => {
+export const useGetDiscoverFeedQuery = (options?: { enabled?: boolean }) => {
   return useQuery<DiscoveryFeedResponse>({
     queryKey: discoverKeys.recommendations(),
     queryFn: () => api.get<DiscoveryFeedResponse>("/recommendations/discover"),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 };
 
@@ -45,8 +46,8 @@ export const useGetDiscoverBooksByCategoryQuery = (slug: string, params?: any) =
 
 // --- Domain Hooks ---
 
-export const useDiscoverFeed = () => {
-  const { data, isLoading, error } = useGetDiscoverFeedQuery();
+export const useDiscoverFeed = (options?: { enabled?: boolean }) => {
+  const { data, isLoading, error } = useGetDiscoverFeedQuery(options);
   
   return {
     recommendations: data || null,

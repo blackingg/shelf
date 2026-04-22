@@ -79,23 +79,25 @@ export const useRemoveBookmarkMutation = () => {
   });
 };
 
-export const useGetIsBookBookmarkedQuery = (bookId: string) => {
+export const useGetIsBookBookmarkedQuery = (bookId: string, options?: { enabled?: boolean }) => {
   return useQuery<BookmarkedStatus>({
     queryKey: bookmarkKeys.bookStatus(bookId),
     queryFn: () =>
       api.get<BookmarkedStatus>(`/books/${bookId}/bookmarked`),
-    enabled: !!bookId,
+    enabled: !!bookId && (options?.enabled ?? true),
+    ...options,
   });
 };
 
-export const useGetIsFolderBookmarkedQuery = (folderId: string) => {
+export const useGetIsFolderBookmarkedQuery = (folderId: string, options?: { enabled?: boolean }) => {
   return useQuery<BookmarkedStatus>({
     queryKey: bookmarkKeys.folderStatus(folderId),
     queryFn: () =>
       api.get<BookmarkedStatus>(
         `/folders/${folderId}/bookmarked`,
       ),
-    enabled: !!folderId,
+    enabled: !!folderId && (options?.enabled ?? true),
+    ...options,
   });
 };
 
@@ -176,8 +178,8 @@ export const useBookmarkedFolders = (params: any = {}, options?: { enabled?: boo
   };
 };
 
-export const useIsFolderBookmarked = (folderId: string) => {
-  const { data, isLoading } = useGetIsFolderBookmarkedQuery(folderId);
+export const useIsFolderBookmarked = (folderId: string, options?: { enabled?: boolean }) => {
+  const { data, isLoading } = useGetIsFolderBookmarkedQuery(folderId, options);
   return { isBookmarked: data?.bookmarked || false, isLoading };
 };
 
@@ -207,8 +209,8 @@ export const useBookmarkFolderActions = () => {
   };
 };
 
-export const useIsBookBookmarked = (bookId: string) => {
-  const { data, isLoading } = useGetIsBookBookmarkedQuery(bookId);
+export const useIsBookBookmarked = (bookId: string, options?: { enabled?: boolean }) => {
+  const { data, isLoading } = useGetIsBookBookmarkedQuery(bookId, options);
   return { isBookmarked: data?.bookmarked || false, isLoading };
 };
 
