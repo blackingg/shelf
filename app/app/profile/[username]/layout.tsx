@@ -24,20 +24,16 @@ export async function generateMetadata({
 
   if (!user) {
     return {
-      title: "User Not Found | Shelf",
+      title: "User Not Found",
       description: "This profile could not be found.",
     };
   }
 
-  const title = `${user.fullName} (@${user.username}) | Shelf`;
+  const title = `${user.fullName} (@${user.username})`;
   const description = user.bio
     ? user.bio.slice(0, 160)
     : `Explore ${user.fullName}'s profile on Shelf.`;
-  const image =
-    user.avatar &&
-    (user.avatar.startsWith("http://") || user.avatar.startsWith("https://"))
-      ? user.avatar
-      : "/logo.png";
+  const image = user.avatar || "/logo.png";
 
   return {
     title,

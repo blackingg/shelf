@@ -24,21 +24,16 @@ export async function generateMetadata({
 
   if (!book) {
     return {
-      title: "Book Not Found | Shelf",
+      title: "Book Not Found",
       description: "This book could not be found in the Shelf library.",
     };
   }
 
-  const title = `${book.title} by ${book.author} | Shelf`;
+  const title = `${book.title} by ${book.author}`;
   const description = book.description
     ? book.description.slice(0, 160)
     : `Read ${book.title} by ${book.author} on Shelf — a community-driven book library.`;
-  const image =
-    book.coverImage &&
-    (book.coverImage.startsWith("http://") ||
-      book.coverImage.startsWith("https://"))
-      ? book.coverImage
-      : "/logo.png";
+  const image = book.coverImage || "/logo.png";
 
   return {
     title,

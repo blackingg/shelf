@@ -23,18 +23,18 @@ export async function generateMetadata({
 
   if (slug === "all") {
     return {
-      title: "All Categories | Shelf",
+      title: "All Categories",
       description:
         "Browse the full Shelf collection across all categories and disciplines.",
       openGraph: {
-        title: "All Categories | Shelf",
+        title: "All Categories",
         description:
           "Browse the full Shelf collection across all categories and disciplines.",
         images: [{ url: "/logo.png", alt: "Shelf" }],
       },
       twitter: {
         card: "summary_large_image",
-        title: "All Categories | Shelf",
+        title: "All Categories",
         description:
           "Browse the full Shelf collection across all categories and disciplines.",
         images: ["/logo.png"],
@@ -46,12 +46,12 @@ export async function generateMetadata({
 
   if (!category) {
     return {
-      title: "Category Not Found | Shelf",
+      title: "Category Not Found",
       description: "This category could not be found.",
     };
   }
 
-  const title = `${category.name} | Shelf`;
+  const title = category.name;
   const description = category.description
     ? category.description.slice(0, 160)
     : `Explore community-curated resources for ${category.name} on Shelf.`;

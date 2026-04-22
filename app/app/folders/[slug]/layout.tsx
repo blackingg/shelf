@@ -24,21 +24,16 @@ export async function generateMetadata({
 
   if (!folder) {
     return {
-      title: "Folder Not Found | Shelf",
+      title: "Folder Not Found",
       description: "This folder could not be found.",
     };
   }
 
-  const title = `${folder.name} | Shelf`;
+  const title = folder.name;
   const description = folder.description
     ? folder.description.slice(0, 160)
     : `Explore the "${folder.name}" collection on Shelf — a community-driven book library.`;
-  const image =
-    folder.coverImage &&
-    (folder.coverImage.startsWith("http://") ||
-      folder.coverImage.startsWith("https://"))
-      ? folder.coverImage
-      : "/logo.png";
+  const image = folder.coverImage || "/logo.png";
 
   return {
     title,

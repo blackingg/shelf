@@ -31,7 +31,10 @@ export const metadata: Metadata = {
       { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
     ],
   },
-  title: "Shelf",
+  title: {
+    default: "Shelf",
+    template: "%s | Shelf",
+  },
   description: "Community-driven book collections",
   manifest: "/manifest.json",
   appleWebApp: {
