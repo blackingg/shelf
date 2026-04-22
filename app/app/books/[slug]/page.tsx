@@ -24,9 +24,22 @@ export async function generateMetadata({
   const book = await getBook(slug);
 
   if (!book) {
+    const title = "Book Not Found";
+    const description = "This book could not be found.";
     return {
-      title: "Book Not Found",
-      description: "This book could not be found in the Shelf library.",
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: ["/logo.png"],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: ["/logo.png"],
+      },
     };
   }
 

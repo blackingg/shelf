@@ -24,9 +24,22 @@ export async function generateMetadata({
   const category = await getCategory(slug);
 
   if (!category) {
+    const title = "Category Not Found";
+    const description = "This category could not be found.";
     return {
-      title: "Category Not Found",
-      description: "This category could not be found.",
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: ["/logo.png"],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: ["/logo.png"],
+      },
     };
   }
 
