@@ -25,7 +25,7 @@ export async function generateMetadata({
 
   if (!folder) {
     const title = "Folder Not Found";
-    const description = "This collection could not be found.";
+    const description = "This folder could not be found.";
     return {
       title,
       description,
