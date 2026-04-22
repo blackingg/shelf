@@ -10,7 +10,7 @@ import {
 import { Book } from "@/app/types/book";
 
 interface BooksTableProps {
-  books: Book[];
+  books: (Partial<Book> & { id: string; title: string; author: string })[];
   onBookClick: (id: string) => void;
   folderId?: string;
   onRemoveBook?: (bookId: string) => void;

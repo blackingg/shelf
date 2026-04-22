@@ -41,7 +41,7 @@ export interface FolderItem {
   id: string;
   order: number;
   addedAt: string;
-  book: Book;
+  book: Partial<Book> & { id: string; slug: string; title: string; author: string };
 }
 
 export interface CreateFolderRequest {

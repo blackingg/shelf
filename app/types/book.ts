@@ -11,12 +11,12 @@ export interface Book {
   title: string;
   author: string;
   coverImage: string;
-  category?: string;
-  rating?: number;
-  ratingsCount?: number;
-  pages?: number;
-  featured?: boolean;
-  description?: string;
+  category: string;
+  rating: number;
+  ratingsCount: number;
+  pages: number;
+  featured: boolean;
+  description: string;
   fileUrl?: string | null;
   fileSize?: number | null;
   fileType?: string | null;
