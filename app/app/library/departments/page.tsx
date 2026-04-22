@@ -9,7 +9,7 @@ import {
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { useDepartments } from "@/app/services";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
@@ -27,7 +27,8 @@ export default function DepartmentsPage() {
   const userDepartmentName = user?.department?.name;
   const userDepartmentSlug = userDepartment?.slug || null;
 
-  const [viewDepartments, setViewDepartments] = useState(false);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
   const departmentSkeletonCount = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
     4,
@@ -50,19 +51,21 @@ export default function DepartmentsPage() {
               </p>
             </div>
 
-            <button
-              onClick={toggleViewDepartments}
-              className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
-            >
-              {!viewDepartments ? (
-                <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
-              ) : (
-                <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
-              )}
-              <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
-                {!viewDepartments ? "Explore All" : "Close Gallery"}
-              </span>
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={toggleViewDepartments}
+                className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
+              >
+                {!viewDepartments ? (
+                  <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
+                ) : (
+                  <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                )}
+                <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
+                  {!viewDepartments ? "Explore All" : "Close Gallery"}
+                </span>
+              </button>
+            )}
           </div>
 
           <AnimatePresence>
