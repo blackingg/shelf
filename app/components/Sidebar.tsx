@@ -6,17 +6,17 @@ import {
   FiBook,
   FiSettings,
   FiLogOut,
-  FiHeart,
   FiCompass,
   FiBookOpen,
-  FiCheckCircle,
   FiBriefcase,
+  FiLogIn,
+  FiUserPlus,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
-import { useDispatch } from "react-redux";
-import { logout } from "../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectIsAuthenticated } from "../store/authSlice";
 
 interface SidebarItem {
   label: string;
@@ -24,12 +24,15 @@ interface SidebarItem {
   href?: string;
   badge?: number;
   onClick?: () => void;
+  /** If true, only show when authenticated */
+  requiresAuth?: boolean;
 }
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
 
   const handleLogout = () => {
@@ -39,22 +42,46 @@ export const Sidebar: React.FC = () => {
 
   const mainItems: SidebarItem[] = [
     { label: "Discover", icon: <FiCompass />, href: "/app/discover" },
-    { label: "My Library", icon: <FiBook />, href: "/app/library" },
     {
-      label: "My Department",
+      label: "My Library",
+      icon: <FiBook />,
+      href: "/app/library",
+      requiresAuth: true,
+    },
+    {
+      label: isAuthenticated ? "My Department" : "Departments",
       icon: <FiBriefcase />,
       href: "/app/library/departments",
     },
-    { label: "Viewer", icon: <FiBookOpen />, href: "/app/upload-and-read" },
-    // { label: "Donate Book", icon: <FiHeart />, href: "/app/books/upload" },
-
-    // { label: "Moderator", icon: <FiCheckCircle />, href: "/app/moderator" },
+    {
+      label: "Viewer",
+      icon: <FiBookOpen />,
+      href: "/app/upload-and-read",
+      requiresAuth: true,
+    },
   ];
 
-  const bottomItems: SidebarItem[] = [
+  const visibleMainItems = mainItems.filter(
+    (item) => !item.requiresAuth || isAuthenticated,
+  );
+
+  const authenticatedBottomItems: SidebarItem[] = [
     { label: "Settings", icon: <FiSettings />, href: "/app/settings/profile" },
     { label: "Logout", icon: <FiLogOut />, onClick: handleLogout },
   ];
+
+  const guestBottomItems: SidebarItem[] = [
+    { label: "Log in", icon: <FiLogIn />, href: "/app/auth/login" },
+    {
+      label: "Create account",
+      icon: <FiUserPlus />,
+      href: "/app/auth/register",
+    },
+  ];
+
+  const bottomItems = isAuthenticated
+    ? authenticatedBottomItems
+    : guestBottomItems;
 
   const isActive = (href: string) => {
     if (pathname === href) return true;
@@ -96,7 +123,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {mainItems.map((item) => (
+          {visibleMainItems.map((item) => (
             <Link
               key={item.href}
               href={item.href!}
@@ -128,11 +155,19 @@ export const Sidebar: React.FC = () => {
               );
             }
 
+            // Use accent styling for guest CTA buttons
+            const isGuestCTA = !isAuthenticated;
+            const isRegister = item.label === "Create account";
+
             return (
               <Link
                 key={item.href}
                 href={item.href!}
-                className="flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-colors duration-150"
+                className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150 ${
+                  isGuestCTA && isRegister
+                    ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                }`}
               >
                 <span className="w-4 h-4 shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
@@ -179,7 +214,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
-          {mainItems.map((item) => (
+          {visibleMainItems.map((item) => (
             <Link
               key={item.href}
               href={item.href!}
@@ -215,12 +250,19 @@ export const Sidebar: React.FC = () => {
               );
             }
 
+            const isGuestCTA = !isAuthenticated;
+            const isRegister = item.label === "Create account";
+
             return (
               <Link
                 key={item.href}
                 href={item.href!}
                 onClick={() => setShowSideBar(false)}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-colors duration-150"
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base transition-colors duration-150 ${
+                  isGuestCTA && isRegister
+                    ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                }`}
               >
                 <span className="w-5 h-5 shrink-0">{item.icon}</span>
                 <span className="font-medium">{item.label}</span>
