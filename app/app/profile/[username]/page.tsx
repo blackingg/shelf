@@ -25,7 +25,7 @@ export async function generateMetadata({
   const user = await getUser(username);
 
   if (!user) {
-    const title = "User Not Found";
+    const title = "Profile Not Found";
     const description = "This profile could not be found.";
     return {
       title,
