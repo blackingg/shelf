@@ -25,7 +25,15 @@ async function PDFPromise(buffer: ArrayBuffer) {
       category: "Fiction",
     };
   } else {
-    throw new Error("Metadata Not Identified");
+    return {
+      title: "",
+      author: "",
+      publisher: "",
+      description: "",
+      publishedYear: "",
+      pages: 0,
+      category: "",
+    };
   }
 }
 
@@ -47,7 +55,15 @@ export async function metadataParse(buffer: ArrayBuffer) {
         category: "Fiction",
       };
     } else {
-      throw new Error("Metadata Not Identified");
+      return {
+        title: "",
+        author: "",
+        publisher: "",
+        description: "",
+        publishedYear: "",
+        pages: 0,
+        category: "",
+      };
     }
   } else {
     const pdfParsedMetadata = await PDFPromise(buffer);

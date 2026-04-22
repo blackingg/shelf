@@ -771,8 +771,6 @@ export default function UploadPage() {
                   className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
                 >
                   Confirm Essentials & Upload
-                  <span>Continue...</span>
-                  <FiArrowRight className="text-sm inline" />
                 </Button>
               </div>
             </motion.form>
