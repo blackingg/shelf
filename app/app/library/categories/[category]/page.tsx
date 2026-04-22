@@ -1,59 +1,60 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import CategoryClient from "./CategoryClient";
 
-interface PageProps {
-  params: Promise<{
-    category: string;
-  }>;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 async function getCategory(slug: string) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${API_BASE_URL}/categories/slug/${slug}`, {
+    const res = await fetch(`${API_BASE}/categories/${slug}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (error) {
-    console.error("Error fetching category for metadata:", error);
+  } catch {
     return null;
   }
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
-  const { category } = await params;
-  const categoryData = await getCategory(category);
+}: {
+  params: Promise<{ category: string }>;
+}): Promise<Metadata> {
+  const { category: slug } = await params;
+  const category = await getCategory(slug);
 
-  if (!categoryData) {
+  if (!category) {
     return {
       title: "Category Not Found",
+      description: "This category could not be found.",
     };
   }
 
-  const title = categoryData.name;
-  const description = categoryData.description || `Explore resources in the ${categoryData.name} category on Shelf.`;
+  const title = category.name;
+  const description = category.description
+    ? category.description.slice(0, 160)
+    : `Browse resources in the ${category.name} category on Shelf.`;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${title} | Shelf`,
+      title,
       description,
-      type: "website",
+      type: "article",
     },
     twitter: {
       card: "summary",
-      title: `${title} | Shelf`,
+      title,
       description,
     },
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { category } = await params;
-
-  return <CategoryClient categorySlug={category} />;
+export default function Page({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  return <CategoryClient params={params} />;
 }

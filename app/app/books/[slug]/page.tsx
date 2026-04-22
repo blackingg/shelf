@@ -1,71 +1,59 @@
-import { Metadata } from "next";
-import BookDetailsClient from "./BookDetailsClient";
+import type { Metadata } from "next";
+import BookClient from "./BookClient";
 
-interface PageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 async function getBook(slug: string) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${API_BASE_URL}/books/slug/${slug}`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+    const res = await fetch(`${API_BASE}/books/slug/${slug}`, {
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (error) {
-    console.error("Error fetching book for metadata:", error);
+  } catch {
     return null;
   }
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const book = await getBook(slug);
 
   if (!book) {
     return {
       title: "Book Not Found",
+      description: "This book could not be found in the Shelf library.",
     };
   }
 
-  const title = book.title;
-  const description = book.description 
-    ? book.description.substring(0, 160) 
-    : `Read ${book.title} by ${book.author} on Shelf.`;
+  const title = `${book.title} by ${book.author}`;
+  const description = book.description
+    ? book.description.slice(0, 160)
+    : `Read ${book.title} by ${book.author} on Shelf — a community-driven book library.`;
   const image = book.coverImage || "/logo.png";
 
   return {
     title,
     description,
     openGraph: {
-      title: `${title} | Shelf`,
+      title,
       description,
-      images: [
-        {
-          url: image,
-          width: 800,
-          height: 1200,
-          alt: title,
-        },
-      ],
-      type: "book",
+      images: [{ url: image, alt: book.title }],
+      type: "article",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | Shelf`,
+      title,
       description,
       images: [image],
     },
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
-
-  return <BookDetailsClient slug={slug} />;
+export default function Page() {
+  return <BookClient />;
 }

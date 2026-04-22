@@ -1,62 +1,58 @@
-import { Metadata } from "next";
-import FolderDetailsClient from "./FolderDetailsClient";
+import type { Metadata } from "next";
+import FolderClient from "./FolderClient";
 
-interface PageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 async function getFolder(slug: string) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${API_BASE_URL}/folders/slug/${slug}`, {
+    const res = await fetch(`${API_BASE}/folders/slug/${slug}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (error) {
-    console.error("Error fetching folder for metadata:", error);
+  } catch {
     return null;
   }
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const folder = await getFolder(slug);
 
   if (!folder) {
     return {
       title: "Folder Not Found",
+      description: "This collection could not be found.",
     };
   }
 
   const title = folder.name;
-  const description = folder.description || `Browse the ${folder.name} collection on Shelf.`;
-  const image = "/logo.png";
+  const description = folder.description
+    ? folder.description.slice(0, 160)
+    : `Explore the "${folder.name}" collection on Shelf — a community-driven book library.`;
+  const image = folder.coverImage || "/logo.png";
 
   return {
     title,
     description,
     openGraph: {
-      title: `${title} | Shelf`,
+      title,
       description,
-      images: [{ url: image }],
-      type: "website",
+      images: [{ url: image, alt: folder.name }],
     },
     twitter: {
-      card: "summary_large_image",
-      title: `${title} | Shelf`,
+      card: "summary",
+      title,
       description,
       images: [image],
     },
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
-
-  return <FolderDetailsClient slug={slug} />;
+export default function Page() {
+  return <FolderClient />;
 }

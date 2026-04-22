@@ -1,25 +1,23 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DepartmentSkeleton from "@/app/components/Skeletons/DepartmentSkeleton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { FiSearch } from "react-icons/fi";
-import {
-  useBooksByDepartment,
-  useDepartmentBySlug,
-} from "@/app/services";
+import { useBooksByDepartment, useDepartmentBySlug } from "@/app/services";
 import { BookPreview } from "@/app/types/book";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
-interface DepartmentClientProps {
-  departmentSlug: string;
-}
-
-export default function DepartmentClient({ departmentSlug }: DepartmentClientProps) {
+export default function DepartmentClient({
+  params,
+}: {
+  params: Promise<{ department: string }>;
+}) {
+  const resolvedParams = use(params);
+  const slug = resolvedParams.department;
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,15 +40,15 @@ export default function DepartmentClient({ departmentSlug }: DepartmentClientPro
 
   useEffect(() => {
     setPage(1);
-  }, [sortBy, order, departmentSlug]);
+  }, [sortBy, order, slug]);
 
-  const { department, isLoading: isLoadingDept } = useDepartmentBySlug(departmentSlug);
+  const { department, isLoading: isLoadingDept } = useDepartmentBySlug(slug);
   const {
     books,
     totalPages,
     total: totalBooks,
     isFetching: isFetchingBooks,
-  } = useBooksByDepartment(departmentSlug, {
+  } = useBooksByDepartment(slug, {
     page,
     limit: pageSize,
     sort_by: sortBy,

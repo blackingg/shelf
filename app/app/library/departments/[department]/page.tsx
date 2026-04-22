@@ -1,59 +1,60 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import DepartmentClient from "./DepartmentClient";
 
-interface PageProps {
-  params: Promise<{
-    department: string;
-  }>;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 async function getDepartment(slug: string) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${API_BASE_URL}/departments/slug/${slug}`, {
+    const res = await fetch(`${API_BASE}/departments/${slug}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (error) {
-    console.error("Error fetching department for metadata:", error);
+  } catch {
     return null;
   }
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
-  const { department } = await params;
-  const deptData = await getDepartment(department);
+}: {
+  params: Promise<{ department: string }>;
+}): Promise<Metadata> {
+  const { department: slug } = await params;
+  const department = await getDepartment(slug);
 
-  if (!deptData) {
+  if (!department) {
     return {
       title: "Department Not Found",
+      description: "This department could not be found.",
     };
   }
 
-  const title = deptData.name;
-  const description = deptData.description || `Explore resources in the ${deptData.name} department at ${deptData.school?.name || "Shelf"}.`;
+  const title = department.name;
+  const description = department.description
+    ? department.description.slice(0, 160)
+    : `Browse resources in the ${department.name} department at ${department.school?.name || "Shelf"}.`;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${title} | Shelf`,
+      title,
       description,
-      type: "website",
+      type: "article",
     },
     twitter: {
       card: "summary",
-      title: `${title} | Shelf`,
+      title,
       description,
     },
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { department } = await params;
-
-  return <DepartmentClient departmentSlug={department} />;
+export default function Page({
+  params,
+}: {
+  params: Promise<{ department: string }>;
+}) {
+  return <DepartmentClient params={params} />;
 }

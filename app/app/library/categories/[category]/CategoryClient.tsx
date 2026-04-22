@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CategorySkeleton from "@/app/components/Skeletons/CategorySkeleton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
@@ -12,11 +11,13 @@ import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
-interface CategoryClientProps {
-  categorySlug: string;
-}
-
-export default function CategoryClient({ categorySlug }: CategoryClientProps) {
+export default function CategoryClient({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  const resolvedParams = use(params);
+  const slug = resolvedParams.category;
   const router = useRouter();
 
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
@@ -49,7 +50,7 @@ export default function CategoryClient({ categorySlug }: CategoryClientProps) {
     total: totalBooks,
     isLoading: isLoadingBooks,
     isFetching: isFetchingBooks,
-  } = useBooksByCategory(categorySlug, commonBooksParams);
+  } = useBooksByCategory(slug, commonBooksParams);
 
   const isLoadingCategory = isLoadingBooks;
 

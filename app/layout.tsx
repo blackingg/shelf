@@ -35,8 +35,7 @@ export const metadata: Metadata = {
     default: "Shelf",
     template: "%s | Shelf",
   },
-  description:
-    "A community-driven digital library for preserving and sharing academic resources.",
+  description: "Community-driven book collections",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

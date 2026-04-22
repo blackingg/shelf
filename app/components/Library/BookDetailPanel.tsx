@@ -16,12 +16,12 @@ import { useState, useRef, useEffect } from "react";
 import { FolderDropdown } from "./FolderDropdown";
 import { BookPreview } from "@/app/types/book";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { 
-  useIsBookBookmarked, 
+import {
+  useIsBookBookmarked,
   useBookBookmarkActions,
   useBookActions,
-  useMyRating, 
-  useRatingActions 
+  useMyRating,
+  useRatingActions,
 } from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
@@ -103,13 +103,7 @@ export const BookDetailPanel: React.FC<{
             <div className="flex-1 overflow-y-auto custom-scrollbar pt-10 md:pt-12 pr-1">
               <div className="relative aspect-2/3 w-36 sm:w-44 md:w-56 mx-auto rounded-md overflow-hidden border border-emerald-700/50 mb-6 md:mb-8 group">
                 <img
-                  src={
-                    book?.coverImage &&
-                    (book.coverImage.startsWith("/") ||
-                      book.coverImage.startsWith("http"))
-                      ? book.coverImage
-                      : "/dummycover.png"
-                  }
+                  src={book?.coverImage || "/dummycover.png"}
                   alt={book?.title || ""}
                   className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
