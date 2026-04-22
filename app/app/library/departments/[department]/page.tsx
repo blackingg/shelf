@@ -44,9 +44,7 @@ export async function generateMetadata({
   }
 
   const title = department.name;
-  const description = department.description
-    ? department.description.slice(0, 160)
-    : `Browse resources in the ${department.name} department at ${department.school?.name || "Shelf"}.`;
+  const description = department.description;
 
   return {
     title,

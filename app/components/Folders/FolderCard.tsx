@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
 import { FolderIcon } from "./FolderIcon";
 import { shareContent } from "@/app/helpers/share";
@@ -70,7 +70,8 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
 
-  const { isBookmarked } = useIsFolderBookmarked(folder.id);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isBookmarked } = useIsFolderBookmarked(folder.id, { enabled: isAuthenticated });
   const { toggleBookmark } = useBookmarkFolderActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -84,19 +85,21 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       className="group cursor-pointer relative"
     >
       <div className="absolute top-1.5 right-1.5 z-20 flex items-center space-x-1.5">
-        <button
-          onClick={handleBookmark}
-          className={`p-1.5 rounded-md transition-all duration-200 ${
-            isBookmarked
-              ? "bg-emerald-600 text-white shadow-sm"
-              : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
-          }`}
-          title={isBookmarked ? "Remove Bookmark" : "Bookmark Folder"}
-        >
-          <FiBookmark
-            className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
-          />
-        </button>
+        {isAuthenticated && (
+          <button
+            onClick={handleBookmark}
+            className={`p-1.5 rounded-md transition-all duration-200 ${
+              isBookmarked
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
+            }`}
+            title={isBookmarked ? "Remove Bookmark" : "Bookmark Folder"}
+          >
+            <FiBookmark
+              className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
+            />
+          </button>
+        )}
 
         {showActions && hasActions && (
           <div className="relative">
