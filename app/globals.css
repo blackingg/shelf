@@ -5,7 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #044c41;
+  --primary: #072c0b;
   --primary-foreground: #ffffff;
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
@@ -29,7 +29,7 @@
   --color-emerald-400: #2dd4be;
   --color-emerald-500: #14b8a5;
   --color-emerald-600: #0d9488;
-  --color-emerald-700: #044c41;
+  --color-emerald-700: #072c0b;
   --color-emerald-800: #064038;
   --color-emerald-900: #06352f;
   --color-emerald-950: #021f1b; */
