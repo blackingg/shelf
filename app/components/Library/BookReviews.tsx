@@ -55,7 +55,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
             placeholder="Write a review..."
-            className="w-full bg-gray-50 dark:bg-emerald-900/20 border border-gray-200 dark:border-emerald-800/50 rounded-md px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-emerald-100/30 outline-none focus:border-emerald-500/50 min-h-[80px] resize-none transition-colors"
+            className="w-full bg-gray-50 dark:bg-emerald-900/20 border border-gray-200 dark:border-emerald-800/50 rounded-md px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-emerald-100/30 outline-none focus:border-emerald-500/50 min-h-20 resize-none transition-colors"
           />
           <button
             type="submit"
@@ -84,9 +84,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
                   className="flex items-center space-x-3 transition-opacity hover:opacity-80"
                 >
                   <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-100 dark:bg-emerald-800 relative flex items-center justify-center text-[10px] font-bold shrink-0 border border-gray-200 dark:border-emerald-700/50 text-gray-600 dark:text-emerald-100">
-                    {review.user?.avatar &&
-                    (review.user.avatar.startsWith("/") ||
-                      review.user.avatar.startsWith("http")) ? (
+                    {review.user?.avatar ? (
                       <Image
                         src={review.user.avatar}
                         alt={review.user.username}

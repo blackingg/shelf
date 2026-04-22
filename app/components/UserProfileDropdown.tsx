@@ -65,8 +65,7 @@ export const UserProfileDropdown: React.FC = () => {
         {isAuthenticated && user ? (
           <>
             <div className="w-8 h-8 md:w-9 md:h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm font-bold border border-emerald-100 dark:border-emerald-800/50">
-              {userAvatar &&
-              (userAvatar.startsWith("/") || userAvatar.startsWith("http")) ? (
+              {userAvatar ? (
                 <img
                   src={userAvatar}
                   alt="User"
@@ -123,9 +122,7 @@ export const UserProfileDropdown: React.FC = () => {
                   <div className="p-5 border-b border-gray-100 dark:border-neutral-800">
                     <div className="flex items-center gap-4">
                       <div className="w-11 h-11 rounded-md flex items-center justify-center bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-white font-bold text-lg shrink-0 overflow-hidden border border-gray-100 dark:border-neutral-700/50">
-                        {userAvatar &&
-                        (userAvatar.startsWith("/") ||
-                          userAvatar.startsWith("http")) ? (
+                        {userAvatar ? (
                           <img
                             src={userAvatar}
                             alt={userName}
