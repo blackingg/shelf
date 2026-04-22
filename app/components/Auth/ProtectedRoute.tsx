@@ -12,6 +12,13 @@ import { useGetMeQuery } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = ["/", "/docs/privacy", "/docs/terms"];
+const PUBLIC_DYNAMIC_PREFIXES = [
+  "/app/folders/",
+  "/app/books/",
+  "/app/profile/",
+  "/app/library/departments/",
+  "/app/library/categories/",
+];
 
 export default function ProtectedRoute({
   children,
@@ -26,7 +33,9 @@ export default function ProtectedRoute({
   const [isChecking, setIsChecking] = useState(true);
 
   const isPublicPath = pathname
-    ? PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/app/auth")
+    ? PUBLIC_PATHS.includes(pathname) ||
+      pathname.startsWith("/app/auth") ||
+      PUBLIC_DYNAMIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
     : true;
 
   const shouldFetchMe = isAuthenticated && !isPublicPath;
