@@ -14,15 +14,11 @@ type DepartmentsListResponse =
 
 async function getDepartment(slug: string) {
   try {
-    const res = await fetch(`${API_BASE}/departments`, {
+    const res = await fetch(`${API_BASE}/departments/${slug}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
-    const data = (await res.json()) as DepartmentsListResponse;
-
-    const departments = Array.isArray(data) ? data : data.items || [];
-
-    return departments.find((department) => department.slug === slug) || null;
+    return (await res.json()) as DepartmentListItem;
   } catch {
     return null;
   }
@@ -38,12 +34,12 @@ export async function generateMetadata({
 
   if (!department) {
     return {
-      title: "Department Not Found | Shelf",
+      title: "Department Not Found",
       description: "This department could not be found.",
     };
   }
 
-  const title = `${department.name} | Shelf`;
+  const title = department.name;
   const description = department.description
     ? department.description.slice(0, 160)
     : `Browse resources from the ${department.name} department on Shelf.`;

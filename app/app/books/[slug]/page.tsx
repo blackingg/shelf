@@ -88,13 +88,7 @@ export default function BookDetailsPage() {
                 >
                   <div className="relative aspect-2/3 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
                     <img
-                      src={
-                        book.coverImage &&
-                        (book.coverImage.startsWith("/") ||
-                          book.coverImage.startsWith("http"))
-                          ? book.coverImage
-                          : "/dummycover.png"
-                      }
+                      src={book.coverImage || "/dummycover.png"}
                       alt={book.title}
                       className="object-cover"
                     />

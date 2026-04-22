@@ -42,14 +42,7 @@ export const BookCard: React.FC<BookCardProps> = ({
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <img
-          src={
-            coverImage &&
-            (coverImage.startsWith("/") ||
-              coverImage.startsWith("http://") ||
-              coverImage.startsWith("https://"))
-              ? coverImage
-              : "/dummycover.png"
-          }
+          src={coverImage || "/dummycover.png"}
           alt={title}
           className="object-cover h-full w-full"
         />
