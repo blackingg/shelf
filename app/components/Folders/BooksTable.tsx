@@ -25,7 +25,10 @@ const BooksTable = ({
   canEdit = false,
 }: BooksTableProps) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,7 +42,10 @@ const BooksTable = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleMenuToggle = (e: React.MouseEvent<HTMLButtonElement>, bookId: string) => {
+  const handleMenuToggle = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    bookId: string,
+  ) => {
     e.stopPropagation();
     if (activeMenuId === bookId) {
       setActiveMenuId(null);
@@ -66,15 +72,6 @@ const BooksTable = ({
               <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
                 Author
               </th>
-              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-                Category
-              </th>
-              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-                Department
-              </th>
-              <th className="px-6 py-4 text-center text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-                Pages
-              </th>
               <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
                 Actions
               </th>
@@ -89,37 +86,34 @@ const BooksTable = ({
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-4">
-                    <div className="w-8 h-10 bg-emerald-50 dark:bg-emerald-900/10 rounded-sm flex-shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-100/20 dark:border-emerald-500/10">
-                      <FiFile className="w-4 h-4" />
+                    <div className="w-8 h-10 bg-gray-50 dark:bg-neutral-800 rounded-sm flex-shrink-0 overflow-hidden border border-gray-100 dark:border-white/5">
+                      {book.coverImage ? (
+                        <img
+                          src={book.coverImage}
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <FiFile className="w-4 h-4" />
+                        </div>
+                      )}
                     </div>
-                    <div className="max-w-[200px]">
+                    <div className="max-w-[300px]">
                       <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {book.title}
                       </div>
-                      <div className="text-[10px] text-gray-400 dark:text-neutral-500 truncate mt-0.5">
-                        {book.description || "No description available"}
-                      </div>
+                      {book.description && (
+                        <div className="text-[10px] text-gray-400 dark:text-neutral-500 truncate mt-0.5">
+                          {book.description}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-[13px] text-gray-600 dark:text-neutral-400">
                     {book.author}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-[11px] text-gray-500 dark:text-neutral-500 uppercase tracking-tight">
-                    {book.category}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-[11px] text-gray-500 dark:text-neutral-500 uppercase tracking-tight">
-                    {book.department?.replace(/-/g, " ") || "N/A"}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <div className="text-[13px] text-gray-600 dark:text-neutral-400">
-                    {book.pages}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
