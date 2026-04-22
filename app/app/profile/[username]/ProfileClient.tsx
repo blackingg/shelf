@@ -58,7 +58,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const isOwner = currentUser?.username === username;
   const { addNotification } = useNotifications();
 
-  const { actions: userActions } = useUser();
+  const { actions: userActions } = useUser({ enabled: !!currentUser });
   const { actions: folderActions } = useFolderActions();
 
   const { user, isLoading: isLoadingUser } = useUserByUsername(username);
@@ -148,7 +148,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     if (!url || !user) return;
 
     await shareContent({
-      title: `${user.fullName} (@${user.username}) | Shelf`,
+      title: `${user.fullName} (@${user.username})`,
       text: `Check out ${user.fullName}'s book collections and library on Shelf.`,
       url: url,
     });
@@ -200,9 +200,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
               <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
                 <div className="w-full h-full rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-emerald-600 dark:text-emerald-400 overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
-                  {user.avatar &&
-                  (user.avatar.startsWith("/") ||
-                    user.avatar.startsWith("http")) ? (
+                  {user.avatar ? (
                     <img
                       src={user.avatar}
                       alt={user.fullName}

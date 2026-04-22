@@ -10,8 +10,9 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
+import { FolderIcon } from "./FolderIcon";
 import { shareContent } from "@/app/helpers/share";
 import {
   useIsFolderBookmarked,
@@ -69,7 +70,8 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
 
-  const { isBookmarked } = useIsFolderBookmarked(folder.id);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isBookmarked } = useIsFolderBookmarked(folder.id, { enabled: isAuthenticated });
   const { toggleBookmark } = useBookmarkFolderActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -77,32 +79,27 @@ export const FolderCard: React.FC<FolderCardProps> = ({
     await toggleBookmark(folder.id, isBookmarked);
   };
 
-  const coverImage = folder.coverImage;
-  const hasCover =
-    coverImage &&
-    (coverImage.startsWith("/") ||
-      coverImage.startsWith("http://") ||
-      coverImage.startsWith("https://"));
-
   return (
     <div
       onClick={onClick}
       className="group cursor-pointer relative"
     >
       <div className="absolute top-1.5 right-1.5 z-20 flex items-center space-x-1.5">
-        <button
-          onClick={handleBookmark}
-          className={`p-1.5 rounded-md transition-all duration-200 ${
-            isBookmarked
-              ? "bg-emerald-600 text-white shadow-sm"
-              : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
-          }`}
-          title={isBookmarked ? "Remove Bookmark" : "Bookmark Folder"}
-        >
-          <FiBookmark
-            className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
-          />
-        </button>
+        {isAuthenticated && (
+          <button
+            onClick={handleBookmark}
+            className={`p-1.5 rounded-md transition-all duration-200 ${
+              isBookmarked
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
+            }`}
+            title={isBookmarked ? "Remove Bookmark" : "Bookmark Folder"}
+          >
+            <FiBookmark
+              className={`w-3.5 h-3.5 ${isBookmarked ? "fill-current" : ""}`}
+            />
+          </button>
+        )}
 
         {showActions && hasActions && (
           <div className="relative">
@@ -172,32 +169,10 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       </div>
 
       <div className="relative">
-        {hasCover && (
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70%] z-0">
-            <div className="relative w-full h-16 sm:h-20 -top-2 rounded-t-md overflow-hidden border border-gray-100 dark:border-white/10">
-              <Image
-                src={coverImage}
-                alt="Folder cover"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`relative z-10 transition-opacity duration-200 ${
-            hasCover ? "mt-4" : ""
-          }`}
-        >
-          <Image
-            src="/folder.svg"
-            alt="Folder"
-            width={278}
-            height={194}
-            className={`w-full h-auto transition-all duration-300 ${
-              !isPublic ? "grayscale-[50%] opacity-85 dark:opacity-75" : ""
-            }`}
+        <div className="relative z-10 transition-opacity duration-200">
+          <FolderIcon
+            visibility={folder.visibility}
+            booksCount={folder.booksCount}
           />
         </div>
       </div>
@@ -229,7 +204,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
               </div>
             )}
           </div>
-          <span className="truncate max-w-[80px]">
+          <span className="truncate max-w-20">
             {folder.user?.username || "User"}
           </span>
         </div>

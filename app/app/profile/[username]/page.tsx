@@ -1,43 +1,53 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import ProfileClient from "./ProfileClient";
+import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 
-interface PageProps {
-  params: Promise<{
-    username: string;
-  }>;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 async function getUser(username: string) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${username}`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+    const res = await fetch(`${API_BASE}/users/${username}`, {
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (error) {
-    console.error("Error fetching user for metadata:", error);
+  } catch {
     return null;
   }
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
   const { username } = await params;
-  const decodedUsername = decodeURIComponent(username);
-  const user = await getUser(decodedUsername);
+  const user = await getUser(username);
 
   if (!user) {
+    const title = "Profile Not Found";
+    const description = "This profile could not be found.";
     return {
-      title: "User Not Found | Shelf",
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: ["/logo.png"],
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+        images: ["/logo.png"],
+      },
     };
   }
 
-  const title = `${user.fullName} (@${decodedUsername}) | Shelf`;
-  const description =
-    user.bio ||
-    `Check out ${user.fullName}'s book collections and donations on Shelf.`;
+  const title = `${user.fullName} (@${user.username})`;
+  const description = user.bio
+    ? user.bio.slice(0, 160)
+    : `Explore ${user.fullName}'s profile on Shelf.`;
   const image = user.avatar || "/logo.png";
 
   return {
@@ -46,19 +56,11 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      images: [
-        {
-          url: image,
-          width: 400,
-          height: 400,
-          alt: user.fullName,
-        },
-      ],
+      images: [{ url: image, alt: user.fullName }],
       type: "profile",
-      username: decodedUsername,
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary",
       title,
       description,
       images: [image],
@@ -66,9 +68,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
   const { username } = await params;
-  const decodedUsername = decodeURIComponent(username);
-
-  return <ProfileClient username={decodedUsername} />;
+  return <ProfileClient username={username} />;
 }

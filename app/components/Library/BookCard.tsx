@@ -7,11 +7,9 @@ import { FiStar, FiBookmark, FiMoreVertical, FiShare2 } from "react-icons/fi";
 import { shareContent } from "@/app/helpers/share";
 import { useState } from "react";
 import { useIsBookBookmarked, useBookBookmarkActions } from "@/app/services";
-import { BookCardProps } from "@/app/types/book";
-import { motion } from "motion/react";
+import { BookCardProps, BookPreview } from "@/app/types/book";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store/authSlice";
-import { useNotifications } from "@/app/context/NotificationContext";
+import { selectIsAuthenticated } from "@/app/store";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -26,9 +24,10 @@ export const BookCard: React.FC<BookCardProps> = ({
   onDelete,
   className = "",
 }) => {
-  const { addNotification } = useNotifications();
-  const { isBookmarked } = useIsBookBookmarked(id || "");
-
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isBookmarked } = useIsBookBookmarked(id || "", {
+    enabled: isAuthenticated,
+  });
   const { toggleBookmark } = useBookBookmarkActions();
   const [showMenu, setShowMenu] = useState(false);
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -44,14 +43,7 @@ export const BookCard: React.FC<BookCardProps> = ({
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <img
-          src={
-            coverImage &&
-            (coverImage.startsWith("/") ||
-              coverImage.startsWith("http://") ||
-              coverImage.startsWith("https://"))
-              ? coverImage
-              : "/dummycover.png"
-          }
+          src={coverImage || "/dummycover.png"}
           alt={title}
           className="object-cover h-full w-full"
         />
@@ -68,7 +60,7 @@ export const BookCard: React.FC<BookCardProps> = ({
         )}
 
         <div className="absolute top-1.5 right-1.5 flex items-center space-x-1.5 z-20">
-          {id && (
+          {isAuthenticated && id && (
             <button
               onClick={handleBookmark}
               className={`p-1.5 rounded-md transition-all duration-200 ${

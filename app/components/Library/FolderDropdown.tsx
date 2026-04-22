@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { FiFolder, FiPlus, FiCheck, FiAlertCircle, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
-
 import { useMeFolders, useFolderActions } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 
@@ -29,7 +28,11 @@ export const FolderDropdown: React.FC<{
 
   const handleCreateFolder = async () => {
     if (newFolderName.trim() && !isCreating) {
-      await actions.createFolder({ name: newFolderName.trim() });
+      const folder = await actions.createFolder({ name: newFolderName.trim() });
+      if (folder && bookId) {
+        await actions.addBookToFolder(folder.id, bookId);
+        onClose();
+      }
       setNewFolderName("");
       setIsCreatingNew(false);
     }

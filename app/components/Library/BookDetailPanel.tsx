@@ -113,6 +113,14 @@ export const BookDetailPanel: React.FC<{
                 <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
               </button>
 
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-10 md:pt-12 pr-1">
+              <div className="relative aspect-2/3 w-36 sm:w-44 md:w-56 mx-auto rounded-md overflow-hidden border border-emerald-700/50 mb-6 md:mb-8 group">
+                <img
+                  src={book?.coverImage || "/dummycover.png"}
+                  alt={book?.title || ""}
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
+                />
+              </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar pt-10 md:pt-12 pr-1">
                 <div
                   className={`${isDonationsPage ? "grid md:grid-cols-3 md:gap-x-4 items-center" : ""}`}

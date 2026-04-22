@@ -62,8 +62,8 @@ export const useAddBookToFolderMutation = () => {
   return useMutation({
     mutationFn: ({ folderId, bookId }: { folderId: string; bookId: string }) =>
       api.post(`/folders/${folderId}/books`, { bookId }),
-    onSuccess: (_, { folderId }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(folderId) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -73,8 +73,8 @@ export const useRemoveBookFromFolderMutation = () => {
   return useMutation({
     mutationFn: ({ id, bookId }: { id: string; bookId: string }) =>
       api.delete(`/folders/${id}/books/${bookId}`),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -84,8 +84,8 @@ export const useUploadFolderCoverMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: FormData }) =>
       api.post<Folder>(`/folders/${id}/cover`, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -125,8 +125,8 @@ export const useInviteCollaboratorMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: { userId: string; role: string } }) =>
       api.post(`/collaboration/folders/${id}/invite`, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(id) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -136,8 +136,8 @@ export const useRemoveCollaboratorMutation = () => {
   return useMutation({
     mutationFn: ({ folderId, collaboratorId }: { folderId: string; collaboratorId: string }) =>
       api.delete(`/collaboration/folders/${folderId}/collaborators/${collaboratorId}`),
-    onSuccess: (_, { folderId }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(folderId) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -147,8 +147,8 @@ export const useUpdateCollaborationSettingsMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: { allowCollaboration: boolean; requireApproval: boolean } }) =>
       api.patch(`/folders/${id}/collaboration`, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -220,8 +220,9 @@ export const useFolderActions = () => {
 
   const createFolder = async (data: CreateFolderRequest) => {
     try {
-      await createMutation.mutateAsync(data);
+      const folder = await createMutation.mutateAsync(data);
       addNotification("success", "Folder created successfully");
+      return folder;
     } catch (err: any) {
       addNotification("error", err.message || "Failed to create folder");
     }

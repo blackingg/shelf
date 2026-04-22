@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#044c41",
+  themeColor: "#072c0b",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -24,6 +24,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.shelf.ng"
+  ),
   icons: {
     icon: "/logo.png",
     apple: [
@@ -31,7 +34,10 @@ export const metadata: Metadata = {
       { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
     ],
   },
-  title: "Shelf",
+  title: {
+    default: "Shelf",
+    template: "%s | Shelf",
+  },
   description: "Community-driven book collections",
   manifest: "/manifest.json",
   appleWebApp: {
@@ -43,8 +49,11 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: "Shelf",
-    description: "Community-driven book collections",
+    title: {
+      default: "Shelf",
+      template: "%s | Shelf",
+    },
+    description: "Community-driven digital library",
     url: "https://www.shelf.ng/",
     siteName: "Shelf",
     images: [
@@ -52,7 +61,7 @@ export const metadata: Metadata = {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Shelf - Community-driven book collections",
+        alt: "Shelf - Community-driven digital library",
       },
     ],
     locale: "en_US",
@@ -60,8 +69,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shelf",
-    description: "Community-driven book collections",
+    title: {
+      default: "Shelf",
+      template: "%s | Shelf",
+    },
+    description: "Community-driven digital library",
     site: "@shelfng_",
     creator: "@shelfng_",
     images: ["/logo.png"],
@@ -77,16 +89,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Shelf" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="me" href="https://x.com/shelfng_" />
-        <link rel="me" href="https://www.instagram.com/shelf_ng" />
+        <link
+          rel="me"
+          href="https://x.com/shelfng_"
+        />
+        <link
+          rel="me"
+          href="https://www.instagram.com/shelf_ng"
+        />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider

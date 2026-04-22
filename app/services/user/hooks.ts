@@ -12,8 +12,10 @@ export const userKeys = {
   all: ["user"] as const,
   me: () => [...userKeys.all, "me"] as const,
   byUsername: (username: string) => [...userKeys.all, username] as const,
-  books: (username: string) => [...userKeys.byUsername(username), "books"] as const,
-  folders: (username: string) => [...userKeys.byUsername(username), "folders"] as const,
+  books: (username: string) =>
+    [...userKeys.byUsername(username), "books"] as const,
+  folders: (username: string) =>
+    [...userKeys.byUsername(username), "folders"] as const,
 };
 
 export const useGetMeQuery = (options?: { enabled?: boolean }) => {
@@ -62,7 +64,6 @@ export const useDeleteMeMutation = () => {
   });
 };
 
-
 export const useGetUserByUsernameQuery = (username: string, options?: any) => {
   return useQuery<UserPublic>({
     queryKey: userKeys.byUsername(username),
@@ -72,10 +73,9 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
   });
 };
 
-
-export const useUser = () => {
+export const useUser = (options?: { enabled?: boolean }) => {
   const { addNotification } = useNotifications();
-  const { data: me, isLoading, isFetching } = useGetMeQuery();
+  const { data: me, isLoading, isFetching } = useGetMeQuery(options);
   const updateMutation = useUpdateMeMutation();
   const avatarMutation = useUploadAvatarMutation();
   const dispatch = useAppDispatch();
@@ -114,13 +114,17 @@ export const useUser = () => {
 };
 
 export const useUserByUsername = (username: string) => {
-  const { data: user, isLoading, isFetching, error } = useGetUserByUsernameQuery(username);
-  
+  const {
+    data: user,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetUserByUsernameQuery(username);
+
   return {
     user: user || null,
     isLoading,
     isFetching,
-    error
+    error,
   };
 };
-
