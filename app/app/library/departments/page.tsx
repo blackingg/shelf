@@ -19,10 +19,12 @@ export default function DepartmentsPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
 
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
-  const { data: schools = [] } = useGetSchoolsQuery();
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
+    user?.school?.id || "",
+  );
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { data: schools = [] } = useGetSchoolsQuery();
   const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
 
   const { departments: allDepartments, isLoading } = useDepartments(
@@ -58,9 +60,15 @@ export default function DepartmentsPage() {
               <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-2">
                 Departments
               </h1>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                Browse resources by your school's department
-              </p>
+              {userDepartmentName ? (
+                <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
+                  Your Department: {userDepartmentName}
+                </p>
+              ) : (
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                  Browse resources by your school's department
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-4">
