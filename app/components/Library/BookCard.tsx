@@ -33,12 +33,14 @@ export const BookCard: React.FC<BookCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
-  const handleCardClick = () => {
-    if (isAuthenticated) {
-      onClick?.();
-    } else {
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      e.stopPropagation();
       setShowAuthPrompt(true);
+      return;
     }
+    onClick?.();
   };
 
   const handleBookmark = async (e: React.MouseEvent) => {
