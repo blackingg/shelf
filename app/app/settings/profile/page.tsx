@@ -36,12 +36,12 @@ export default function SettingsProfilePage() {
     useGetSchoolsQuery(schoolSearch);
 
   const [formData, setFormData] = useState({
-    name: "",
-    username: "",
-    schoolId: "",
-    departmentId: "",
-    email: "",
-    bio: "",
+    name: user?.fullName || "",
+    username: user?.username || "",
+    schoolId: user?.school?.id || "",
+    departmentId: user?.department?.id || "",
+    email: user?.email || "",
+    bio: user?.bio || "",
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
@@ -153,7 +153,10 @@ export default function SettingsProfilePage() {
 
       <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
         <div className="p-5 md:p-8 lg:p-10">
-          <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-8 md:space-y-10"
+          >
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
@@ -191,9 +194,12 @@ export default function SettingsProfilePage() {
                 </label>
               </div>
               <div className="space-y-1">
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white">Profile Photo</h4>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                  Profile Photo
+                </h4>
                 <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-xs">
-                  Upload a professional photo to help others recognize you. JPG, GIF or PNG. Max size 2MB.
+                  Upload a professional photo to help others recognize you. JPG,
+                  GIF or PNG. Max size 2MB.
                 </p>
               </div>
             </div>
