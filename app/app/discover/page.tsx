@@ -38,11 +38,9 @@ export default function DiscoverPage() {
   const user = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
-
 
   const { categories } = useDiscoverCategories();
 
@@ -134,7 +132,6 @@ export default function DiscoverPage() {
     setFolderToDelete(null);
   };
 
-
   const isCategoryLoading =
     !activeCategory ||
     (categoryBooks.length === 0 &&
@@ -147,11 +144,7 @@ export default function DiscoverPage() {
   };
 
   const handleBookClick = (book: BookPreview) => {
-    if (isAuthenticated) {
-      setSelectedBook(book);
-    } else {
-      setShowAuthPrompt(true);
-    }
+    setSelectedBook(book);
   };
 
   if (recommendations) {
@@ -216,7 +209,6 @@ export default function DiscoverPage() {
                             router.push(`/app/folders/${item.slug}`)
                           }
                         />
-
                       ) : (
                         <BookCard
                           {...item}
@@ -367,7 +359,6 @@ export default function DiscoverPage() {
                       onDelete={() => handleFolderDelete(folder)}
                       onClick={() => router.push(`/app/folders/${folder.slug}`)}
                     />
-
                   ))}
                 </div>
 
@@ -409,13 +400,6 @@ export default function DiscoverPage() {
         />
       )}
 
-      {/* Auth prompt modal — for guests */}
-      <AuthPromptModal
-        isOpen={showAuthPrompt}
-        onClose={() => setShowAuthPrompt(false)}
-        message="Sign in to view book details, bookmark resources, and build your library."
-      />
-
       <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -438,6 +422,5 @@ export default function DiscoverPage() {
         isLoading={isDeleting}
       />
     </div>
-
   );
 }
