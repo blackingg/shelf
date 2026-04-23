@@ -62,11 +62,12 @@ export default function DepartmentsPage() {
               </h1>
               {userDepartmentName ? (
                 <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
-                  Your Department: {userDepartmentName}
+                  Browse resources by your school's department
                 </p>
               ) : (
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                  Browse resources by your school's department
+                  Browse resources available, filter by school to find your
+                  department's resources
                 </p>
               )}
             </div>
