@@ -28,7 +28,9 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUpload } from "@/app/hooks/useUpload";
-import MultipleUploadForm from "@/app/components/MultipleUploadForm";
+import MultipleUploadForm, {
+  MultipleFileProvider,
+} from "@/app/components/MultipleUploadForm";
 
 export interface PDFJSInfo {
   Title: string;
@@ -908,7 +910,9 @@ export default function UploadPage() {
       >
         CLEAR SELECTION
       </button>
-      <MultipleUploadForm files={multiplesList} />
+      <MultipleFileProvider>
+        <MultipleUploadForm files={multiplesList} />
+      </MultipleFileProvider>
     </div>
   );
 }

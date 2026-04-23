@@ -1,14 +1,68 @@
-import { useEffect, useRef, useState } from "react";
+import React, {
+  FormEventHandler,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FiTrash, FiUploadCloud } from "react-icons/fi";
 import { prepareForUpload } from "../app/books/upload/documentHandlingFunctions";
 
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
 import { useBookActions } from "../services";
+import { Book, CreateBookRequest } from "../types/book";
+import processDescription from "../helpers/processDescription";
+import { createContext } from "react";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
   else return "EPUB";
+};
+
+type multFileContext = {
+  filesWithMetadataState: {
+    formDataObject: any;
+    state: boolean;
+    file: File;
+  }[];
+  updateFilesStatusObject: React.Dispatch<
+    SetStateAction<
+      {
+        formDataObject: any;
+        state: boolean;
+        file: File;
+      }[]
+    >
+  >;
+};
+
+const MultipleFileContext = createContext<multFileContext>(
+  {} as multFileContext,
+);
+
+const useMultipleFiles = () => useContext(MultipleFileContext);
+
+export const MultipleFileProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const [filesWithMetadataState, updateFilesStatusObject] = useState<
+    {
+      formDataObject: any;
+      state: boolean;
+      file: File;
+    }[]
+  >([]);
+
+  return (
+    <MultipleFileContext
+      value={{ filesWithMetadataState, updateFilesStatusObject }}
+    >
+      {children}
+    </MultipleFileContext>
+  );
 };
 
 export default function MultipleUploadForm({
@@ -23,13 +77,8 @@ export default function MultipleUploadForm({
     filesNew,
   );
   const [isLoading, updateLoadingState] = useState(false);
-  const [filesWithMetadataState, updateFilesStatusObject] = useState<
-    {
-      formDataObject: any;
-      state: boolean;
-      file: File;
-    }[]
-  >([]);
+  const { filesWithMetadataState, updateFilesStatusObject } =
+    useMultipleFiles();
   const { addNotification } = useNotifications();
   const router = useRouter();
 
@@ -37,26 +86,85 @@ export default function MultipleUploadForm({
     return Array.from(fileList);
   };
 
-  const uploadIndividualItem = async (file: File) => {
+  interface BookMetadata {
+    author: string;
+    description: string;
+    category: string;
+    title: string;
+    pages: number;
+    department?: string;
+    isbn?: string;
+    publisher?: string;
+    publishedYear?: number | string;
+    tags?: string[];
+    cover_image: File | null;
+    book_file: File;
+  }
+
+  function validateBookToBeUploaded(book: BookMetadata) {
+    const { title, author, description, category, pages } = book;
+    if (
+      title?.length > 1 &&
+      author?.length > 1 &&
+      description?.length > 1 &&
+      category.length > 1 &&
+      pages > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const parseIndividualItemData = async (file: File) => {
     const shape_fake = await prepareForUpload(file);
     const shapeReal = { ...shape_fake, book_file: file };
     try {
-      // const formValues = new FormData();
-      // formValues.append("title", shapeReal.title);
-      // formValues.append("author", shapeReal.author);
-      // formValues.append("description", shapeReal.description || "");
-      // formValues.append("category", shapeReal.category);
-      // formValues.append("pages", String(shapeReal.pages));
-      // formValues.append("book_file", shapeReal.book_file);
-      // formValues.append("published_year", shapeReal.publishedYear);
-      // formValues.append("publisher", shapeReal.publisher);
-      // if (shapeReal.cover_image) {
-      //   formValues.append("cover_image", shapeReal.cover_image);
-      // }
-      // return formValues;
       return shapeReal;
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const uploadIndividualItem = async (item: {
+    formDataObject: BookMetadata;
+    state: boolean;
+    file: File;
+  }) => {
+    try {
+      if (item.state === true) {
+        const {
+          title,
+          book_file,
+          author,
+          description,
+          category,
+          pages,
+          publishedYear,
+          publisher,
+          cover_image,
+        } = item.formDataObject;
+        const formValues = new FormData();
+        formValues.append("title", title);
+        formValues.append("author", author);
+        formValues.append("description", description || "");
+        formValues.append("category", category);
+        formValues.append("pages", String(pages));
+        formValues.append("book_file", book_file);
+        formValues.append("published_year", String(publishedYear));
+        formValues.append("publisher", String(publisher));
+        if (cover_image) {
+          formValues.append("cover_image", cover_image);
+        }
+        await bookActions.createBook(formValues);
+      } else {
+        addNotification(
+          `error`,
+          `${item.file.name} could not be uploaded. Reason: Missing Metadata`,
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -64,13 +172,20 @@ export default function MultipleUploadForm({
     const doStuff = async () => {
       if (!filesToBeUploaded) return;
 
+      const filesInMetadataObj = filesWithMetadataState.map(
+        (item) => item.file,
+      );
+      const newFiles = filesToBeUploaded.filter(
+        (item) => filesInMetadataObj.indexOf(item) === -1,
+      );
+
       const results = await Promise.all(
-        filesToBeUploaded.map(async (file) => {
-          const parsedData = await uploadIndividualItem(file);
+        newFiles.map(async (file) => {
+          const parsedData = await parseIndividualItemData(file);
           if (!parsedData) return null;
 
           return {
-            state: parsedData.title.length > 1,
+            state: validateBookToBeUploaded(parsedData),
             formDataObject: parsedData,
             file: file,
           };
@@ -78,12 +193,12 @@ export default function MultipleUploadForm({
       );
 
       const filteredResults = results.filter(Boolean) as {
-        formDataObject: any;
+        formDataObject: BookMetadata;
         state: boolean;
         file: File;
       }[];
 
-      updateFilesStatusObject(filteredResults);
+      updateFilesStatusObject([...filesWithMetadataState, ...filteredResults]);
     };
 
     doStuff();
@@ -93,20 +208,11 @@ export default function MultipleUploadForm({
     updateLoadingState(true);
     if (filesToBeUploaded && filesToBeUploaded.length > 0) {
       Promise.allSettled(
-        filesToBeUploaded?.map((file) => uploadIndividualItem(file)),
+        filesWithMetadataState?.map((file) => uploadIndividualItem(file)),
       )
         .then((results) => {
           results.forEach((result, index) => {
-            if (result.status === "rejected") {
-              console.error(
-                `Failed: ${filesToBeUploaded[index].name}`,
-                result.reason,
-              );
-              addNotification(
-                "error",
-                `${filesToBeUploaded[index].name} failed to upload`,
-              );
-            } else {
+            if (result.status !== "rejected") {
               addNotification(
                 "success",
                 `${filesToBeUploaded[index].name} successfully uploaded`,
@@ -116,7 +222,7 @@ export default function MultipleUploadForm({
         })
         .then(() => {
           updateLoadingState(false);
-          // router.push("/app/library");
+          router.push("/app/library");
         });
     }
   }
@@ -158,7 +264,7 @@ export default function MultipleUploadForm({
       </div>
 
       <p className="text-emerald-400 text-lg font-bold my-1">
-        {filesToBeUploaded?.length} Files to be Uploaded:{" "}
+        {filesWithMetadataState?.length} Files to be Uploaded:{" "}
       </p>
 
       <div className="md:my-2 my-4">
@@ -176,12 +282,14 @@ export default function MultipleUploadForm({
               <FileToBeUploaded
                 file={file}
                 onClick={() => {
-                  const excludesFile = filesToBeUploaded.filter(
-                    (fileSpec) =>
-                      filesToBeUploaded.indexOf(file) !==
-                      filesToBeUploaded.indexOf(fileSpec),
+                  const removedFromContext = filesWithMetadataState.filter(
+                    (fileSpecific) => fileSpecific.file.name !== file.name,
                   );
-                  updateFilesToBeUploaded(excludesFile);
+                  updateFilesStatusObject(removedFromContext);
+                  const goodFiles = filesToBeUploaded.filter(
+                    (fileSpecific) => file.name !== fileSpecific.name,
+                  );
+                  updateFilesToBeUploaded(goodFiles);
                 }}
                 state={state}
                 dataObj={formDataObject}
@@ -212,32 +320,71 @@ function FileToBeUploaded({
   file: File;
   onClick: () => void;
   state: boolean;
-  dataObj: {
-    title: string;
-    author: string;
-    publisher: number;
-    description: string;
-    publishedYear: string;
-    pages: number;
-    category: "";
-  };
+  dataObj: Partial<CreateBookRequest>;
 }) {
-  useEffect(() => {
-    console.log(dataObj);
-  }, []);
+  const { updateFilesStatusObject, filesWithMetadataState } =
+    useMultipleFiles();
+
   const [isShown, show] = useState(false);
-  const [dataObject, updateDataObject] = useState(dataObj);
   const [title, updateTitle] = useState(dataObj.title);
+  const [author, updateAuthor] = useState(dataObj.author);
+  const [description, updateDescription] = useState(dataObj.description);
+  const [publisher, updatePublisher] = useState(dataObj.publisher);
+  const [publishedYear, updatePublishedYear] = useState(dataObj.publishedYear);
+  const [isbn, updateISBN] = useState(dataObj.isbn);
+  const [department, updateDepartment] = useState(dataObj.department);
+  const [category, updateCategory] = useState(dataObj.category);
+  const [pages, updatePages] = useState(dataObj.pages);
+
+  const updateMetadata = (e: any) => {
+    e.preventDefault();
+    const [fileTarget] = filesWithMetadataState.filter(
+      (item) => item.file.name === file.name,
+    );
+    const fileTargetRemoved = filesWithMetadataState.filter(
+      (item) => item.file.name !== file.name,
+    );
+    const newFileTarget = {
+      ...fileTarget,
+      formDataObject: {
+        title: title,
+        description: description,
+        author: author,
+        publisher: publisher,
+        publlishedYear: publishedYear,
+        isbn: isbn,
+        department: department,
+        category: category,
+        pages: pages,
+      },
+      state: true,
+    };
+    updateFilesStatusObject([...fileTargetRemoved, newFileTarget]);
+    show(false);
+  };
 
   return (
-    <div onClick={() => show(true)}>
+    <div>
       <div className="md:p-2 p-1 my-1 md:my-2 grid grid-cols-6" key={file.name}>
-        <p
-          className={`${state ? "text-emerald-500" : "text-red-500"} cursor-pointer w-3/4 truncate h-8 grid col-span-3 `}
-          title={`${state ? "Good to go!" : "This file does not have the required metadata. It will not be uploaded to the Shelf DB"}`}
-        >
-          {file.name}
-        </p>
+        <div className="col-span-3 flex gap-x-2">
+          {!state ? (
+            <FaCaretDown
+              onClick={() => show(!isShown)}
+              className="text-2xl fill-white"
+            />
+          ) : (
+            <FaCaretUp
+              onClick={() => show(!isShown)}
+              className="text-2xl fill-white"
+            />
+          )}
+          <p
+            className={`${state ? "text-emerald-500" : "text-red-500"} cursor-pointer flex w-3/4 truncate h-8 gap-x-2 `}
+            title={`${state ? "Good to go!" : "This file does not have the required metadata. It will not be uploaded to the Shelf DB"}`}
+          >
+            {file.name}
+          </p>
+        </div>
         <div className="text-center col-span-1">
           {(file.size / 1048576).toFixed(2)} MB
         </div>
@@ -252,10 +399,13 @@ function FileToBeUploaded({
           />
         </div>
       </div>
+
       <div className={`${isShown ? "block" : "hidden"} metadata-input-form`}>
         {/* {//Input States for showing and allowing for metadata editing on bulk} */}
-        uploads
-        <div className="grid grid-cols-3 gap-x-3 gap-y-1 p-1 items-center">
+        <form
+          className="grid grid-cols-3 gap-x-3 gap-y-1 p-1 items-center"
+          onSubmit={updateMetadata}
+        >
           <div className="p-1">
             <label>Title</label>
             <input
@@ -264,7 +414,6 @@ function FileToBeUploaded({
               autoFocus
               onChange={(e) => updateTitle(e.target.value)}
               defaultValue={dataObj.title}
-              readOnly={state}
             />
           </div>
           <div className="p-1">
@@ -272,8 +421,8 @@ function FileToBeUploaded({
             <input
               type="text"
               defaultValue={dataObj.author}
-              readOnly={state}
               className="block w-full border border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updateAuthor(e.target.value)}
             />
           </div>
 
@@ -281,9 +430,9 @@ function FileToBeUploaded({
             <label>Publisher</label>
             <input
               type="text"
-              defaultValue={dataObj.author}
-              readOnly={state}
-              className="block w-4/5 border  border-white rounded-lg outline-0 indent-4 px-2"
+              defaultValue={dataObj.publisher}
+              className="block w-full border  border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updatePublisher(e.target.value)}
             />
           </div>
 
@@ -292,8 +441,8 @@ function FileToBeUploaded({
             <input
               type="text"
               defaultValue={dataObj.publishedYear}
-              readOnly={state}
-              className="block w-full border border-white rounded-lg outline-0 indent-4 px-2 "
+              className="block w-full border border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updatePublishedYear(Number(e.target.value))}
             />
           </div>
 
@@ -302,8 +451,8 @@ function FileToBeUploaded({
             <input
               type="number"
               defaultValue={dataObj.pages}
-              readOnly={state}
               className="block w-full border border-white rounded-lg outline-0 indent-4 px-2 "
+              onChange={(e) => updatePages(Number(e.target.value))}
             />
           </div>
 
@@ -312,23 +461,49 @@ function FileToBeUploaded({
             <input
               type="text"
               defaultValue={dataObj.category}
-              readOnly={state}
               className="block border w-full border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updateCategory(e.target.value)}
             />
           </div>
 
-          <button
-            onClick={() => {
-              updateDataObject({
-                ...dataObject,
-                title: title,
-              });
-              console.log(dataObject);
-            }}
-          >
+          <div>
+            <label>Description</label>
+            <input
+              type="text"
+              defaultValue={
+                dataObj.description
+                  ? processDescription(dataObj.description)
+                  : ""
+              }
+              className="block border w-full border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updateDescription(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label>Department *</label>
+            <input
+              type="text"
+              defaultValue={dataObj.department}
+              className="block border w-full border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updateDepartment(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label>ISBN *</label>
+            <input
+              type="text"
+              defaultValue={dataObj.isbn}
+              className="block border w-full border-white rounded-lg outline-0 indent-4 px-2"
+              onChange={(e) => updateISBN(e.target.value)}
+            />
+          </div>
+
+          <button className="rounded-lg p-2 bg-emerald-500 my-2">
             Update Metas
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
