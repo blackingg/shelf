@@ -1,4 +1,7 @@
+"use client";
 import { FaBuilding } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "@/app/store";
 import { Department } from "@/app/types/departments";
 import { getDepartmentColor } from "@/app/helpers/colors";
 
@@ -11,6 +14,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   department,
   onClick,
 }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const iconColorClass = getDepartmentColor(department.slug);
   const resourcesCount = department.booksCount || 0;
 
@@ -20,7 +24,13 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
       className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-md p-4 md:p-5 border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-150"
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex flex-col min-w-0">
+          {!isAuthenticated && (
+            <p className="text-[9px] font-black uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-500 line-clamp-1 mb-0.5">
+              {department.school?.shortName}
+            </p>
+          )}
+
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 line-clamp-1">
             {department.faculty || "Department"}
           </p>
