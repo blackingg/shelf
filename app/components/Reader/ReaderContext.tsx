@@ -5,61 +5,97 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 import {
   ReaderThemeName,
   readerThemes,
   ReaderThemeColors,
 } from "./readerThemes";
+import { usePersistentReaderSettings } from "@/app/hooks/usePersistentReaderSettings";
+
+/** Represents a chapter or section in a book's Table of Contents */
+export interface TableOfContentsItem {
+  label: string;
+  /** A format-specific reference (e.g. CFI for EPUB, Page index for PDF) */
+  href: string;
+  /** Hierarchy level (0 for top-level, 1 for sub-chapter, etc) */
+  level: number;
+}
 
 interface ReaderContextType {
-  theme: ReaderThemeName;
-  setTheme: (theme: ReaderThemeName) => void;
+  // Appearance
   currentTheme: ReaderThemeColors;
+  themeName: ReaderThemeName;
+  setTheme: (theme: ReaderThemeName) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
-  format: "pdf" | "epub";
-  setFormat: (format: "pdf" | "epub") => void;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
+  pdfScale: number;
+  setPdfScale: (scale: number) => void;
+
+  // Format
+  format: "pdf" | "epub" | null;
+
+  // Table of Contents
+  isTableOfContentsOpen: boolean;
+  setIsTableOfContentsOpen: (open: boolean) => void;
+  tableOfContentsItems: TableOfContentsItem[];
+  setTableOfContentsItems: (items: TableOfContentsItem[]) => void;
+  /** Triggered when a user clicks a TOC item. Navigator implementation depends on the viewer. */
+  onTableOfContentsNavigate: ((href: string) => void) | null;
+  setTableOfContentsNavigator: (fn: ((href: string) => void) | null) => void;
 }
 
 const ReaderContext = createContext<ReaderContextType | undefined>(undefined);
 
 export function ReaderProvider({
   children,
-  initialFormat = "epub",
+  initialFormat,
 }: {
   children: ReactNode;
   initialFormat?: "pdf" | "epub";
 }) {
-  const [theme, setTheme] = useState<ReaderThemeName>("light");
-  const [fontSize, setFontSize] = useState(18);
-  const [format, setFormat] = useState<"pdf" | "epub">(initialFormat);
-  const [loading, setLoading] = useState(true);
+  const { theme, setTheme, fontSize, setFontSize, pdfScale, setPdfScale } =
+    usePersistentReaderSettings();
 
-  useEffect(() => {
-    setFormat(initialFormat);
-  }, [initialFormat]);
+  const [isTableOfContentsOpen, setIsTableOfContentsOpen] = useState(false);
+  const [tableOfContentsItems, setTableOfContentsItems] = useState<TableOfContentsItem[]>([]);
+  const [onTableOfContentsNavigate, _setOnTableOfContentsNavigate] = useState<
+    ((href: string) => void) | null
+  >(null);
 
-  const currentTheme = readerThemes[theme];
+  /**
+   * Sets the navigation handler for the current viewer.
+   * Wrapped in a function setter to avoid React treating the handler function itself as an initializer.
+   */
+  const setTableOfContentsNavigator = useCallback(
+    (fn: ((href: string) => void) | null) => {
+      _setOnTableOfContentsNavigate(() => fn);
+    },
+    [],
+  );
+
+  const currentThemeData = readerThemes[theme];
+
+  const value: ReaderContextType = {
+    currentTheme: currentThemeData,
+    themeName: theme,
+    setTheme,
+    fontSize,
+    setFontSize,
+    pdfScale,
+    setPdfScale,
+    format: initialFormat || null,
+    isTableOfContentsOpen,
+    setIsTableOfContentsOpen,
+    tableOfContentsItems,
+    setTableOfContentsItems,
+    onTableOfContentsNavigate,
+    setTableOfContentsNavigator,
+  };
 
   return (
-    <ReaderContext.Provider
-      value={{
-        theme,
-        setTheme,
-        currentTheme,
-        fontSize,
-        setFontSize,
-        format,
-        setFormat,
-        loading,
-        setLoading,
-      }}
-    >
-      {children}
-    </ReaderContext.Provider>
+    <ReaderContext.Provider value={value}>{children}</ReaderContext.Provider>
   );
 }
 

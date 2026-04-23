@@ -4,6 +4,7 @@ export interface ReaderThemeColors {
   bg: string;
   text: string;
   ui: string;
+  border: string;
   accent: string;
   panel: string;
 }
@@ -12,21 +13,24 @@ export const readerThemes: Record<ReaderThemeName, ReaderThemeColors> = {
   light: {
     bg: "bg-white",
     text: "text-gray-900",
-    ui: "bg-white border-gray-200",
+    ui: "bg-white",
+    border: "border-gray-200",
     accent: "text-emerald-700",
     panel: "bg-gray-50 border-gray-200",
   },
   sepia: {
     bg: "bg-[#f4ecd8]",
     text: "text-[#5b4636]",
-    ui: "bg-[#f4ecd8] border-[#e3d7bf]",
+    ui: "bg-[#f4ecd8]",
+    border: "border-[#e3d7bf]",
     accent: "text-[#8c6b5d]",
     panel: "bg-[#ebe0c8] border-[#dccfb4]",
   },
   dark: {
     bg: "bg-[#1a1a1a]",
     text: "text-[#d1d5db]",
-    ui: "bg-[#262626] border-[#404040]",
+    ui: "bg-[#262626]",
+    border: "border-[#404040]",
     accent: "text-emerald-400",
     panel: "bg-[#262626] border-[#404040]",
   },
