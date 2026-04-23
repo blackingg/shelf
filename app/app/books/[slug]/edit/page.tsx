@@ -75,7 +75,7 @@ export default function EditBookPage() {
         author: book.author || "",
         description: book.description || "",
         category: book.category || "",
-        department: book.department || "",
+        department: book.departmentRef?.id || "",
         pages: book.pages?.toString() || "",
         publisher: book.publisher || "",
         publishedYear: book.publishedYear?.toString() || "",
@@ -446,7 +446,13 @@ export default function EditBookPage() {
                 value={
                   departmentOptions.find(
                     (opt) => opt.value === formData.department,
-                  ) || null
+                  ) ||
+                  (book?.departmentRef
+                    ? {
+                        value: book.departmentRef.id as string,
+                        label: book.departmentRef.name,
+                      }
+                    : null)
                 }
               />
 
