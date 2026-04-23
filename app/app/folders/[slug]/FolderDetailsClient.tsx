@@ -91,7 +91,7 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
     if (!folder) return;
     await actions.deleteFolder(folder.id);
     setShowDeleteModal(false);
-    router.push("/app/folders");
+    router.push("/app/discover/folders");
   };
 
   return (
