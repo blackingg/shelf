@@ -59,18 +59,16 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onDelete,
   showActions = false,
 }) => {
-  const user = useSelector(selectCurrentUser);
-  const currentUser = user?.username || "Guest";
+  const activeUser = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
-  const isOwner = folder.user?.username === currentUser;
+  const isOwner = activeUser?.id === folder.user?.id;
   const isEditor = folder.collaborator?.role === "EDITOR";
   const canEdit = isOwner || isEditor;
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
-
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const { isBookmarked } = useIsFolderBookmarked(folder.id, { enabled: isAuthenticated });
   const { toggleBookmark } = useBookmarkFolderActions();
 

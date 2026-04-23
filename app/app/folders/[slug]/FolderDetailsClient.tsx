@@ -16,6 +16,7 @@ import {
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store";
+import { ConfirmModal } from "@/app/components/ConfirmModal";
 import {
   useFolderBySlug,
   useFolderActions,
@@ -33,16 +34,17 @@ interface FolderDetailsClientProps {
 export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) {
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { folder, isLoading, error } = useFolderBySlug(slug);
   const {
     actions,
+    isDeleting,
   } = useFolderActions();
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
-  const user = useSelector(selectCurrentUser);
-  const currentUser = user?.username || "Guest";
+  const activeUser = useSelector(selectCurrentUser);
 
   const isForbidden = (error as any)?.status === 403;
 
@@ -64,12 +66,12 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
 
   const books = folder?.items?.map((item: any) => item.book) || [];
 
-  const isOwner = folder?.user?.username === currentUser;
+  const isOwner = folder?.user?.id === activeUser?.id;
   const isCollaborator = !!folder?.collaborators?.some(
-    (c: any) => c.user.username === currentUser,
+    (c: any) => c.user.id === activeUser?.id,
   );
   const userCollaborator = folder?.collaborators?.find(
-    (c: any) => c.user.username === currentUser,
+    (c: any) => c.user.id === activeUser?.id,
   );
   const isEditor = userCollaborator?.role === "EDITOR";
 
@@ -83,6 +85,13 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
   const handleRemoveBook = async (bookId: string) => {
     if (!folder) return;
     await actions.removeBookFromFolder(folder.id, bookId);
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!folder) return;
+    await actions.deleteFolder(folder.id);
+    setShowDeleteModal(false);
+    router.push("/app/discover/folders");
   };
 
   return (
@@ -235,10 +244,13 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
                             {(canEdit || canSeeShare) && (
                               <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                             )}
-                            <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2">
-                              <FiTrash2 className="w-4 h-4" />
-                              <span>Delete</span>
-                            </button>
+                             <button 
+                               onClick={() => setShowDeleteModal(true)}
+                               className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
+                             >
+                               <FiTrash2 className="w-4 h-4" />
+                               <span>Delete</span>
+                             </button>
                           </>
                         )}
                       </div>
@@ -263,6 +275,28 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteFolder}
+        title="Delete Folder?"
+        message={
+          folder && (
+            <p className="text-gray-600 text-left">
+              Are you sure you want to delete{" "}
+              <span className="font-bold text-gray-600 dark:text-gray-300">
+                &quot;{folder.name}&quot;
+              </span>
+              ? This action cannot be undone.
+            </p>
+          )
+        }
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDanger={true}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

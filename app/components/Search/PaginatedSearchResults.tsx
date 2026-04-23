@@ -97,6 +97,7 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
                       key={`grid-folder-${item.data.id}-${idx}`}
                       folder={item.data}
                       onClick={() => onFolderClick(item.data.slug)}
+                      showActions={true}
                     />
                   );
                 } else if (item.type === "user") {
