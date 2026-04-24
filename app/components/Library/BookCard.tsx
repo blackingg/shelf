@@ -10,6 +10,7 @@ import { useIsBookBookmarked, useBookBookmarkActions } from "@/app/services";
 import { BookCardProps, BookPreview } from "@/app/types/book";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "@/app/store";
+import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -30,6 +31,18 @@ export const BookCard: React.FC<BookCardProps> = ({
   });
   const { toggleBookmark } = useBookBookmarkActions();
   const [showMenu, setShowMenu] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowAuthPrompt(true);
+      return;
+    }
+    onClick?.();
+  };
+
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;
@@ -38,7 +51,7 @@ export const BookCard: React.FC<BookCardProps> = ({
 
   return (
     <div
-      onClick={onClick}
+      onClick={handleCardClick}
       className={`group cursor-pointer transition-colors duration-200 ${className} relative`}
     >
       <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
@@ -158,6 +171,12 @@ export const BookCard: React.FC<BookCardProps> = ({
           </span>
         </Link>
       )}
+
+      <AuthPromptModal
+        isOpen={showAuthPrompt}
+        onClose={() => setShowAuthPrompt(false)}
+        message="Sign in to view book details, bookmark resources, and build your library."
+      />
     </div>
   );
 };

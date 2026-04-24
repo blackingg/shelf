@@ -93,7 +93,7 @@ export const PWAInstallPrompt: React.FC = () => {
                         <span className="font-bold text-neutral-900 dark:text-white">
                           Share
                         </span>{" "}
-                        in Safari
+                        in your browser.
                       </p>
                     </div>
                     <div className="flex items-center gap-4">

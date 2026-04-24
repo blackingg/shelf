@@ -23,6 +23,11 @@ export interface Book {
   fileSize?: number | null;
   fileType?: string | null;
   department?: string;
+  departmentRef?: {
+    id: string;
+    name: string;
+    slug?: string;
+  };
   isbn?: string | null;
   publisher?: string | null;
   publishedYear?: number | null;

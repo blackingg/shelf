@@ -38,8 +38,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   skeletonCount = 5,
   className = "",
 }) => {
-  const user = useSelector(selectCurrentUser);
-  const currentUser = user?.username || "";
+  const activeUser = useSelector(selectCurrentUser);
   const [activeMenuId, setActiveMenuId] = React.useState<string | null>(null);
 
   if (isLoading) {
@@ -90,7 +89,7 @@ export const FolderList: React.FC<FolderListProps> = ({
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-neutral-800">
             {folders.map((folder) => {
-              const isOwner = folder.user?.username === currentUser;
+              const isOwner = activeUser?.id === folder.user?.id;
               const isEditor = folder.collaborator?.role === "EDITOR";
               const canEdit = isOwner || isEditor;
               const canDelete = isOwner;

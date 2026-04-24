@@ -1,24 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiList, FiX } from "react-icons/fi";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
+import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useDepartments } from "@/app/services";
+import { useGetSchoolsQuery } from "@/app/services/onboarding";
 import { useSelector } from "react-redux";
 import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
+import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
 
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
+    user?.school?.id || "",
+  );
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { data: schools = [] } = useGetSchoolsQuery();
+  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
+
   const { departments: allDepartments, isLoading } = useDepartments(
-    user?.school?.id ? { school_id: user.school.id } : {},
+    selectedSchoolId ? { school_id: selectedSchoolId } : {},
   );
 
   const userDepartment = allDepartments.find(
@@ -27,14 +37,18 @@ export default function DepartmentsPage() {
   const userDepartmentName = user?.department?.name;
   const userDepartmentSlug = userDepartment?.slug || null;
 
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
+  useEffect(() => {
+    if (user?.school?.id && !selectedSchoolId) {
+      setSelectedSchoolId(user.school.id);
+    }
+  }, [user?.school?.id]);
+
+  const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
     4,
     10,
   );
-
   const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
 
   return (
@@ -46,26 +60,51 @@ export default function DepartmentsPage() {
               <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-2">
                 Departments
               </h1>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                Browse resources by your school's department
-              </p>
+              {userDepartmentName ? (
+                <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
+                  Browse resources by your school's department
+                </p>
+              ) : (
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                  Browse resources available, filter by school to find your
+                  department's resources
+                </p>
+              )}
             </div>
 
-            {isAuthenticated && (
-              <button
-                onClick={toggleViewDepartments}
-                className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
-              >
-                {!viewDepartments ? (
-                  <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
-                ) : (
-                  <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
-                )}
-                <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
-                  {!viewDepartments ? "Explore All" : "Close Gallery"}
-                </span>
-              </button>
-            )}
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              {!isAuthenticated && (
+                <SortFilter
+                  value={selectedSchoolId}
+                  onValueChange={setSelectedSchoolId}
+                  options={[
+                    { value: "", label: "All Schools" },
+                    ...schools.map((school) => ({
+                      value: school.id,
+                      label: school.name,
+                    })),
+                  ]}
+                  labelPrefix="School:"
+                  className="w-full md:w-auto"
+                />
+              )}
+
+              {isAuthenticated && (
+                <button
+                  onClick={toggleViewDepartments}
+                  className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
+                >
+                  {!viewDepartments ? (
+                    <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                  )}
+                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
+                    {!viewDepartments ? "Explore All" : "Close Gallery"}
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
 
           <AnimatePresence>
@@ -100,7 +139,7 @@ export default function DepartmentsPage() {
                 ) : (
                   <div className="h-[40vh] bg-gray-50/30 dark:bg-neutral-900/10 p-12 md:p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center mb-20">
                     <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                      No departments found for your school.
+                      No departments found for this selection.
                     </p>
                   </div>
                 )}

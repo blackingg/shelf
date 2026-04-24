@@ -390,6 +390,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 router.push(`/app/folders/${folder.slug}`)
               }
               pageSize={pageSize}
+              showActions={isOwner}
               emptyMessage="No folders yet."
               emptyAction={
                 isOwner && (
