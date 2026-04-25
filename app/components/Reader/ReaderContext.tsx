@@ -22,10 +22,6 @@ interface ReaderContextType {
   setFormat: (format: "pdf" | "epub") => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
-  epubTotalPages: number;
-  setEpubTotalPages: (epubTotalPages: number) => void;
-  epubCurrentPage: number;
-  setEpubCurrentPage: (epubCurrent: number) => void;
 }
 
 const ReaderContext = createContext<ReaderContextType | undefined>(undefined);
@@ -41,8 +37,6 @@ export function ReaderProvider({
   const [fontSize, setFontSize] = useState(18);
   const [format, setFormat] = useState<"pdf" | "epub">(initialFormat);
   const [loading, setLoading] = useState(true);
-  const [epubTotalPages, setEpubTotalPages] = useState(1);
-  const [epubCurrentPage, setEpubCurrentPage] = useState(1);
 
   useEffect(() => {
     setFormat(initialFormat);
@@ -62,10 +56,6 @@ export function ReaderProvider({
         setFormat,
         loading,
         setLoading,
-        setEpubCurrentPage,
-        setEpubTotalPages,
-        epubCurrentPage,
-        epubTotalPages,
       }}
     >
       {children}

@@ -70,10 +70,7 @@ export default function UserSearchInput({
   const showDropdown = isOpen && debouncedQuery.length >= 2;
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex-1"
-    >
+    <div ref={containerRef} className="relative flex-1">
       <div className="relative">
         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500 pointer-events-none" />
         <input
@@ -101,7 +98,7 @@ export default function UserSearchInput({
         <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md shadow-lg overflow-hidden">
           {isFetching ? (
             <div className="flex items-center space-x-3 px-4 py-3 animate-pulse">
-              <div className="w-8 h-8 bg-gray-200 dark:bg-neutral-700 rounded-md flex-shrink-0" />
+              <div className="w-8 h-8 bg-gray-200 dark:bg-neutral-700 rounded-md shrink-0" />
               <div className="flex-1 space-y-1.5">
                 <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-28" />
                 <div className="h-3 bg-gray-100 dark:bg-neutral-800 rounded w-20" />
@@ -124,10 +121,10 @@ export default function UserSearchInput({
                 <img
                   src={foundUser.avatar}
                   alt={foundUser.username}
-                  className="w-8 h-8 rounded-md object-cover flex-shrink-0"
+                  className="w-8 h-8 rounded-md object-cover shrink-0"
                 />
               ) : (
-                <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-md flex items-center justify-center text-xs font-medium text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 uppercase flex-shrink-0">
+                <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-md flex items-center justify-center text-xs font-medium text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 uppercase shrink-0">
                   {foundUser.fullName?.[0] || foundUser.username?.[0] || "?"}
                 </div>
               )}

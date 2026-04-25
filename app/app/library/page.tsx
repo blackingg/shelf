@@ -21,7 +21,11 @@ import {
   useBookActions,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useAppSelector, selectCurrentUser } from "@/app/store";
+import { getErrorMessage } from "@/app/helpers/error";
+import { useAppSelector } from "@/app/store/store";
+import { selectCurrentUser } from "@/app/store/authSlice";
+import { BookCardListView } from "@/app/components/Donation_ListView";
+import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 
@@ -50,6 +54,7 @@ export default function LibraryPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [viewState, updateViewState] = useState("grid");
 
   const pageSize = useResponsiveLimit({ base: 2, md: 4, lg: 5 }, 2, 8);
 
@@ -95,7 +100,8 @@ export default function LibraryPage() {
     enabled: activeTab === "folders",
   });
 
-  const { actions: folderActions, isDeleting: isDeletingFolder } = useFolderActions();
+  const { actions: folderActions, isDeleting: isDeletingFolder } =
+    useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
   // ── Uploads queries ──
@@ -109,7 +115,6 @@ export default function LibraryPage() {
     { username: activeUser?.username || "", page: uploadPage, limit: pageSize },
     { enabled: activeTab === "uploads" && !!activeUser?.username },
   );
-
   // ── Simplified loading helpers ──
 
   // ── Handlers ──
@@ -400,11 +405,22 @@ export default function LibraryPage() {
         )}
       </div>
 
-      <BookDetailPanel
-        book={selectedBook!}
-        isOpen={!!selectedBook}
-        onClose={() => setSelectedBook(null)}
-      />
+      {viewState !== "list" && (
+        <BookDetailPanel
+          book={selectedBook!}
+          isOpen={!!selectedBook}
+          onClose={() => setSelectedBook(null)}
+          isDonationsPage={activeTab === "uploads"}
+        />
+      )}
+
+      {viewState === "list" && (
+        <DeleteModal
+          isOpen={!!selectedBook}
+          onClose={() => setSelectedBook(null)}
+          book={selectedBook!}
+        />
+      )}
 
       <CreateFolderModal
         isOpen={showCreateModal}

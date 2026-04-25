@@ -28,13 +28,18 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUpload } from "@/app/hooks/useUpload";
+import MultipleUploadForm, {
+  MultipleFileProvider,
+} from "@/app/components/MultipleUploadForm";
 
-interface PDFJSInfo {
+export interface PDFJSInfo {
   Title: string;
   Author: string;
 }
 
-async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractPdfCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const { parsePdf, getPdfPage } =
       await import("@/app/components/Reader/processingFunctions");
@@ -63,7 +68,9 @@ async function extractPdfCover(fileBuffer: ArrayBuffer): Promise<File | null> {
   }
 }
 
-async function extractEpubCover(fileBuffer: ArrayBuffer): Promise<File | null> {
+export async function extractEpubCover(
+  fileBuffer: ArrayBuffer,
+): Promise<File | null> {
   try {
     const bookDetails = Epub(fileBuffer.slice(0) as any);
     await bookDetails.ready;
@@ -88,6 +95,10 @@ export default function UploadPage() {
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
   const [isExtractingMetadata, setIsExtractingMetadata] = useState(false);
+
+  //stateful values for tracking multiple files
+  const [bookCount, updateBookCount] = useState(1);
+  const [multiplesList, updateMultiplesList] = useState<FileList | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const {
     isAuthorized,
@@ -158,8 +169,13 @@ export default function UploadPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActiveBook(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetBookFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files) {
+      if (e.dataTransfer.files.length === 1) {
+        validateAndSetBookFile(e.dataTransfer.files[0]);
+      } else {
+        updateMultiplesList(e.dataTransfer.files);
+        updateBookCount(e.dataTransfer.files.length);
+      }
     }
   };
 
@@ -231,8 +247,13 @@ export default function UploadPage() {
   };
 
   const handleBookFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      validateAndSetBookFile(e.target.files[0]);
+    if (e.target.files) {
+      if (e.target.files.length == 1) {
+        validateAndSetBookFile(e.target.files[0]);
+      } else {
+        updateMultiplesList(e.target.files);
+        updateBookCount(e.target.files?.length);
+      }
     }
   };
 
@@ -273,7 +294,8 @@ export default function UploadPage() {
 
       if (formData.department) {
         const selectedId = departments.find(
-          (d) => d.id === formData.department || d.slug === formData.department,
+          (d: any) =>
+            d.id === formData.department || d.slug === formData.department,
         )?.id;
         if (selectedId) formValues.append("department", selectedId);
       }
@@ -325,7 +347,7 @@ export default function UploadPage() {
     try {
       const selectedDepartmentId = formData.department
         ? departments.find(
-            (dept) =>
+            (dept: any) =>
               dept.id === formData.department ||
               dept.slug === formData.department,
           )?.id
@@ -336,8 +358,8 @@ export default function UploadPage() {
         publisher: formData.publisher || undefined,
         publishedYear: formData.publishedYear
           ? parseInt(formData.publishedYear)
-          : undefined,
-        isbn: formData.isbn || undefined,
+          : 2000,
+        isbn: formData.isbn || "",
         tags: formData.tags
           ? formData.tags
               .split(",")
@@ -369,11 +391,11 @@ export default function UploadPage() {
     }
   };
 
-  const departmentOptions = departments.map((dept) => ({
+  const departmentOptions = departments.map((dept: any) => ({
     value: dept.id,
     label: dept.name,
   }));
-  const categoryOptions = categoriesData.map((cat) => ({
+  const categoryOptions = categoriesData.map((cat: any) => ({
     value: cat.name,
     label: cat.name,
   }));
@@ -424,10 +446,7 @@ export default function UploadPage() {
             Please enter the authorization password to continue to the document
             upload pipeline.
           </p>
-          <form
-            onSubmit={handlePasswordSubmit}
-            className="space-y-6"
-          >
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label>Access Password</Label>
               <div className="relative group">
@@ -456,10 +475,7 @@ export default function UploadPage() {
                 </button>
               </div>
             </div>
-            <Button
-              type="submit"
-              icon={<FiArrowRight className="text-sm" />}
-            >
+            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
               Continue
             </Button>
           </form>
@@ -468,19 +484,32 @@ export default function UploadPage() {
     );
   }
 
-  return (
+  if (isAuthLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+            Verifying Access
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return bookCount <= 1 ? (
     <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
       <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-8 w-1 bg-emerald-500"></div>
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
-              {step === 1 ? "Upload Resource" : "Refine Metadata"}
+              Upload Resources
             </h1>
           </div>
           <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
             {step === 1
-              ? "Upload your document and cover image to start the donation flow."
+              ? "Upload your document(s) — we'll automatically extract the title, author, and cover image from the file."
               : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
           </p>
         </div>
@@ -532,6 +561,7 @@ export default function UploadPage() {
                       className="hidden"
                       onChange={handleBookFileChange}
                       accept=".pdf,.epub"
+                      multiple={true}
                     />
                     <div
                       onDragOver={handleDrag}
@@ -670,7 +700,7 @@ export default function UploadPage() {
                     }
                     value={
                       categoryOptions.find(
-                        (opt) => opt.value === formData.category,
+                        (opt: any) => opt.value === formData.category,
                       ) || null
                     }
                   />
@@ -688,7 +718,7 @@ export default function UploadPage() {
                     }
                     value={
                       departmentOptions.find(
-                        (opt) => opt.value === formData.department,
+                        (opt: any) => opt.value === formData.department,
                       ) || null
                     }
                   />
@@ -871,6 +901,18 @@ export default function UploadPage() {
           )}
         </AnimatePresence>
       </main>
+    </div>
+  ) : (
+    <div className="grid bg-inherit py-2">
+      <button
+        className="justify-self-end grid p-2 my-2 text-lg rounded-lg bg-red-600"
+        onClick={() => updateBookCount(0)}
+      >
+        CLEAR SELECTION
+      </button>
+      <MultipleFileProvider>
+        <MultipleUploadForm files={multiplesList} />
+      </MultipleFileProvider>
     </div>
   );
 }

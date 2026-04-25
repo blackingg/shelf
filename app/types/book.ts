@@ -16,6 +16,8 @@ export interface Book {
   ratingsCount: number;
   pages: number;
   featured: boolean;
+  donatedAt: string;
+  updatedAt: string;
   description: string;
   fileUrl?: string | null;
   fileSize?: number | null;

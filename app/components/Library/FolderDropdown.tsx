@@ -59,7 +59,7 @@ export const FolderDropdown: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60]"
+            className="fixed inset-0 z-60"
             onClick={onClose}
           />
           <motion.div
@@ -67,7 +67,7 @@ export const FolderDropdown: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={`absolute left-0 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 overflow-hidden z-[70] ${className}`}
+            className={`absolute left-0 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 overflow-hidden z-70 ${className}`}
           >
             <div className="p-3 border-b border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-800/50">
               <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-[10px] uppercase tracking-widest">

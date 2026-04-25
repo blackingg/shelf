@@ -90,10 +90,7 @@ export default function ShelfLanding() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center h-16">
-            <Link
-              href="/"
-              className="flex items-center"
-            >
+            <Link href="/" className="flex items-center">
               <LogoStacked className="w-32 h-10 text-[#072c0b] dark:text-[#D0FDC2]" />
             </Link>
 
@@ -265,7 +262,7 @@ export default function ShelfLanding() {
             <span className="text-[10px] uppercase tracking-widest text-gray-400">
               Scroll
             </span>
-            <div className="w-[1px] h-12 bg-gray-100 dark:bg-white/10 relative overflow-hidden">
+            <div className="w-px h-12 bg-gray-100 dark:bg-white/10 relative overflow-hidden">
               <motion.div
                 className="absolute top-0 left-0 w-full h-full bg-emerald-500"
                 animate={{ y: ["-100%", "100%"] }}
@@ -310,10 +307,7 @@ export default function ShelfLanding() {
         </div>
       </section>
 
-      <section
-        id="features"
-        className="py-32 px-6 bg-white dark:bg-black"
-      >
+      <section id="features" className="py-32 px-6 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
@@ -381,10 +375,7 @@ export default function ShelfLanding() {
 
       <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-50 dark:border-white/5">
         <div className="max-w-7xl mx-auto text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center mb-6"
-          >
+          <Link href="/" className="inline-flex items-center mb-6">
             <LogoStacked className="w-20 h-6 text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
