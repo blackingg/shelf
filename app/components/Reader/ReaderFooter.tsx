@@ -98,7 +98,6 @@ export function ReaderFooter({
                 }}
                 className={`w-12 text-center py-1 rounded-lg border-2 border-transparent focus:border-emerald-500 bg-black/5 outline-none transition-all font-bold ${currentTheme.text}`}
               />
-              <FiGrid className="absolute -right-6 top-1/2 -translate-y-1/2 w-3 h-3 opacity-30 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
             <span
               className={`text-sm font-semibold opacity-50 ${currentTheme.text}`}

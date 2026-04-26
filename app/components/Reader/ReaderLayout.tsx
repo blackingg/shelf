@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ReaderHeader } from "./ReaderHeader";
 import { ReaderFooter } from "./ReaderFooter";
-import { ReaderThemeName, readerThemes } from "./readerThemes";
+import { TableOfContentsPanel } from "./TableOfContentsPanel";
 import { ReaderProvider, useReader } from "./ReaderContext";
 
 interface ReaderLayoutProps {
@@ -56,16 +56,7 @@ function ReaderLayoutContent({
   extraPanels,
   contentShrink = false,
 }: ReaderLayoutProps) {
-  const {
-    theme,
-    setTheme,
-    fontSize,
-    setFontSize,
-    currentTheme,
-    format,
-    setLoading,
-    loading,
-  } = useReader();
+  const { fontSize, currentTheme, format, isTableOfContentsOpen } = useReader();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
@@ -93,6 +84,9 @@ function ReaderLayoutContent({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onNextPage, onPrevPage]);
 
+  // Determine if Table of Contents is pushing content
+  const shouldPushContentForTableOfContents = isTableOfContentsOpen;
+
   return (
     <div
       className={`h-screen flex flex-col overflow-hidden transition-colors duration-300 ${currentTheme.bg}`}
@@ -107,13 +101,19 @@ function ReaderLayoutContent({
         extraActions={extraHeaderActions}
       />
 
+      <TableOfContentsPanel />
+
       <div className="flex flex-1 relative overflow-hidden">
         <main
-          className={`flex-1 w-full mx-auto px-6 py-8 md:py-16 cursor-text transition-all duration-300 overflow-y-auto custom-scrollbar ${contentShrink ? "md:pr-80" : ""}`}
+          className={`flex-1 w-full mx-auto cursor-text transition-all duration-300 ${
+            format === "pdf" || format === "epub"
+              ? "overflow-hidden"
+              : "overflow-y-auto px-6 py-8 md:py-16 custom-scrollbar"
+          } ${contentShrink ? "md:pr-80" : ""} ${shouldPushContentForTableOfContents ? "md:pl-80" : ""}`}
           onClick={() => setShowControls(!showControls)}
         >
           <div
-            className="max-w-3xl mx-auto"
+            className={`${format === "pdf" ? "max-w-full h-full" : "max-w-3xl"} mx-auto`}
             style={{
               fontSize: format === "epub" ? `${fontSize}px` : undefined,
             }}

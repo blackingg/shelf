@@ -3,6 +3,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
 import { PdfViewer } from "@/app/components/Reader/PdfViewer";
+import type { PdfViewerHandle } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { useGetBookBySlugQuery } from "@/app/services";
 import { LoadingScreen } from "@/app/components/Loader/LoadingScreen";
@@ -24,6 +25,8 @@ export default function ReaderPage() {
     goTo?: (p: number) => void;
   } | null>(null);
 
+  const pdfViewerRef = useRef<PdfViewerHandle>(null);
+
   const { data, isLoading } = useGetBookBySlugQuery(String(slug));
 
   useEffect(() => {
@@ -32,7 +35,6 @@ export default function ReaderPage() {
         setIsFetchingFile(true);
         try {
           const response = await fetch(data.fileUrl);
-          const contentType = response.headers.get("content-type");
           const buf = await response.arrayBuffer();
           setBuffer(buf);
           const derivedFileType = await fileTypeFromBuffer(buf);
@@ -57,11 +59,9 @@ export default function ReaderPage() {
   const handleNextPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.next();
-      setCurrentPage((prev) => prev + 1);
     } else {
       if (currentPage < totalPages) {
-        setCurrentPage((prev) => prev + 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        pdfViewerRef.current?.scrollToPage(currentPage + 1);
       }
     }
   }, [fileType, currentPage, totalPages]);
@@ -69,11 +69,9 @@ export default function ReaderPage() {
   const handlePrevPage = useCallback(() => {
     if (fileType === "epub") {
       epubControlsRef.current?.prev();
-      setCurrentPage((prev) => prev - 1);
     } else {
       if (currentPage > 1) {
-        setCurrentPage((prev) => prev - 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        pdfViewerRef.current?.scrollToPage(currentPage - 1);
       }
     }
   }, [fileType, currentPage, totalPages]);
@@ -84,8 +82,7 @@ export default function ReaderPage() {
         epubControlsRef.current?.goTo?.(page);
         setCurrentPage(page);
       } else {
-        setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        pdfViewerRef.current?.scrollToPage(page);
       }
     },
     [fileType],
@@ -128,9 +125,10 @@ export default function ReaderPage() {
           />
         ) : (
           <PdfViewer
+            ref={pdfViewerRef}
             buffer={buffer}
-            page={currentPage}
-            onPageInfo={({ totalPages: tp }) => {
+            onPageInfo={({ currentPage: cp, totalPages: tp }) => {
+              setCurrentPage(cp);
               setTotalPages(tp);
             }}
           />
