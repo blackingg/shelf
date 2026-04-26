@@ -13,6 +13,8 @@ import {
   FiShare2,
   FiBookmark,
   FiLock,
+  FiArrowLeft,
+  FiSearch,
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store";
@@ -23,6 +25,7 @@ import {
   useIsFolderBookmarked,
   useBookmarkFolderActions,
 } from "@/app/services";
+import { useFolderPermissions } from "@/app/hooks/useFolderPermissions";
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
@@ -45,6 +48,18 @@ export default function FolderDetailsClient({
 
   const activeUser = useSelector(selectCurrentUser);
 
+  const {
+    isOwner,
+    isCollaborator,
+    canEditFolder,
+    canDeleteFolder,
+    canAddBooks,
+    canRemoveBooks,
+  } = useFolderPermissions(folder);
+
+  const canEdit = canEditFolder;
+  const canDelete = canDeleteFolder;
+
   const isForbidden = (error as any)?.status === 403;
 
   const handleShare = async () => {
@@ -65,17 +80,6 @@ export default function FolderDetailsClient({
 
   const books = folder?.items?.map((item: any) => item.book) || [];
 
-  const isOwner = folder?.user?.id === activeUser?.id;
-  const isCollaborator = !!folder?.collaborators?.some(
-    (c: any) => c.user.id === activeUser?.id,
-  );
-  const userCollaborator = folder?.collaborators?.find(
-    (c: any) => c.user.id === activeUser?.id,
-  );
-  const isEditor = userCollaborator?.role === "EDITOR";
-
-  const canEdit = isOwner || isEditor;
-  const canDelete = isOwner;
   const canSeeShare =
     folder?.visibility === "PUBLIC" || isOwner || isCollaborator;
 
@@ -129,23 +133,43 @@ export default function FolderDetailsClient({
             </div>
           </div>
         ) : !folder ? (
-          <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
-            <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-6">
-              <FiFolder className="w-10 h-10 text-gray-300 dark:text-neutral-600" />
+          <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 min-h-[48vh] flex items-center justify-center px-6 py-12">
+            <div className="w-full max-w-xl text-left space-y-5">
+              <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                <span>404 folder missing</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                  <FiFolder className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </div>
+                <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                  Folder Not Found
+                </h2>
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                The folder you are looking for does not exist.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/app/folders")}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                >
+                  <FiSearch className="w-4 h-4" />
+                  Browse Folders
+                </button>
+                <button
+                  onClick={() => router.back()}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  <FiArrowLeft className="w-4 h-4" />
+                  Go Back
+                </button>
+              </div>
             </div>
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-              Folder Not Found
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 max-w-sm">
-              The folder you are looking for doesn&apos;t exist or has been
-              removed from our system.
-            </p>
-            <button
-              onClick={() => router.push("/app/folders")}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-md font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
-            >
-              Back to Folders
-            </button>
           </div>
         ) : (
           <div className="space-y-6 md:space-y-10">
@@ -262,11 +286,11 @@ export default function FolderDetailsClient({
             <div>
               <BooksTable
                 books={books}
-                canEdit={canEdit}
+                canEdit={canRemoveBooks}
                 folderId={folder.id}
                 onRemoveBook={handleRemoveBook}
                 onBookClick={(bookId) => {
-                  const book = books.find((b) => b.id === bookId);
+                  const book = books.find((b: any) => b.id === bookId);
                   router.push(`/app/books/${book?.slug || bookId}/read`);
                 }}
               />
