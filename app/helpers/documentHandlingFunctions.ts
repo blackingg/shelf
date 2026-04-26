@@ -1,9 +1,7 @@
-//compulsory Fileds : title, author, description, category, pages, cover_image, book_file
-//btw, all of ts is FormData
-
 import { parsePdf } from "@/app/components/Reader";
 import Epub from "epubjs";
-import { extractEpubCover, extractPdfCover, type PDFJSInfo } from "./page";
+import { extractEpubCover, extractPdfCover } from "./coverExtraction";
+import { type PDFJSInfo } from "@/app/types/book";
 import { generateLocations } from "@/app/components/Reader/EpubViewer";
 import { fileTypeFromBuffer } from "file-type";
 
@@ -92,6 +90,6 @@ export async function prepareForUpload(file: File) {
 
   return {
     ...metaObj,
-    cover_image: photo,
+    coverImage: photo,
   };
 }

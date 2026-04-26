@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
-import { Book, UpdateBookRequest } from "../../types/book";
+import { Book, UpdateBookRequest, CreateBookRequest } from "../../types/book";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 
@@ -51,7 +51,25 @@ export const useGetUserBooksQuery = (
 export const useCreateBookMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: FormData) => api.post<Book>("/books/upload", data),
+    mutationFn: (data: CreateBookRequest) => {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        
+        // Handle special cases for backend naming
+        const apiKey = key === "coverImage" ? "cover_image" : 
+                       key === "publishedYear" ? "published_year" : key;
+        
+        if (Array.isArray(value)) {
+          formData.append(apiKey, value.join(","));
+        } else if (value instanceof Blob) {
+          formData.append(apiKey, value);
+        } else {
+          formData.append(apiKey, String(value));
+        }
+      });
+      return api.post<Book>("/books/upload", formData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bookKeys.all });
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
@@ -179,7 +197,7 @@ export const useBookActions = () => {
   
   return {
     actions: {
-      createBook: async (data: FormData) => {
+      createBook: async (data: CreateBookRequest) => {
         try {
           return await createMutation.mutateAsync(data);
         } catch (err: any) {

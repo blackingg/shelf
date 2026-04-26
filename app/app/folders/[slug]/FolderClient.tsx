@@ -25,6 +25,7 @@ import {
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
+import { ConfirmModal } from "@/app/components/ConfirmModal";
 
 export default function FolderClient() {
   const params = useParams();
@@ -32,9 +33,10 @@ export default function FolderClient() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { folder, isLoading, error } = useFolderBySlug(slug);
-  const { actions } = useFolderActions();
+  const { actions, isDeleting } = useFolderActions();
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
@@ -80,6 +82,13 @@ export default function FolderClient() {
   const handleRemoveBook = async (bookId: string) => {
     if (!folder) return;
     await actions.removeBookFromFolder(folder.id, bookId);
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!folder) return;
+    await actions.deleteFolder(folder.id);
+    setShowDeleteModal(false);
+    router.push("/app/folders");
   };
 
   return (
@@ -232,7 +241,13 @@ export default function FolderClient() {
                             {(canEdit || canSeeShare) && (
                               <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                             )}
-                            <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                setShowDeleteModal(true);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
+                            >
                               <FiTrash2 className="w-4 h-4" />
                               <span>Delete</span>
                             </button>
@@ -260,6 +275,17 @@ export default function FolderClient() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteFolder}
+        title="Delete Folder"
+        message={`Are you sure you want to delete "${folder?.name}"? This action will remove the folder and all its organizational data.`}
+        confirmText="Delete Folder"
+        isDanger
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

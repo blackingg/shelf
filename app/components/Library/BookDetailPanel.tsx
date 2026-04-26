@@ -233,7 +233,11 @@ export const BookDetailPanel: React.FC<{
                         <FiChevronDown className="-rotate-90 w-3 h-3" />
                       </Link>
                     </div>
-                    <BookReviews bookId={book?.id || ""} limit={3} hideForm />
+                    <BookReviews
+                      bookId={book?.id || ""}
+                      limit={3}
+                      hideForm
+                    />
                   </div>
                 )}
               </div>
@@ -286,7 +290,7 @@ export const BookDetailPanel: React.FC<{
                   )}
                 </div>
 
-                <div>
+                <div className="relative">
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
                     className=" w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
