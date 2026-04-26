@@ -228,13 +228,16 @@ export default function SingleUploadForm({
       });
 
       if (targetFolderId && result?.id) {
-        await folderActions.addBookToFolder(targetFolderId, result.id);
+        await folderActions.addBookToFolder(targetFolderId, result.id, formData.title);
       }
       setUploadedBookId(result.id);
       setStep(2);
+      
       addNotification(
-        "success",
-        "Files and essentials uploaded! Now refine the details.",
+        "info",
+        "Essentials Uploaded",
+        `${formData.title} is almost ready. Let's refine the metadata to finish the donation.`,
+        1200000
       );
     } catch (error) {
       addNotification(
@@ -278,7 +281,25 @@ export default function SingleUploadForm({
       };
 
       const result = await bookActions.updateBook(uploadedBookId, payload);
-      addNotification("success", "Book details updated and donation complete!");
+      const targetFolder = folders.find((f) => f.id === targetFolderId);
+
+      if (targetFolder) {
+        addNotification(
+          "success",
+          "Donation Complete",
+          `${formData.title} has been uploaded and saved to your ${targetFolder.name} folder.`,
+          1200000,
+          `/app/folders/${targetFolder.slug}`
+        );
+      } else {
+        addNotification(
+          "success",
+          "Donation Complete",
+          `${formData.title} has been successfully donated.`,
+          1200000,
+          `/app/books/${result.slug}`
+        );
+      }
 
       const targetSlug = folders.find((f) => f.id === targetFolderId)?.slug;
       if (targetSlug) {

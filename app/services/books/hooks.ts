@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
-import { Book, UpdateBookRequest, CreateBookRequest } from "../../types/book";
+import { Book, UpdateBookRequest, CreateBookRequest, RecommendedBooksResponse } from "../../types/book";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
+import { getErrorMessage } from "../../helpers/error";
 
 export const bookKeys = {
   all: ["books"] as const,
@@ -29,9 +30,9 @@ export const useGetBookBySlugQuery = (slug: string) => {
 };
 
 export const useGetRecommendedBooksQuery = (params: any) => {
-  return useQuery<Book[]>({
+  return useQuery<RecommendedBooksResponse>({
     queryKey: bookKeys.recommended(params),
-    queryFn: () => api.get<Book[]>("/books/recommended", { params }),
+    queryFn: () => api.get<RecommendedBooksResponse>("/books/recommended", { params }),
   });
 };
 
@@ -165,7 +166,7 @@ export const useRecommendedBooks = (limit?: number) => {
   const { data, isLoading, error } = useGetRecommendedBooksQuery({ limit });
   
   return {
-    books: data || [],
+    books: data?.items || [],
     isLoading,
     error,
   };
@@ -201,7 +202,7 @@ export const useBookActions = () => {
         try {
           return await createMutation.mutateAsync(data);
         } catch (err: any) {
-          addNotification("error", err.message || "Failed to upload book");
+          addNotification("error", getErrorMessage(err, "Failed to upload book"));
           throw err;
         }
       },
@@ -209,7 +210,7 @@ export const useBookActions = () => {
         try {
           return await updateMutation.mutateAsync({ id, data });
         } catch (err: any) {
-          addNotification("error", err.message || "Failed to update book");
+          addNotification("error", getErrorMessage(err, "Failed to update book"));
           throw err;
         }
       },
@@ -217,7 +218,7 @@ export const useBookActions = () => {
         try {
           return await updateCoverMutation.mutateAsync({ id, file });
         } catch (err: any) {
-          addNotification("error", err.message || "Failed to update cover");
+          addNotification("error", getErrorMessage(err, "Failed to update cover"));
           throw err;
         }
       },
@@ -225,7 +226,7 @@ export const useBookActions = () => {
         try {
           return await updateFileMutation.mutateAsync({ id, file });
         } catch (err: any) {
-          addNotification("error", err.message || "Failed to update file");
+          addNotification("error", getErrorMessage(err, "Failed to update file"));
           throw err;
         }
       },
@@ -233,7 +234,7 @@ export const useBookActions = () => {
         try {
           return await deleteMutation.mutateAsync(id);
         } catch (err: any) {
-          addNotification("error", err.message || "Failed to delete book");
+          addNotification("error", getErrorMessage(err, "Failed to delete book"));
           throw err;
         }
       },
