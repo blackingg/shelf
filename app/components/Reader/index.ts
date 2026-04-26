@@ -4,7 +4,7 @@ export { ReaderFooter } from "./ReaderFooter";
 export { PdfViewer } from "./PdfViewer";
 export type { PdfViewerHandle } from "./PdfViewer";
 export { EpubViewer } from "./EpubViewer";
-export { TableOfContentsPanel } from "./TableOfContentsPanel.tsx";
+export { TableOfContentsPanel } from "./TableOfContentsPanel";
 export { readerThemes, epubThemes } from "./readerThemes";
 export type { ReaderThemeName, ReaderThemeColors } from "./readerThemes";
 export {
