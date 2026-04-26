@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FiFolder,
   FiUploadCloud,
@@ -12,6 +12,9 @@ import {
   FiPlus,
   FiCamera,
   FiShare2,
+  FiUserX,
+  FiArrowLeft,
+  FiSearch,
 } from "react-icons/fi";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
@@ -43,11 +46,24 @@ interface ProfileClientProps {
   username: string;
 }
 
+type ProfileTab = "donated" | "folders" | "bookmarks";
+type ProfileQueryTab = "donated" | "folders";
+
+function isProfileQueryTab(value: string | null): value is ProfileQueryTab {
+  return value === "donated" || value === "folders";
+}
+
 export default function ProfileClient({ username }: ProfileClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<
-    "donated" | "folders" | "bookmarks"
-  >("donated");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const tabParam = searchParams.get("tab");
+  const initialTab: ProfileTab = isProfileQueryTab(tabParam)
+    ? tabParam
+    : "donated";
+
+  const [activeTab, setActiveTab] = useState<ProfileTab>(initialTab);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [folderPage, setFolderPage] = useState(1);
@@ -95,7 +111,33 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     include_collaborated: true,
     page: folderPage,
     limit: pageSize,
+    enabled: isOwner && !!currentUser,
   });
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (!isProfileQueryTab(tabFromUrl)) return;
+
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Keep URL-driven tabs limited to public profile sections.
+    if (activeTab !== "donated" && activeTab !== "folders") return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", activeTab);
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery !== currentQuery) {
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [activeTab, pathname, router, searchParams]);
 
   const folders = isOwner ? ownerFolders : publicFolders;
   const isFetchingFoldersCount = isOwner
@@ -199,19 +241,45 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             <ProfileSkeleton isOwner={isOwner} />
           </div>
         ) : !user ? (
-          <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              User Not Found
-            </h2>
-            <p className="text-gray-600 dark:text-neutral-400 mb-8 max-w-sm mx-auto">
-              The user @{username} doesn&apos;t exist.
-            </p>
-            <button
-              onClick={() => router.push("/app/discover")}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-md font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors"
-            >
-              Back to Library
-            </button>
+          <div className="max-w-7xl mx-auto px-6 py-10">
+            <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+              <div className="max-w-xl text-left space-y-5">
+                <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-purple-500" />
+                  <span>404 user missing</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                    <FiUserX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </div>
+                  <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                    User Not Found
+                  </h2>
+                </div>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                  We could not find @{username}.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => router.push("/app/discover")}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                  >
+                    <FiSearch className="w-4 h-4" />
+                    Explore Library
+                  </button>
+                  <button
+                    onClick={() => router.back()}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <FiArrowLeft className="w-4 h-4" />
+                    Go Back
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">

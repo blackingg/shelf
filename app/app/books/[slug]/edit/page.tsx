@@ -5,13 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import {
   FiAlertCircle,
   FiCheck,
-  FiArrowRight,
   FiArrowLeft,
   FiImage,
   FiLayout,
   FiBookOpen,
   FiEdit3,
   FiFileText,
+  FiSearch,
 } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormSelect } from "@/app/components/Form/FormSelect";
@@ -203,15 +203,39 @@ export default function EditBookPage() {
 
   if (!book) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
-        <FiAlertCircle className="text-3xl text-gray-300 mb-4" />
-        <p className="text-sm text-gray-500">Resource not found</p>
-        <Button
-          onClick={() => router.push("/app/library")}
-          className="mt-6"
-        >
-          Back to Library
-        </Button>
+      <div className="flex-1 bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-6 md:p-10">
+        <div className="max-w-4xl mx-auto border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+          <div className="max-w-xl text-left space-y-5">
+            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span>404 resource missing</span>
+            </div>
+
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+              Resource Not Found
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+              The resource you are trying to edit does not exist.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => router.push("/app/library")}
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700"
+              >
+                <FiSearch className="w-4 h-4" />
+                Back to Library
+              </button>
+              <button
+                onClick={() => router.back()}
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <FiArrowLeft className="w-4 h-4" />
+                Go Back
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

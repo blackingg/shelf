@@ -10,6 +10,7 @@ export function TableOfContentsPanel() {
     setIsTableOfContentsOpen,
     tableOfContentsItems,
     onTableOfContentsNavigate,
+    currentTheme,
   } = useReader();
 
   const handleItemClick = (href: string) => {
@@ -30,54 +31,51 @@ export function TableOfContentsPanel() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsTableOfContentsOpen(false)}
-            className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] md:hidden"
+            className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-[60] md:hidden"
           />
 
-          {/* Panel */}
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 bottom-0 w-80 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 z-[70] flex flex-col shadow-2xl"
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className={`fixed top-0 left-0 bottom-0 w-80 ${currentTheme.bg} border-r border-neutral-100 dark:border-neutral-800 z-[70] flex flex-col`}
           >
-            {/* Header */}
-            <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-              <h2 className="font-semibold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider text-xs">
+            <div className="p-4 h-14 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+              <h2 className="font-medium text-neutral-900 dark:text-neutral-100 uppercase tracking-[0.2em] text-[10px]">
                 Table of Contents
               </h2>
               <button
                 onClick={() => setIsTableOfContentsOpen(false)}
-                className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+                className="p-1 hover:bg-black/5 rounded-sm transition-colors"
                 title="Close sidebar"
               >
-                <FiX className="w-4 h-4 text-neutral-500" />
+                <FiX className="w-4 h-4 text-neutral-400" />
               </button>
             </div>
 
-            {/* List */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
               {tableOfContentsItems.length === 0 ? (
                 <div className="p-8 text-center">
-                  <p className="text-sm text-neutral-400 italic">
-                    No table of contents available for this book.
+                  <p className="text-xs text-neutral-400 italic font-medium">
+                    No chapters identified.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-0.5">
+                <div className="space-y-px">
                   {tableOfContentsItems.map((item, index) => (
                     <button
                       key={`${item.href}-${index}`}
                       onClick={() => handleItemClick(item.href)}
-                      className="w-full text-left px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group"
-                      style={{ paddingLeft: `${item.level * 1.5 + 0.75}rem` }}
+                      className="w-full text-left px-4 py-2.5 rounded-sm hover:bg-black/5 transition-colors group"
+                      style={{ paddingLeft: `${item.level * 1.25 + 1}rem` }}
                     >
                       <span
-                        className={`text-sm ${
+                        className={`text-xs tracking-tight ${
                           item.level === 0
-                            ? "font-medium text-neutral-700 dark:text-neutral-200"
+                            ? "font-medium text-neutral-800 dark:text-neutral-200"
                             : "text-neutral-500 dark:text-neutral-400"
-                        } group-hover:text-emerald-600 dark:group-hover:text-emerald-400 line-clamp-2`}
+                        } group-hover:text-emerald-600 dark:group-hover:text-emerald-400 line-clamp-2 transition-colors`}
                       >
                         {item.label}
                       </span>

@@ -147,7 +147,11 @@ export default function MultipleUploadForm({
 
         // Add to folder if selected
         if (targetFolderId && result?.id) {
-          await folderActions.addBookToFolder(targetFolderId, result.id);
+          await folderActions.addBookToFolder(
+            targetFolderId,
+            result.id,
+            item.formDataObject.title,
+          );
         }
 
         // Mark as success
@@ -287,9 +291,17 @@ export default function MultipleUploadForm({
       });
 
       if (failCount === 0 && successCount > 0) {
+        const targetFolder = folders.find((f) => f.id === targetFolderId);
         addNotification(
           "success",
-          `Successfully uploaded all ${successCount} files`,
+          "Bulk Upload Complete",
+          targetFolder
+            ? `Successfully uploaded ${successCount} files and added them to your ${targetFolder.name} folder.`
+            : `Successfully uploaded all ${successCount} files to your library.`,
+          1200000,
+          targetFolder
+            ? `/app/folders/${targetFolder.slug}`
+            : "/app/library?tab=uploads",
         );
         updateFilesStatusObject([]);
         updateFilesToBeUploaded([]);
@@ -298,7 +310,7 @@ export default function MultipleUploadForm({
         if (targetSlug) {
           router.push(`/app/folders/${targetSlug}`);
         } else {
-          router.push("/app/library");
+          router.push("/app/library?tab=uploads");
         }
       } else if (successCount > 0) {
         addNotification(

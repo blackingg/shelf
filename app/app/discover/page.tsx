@@ -8,7 +8,6 @@ import {
   FolderCardSkeleton,
 } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
 import { FiBook } from "react-icons/fi";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 import { BookPreview } from "@/app/types/book";
@@ -26,7 +25,7 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
+import { selectCurrentUser } from "@/app/store";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 type RecommendedItem =
@@ -36,7 +35,6 @@ type RecommendedItem =
 export default function DiscoverPage() {
   const router = useRouter();
   const user = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -65,9 +63,8 @@ export default function DiscoverPage() {
     8,
   );
 
-  // Only fetch recommendations when authenticated
   const { recommendations, isLoading: isLoadingRecommendations } =
-    useDiscoverFeed({ enabled: isAuthenticated });
+    useDiscoverFeed({ enabled: true });
 
   const {
     departments,
@@ -168,71 +165,66 @@ export default function DiscoverPage() {
     <div className="flex-1 flex flex-col min-h-full">
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
-          {/* Recommendations — only for authenticated users */}
-          {isAuthenticated && (
-            <div className="mb-20">
-              <div className="flex items-center justify-between mb-10">
-                <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-                  Discover
-                </h2>
-              </div>
-
-              {isLoadingRecommendations ? (
-                <div className="flex items-stretch gap-6 md:gap-8 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
-                  <div className="w-60 md:w-[280px] shrink-0">
-                    <FolderCardSkeleton count={1} />
-                  </div>
-                  <div className="w-60 md:w-[280px] shrink-0">
-                    <FolderCardSkeleton count={1} />
-                  </div>
-                  <div className="w-60 md:w-[280px] shrink-0">
-                    <BookCardSkeleton count={1} />
-                  </div>
-                  <div className="w-60 md:w-[280px] shrink-0">
-                    <BookCardSkeleton count={1} />
-                  </div>
-                </div>
-              ) : displayItems.length > 0 ? (
-                <div className="flex items-stretch gap-8 md:gap-10 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
-                  {displayItems.map((item, idx) => (
-                    <div
-                      key={`rec-${item.type}-${item.id}-${idx}`}
-                      className="w-60 md:w-[300px] shrink-0"
-                    >
-                      {item.type === "folder" ? (
-                        <FolderCard
-                          folder={item}
-                          showActions={true}
-                          onEdit={() => handleFolderEdit(item)}
-                          onDelete={() => handleFolderDelete(item)}
-                          onClick={() =>
-                            router.push(`/app/folders/${item.slug}`)
-                          }
-                        />
-                      ) : (
-                        <BookCard
-                          {...item}
-                          onClick={() => handleBookClick(item)}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
-                    <FiBook className="w-6 h-6 text-emerald-500" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    No Recommendations Yet
-                  </h3>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
-                    Start exploring to get personalized suggestions.
-                  </p>
-                </div>
-              )}
+          <div className="mb-20">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Discover
+              </h2>
             </div>
-          )}
+
+            {isLoadingRecommendations ? (
+              <div className="flex items-stretch gap-6 md:gap-8 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <FolderCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
+                <div className="w-60 md:w-[280px] shrink-0">
+                  <BookCardSkeleton count={1} />
+                </div>
+              </div>
+            ) : displayItems.length > 0 ? (
+              <div className="flex items-stretch gap-8 md:gap-10 overflow-x-auto pb-6 custom-scrollbar -mx-4 px-4 md:-mx-8 md:px-8">
+                {displayItems.map((item, idx) => (
+                  <div
+                    key={`rec-${item.type}-${item.id}-${idx}`}
+                    className="w-60 md:w-[300px] shrink-0"
+                  >
+                    {item.type === "folder" ? (
+                      <FolderCard
+                        folder={item}
+                        showActions={true}
+                        onEdit={() => handleFolderEdit(item)}
+                        onDelete={() => handleFolderDelete(item)}
+                        onClick={() => router.push(`/app/folders/${item.slug}`)}
+                      />
+                    ) : (
+                      <BookCard
+                        {...item}
+                        onClick={() => handleBookClick(item)}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
+                <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
+                  <FiBook className="w-6 h-6 text-emerald-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  No Recommendations Yet
+                </h3>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
+                  Start exploring to get personalized suggestions.
+                </p>
+              </div>
+            )}
+          </div>
 
           <div>
             <div className="mb-8">
@@ -312,7 +304,9 @@ export default function DiscoverPage() {
                 {hasMoreDepartments && (
                   <div className="mt-10 flex justify-center">
                     <button
-                      onClick={() => router.push("/app/library/departments")}
+                      onClick={() =>
+                        router.push("/app/library/departments?view=gallery")
+                      }
                       className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
                     >
                       View All
@@ -327,7 +321,9 @@ export default function DiscoverPage() {
                   departments.
                 </p>
                 <button
-                  onClick={() => router.push("/app/library/departments")}
+                  onClick={() =>
+                    router.push("/app/library/departments?view=gallery")
+                  }
                   className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
                 >
                   Browse Departments
@@ -391,14 +387,11 @@ export default function DiscoverPage() {
         </div>
       </main>
 
-      {/* Book detail panel — only for authenticated users */}
-      {isAuthenticated && (
-        <BookDetailPanel
-          book={selectedBook!}
-          isOpen={!!selectedBook}
-          onClose={() => setSelectedBook(null)}
-        />
-      )}
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
 
       <ConfirmModal
         isOpen={showDeleteModal}

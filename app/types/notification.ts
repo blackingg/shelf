@@ -7,7 +7,10 @@ interface Notification {
   id: string;
   type: NotificationType;
   message: string;
+  description?: string;
   duration?: number;
+  actionLink?: string;
+  dismissedFromStack?: boolean;
 }
 
 interface NotificationContextType {
@@ -15,9 +18,13 @@ interface NotificationContextType {
   addNotification: (
     type: NotificationType,
     message: string,
+    description?: string,
     duration?: number,
+    actionLink?: string,
   ) => void;
+  dismissFromStack: (id: string) => void;
   removeNotification: (id: string) => void;
+  clearAllNotifications: () => void;
 }
 
 // User notification type (used by NotificationPanel)

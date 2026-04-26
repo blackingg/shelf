@@ -25,7 +25,7 @@ export default function DepartmentsPage() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { data: schools = [] } = useGetSchoolsQuery();
-  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
+  const [viewDepartments, setViewDepartments] = useState(false);
 
   const { departments: allDepartments, isLoading } = useDepartments(
     selectedSchoolId ? { school_id: selectedSchoolId } : {},
@@ -42,6 +42,18 @@ export default function DepartmentsPage() {
       setSelectedSchoolId(user.school.id);
     }
   }, [user?.school?.id]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setViewDepartments(true);
+      return;
+    }
+
+    const openGallery =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("view") === "gallery";
+    setViewDepartments(openGallery);
+  }, [isAuthenticated]);
 
   const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
