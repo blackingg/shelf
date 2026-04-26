@@ -40,8 +40,14 @@ export default function BookClient() {
   }, [book?.id]);
 
   const actualBookId = book?.id || "";
+  const departmentFilter = book?.departmentRef?.id || book?.department;
 
   const { myRating, actions: ratingActions } = useRatings(actualBookId);
+
+  const { books: allDepartmentBooks, isLoading: isLoadingDepartment } =
+    useBooks(
+      departmentFilter ? { department: departmentFilter, limit: 12 } : {},
+    );
 
   const { books: allSimilarBooks, isLoading: isLoadingSimilar } = useBooks(
     book?.category ? { category: book.category, limit: 12 } : {},
@@ -50,17 +56,40 @@ export default function BookClient() {
   const { books: trendingBooks, isLoading: isLoadingTrending } =
     useRecommendedBooks(5);
 
+  const recommendedBooks = trendingBooks
+    .filter((b: any) => b.id !== book?.id)
+    .slice(0, 3);
+
+  const recommendedBookIds = new Set(recommendedBooks.map((b: any) => b.id));
+
+  const departmentBooks = allDepartmentBooks
+    .filter((b: any) => b.id !== book?.id && !recommendedBookIds.has(b.id))
+    .slice(0, 3);
+
+  const departmentBookIds = new Set(departmentBooks.map((b: any) => b.id));
+
   const similarBooks = allSimilarBooks
-    .filter((b: any) => b.id !== book?.id)
+    .filter(
+      (b: any) =>
+        b.id !== book?.id &&
+        !recommendedBookIds.has(b.id) &&
+        !departmentBookIds.has(b.id),
+    )
     .slice(0, 3);
 
-  const fallbackBooks = trendingBooks
-    .filter((b: any) => b.id !== book?.id)
-    .slice(0, 3);
-
-  const displayBooks = similarBooks.length > 0 ? similarBooks : fallbackBooks;
+  // Priority: recommendations -> same department -> same category fallback.
+  const displayBooks = [
+    ...recommendedBooks,
+    ...departmentBooks,
+    ...similarBooks,
+  ].slice(0, 3);
+  const needsDepartmentFallback = recommendedBooks.length < 3;
+  const needsCategoryFallback =
+    recommendedBooks.length + departmentBooks.length < 3;
   const isMoreLoading =
-    isLoadingSimilar || (similarBooks.length === 0 && isLoadingTrending);
+    isLoadingTrending ||
+    (needsDepartmentFallback && isLoadingDepartment) ||
+    (needsCategoryFallback && isLoadingSimilar);
 
   const handleRate = async (newRating: number) => {
     await ratingActions.rateBook(newRating);
