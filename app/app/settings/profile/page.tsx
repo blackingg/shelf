@@ -2,11 +2,10 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { SingleValue } from "react-select";
-import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
-import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, setUser } from "@/app/store";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/app/store";
 import {
   useGetMeQuery,
   useUpdateMeMutation,
@@ -18,7 +17,6 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";
 import { FormSelect } from "@/app/components/Form/FormSelect";
-import { useCompleteOnboardingMutation } from "@/app/services";
 
 interface OptionType {
   value: string;
@@ -27,8 +25,9 @@ interface OptionType {
 
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
-  const user = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
+  const { data: me } = useGetMeQuery();
+  const profileUser = me || null;
 
   const updateMe = useUpdateMeMutation();
   const uploadAvatar = useUploadAvatarMutation();
@@ -38,29 +37,29 @@ export default function SettingsProfilePage() {
     useGetSchoolsQuery(schoolSearch);
 
   const [formData, setFormData] = useState({
-    name: user?.fullName || "",
-    username: user?.username || "",
-    schoolId: user?.school?.id || "",
-    departmentId: user?.department?.id || "",
-    email: user?.email || "",
-    bio: user?.bio || "",
+    name: "",
+    username: "",
+    schoolId: "",
+    departmentId: "",
+    email: "",
+    bio: "",
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
     useGetOnboardingDepartmentsQuery(formData.schoolId);
 
   useEffect(() => {
-    if (user) {
+    if (profileUser) {
       setFormData({
-        name: user?.fullName || "",
-        username: user?.username || "",
-        schoolId: user?.school?.id || "",
-        departmentId: user?.department?.id || "",
-        email: user?.email || "",
-        bio: user?.bio || "",
+        name: profileUser.fullName || "",
+        username: profileUser.username || "",
+        schoolId: profileUser.school?.id || "",
+        departmentId: profileUser.department?.id || "",
+        email: profileUser.email || "",
+        bio: profileUser.bio || "",
       });
     }
-  }, [user]);
+  }, [profileUser]);
 
   const schoolOptions: OptionType[] = schools?.map((school: any) => ({
     value: school.id,
@@ -75,11 +74,11 @@ export default function SettingsProfilePage() {
   );
 
   const isDirty =
-    formData.name !== (user?.fullName || "") ||
-    formData.username !== (user?.username || "") ||
-    formData.bio !== (user?.bio || "") ||
-    formData.schoolId !== (user?.school?.id || "") ||
-    formData.departmentId !== (user?.department?.id || "");
+    formData.name !== (profileUser?.fullName || "") ||
+    formData.username !== (profileUser?.username || "") ||
+    formData.bio !== (profileUser?.bio || "") ||
+    formData.schoolId !== (profileUser?.school?.id || "") ||
+    formData.departmentId !== (profileUser?.department?.id || "");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -111,7 +110,6 @@ export default function SettingsProfilePage() {
         username: formData.username,
         bio: formData.bio,
       });
-      await useCompleteOnboardingMutation();
       dispatch(setUser(updatedUser));
       addNotification("success", "Profile updated successfully!");
     } catch (error) {
@@ -161,16 +159,16 @@ export default function SettingsProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
-                  {user?.avatar ? (
+                  {profileUser?.avatar ? (
                     <img
-                      src={user.avatar}
+                      src={profileUser.avatar}
                       alt={formData.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
-                      {user?.fullName?.charAt(0) ||
-                        user?.username?.charAt(0) ||
+                      {profileUser?.fullName?.charAt(0) ||
+                        profileUser?.username?.charAt(0) ||
                         "?"}
                     </div>
                   )}
@@ -249,10 +247,10 @@ export default function SettingsProfilePage() {
                     ? schoolOptions.find(
                         (opt) => opt.value === formData.schoolId,
                       ) ||
-                      (user?.school
+                      (profileUser?.school
                         ? {
-                            value: user.school.id as string,
-                            label: user.school.name,
+                            value: profileUser.school.id as string,
+                            label: profileUser.school.name,
                           }
                         : null)
                     : null
@@ -270,10 +268,10 @@ export default function SettingsProfilePage() {
                     ? departmentOptions.find(
                         (opt) => opt.value === formData.departmentId,
                       ) ||
-                      (user?.department
+                      (profileUser?.department
                         ? {
-                            value: user.department.id as string,
-                            label: user.department.name,
+                            value: profileUser.department.id as string,
+                            label: profileUser.department.name,
                           }
                         : null)
                     : null
