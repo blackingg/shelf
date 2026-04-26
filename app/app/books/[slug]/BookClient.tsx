@@ -12,7 +12,6 @@ import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
 import BookDetailSkeleton from "@/app/components/Skeletons/BookDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
-import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 
 export default function BookClient() {
   const router = useRouter();
@@ -292,12 +291,6 @@ export default function BookClient() {
           </div>
         )}
       </div>
-
-      <BookDetailPanel
-        book={book!}
-        isOpen={!!book && !!params.id}
-        onClose={() => router.push(`/app/books/${book?.slug}`)}
-      />
     </div>
   );
 }
