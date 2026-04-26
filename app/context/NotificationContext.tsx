@@ -7,14 +7,14 @@ import type {
 import { NotificationStack } from "../components/Notification/NotificationStack";
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context)
     throw new Error(
-      "useNotifications must be used within NotificationProvider"
+      "useNotifications must be used within NotificationProvider",
     );
   return context;
 };
@@ -27,15 +27,35 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   const addNotification = (
     type: NotificationType,
     message: string,
-    duration = 5000
+    description?: string,
+    duration = 1200000,
+    actionLink?: string,
   ) => {
     const id = Math.random().toString(36).substr(2, 9);
-    const notification = { id, type, message, duration };
-    setNotifications((prev) => [...prev, notification]);
+    const notification = {
+      id,
+      type,
+      message,
+      description,
+      duration,
+      actionLink,
+      dismissedFromStack: false,
+    };
+    setNotifications((prev) => [notification, ...prev]);
 
     if (duration > 0) {
       setTimeout(() => removeNotification(id), duration);
     }
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const dismissFromStack = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, dismissedFromStack: true } : n)),
+    );
   };
 
   const removeNotification = (id: string) => {
@@ -44,7 +64,13 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <NotificationContext.Provider
-      value={{ notifications, addNotification, removeNotification }}
+      value={{
+        notifications,
+        addNotification,
+        removeNotification,
+        dismissFromStack,
+        clearAllNotifications,
+      }}
     >
       {children}
       <NotificationStack />

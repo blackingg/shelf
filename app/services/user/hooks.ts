@@ -7,6 +7,7 @@ import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 import { useAppDispatch } from "../../store/store";
 import { setUser } from "../../store/authSlice";
+import { getErrorMessage } from "../../helpers/error";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -86,7 +87,7 @@ export const useUser = (options?: { enabled?: boolean }) => {
       dispatch(setUser(updatedUser));
       addNotification("success", "Profile updated successfully");
     } catch (err: any) {
-      addNotification("error", err.message || "Failed to update profile");
+      addNotification("error", getErrorMessage(err, "Failed to update profile"));
     }
   };
 
@@ -96,7 +97,7 @@ export const useUser = (options?: { enabled?: boolean }) => {
       dispatch(setUser(updatedUser));
       addNotification("success", "Avatar updated successfully");
     } catch (err: any) {
-      addNotification("error", err.message || "Failed to upload avatar");
+      addNotification("error", getErrorMessage(err, "Failed to upload avatar"));
     }
   };
 
