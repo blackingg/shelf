@@ -10,22 +10,18 @@ import {
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectCurrentUser,
-  selectIsAuthenticated,
-  logout,
-} from "../store/authSlice";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
+import { useGetMeQuery } from "@/app/services";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { data: user } = useGetMeQuery();
+  const isAuthenticated = !!user;
 
   const userFullName = user?.fullName || "";
   const userName = user?.username || "User";
-  const userEmail = user?.email || "";
   const userAvatar = user?.avatar || null;
 
   const router = useRouter();
