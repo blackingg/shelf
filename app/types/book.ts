@@ -85,15 +85,16 @@ export interface CreateBookRequest {
   author: string;
   description: string;
   category: string;
-  coverImage: string;
+  coverImage?: File | null;
   pages: number;
+  book_file?: File;
   fileUrl?: string;
   fileSize?: number;
   fileType?: string;
   department?: string;
   isbn?: string;
   publisher?: string;
-  publishedYear?: number;
+  publishedYear?: number | string;
   tags?: string[];
 }
 

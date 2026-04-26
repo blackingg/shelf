@@ -24,12 +24,14 @@ import {
   useDepartments,
   useDiscoverCategories,
 } from "@/app/services";
+import { useFolderActions, useMeFolders } from "@/app/services/folders/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUpload } from "@/app/hooks/useUpload";
 import MultipleUploadForm, {
   MultipleFileProvider,
+  useMultipleFiles,
 } from "@/app/components/MultipleUploadForm";
 
 export interface PDFJSInfo {
@@ -98,8 +100,12 @@ export default function UploadPage() {
 
   //stateful values for tracking multiple files
   const [bookCount, updateBookCount] = useState(1);
+  const [isBulkManual, setIsBulkManual] = useState(false);
   const [multiplesList, updateMultiplesList] = useState<FileList | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [targetFolderId, setTargetFolderId] = useState<string>("");
+  const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
+  const { actions: folderActions } = useFolderActions();
   const {
     isAuthorized,
     isLoading: isAuthLoading,
@@ -145,6 +151,7 @@ export default function UploadPage() {
     isbn: "",
     tags: "",
   });
+
 
   const bookInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -283,24 +290,28 @@ export default function UploadPage() {
     }
 
     try {
-      const formValues = new FormData();
-      formValues.append("book_file", bookFile);
-      formValues.append("cover_image", coverFile);
-      formValues.append("title", formData.title);
-      formValues.append("author", formData.author);
-      formValues.append("category", formData.category);
-      formValues.append("pages", formData.pages);
-      formValues.append("description", formData.description);
+      const selectedId = formData.department
+        ? departments.find(
+            (d: any) =>
+              d.id === formData.department || d.slug === formData.department,
+          )?.id
+        : undefined;
 
-      if (formData.department) {
-        const selectedId = departments.find(
-          (d: any) =>
-            d.id === formData.department || d.slug === formData.department,
-        )?.id;
-        if (selectedId) formValues.append("department", selectedId);
+      const result = await bookActions.createBook({
+        title: formData.title,
+        author: formData.author,
+        description: formData.description,
+        category: formData.category,
+        pages: Number(formData.pages),
+        book_file: bookFile,
+        coverImage: coverFile,
+        department: selectedId,
+      });
+
+      // Add to folder if selected
+      if (targetFolderId && result?.id) {
+        await folderActions.addBookToFolder(targetFolderId, result.id);
       }
-
-      const result = await bookActions.createBook(formValues);
       setUploadedBookId(result.id);
       setStep(2);
       addNotification(
@@ -375,7 +386,13 @@ export default function UploadPage() {
 
       const result = await bookActions.updateBook(uploadedBookId, payload);
       addNotification("success", "Book details updated and donation complete!");
-      router.push(`/app/books/${result.slug}`);
+
+      const targetSlug = folders.find((f) => f.id === targetFolderId)?.slug;
+      if (targetSlug) {
+        router.push(`/app/folders/${targetSlug}`);
+      } else {
+        router.push(`/app/books/${result.slug}`);
+      }
     } catch (error) {
       addNotification(
         "error",
@@ -446,7 +463,10 @@ export default function UploadPage() {
             Please enter the authorization password to continue to the document
             upload pipeline.
           </p>
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="space-y-6"
+          >
             <div className="space-y-2">
               <Label>Access Password</Label>
               <div className="relative group">
@@ -475,7 +495,10 @@ export default function UploadPage() {
                 </button>
               </div>
             </div>
-            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
+            <Button
+              type="submit"
+              icon={<FiArrowRight className="text-sm" />}
+            >
               Continue
             </Button>
           </form>
@@ -497,422 +520,486 @@ export default function UploadPage() {
     );
   }
 
-  return bookCount <= 1 ? (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
-      <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
-              Upload Resources
-            </h1>
-          </div>
-          <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
-            {step === 1
-              ? "Upload your document(s) — we'll automatically extract the title, author, and cover image from the file."
-              : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4 mb-12">
-          {[
-            { n: "01", label: "Files & Essentials" },
-            { n: "02", label: "Details" },
-          ].map(({ n, label }, i) => (
-            <React.Fragment key={n}>
-              {i > 0 && (
-                <div className="h-px w-8 bg-gray-200 dark:bg-neutral-800" />
-              )}
-              <div
-                className={`flex items-center gap-2 px-4 py-2 border ${
-                  step === i + 1
-                    ? "border-emerald-500 text-emerald-600"
-                    : "border-gray-200 dark:border-neutral-800 text-gray-400"
-                } transition-all duration-300`}
-              >
-                <span className="text-xs font-bold uppercase tracking-widest">
-                  {n}
-                </span>
-                <span className="text-xs font-medium border-l border-current pl-2">
-                  {label}
-                </span>
+  return (
+    <MultipleFileProvider>
+      {bookCount <= 1 && !isBulkManual ? (
+        <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+          <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
+            <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-1 bg-emerald-500"></div>
+                  <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+                    Upload Resources
+                  </h1>
+                </div>
+                <p className="text-gray-500 dark:text-neutral-500 text-sm max-w-lg leading-relaxed">
+                  {step === 1
+                    ? "Upload your document(s) — we'll automatically extract the title, author, and cover image from the file."
+                    : "Review the extracted information and add optional identifiers like ISBN or Tags to make your resource easier to find."}
+                </p>
               </div>
-            </React.Fragment>
-          ))}
-        </div>
+              <button
+                onClick={() => setIsBulkManual(true)}
+                className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-2 border border-emerald-500/20 px-4 py-2 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10"
+              >
+                Switch to Bulk Upload
+              </button>
+            </div>
 
-        <AnimatePresence mode="wait">
-          {step === 1 ? (
-            <motion.form
-              key="step1"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              onSubmit={handleStep1Submit}
-              className="space-y-12"
-            >
-              <div className="space-y-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <Label>Document File (.pdf, .epub)</Label>
-                    <input
-                      ref={bookInputRef}
-                      type="file"
-                      className="hidden"
-                      onChange={handleBookFileChange}
-                      accept=".pdf,.epub"
-                      multiple={true}
-                    />
-                    <div
-                      onDragOver={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDrop={handleDrop}
-                      onClick={() => bookInputRef.current?.click()}
-                      className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
-                        dragActiveBook
-                          ? "border-emerald-500 bg-emerald-50/20"
-                          : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
-                      }`}
-                    >
-                      {isExtractingMetadata ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Processing file…
-                          </p>
+            <div className="flex items-center gap-4 mb-12">
+              {[
+                { n: "01", label: "Files & Essentials" },
+                { n: "02", label: "Details" },
+              ].map(({ n, label }, i) => (
+                <React.Fragment key={n}>
+                  {i > 0 && (
+                    <div className="h-px w-8 bg-gray-200 dark:bg-neutral-800" />
+                  )}
+                  <div
+                    className={`flex items-center gap-2 px-4 py-2 border ${
+                      step === i + 1
+                        ? "border-emerald-500 text-emerald-600"
+                        : "border-gray-200 dark:border-neutral-800 text-gray-400"
+                    } transition-all duration-300`}
+                  >
+                    <span className="text-xs font-bold uppercase tracking-widest">
+                      {n}
+                    </span>
+                    <span className="text-xs font-medium border-l border-current pl-2">
+                      {label}
+                    </span>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              {step === 1 ? (
+                <motion.form
+                  key="step1"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  onSubmit={handleStep1Submit}
+                  className="space-y-12"
+                >
+                  <div className="space-y-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <Label>Document File (.pdf, .epub)</Label>
+                        <input
+                          ref={bookInputRef}
+                          type="file"
+                          className="hidden"
+                          onChange={handleBookFileChange}
+                          accept=".pdf,.epub"
+                          multiple={true}
+                        />
+                        <div
+                          onDragOver={handleDrag}
+                          onDragLeave={handleDrag}
+                          onDrop={handleDrop}
+                          onClick={() => bookInputRef.current?.click()}
+                          className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
+                            dragActiveBook
+                              ? "border-emerald-500 bg-emerald-50/20"
+                              : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                          }`}
+                        >
+                          {isExtractingMetadata ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                              <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                                Processing file…
+                              </p>
+                            </div>
+                          ) : bookFile ? (
+                            <div className="flex items-center gap-4 px-6 text-center">
+                              <FiCheck className="text-emerald-500 text-xl" />
+                              <div className="text-left">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                                  {bookFile.name}
+                                </p>
+                                <p className="text-[10px] text-gray-400 uppercase">
+                                  {(bookFile.size / (1024 * 1024)).toFixed(2)}{" "}
+                                  MB
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
+                              <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
+                                Click or Drag File
+                              </p>
+                            </>
+                          )}
                         </div>
-                      ) : bookFile ? (
-                        <div className="flex items-center gap-4 px-6 text-center">
-                          <FiCheck className="text-emerald-500 text-xl" />
-                          <div className="text-left">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
-                              {bookFile.name}
-                            </p>
-                            <p className="text-[10px] text-gray-400 uppercase">
-                              {(bookFile.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label>Cover Image</Label>
+                          {coverFile && (
+                            <button
+                              type="button"
+                              onClick={() => coverInputRef.current?.click()}
+                              className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
+                            >
+                              Replace
+                            </button>
+                          )}
+                        </div>
+                        <input
+                          ref={coverInputRef}
+                          type="file"
+                          className="hidden"
+                          onChange={handleCoverFileChange}
+                          accept="image/*"
+                        />
+                        <div
+                          onClick={() =>
+                            !coverFile && coverInputRef.current?.click()
+                          }
+                          className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
+                            !coverFile
+                              ? "cursor-pointer hover:border-emerald-500"
+                              : ""
+                          }`}
+                        >
+                          {coverPreviewUrl ? (
+                            <img
+                              src={coverPreviewUrl}
+                              className="w-full h-full object-cover"
+                              alt="Cover preview"
+                            />
+                          ) : isExtractingMetadata ? (
+                            <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
+                              <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
+                              <p className="text-[11px] font-medium uppercase tracking-tighter">
+                                Extracting cover…
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
+                              <FiImage className="text-2xl mb-1" />
+                              <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
+                                {bookFile
+                                  ? "No cover found — click to upload"
+                                  : "Upload cover image"}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                      <div className="space-y-1.5">
+                        <Label>Title</Label>
+                        <input
+                          value={formData.title}
+                          onChange={(e) =>
+                            setFormData({ ...formData, title: e.target.value })
+                          }
+                          placeholder="Resource Title"
+                          required
+                          className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Author</Label>
+                        <input
+                          value={formData.author}
+                          onChange={(e) =>
+                            setFormData({ ...formData, author: e.target.value })
+                          }
+                          placeholder="Author Name"
+                          required
+                          className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                      <FormSelect<any, false>
+                        label="Category"
+                        icon={<FiLayout />}
+                        options={categoryOptions}
+                        isLoading={isLoadingCategories}
+                        placeholder="Select Category"
+                        onChange={(opt: any) =>
+                          setFormData({
+                            ...formData,
+                            category: opt?.value || "",
+                          })
+                        }
+                        value={
+                          categoryOptions.find(
+                            (opt: any) => opt.value === formData.category,
+                          ) || null
+                        }
+                      />
+                      <FormSelect<any, false>
+                        label="Department"
+                        icon={<FiBookOpen />}
+                        options={departmentOptions}
+                        isLoading={isLoadingDepts}
+                        placeholder="Department"
+                        onChange={(opt: any) =>
+                          setFormData({
+                            ...formData,
+                            department: opt?.value || "",
+                          })
+                        }
+                        value={
+                          departmentOptions.find(
+                            (opt: any) => opt.value === formData.department,
+                          ) || null
+                        }
+                      />
+                      <div className="space-y-1.5">
+                        <Label>Pages</Label>
+                        <input
+                          type="number"
+                          value={formData.pages}
+                          onChange={(e) =>
+                            setFormData({ ...formData, pages: e.target.value })
+                          }
+                          placeholder="0"
+                          required
+                          className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
+                        />
+                      </div>
+                      <FormSelect<any, false>
+                        label="Add to Folder (Optional)"
+                        icon={<FiLayout />}
+                        options={folders.map((f) => ({
+                          value: f.id,
+                          label: f.name,
+                        }))}
+                        isLoading={isLoadingFolders}
+                        placeholder="No folder selected"
+                        onChange={(opt: any) =>
+                          setTargetFolderId(opt?.value || "")
+                        }
+                        value={
+                          folders
+                            .map((f) => ({ value: f.id, label: f.name }))
+                            .find((opt) => opt.value === targetFolderId) || null
+                        }
+                        isClearable
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 pt-4">
+                      <Label>Short Description</Label>
+                      <textarea
+                        rows={4}
+                        value={formData.description}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
+                        }
+                        placeholder="Provide a brief summary of the book (min. 10 characters)..."
+                        required
+                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+                    <Button
+                      type="submit"
+                      isLoading={isUploading}
+                      disabled={
+                        isExtractingMetadata ||
+                        !bookFile ||
+                        !coverFile ||
+                        !formData.title ||
+                        !formData.author ||
+                        !formData.category ||
+                        !formData.pages ||
+                        formData.description.length < 10
+                      }
+                      icon={<FiArrowRight className="text-sm" />}
+                      className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
+                    >
+                      Confirm Essentials & Upload
+                    </Button>
+                  </div>
+                </motion.form>
+              ) : (
+                <motion.form
+                  key="step2"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  onSubmit={handleStep2Submit}
+                  className="space-y-12"
+                >
+                  <div className="grid md:grid-cols-2 gap-10">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label>Publisher</Label>
+                          <input
+                            value={formData.publisher}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                publisher: e.target.value,
+                              })
+                            }
+                            placeholder="e.g. Pearson"
+                            className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label>Published Year</Label>
+                          <input
+                            type="number"
+                            value={formData.publishedYear}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                publishedYear: e.target.value,
+                              })
+                            }
+                            placeholder="YYYY"
+                            className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label>ISBN</Label>
+                        <input
+                          value={formData.isbn}
+                          onChange={(e) =>
+                            setFormData({ ...formData, isbn: e.target.value })
+                          }
+                          placeholder="Optional"
+                          className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label>Tags (Comma separated)</Label>
+                        <input
+                          value={formData.tags}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tags: e.target.value })
+                          }
+                          placeholder="e.g. engineering, study guide, exam"
+                          className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-6 border border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-white/5 space-y-4">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
+                        File Preview
+                      </h3>
+                      <div className="flex gap-4">
+                        <div className="w-20 h-28 bg-gray-200 dark:bg-neutral-800 overflow-hidden border border-gray-100 dark:border-white/10 shrink-0">
+                          {coverPreviewUrl && (
+                            <img
+                              src={coverPreviewUrl}
+                              className="w-full h-full object-cover"
+                              alt="Cover"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                            {formData.title || "Untitled"}
+                          </h4>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500 mb-2">
+                            {formData.author || "Unknown Author"}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] px-1.5 py-0.5 border border-emerald-500/20 text-emerald-600 font-bold uppercase">
+                              {formData.category || "General"}
+                            </span>
+                            <span className="text-[9px] text-gray-400 font-medium uppercase">
+                              {formData.pages || 0} Pages
+                            </span>
                           </div>
                         </div>
-                      ) : (
-                        <>
-                          <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-2xl mb-2" />
-                          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                            Click or Drag File
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label>Cover Image</Label>
-                      {coverFile && (
-                        <button
-                          type="button"
-                          onClick={() => coverInputRef.current?.click()}
-                          className="text-[10px] text-emerald-500 hover:underline uppercase tracking-wider font-semibold"
-                        >
-                          Replace
-                        </button>
-                      )}
-                    </div>
-                    <input
-                      ref={coverInputRef}
-                      type="file"
-                      className="hidden"
-                      onChange={handleCoverFileChange}
-                      accept="image/*"
-                    />
-                    <div
-                      onClick={() =>
-                        !coverFile && coverInputRef.current?.click()
-                      }
-                      className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
-                        !coverFile
-                          ? "cursor-pointer hover:border-emerald-500"
-                          : ""
-                      }`}
-                    >
-                      {coverPreviewUrl ? (
-                        <img
-                          src={coverPreviewUrl}
-                          className="w-full h-full object-cover"
-                          alt="Cover preview"
-                        />
-                      ) : isExtractingMetadata ? (
-                        <div className="flex flex-col items-center gap-2 text-gray-300 dark:text-neutral-600">
-                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-neutral-600 border-t-transparent rounded-full animate-spin" />
-                          <p className="text-[11px] font-medium uppercase tracking-tighter">
-                            Extracting cover…
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="text-center flex flex-col items-center gap-1 text-gray-300 dark:text-neutral-700">
-                          <FiImage className="text-2xl mb-1" />
-                          <p className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">
-                            {bookFile
-                              ? "No cover found — click to upload"
-                              : "Upload cover image"}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
-                  <div className="space-y-1.5">
-                    <Label>Title</Label>
-                    <input
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
-                      placeholder="Resource Title"
-                      required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Author</Label>
-                    <input
-                      value={formData.author}
-                      onChange={(e) =>
-                        setFormData({ ...formData, author: e.target.value })
-                      }
-                      placeholder="Author Name"
-                      required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                    />
-                  </div>
-                  <FormSelect<any, false>
-                    label="Category"
-                    icon={<FiLayout />}
-                    options={categoryOptions}
-                    isLoading={isLoadingCategories}
-                    placeholder="Select Category"
-                    onChange={(opt: any) =>
-                      setFormData({
-                        ...formData,
-                        category: opt?.value || "",
-                      })
-                    }
-                    value={
-                      categoryOptions.find(
-                        (opt: any) => opt.value === formData.category,
-                      ) || null
-                    }
-                  />
-                  <FormSelect<any, false>
-                    label="Department"
-                    icon={<FiBookOpen />}
-                    options={departmentOptions}
-                    isLoading={isLoadingDepts}
-                    placeholder="Department"
-                    onChange={(opt: any) =>
-                      setFormData({
-                        ...formData,
-                        department: opt?.value || "",
-                      })
-                    }
-                    value={
-                      departmentOptions.find(
-                        (opt: any) => opt.value === formData.department,
-                      ) || null
-                    }
-                  />
-                  <div className="space-y-1.5">
-                    <Label>Pages</Label>
-                    <input
-                      type="number"
-                      value={formData.pages}
-                      onChange={(e) =>
-                        setFormData({ ...formData, pages: e.target.value })
-                      }
-                      placeholder="0"
-                      required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 pt-4">
-                  <Label>Short Description</Label>
-                  <textarea
-                    rows={4}
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="Provide a brief summary of the book (min. 10 characters)..."
-                    required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
-                <Button
-                  type="submit"
-                  isLoading={isUploading}
-                  disabled={
-                    isExtractingMetadata ||
-                    !bookFile ||
-                    !coverFile ||
-                    !formData.title ||
-                    !formData.author ||
-                    !formData.category ||
-                    !formData.pages ||
-                    formData.description.length < 10
-                  }
-                  icon={<FiArrowRight className="text-sm" />}
-                  className="px-8 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest whitespace-nowrap"
-                >
-                  Confirm Essentials & Upload
-                </Button>
-              </div>
-            </motion.form>
-          ) : (
-            <motion.form
-              key="step2"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              onSubmit={handleStep2Submit}
-              className="space-y-12"
-            >
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label>Publisher</Label>
-                      <input
-                        value={formData.publisher}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            publisher: e.target.value,
-                          })
-                        }
-                        placeholder="e.g. Pearson"
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label>Published Year</Label>
-                      <input
-                        type="number"
-                        value={formData.publishedYear}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            publishedYear: e.target.value,
-                          })
-                        }
-                        placeholder="YYYY"
-                        className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label>ISBN</Label>
-                    <input
-                      value={formData.isbn}
-                      onChange={(e) =>
-                        setFormData({ ...formData, isbn: e.target.value })
-                      }
-                      placeholder="Optional"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label>Tags (Comma separated)</Label>
-                    <input
-                      value={formData.tags}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tags: e.target.value })
-                      }
-                      placeholder="e.g. engineering, study guide, exam"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-6 border border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-white/5 space-y-4">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
-                    File Preview
-                  </h3>
-                  <div className="flex gap-4">
-                    <div className="w-20 h-28 bg-gray-200 dark:bg-neutral-800 overflow-hidden border border-gray-100 dark:border-white/10 shrink-0">
-                      {coverPreviewUrl && (
-                        <img
-                          src={coverPreviewUrl}
-                          className="w-full h-full object-cover"
-                          alt="Cover"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                        {formData.title || "Untitled"}
-                      </h4>
-                      <p className="text-xs text-gray-500 dark:text-neutral-500 mb-2">
-                        {formData.author || "Unknown Author"}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] px-1.5 py-0.5 border border-emerald-500/20 text-emerald-600 font-bold uppercase">
-                          {formData.category || "General"}
-                        </span>
-                        <span className="text-[9px] text-gray-400 font-medium uppercase">
-                          {formData.pages || 0} Pages
-                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="flex justify-between pt-8 border-t border-gray-100 dark:border-neutral-800">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2"
-                >
-                  <FiArrowLeft className="text-sm" /> Back to Upload
-                </button>
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="submit"
-                    isLoading={isUpdating}
-                    disabled={!isStep2FormComplete}
-                    className="px-12 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest"
-                  >
-                    Confirm Donation
-                  </Button>
-                </div>
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
-      </main>
-    </div>
-  ) : (
-    <div className="grid bg-inherit py-2">
-      <button
-        className="justify-self-end grid p-2 my-2 text-lg rounded-lg bg-red-600"
-        onClick={() => updateBookCount(0)}
-      >
-        CLEAR SELECTION
-      </button>
-      <MultipleFileProvider>
+                  <div className="flex justify-between pt-8 border-t border-gray-100 dark:border-neutral-800">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <FiArrowLeft className="text-sm" /> Back to Upload
+                    </button>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="submit"
+                        isLoading={isUpdating}
+                        disabled={!isStep2FormComplete}
+                        className="px-12 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest"
+                      >
+                        Confirm Donation
+                      </Button>
+                    </div>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </main>
+        </div>
+      ) : (
+        <BulkUploadView
+          onExit={() => {
+            setIsBulkManual(false);
+            updateBookCount(1);
+            updateMultiplesList(null);
+          }}
+          multiplesList={multiplesList}
+        />
+      )}
+    </MultipleFileProvider>
+  );
+}
+
+function BulkUploadView({
+  onExit,
+  multiplesList,
+}: {
+  onExit: () => void;
+  multiplesList: FileList | null;
+}) {
+  const { filesWithMetadataState, updateFilesStatusObject } =
+    useMultipleFiles();
+
+  return (
+    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+      <div className="p-6 md:p-12 max-w-4xl mx-auto w-full">
+        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-neutral-800 pb-6">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1 bg-emerald-500"></div>
+            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+              Bulk Upload
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onExit}
+              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors border border-emerald-500/20 px-3 py-1.5 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10"
+            >
+              Single Upload Mode
+            </button>
+          </div>
+        </div>
         <MultipleUploadForm files={multiplesList} />
-      </MultipleFileProvider>
+      </div>
     </div>
   );
 }

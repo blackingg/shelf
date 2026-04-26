@@ -92,6 +92,6 @@ export async function prepareForUpload(file: File) {
 
   return {
     ...metaObj,
-    cover_image: photo,
+    coverImage: photo,
   };
 }
