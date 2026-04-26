@@ -5,6 +5,10 @@ import { epubThemes } from "./readerThemes";
 import { useReader } from "./ReaderContext";
 import { useNotifications } from "@/app/context/NotificationContext";
 
+export async function generateLocations(book: Book) {
+  return await book.locations.generate(1024);
+}
+
 interface EpubViewerProps {
   buffer: ArrayBuffer;
   onReady?: (controls: {
@@ -26,9 +30,9 @@ export function EpubViewer({
     setTableOfContentsItems,
     setTableOfContentsNavigator,
   } = useReader();
-  
+
   const [loading, setLoading] = useState(true);
-  
+
   const viewRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
   const bookRef = useRef<Book | null>(null);
@@ -36,10 +40,10 @@ export function EpubViewer({
 
   useEffect(() => {
     if (!buffer || buffer.byteLength === 0) return;
-    
+
     const book = ePub(buffer);
     bookRef.current = book;
-    
+
     if (!viewRef.current) return;
 
     const rendition = book.renderTo(viewRef.current, {
@@ -81,7 +85,9 @@ export function EpubViewer({
               level,
             });
             if (item.subitems && item.subitems.length > 0) {
-              result = result.concat(flattenTableOfContents(item.subitems, level + 1));
+              result = result.concat(
+                flattenTableOfContents(item.subitems, level + 1),
+              );
             }
           });
           return result;
@@ -140,7 +146,16 @@ export function EpubViewer({
       rendition.destroy();
       book.destroy();
     };
-  }, [buffer, setTableOfContentsItems, setTableOfContentsNavigator, themeName, fontSize, addNotification, onPageDetails, onReady]);
+  }, [
+    buffer,
+    setTableOfContentsItems,
+    setTableOfContentsNavigator,
+    themeName,
+    fontSize,
+    addNotification,
+    onPageDetails,
+    onReady,
+  ]);
 
   // Update theme when changed in context
   useEffect(() => {
@@ -158,11 +173,13 @@ export function EpubViewer({
         <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-neutral-900 z-10 transition-opacity duration-500">
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-            <p className="text-sm font-medium text-neutral-500 animate-pulse">Loading book content...</p>
+            <p className="text-sm font-medium text-neutral-500 animate-pulse">
+              Loading book content...
+            </p>
           </div>
         </div>
       )}
-      
+
       <div
         ref={viewRef}
         className="w-full h-full overflow-y-auto custom-scrollbar"
