@@ -50,6 +50,27 @@ export function ReaderHeader({
   const router = useRouter();
   const [showSettings, setShowSettings] = useState(false);
 
+  const hoverBgClass =
+    themeName === "sepia"
+      ? "hover:bg-[#dccfb4]/35"
+      : themeName === "dark"
+        ? "hover:bg-white/5"
+        : "hover:bg-black/5";
+
+  const sliderTrackBgClass =
+    themeName === "sepia"
+      ? "bg-[#dccfb4]/70"
+      : themeName === "dark"
+        ? "bg-white/10"
+        : "bg-black/10";
+
+  const dividerBgClass =
+    themeName === "sepia"
+      ? "bg-[#dccfb4]"
+      : themeName === "dark"
+        ? "bg-[#404040]"
+        : "bg-gray-200";
+
   return (
     <AnimatePresence>
       {showControls && (
@@ -62,7 +83,7 @@ export function ReaderHeader({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <button
               onClick={() => router.back()}
-              className={`p-2 rounded-sm hover:bg-black/5 transition-colors ${currentTheme.text}`}
+              className={`p-2 rounded-sm ${hoverBgClass} transition-colors ${currentTheme.text}`}
               title="Go back"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -96,7 +117,7 @@ export function ReaderHeader({
                 className={`p-2 rounded-sm transition-colors ${
                   showSettings
                     ? "bg-emerald-600 text-white"
-                    : `hover:bg-black/5 ${currentTheme.text}`
+                    : `${hoverBgClass} ${currentTheme.text}`
                 }`}
                 title="Reader Settings"
               >
@@ -113,7 +134,7 @@ export function ReaderHeader({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
-                    className={`absolute right-0 mt-2 w-72 p-6 rounded-md border ${currentTheme.bg} ${currentTheme.border} z-[60]`}
+                    className={`absolute right-0 mt-2 w-72 p-6 rounded-md border ${currentTheme.bg} ${currentTheme.border} z-60`}
                   >
                     <h3
                       className={`text-[10px] font-medium uppercase tracking-[0.2em] mb-6 opacity-40 ${currentTheme.text}`}
@@ -133,7 +154,7 @@ export function ReaderHeader({
                               className={`flex-1 flex flex-col items-center gap-2 p-2 rounded-sm border transition-all ${
                                 themeName === t
                                   ? "border-emerald-500 bg-emerald-500/5 shadow-[0_0_0_1px_rgba(16,185,129,0.5)]"
-                                  : "border-transparent hover:bg-black/5"
+                                  : `border-transparent ${hoverBgClass}`
                               }`}
                             >
                               <div
@@ -179,7 +200,7 @@ export function ReaderHeader({
                             onChange={(e) =>
                               setFontSize(parseInt(e.target.value))
                             }
-                            className="w-full h-1 bg-black/10 dark:bg-white/10 rounded-none appearance-none cursor-pointer accent-emerald-600"
+                            className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-emerald-600`}
                           />
                         </div>
                       </>
@@ -208,7 +229,7 @@ export function ReaderHeader({
                           onChange={(e) =>
                             setPdfScale(parseFloat(e.target.value))
                           }
-                          className="w-full h-1 bg-black/10 dark:bg-white/10 rounded-none appearance-none cursor-pointer accent-emerald-600"
+                          className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-emerald-600`}
                         />
                         <div className="flex justify-between text-[8px] uppercase tracking-widest opacity-20 px-1">
                           <span>0.5x</span>
@@ -222,7 +243,7 @@ export function ReaderHeader({
               </AnimatePresence>
             </div>
 
-            <div className="w-px h-4 bg-gray-200 dark:bg-neutral-800 mx-2" />
+            <div className={`w-px h-4 ${dividerBgClass} mx-2`} />
 
             {tableOfContentsItems.length > 0 && (
               <button
@@ -230,7 +251,7 @@ export function ReaderHeader({
                 className={`p-2 rounded-sm transition-all duration-300 ${
                   isTableOfContentsOpen
                     ? "bg-emerald-600 text-white"
-                    : `text-neutral-500 hover:bg-black/5 ${currentTheme.text}`
+                    : `${hoverBgClass} ${currentTheme.text}`
                 }`}
                 title={
                   isTableOfContentsOpen
@@ -244,7 +265,7 @@ export function ReaderHeader({
 
             <button
               onClick={onToggleFullScreen}
-              className={`p-2 rounded-sm hover:bg-black/5 transition-colors ${currentTheme.text}`}
+              className={`p-2 rounded-sm ${hoverBgClass} transition-colors ${currentTheme.text}`}
               title={isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}
             >
               {isFullScreen ? (
