@@ -16,7 +16,8 @@ import {
   FiLayout,
   FiBookOpen,
 } from "react-icons/fi";
-import { prepareForUpload } from "../app/books/upload/documentHandlingFunctions";
+import { FolderSelectDropdown } from "./Library/FolderSelectDropdown";
+import { prepareForUpload } from "../helpers";
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
 import {
@@ -436,22 +437,10 @@ export default function MultipleUploadForm({
         </div>
 
         <div className="mt-12 flex flex-col md:flex-row md:items-end gap-6 p-8 bg-gray-50/50 dark:bg-neutral-800/20 border border-gray-100 dark:border-neutral-800 rounded-2xl">
-          <div className="flex-1 space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block ml-1">
-              Add to Folder (Optional)
-            </label>
-            <FormSelect
-              id="target-folder"
-              value={
-                folders
-                  .map((f) => ({ value: f.id, label: f.name }))
-                  .find((opt) => opt.value === targetFolderId) || null
-              }
-              onChange={(opt: any) => setTargetFolderId(opt?.value || "")}
-              options={folders.map((f) => ({ value: f.id, label: f.name }))}
-              placeholder="No folder selected"
-              isLoading={isLoadingFolders}
-              isClearable
+          <div className="flex-1">
+            <FolderSelectDropdown
+              selectedFolderId={targetFolderId}
+              onSelect={(id) => setTargetFolderId(id)}
             />
           </div>
 
@@ -541,7 +530,6 @@ function FileToBeUploaded({
       setIsExpanded(!state);
     }
   }, [uploadStatus, dataObj]);
-
 
   const isValid =
     formData.title.length >= 1 &&
