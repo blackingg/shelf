@@ -4,7 +4,7 @@ export const PageContainer: React.FC<{
 }> = ({ children, centered = true }) => (
   <div className="min-h-screen bg-white dark:bg-neutral-900">
     <div
-      className={`$ {
+      className={`${
         centered
           ? "flex items-center justify-center min-h-[calc(100vh-4rem)]"
           : ""

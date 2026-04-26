@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
@@ -17,6 +17,7 @@ import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const user = useSelector(selectCurrentUser);
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
@@ -25,7 +26,10 @@ export default function DepartmentsPage() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { data: schools = [] } = useGetSchoolsQuery();
-  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
+  const openGallery = searchParams.get("view") === "gallery";
+  const [viewDepartments, setViewDepartments] = useState(
+    !isAuthenticated || openGallery,
+  );
 
   const { departments: allDepartments, isLoading } = useDepartments(
     selectedSchoolId ? { school_id: selectedSchoolId } : {},

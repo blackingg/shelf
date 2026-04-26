@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
@@ -28,13 +28,31 @@ import { BookCardListView } from "@/app/components/Donation_ListView";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
+type BookmarkSubTab = "books" | "folders";
+
+function isLibraryTab(value: string | null): value is LibraryTab {
+  return value === "bookmarks" || value === "folders" || value === "uploads";
+}
+
+function isBookmarkSubTab(value: string | null): value is BookmarkSubTab {
+  return value === "books" || value === "folders";
+}
 
 export default function LibraryPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
 
+  const initialTab = isLibraryTab(searchParams.get("tab"))
+    ? searchParams.get("tab")
+    : "bookmarks";
+  const initialBookmarkSubTab = isBookmarkSubTab(searchParams.get("bookmark"))
+    ? searchParams.get("bookmark")
+    : "books";
+
   const activeUser = useAppSelector(selectCurrentUser);
-  const [activeTab, setActiveTab] = useState<LibraryTab>("bookmarks");
+  const [activeTab, setActiveTab] = useState<LibraryTab>(initialTab);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
   // Uploads state
@@ -45,8 +63,8 @@ export default function LibraryPage() {
   // Bookmarks state
   const [bookmarkPage, setBookmarkPage] = useState(1);
   const [bookmarkFolderPage, setBookmarkFolderPage] = useState(1);
-  const [bookmarkSubTab, setBookmarkSubTab] = useState<"books" | "folders">(
-    "books",
+  const [bookmarkSubTab, setBookmarkSubTab] = useState<BookmarkSubTab>(
+    initialBookmarkSubTab,
   );
 
   // Folders state
@@ -64,6 +82,42 @@ export default function LibraryPage() {
     setBookmarkFolderPage(1);
     setFolderPage(1);
   }, [pageSize]);
+
+  useEffect(() => {
+    const tabFromUrl = isLibraryTab(searchParams.get("tab"))
+      ? searchParams.get("tab")
+      : "bookmarks";
+    const bookmarkFromUrl = isBookmarkSubTab(searchParams.get("bookmark"))
+      ? searchParams.get("bookmark")
+      : "books";
+
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+
+    if (tabFromUrl === "bookmarks" && bookmarkFromUrl !== bookmarkSubTab) {
+      setBookmarkSubTab(bookmarkFromUrl);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", activeTab);
+
+    if (activeTab === "bookmarks") {
+      params.set("bookmark", bookmarkSubTab);
+    } else {
+      params.delete("bookmark");
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery !== currentQuery) {
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [activeTab, bookmarkSubTab, pathname, router, searchParams]);
 
   const {
     books: bookmarkedBooks,

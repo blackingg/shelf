@@ -309,6 +309,7 @@ export const BookDetailPanel: React.FC<{
                     isOpen={showFolderDropdown}
                     onClose={() => setShowFolderDropdown(false)}
                     bookId={book?.id || ""}
+                    bookTitle={book?.title || undefined}
                   />
                 </div>
               </div>
