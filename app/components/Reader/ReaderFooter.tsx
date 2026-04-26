@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { FiChevronLeft, FiChevronRight, FiGrid } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useReader } from "./ReaderContext";
 
 interface ReaderFooterProps {
@@ -21,10 +21,31 @@ export function ReaderFooter({
   onPrevPage,
   onPageChange,
 }: ReaderFooterProps) {
-  const { currentTheme } = useReader();
+  const { currentTheme, themeName } = useReader();
   const [showPageJump, setShowPageJump] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(currentPage.toString());
   const pageJumpRef = React.useRef<HTMLDivElement>(null);
+
+  const hoverBgClass =
+    themeName === "sepia"
+      ? "hover:bg-[#dccfb4]/35"
+      : themeName === "dark"
+        ? "hover:bg-white/5"
+        : "hover:bg-black/5";
+
+  const inputBgClass =
+    themeName === "sepia"
+      ? "bg-[#dccfb4]/60"
+      : themeName === "dark"
+        ? "bg-white/5"
+        : "bg-black/5";
+
+  const progressTrackBgClass =
+    themeName === "sepia"
+      ? "bg-[#dccfb4]"
+      : themeName === "dark"
+        ? "bg-neutral-800"
+        : "bg-gray-200";
 
   React.useEffect(() => {
     setInputValue(currentPage.toString());
@@ -69,9 +90,7 @@ export function ReaderFooter({
           onClick={onPrevPage}
           disabled={currentPage === 1}
           className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm transition-colors ${
-            currentPage === 1
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-black/5"
+            currentPage === 1 ? "opacity-50 cursor-not-allowed" : hoverBgClass
           } ${currentTheme.text}`}
         >
           <FiChevronLeft className="w-5 h-5" />
@@ -101,7 +120,7 @@ export function ReaderFooter({
                     handleJump();
                   }
                 }}
-                className={`w-12 text-center py-1 rounded-sm border border-transparent focus:border-emerald-600 bg-black/5 dark:bg-white/5 outline-none transition-all text-xs font-medium ${currentTheme.text}`}
+                className={`w-12 text-center py-1 rounded-sm border border-transparent focus:border-emerald-600 ${inputBgClass} outline-none transition-all text-xs font-medium ${currentTheme.text}`}
               />
             </div>
             <span
@@ -111,7 +130,9 @@ export function ReaderFooter({
             </span>
           </div>
 
-          <div className="w-32 sm:w-48 h-0.5 bg-gray-200 dark:bg-neutral-800 mt-2 overflow-hidden">
+          <div
+            className={`w-32 sm:w-48 h-0.5 ${progressTrackBgClass} mt-2 overflow-hidden`}
+          >
             <div
               className="h-full bg-emerald-600 transition-all duration-300"
               style={{ width: `${(currentPage / totalPages) * 100}%` }}
@@ -124,9 +145,9 @@ export function ReaderFooter({
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-md border ${currentTheme.ui} z-60 overflow-hidden shadow-none`}
+                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-md border ${currentTheme.ui} ${currentTheme.border} z-60 overflow-hidden shadow-none`}
               >
-                <div className="p-3 border-b border-gray-100 dark:border-neutral-800">
+                <div className={`p-3 border-b ${currentTheme.border}`}>
                   <span
                     className={`text-[10px] font-medium uppercase tracking-[0.2em] ${currentTheme.text} opacity-40`}
                   >
@@ -145,7 +166,7 @@ export function ReaderFooter({
                         className={`w-full text-left px-4 py-2 rounded-sm text-xs tracking-tight transition-all flex justify-between items-center ${
                           currentPage === p
                             ? "bg-emerald-600 text-white font-medium"
-                            : `hover:bg-black/5 ${currentTheme.text}`
+                            : `${hoverBgClass} ${currentTheme.text}`
                         }`}
                       >
                         <span>Page {p}</span>
@@ -169,7 +190,7 @@ export function ReaderFooter({
           className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm transition-colors ${
             currentPage === totalPages
               ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-black/5"
+              : hoverBgClass
           } ${currentTheme.text}`}
         >
           <span className="hidden sm:inline text-xs font-medium uppercase tracking-widest mt-0.5">
