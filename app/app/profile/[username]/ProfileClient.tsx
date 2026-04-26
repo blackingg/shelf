@@ -23,6 +23,7 @@ import {
   useUserFolders,
   useMeFolders,
   useFolderActions,
+  useBookActions,
   useBookmarkedBooks,
   useBookmarkedFolders,
 } from "@/app/services";
@@ -54,6 +55,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<any | null>(null);
   const pageSize = 10;
 
   const currentUser = useSelector(selectCurrentUser);
@@ -63,6 +65,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const { actions: userActions } = useUser({ enabled: !!currentUser });
   const { actions: folderActions, isDeleting: isDeletingFolder } =
     useFolderActions();
+  const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
   const { user, isLoading: isLoadingUser } = useUserByUsername(username);
 
@@ -150,6 +153,12 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     if (!folderToDelete) return;
     await folderActions.deleteFolder(folderToDelete.id);
     setFolderToDelete(null);
+  };
+
+  const handleDeleteBook = async () => {
+    if (!bookToDelete) return;
+    await bookActions.deleteBook(bookToDelete.id);
+    setBookToDelete(null);
   };
 
   const handleShare = async () => {
@@ -372,6 +381,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               currentPage={page}
               onPageChange={setPage}
               onBookClick={(book) => setSelectedBook(book)}
+              onBookEdit={(book) => router.push(`/app/books/${book.slug}/edit`)}
+              onBookDelete={(book) => setBookToDelete(book)}
               pageSize={pageSize}
               emptyMessage="No books donated yet."
               emptyAction={
@@ -453,6 +464,17 @@ export default function ProfileClient({ username }: ProfileClientProps) {
         confirmText="Delete Folder"
         isDanger
         isLoading={isDeletingFolder}
+      />
+
+      <ConfirmModal
+        isOpen={!!bookToDelete}
+        onClose={() => setBookToDelete(null)}
+        onConfirm={handleDeleteBook}
+        title="Delete Resource"
+        message={`Are you sure you want to delete "${bookToDelete?.title}"? This action is permanent and cannot be undone.`}
+        confirmText="Delete Resource"
+        isDanger
+        isLoading={isDeletingBook}
       />
     </div>
   );
