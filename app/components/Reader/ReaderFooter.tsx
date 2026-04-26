@@ -62,26 +62,31 @@ export function ReaderFooter({
       initial={{ y: 100 }}
       animate={{ y: showControls ? 0 : 100 }}
       transition={{ duration: 0.3 }}
-      className={`fixed bottom-0 w-full z-50 border-t ${currentTheme.ui} backdrop-blur-md bg-opacity-90`}
+      className={`fixed bottom-0 w-full z-50 border-t ${currentTheme.ui} backdrop-blur-md bg-opacity-95`}
     >
-      <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
         <button
           onClick={onPrevPage}
           disabled={currentPage === 1}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-colors ${
+          className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm transition-colors ${
             currentPage === 1
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-black/5"
           } ${currentTheme.text}`}
         >
           <FiChevronLeft className="w-5 h-5" />
-          <span className="hidden sm:inline font-medium">Previous</span>
+          <span className="hidden sm:inline text-xs font-medium uppercase tracking-widest mt-0.5">
+            Previous
+          </span>
         </button>
 
-        <div className="flex flex-col items-center relative" ref={pageJumpRef}>
-          <div className="flex items-center gap-2 group">
+        <div
+          className="flex flex-col items-center relative"
+          ref={pageJumpRef}
+        >
+          <div className="flex items-center gap-3">
             <span
-              className={`text-sm font-semibold opacity-50 ${currentTheme.text}`}
+              className={`text-[10px] font-medium uppercase tracking-widest opacity-40 ${currentTheme.text}`}
             >
               Page
             </span>
@@ -96,19 +101,19 @@ export function ReaderFooter({
                     handleJump();
                   }
                 }}
-                className={`w-12 text-center py-1 rounded-lg border-2 border-transparent focus:border-emerald-500 bg-black/5 outline-none transition-all font-bold ${currentTheme.text}`}
+                className={`w-12 text-center py-1 rounded-sm border border-transparent focus:border-emerald-600 bg-black/5 dark:bg-white/5 outline-none transition-all text-xs font-medium ${currentTheme.text}`}
               />
             </div>
             <span
-              className={`text-sm font-semibold opacity-50 ${currentTheme.text}`}
+              className={`text-[10px] font-medium uppercase tracking-widest opacity-40 ${currentTheme.text}`}
             >
               of {totalPages}
             </span>
           </div>
 
-          <div className="w-32 sm:w-64 h-1 bg-gray-200 dark:bg-neutral-800 rounded-full mt-2 overflow-hidden">
+          <div className="w-32 sm:w-48 h-0.5 bg-gray-200 dark:bg-neutral-800 mt-2 overflow-hidden">
             <div
-              className="h-full bg-emerald-500 transition-all duration-300"
+              className="h-full bg-emerald-600 transition-all duration-300"
               style={{ width: `${(currentPage / totalPages) * 100}%` }}
             />
           </div>
@@ -116,14 +121,14 @@ export function ReaderFooter({
           <AnimatePresence>
             {showPageJump && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-2xl shadow-2xl border ${currentTheme.ui} z-60 overflow-hidden`}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className={`absolute bottom-full mb-6 w-56 max-h-72 flex flex-col rounded-md border ${currentTheme.ui} z-60 overflow-hidden shadow-none`}
               >
                 <div className="p-3 border-b border-gray-100 dark:border-neutral-800">
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-wider ${currentTheme.text} opacity-50`}
+                    className={`text-[10px] font-medium uppercase tracking-[0.2em] ${currentTheme.text} opacity-40`}
                   >
                     Select Page
                   </span>
@@ -137,15 +142,17 @@ export function ReaderFooter({
                           onPageChange?.(p);
                           setShowPageJump(false);
                         }}
-                        className={`w-full text-left px-4 py-2 rounded-xl text-sm transition-all flex justify-between items-center ${
+                        className={`w-full text-left px-4 py-2 rounded-sm text-xs tracking-tight transition-all flex justify-between items-center ${
                           currentPage === p
-                            ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                            ? "bg-emerald-600 text-white font-medium"
                             : `hover:bg-black/5 ${currentTheme.text}`
                         }`}
                       >
                         <span>Page {p}</span>
                         {currentPage === p && (
-                          <span className="text-[10px] font-bold">Current</span>
+                          <span className="text-[10px] uppercase tracking-widest font-medium opacity-80">
+                            Current
+                          </span>
                         )}
                       </button>
                     ),
@@ -159,13 +166,15 @@ export function ReaderFooter({
         <button
           onClick={onNextPage}
           disabled={currentPage === totalPages}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-colors ${
+          className={`flex items-center space-x-2 px-3 py-1.5 rounded-sm transition-colors ${
             currentPage === totalPages
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-black/5"
           } ${currentTheme.text}`}
         >
-          <span className="hidden sm:inline font-medium">Next</span>
+          <span className="hidden sm:inline text-xs font-medium uppercase tracking-widest mt-0.5">
+            Next
+          </span>
           <FiChevronRight className="w-5 h-5" />
         </button>
       </div>
