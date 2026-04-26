@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
 import { useNotifications } from "../../context/NotificationContext";
+import { getErrorMessage } from "../../helpers/error";
 import {
   School,
   Department,
@@ -64,7 +65,7 @@ export const useOnboarding = () => {
       await completeMutation.mutateAsync(data);
       addNotification("success", "Onboarding completed! Welcome to Shelf.");
     } catch (err: any) {
-      addNotification("error", err.message || "Failed to complete onboarding");
+      addNotification("error", getErrorMessage(err, "Failed to complete onboarding"));
       throw err;
     }
   };
