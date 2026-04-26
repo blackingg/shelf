@@ -34,8 +34,9 @@ import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTa
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/app/store";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
-import { FolderVisibility } from "@/app/types/folder";
+import { FolderVisibility, Folder } from "@/app/types/folder";
 import { shareContent } from "@/app/helpers/share";
+import { ConfirmModal } from "@/app/components/ConfirmModal";
 
 interface ProfileClientProps {
   username: string;
@@ -52,6 +53,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const [bookmarkBooksPage, setBookmarkBooksPage] = useState(1);
   const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
   const pageSize = 10;
 
   const currentUser = useSelector(selectCurrentUser);
@@ -59,7 +61,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const { addNotification } = useNotifications();
 
   const { actions: userActions } = useUser({ enabled: !!currentUser });
-  const { actions: folderActions } = useFolderActions();
+  const { actions: folderActions, isDeleting: isDeletingFolder } =
+    useFolderActions();
 
   const { user, isLoading: isLoadingUser } = useUserByUsername(username);
 
@@ -141,6 +144,12 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   ) => {
     await folderActions.createFolder({ name, visibility, description });
     setShowCreateFolderModal(false);
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!folderToDelete) return;
+    await folderActions.deleteFolder(folderToDelete.id);
+    setFolderToDelete(null);
   };
 
   const handleShare = async () => {
@@ -389,6 +398,10 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               onFolderClick={(folder) =>
                 router.push(`/app/folders/${folder.slug}`)
               }
+              onFolderEdit={(folder) =>
+                router.push(`/app/folders/${folder.slug}/edit`)
+              }
+              onFolderDelete={(folder) => setFolderToDelete(folder)}
               pageSize={pageSize}
               showActions={isOwner}
               emptyMessage="No folders yet."
@@ -429,6 +442,17 @@ export default function ProfileClient({ username }: ProfileClientProps) {
         isOpen={showCreateFolderModal}
         onClose={() => setShowCreateFolderModal(false)}
         onSubmit={handleCreateFolder}
+      />
+
+      <ConfirmModal
+        isOpen={!!folderToDelete}
+        onClose={() => setFolderToDelete(null)}
+        onConfirm={handleDeleteFolder}
+        title="Delete Folder"
+        message={`Are you sure you want to delete "${folderToDelete?.name}"? This action will remove the folder and all its organizational data.`}
+        confirmText="Delete Folder"
+        isDanger
+        isLoading={isDeletingFolder}
       />
     </div>
   );
