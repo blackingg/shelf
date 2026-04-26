@@ -44,11 +44,14 @@ export default function LibraryPage() {
   const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
 
-  const initialTab = isLibraryTab(searchParams.get("tab"))
-    ? searchParams.get("tab")
+  const tabParam = searchParams.get("tab");
+  const bookmarkParam = searchParams.get("bookmark");
+
+  const initialTab: LibraryTab = isLibraryTab(tabParam)
+    ? tabParam
     : "bookmarks";
-  const initialBookmarkSubTab = isBookmarkSubTab(searchParams.get("bookmark"))
-    ? searchParams.get("bookmark")
+  const initialBookmarkSubTab: BookmarkSubTab = isBookmarkSubTab(bookmarkParam)
+    ? bookmarkParam
     : "books";
 
   const activeUser = useAppSelector(selectCurrentUser);
@@ -84,11 +87,14 @@ export default function LibraryPage() {
   }, [pageSize]);
 
   useEffect(() => {
-    const tabFromUrl = isLibraryTab(searchParams.get("tab"))
-      ? searchParams.get("tab")
+    const nextTabParam = searchParams.get("tab");
+    const nextBookmarkParam = searchParams.get("bookmark");
+
+    const tabFromUrl: LibraryTab = isLibraryTab(nextTabParam)
+      ? nextTabParam
       : "bookmarks";
-    const bookmarkFromUrl = isBookmarkSubTab(searchParams.get("bookmark"))
-      ? searchParams.get("bookmark")
+    const bookmarkFromUrl: BookmarkSubTab = isBookmarkSubTab(nextBookmarkParam)
+      ? nextBookmarkParam
       : "books";
 
     if (tabFromUrl !== activeTab) {

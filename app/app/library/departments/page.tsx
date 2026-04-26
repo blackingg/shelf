@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
@@ -17,7 +17,6 @@ import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const user = useSelector(selectCurrentUser);
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
@@ -26,10 +25,7 @@ export default function DepartmentsPage() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { data: schools = [] } = useGetSchoolsQuery();
-  const openGallery = searchParams.get("view") === "gallery";
-  const [viewDepartments, setViewDepartments] = useState(
-    !isAuthenticated || openGallery,
-  );
+  const [viewDepartments, setViewDepartments] = useState(false);
 
   const { departments: allDepartments, isLoading } = useDepartments(
     selectedSchoolId ? { school_id: selectedSchoolId } : {},
@@ -46,6 +42,18 @@ export default function DepartmentsPage() {
       setSelectedSchoolId(user.school.id);
     }
   }, [user?.school?.id]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setViewDepartments(true);
+      return;
+    }
+
+    const openGallery =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("view") === "gallery";
+    setViewDepartments(openGallery);
+  }, [isAuthenticated]);
 
   const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
