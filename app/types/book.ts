@@ -112,3 +112,8 @@ export interface BookmarkResponse {
 export interface BookmarkedStatus {
   bookmarked: boolean;
 }
+
+export interface PDFJSInfo {
+  Title: string;
+  Author: string;
+}
