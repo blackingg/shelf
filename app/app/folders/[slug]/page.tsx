@@ -46,7 +46,7 @@ export async function generateMetadata({
   const title = folder.name;
   const description = folder.description
     ? folder.description.slice(0, 160)
-    : `Explore the "${folder.name}" collection on Shelf — a community-driven book library.`;
+    : `Explore the ${folder.name} folder on Shelf — a community-driven book library.`;
   const image = folder.coverImage || "/logo.png";
 
   return {

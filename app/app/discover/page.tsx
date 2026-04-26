@@ -323,7 +323,7 @@ export default function DiscoverPage() {
             ) : (
               <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
-                  Explore specialized collections from your school&apos;s
+                  Explore specialized folders from your school&apos;s
                   departments.
                 </p>
                 <button
@@ -376,7 +376,7 @@ export default function DiscoverPage() {
             ) : (
               <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
-                  Discover curated reading lists and collections created by the
+                  Discover curated reading lists and folders created by the
                   community.
                 </p>
                 <button

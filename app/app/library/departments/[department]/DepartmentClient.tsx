@@ -97,7 +97,7 @@ export default function DepartmentClient({
                     </h1>
                     <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
                       {department.description ||
-                        `Browse through our curated collection of resources for ${department.name}.`}
+                        `Browse through our curated library of resources for ${department.name}.`}
                     </p>
                   </div>
 

@@ -50,7 +50,7 @@ export default function FolderClient() {
 
     await shareContent({
       title: folder.name,
-      text: `Check out the "${folder.name}" collection on Shelf.`,
+      text: `Check out the ${folder.name} folder on Shelf.`,
       url: window.location.href,
     });
     setShowMenu(false);

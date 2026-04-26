@@ -39,7 +39,7 @@ export default function BookClient() {
     if (!book) return;
     await shareContent({
       title: `${book.title}`,
-      text: `Check out "${book.title}" by ${book.author} on Shelf.`,
+      text: `Check out ${book.title} by ${book.author} on Shelf.`,
       url: window.location.href,
     });
   };

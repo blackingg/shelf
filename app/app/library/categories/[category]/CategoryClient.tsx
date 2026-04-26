@@ -95,7 +95,7 @@ export default function CategoryClient({
                     </h1>
                     <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
                       {categoryView.description ||
-                        `Explore our extensive collection of community-curated resources for ${categoryView.name}.`}
+                        `Explore our extensive library of community-curated resources for ${categoryView.name}.`}
                     </p>
                   </div>
 
@@ -120,7 +120,7 @@ export default function CategoryClient({
                   <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" />
                   <input
                     type="text"
-                    placeholder="Search collection..."
+                    placeholder="Search folder..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"

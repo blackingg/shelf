@@ -167,7 +167,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
     await shareContent({
       title: `${user.fullName} (@${user.username})`,
-      text: `Check out ${user.fullName}'s book collections and library on Shelf.`,
+      text: `Check out ${user.username}'s book folders and library on Shelf.`,
       url: url,
     });
   };
