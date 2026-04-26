@@ -69,7 +69,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const canEdit = isOwner || isEditor;
   const canDelete = isOwner;
   const hasActions = canEdit || canDelete;
-  const { isBookmarked } = useIsFolderBookmarked(folder.id, { enabled: isAuthenticated });
+  const { isBookmarked } = useIsFolderBookmarked(folder.id, {
+    enabled: isAuthenticated,
+  });
   const { toggleBookmark } = useBookmarkFolderActions();
 
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -149,7 +151,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       e.stopPropagation();
                       await shareContent({
                         title: folder.name,
-                        text: `Check out the "${folder.name}" folder on Shelf.`,
+                        text: `Check out the ${folder.name} folder on Shelf.`,
                         url: `${window.location.origin}/app/folders/${folder.slug}`,
                       });
                       setShowMenu(false);
@@ -181,9 +183,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({
             {folder.name}
           </h3>
           {isPublic ? (
-            <FiGlobe className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 flex-shrink-0" />
+            <FiGlobe className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 shrink-0" />
           ) : (
-            <FiLock className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 flex-shrink-0" />
+            <FiLock className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 shrink-0" />
           )}
         </div>
 

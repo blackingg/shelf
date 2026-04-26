@@ -31,16 +31,15 @@ interface FolderDetailsClientProps {
   slug: string;
 }
 
-export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) {
+export default function FolderDetailsClient({
+  slug,
+}: FolderDetailsClientProps) {
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { folder, isLoading, error } = useFolderBySlug(slug);
-  const {
-    actions,
-    isDeleting,
-  } = useFolderActions();
+  const { actions, isDeleting } = useFolderActions();
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
@@ -50,10 +49,10 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
 
   const handleShare = async () => {
     if (!folder) return;
-    
+
     await shareContent({
       title: folder.name,
-      text: `Check out the "${folder.name}" folder on Shelf.`,
+      text: `Check out the ${folder.name} folder on Shelf.`,
       url: window.location.href,
     });
     setShowMenu(false);
@@ -244,13 +243,13 @@ export default function FolderDetailsClient({ slug }: FolderDetailsClientProps) 
                             {(canEdit || canSeeShare) && (
                               <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                             )}
-                             <button 
-                               onClick={() => setShowDeleteModal(true)}
-                               className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
-                             >
-                               <FiTrash2 className="w-4 h-4" />
-                               <span>Delete</span>
-                             </button>
+                            <button
+                              onClick={() => setShowDeleteModal(true)}
+                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
+                            >
+                              <FiTrash2 className="w-4 h-4" />
+                              <span>Delete</span>
+                            </button>
                           </>
                         )}
                       </div>

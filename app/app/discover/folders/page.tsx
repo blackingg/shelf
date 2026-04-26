@@ -60,7 +60,7 @@ export default function DiscoverFoldersPage() {
                   Public Folders
                 </h1>
                 <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
-                  Explore curated reading lists, study guides, and collections
+                  Explore curated reading lists, study guides, and folders
                   shared by the community.
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function DiscoverFoldersPage() {
                     {total}
                   </span>
                   <span className="text-[10px] font-bold uppercase text-gray-400 dark:text-neutral-600 tracking-widest">
-                    Collections
+                    Folders
                   </span>
                 </div>
               </div>
@@ -122,7 +122,9 @@ export default function DiscoverFoldersPage() {
             totalPages={totalPages}
             currentPage={page}
             onPageChange={setPage}
-            onFolderClick={(folder) => router.push(`/app/folders/${folder.slug}`)}
+            onFolderClick={(folder) =>
+              router.push(`/app/folders/${folder.slug}`)
+            }
             showActions={true}
             pageSize={pageSize}
             emptyMessage="No folders found matching your search."

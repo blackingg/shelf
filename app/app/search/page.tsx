@@ -62,7 +62,7 @@ function SearchContent() {
               Search Shelf
             </h2>
             <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium">
-              Find resources, scholars, and collections across the library.
+              Find resources, scholars, and folders across the library.
             </p>
           </div>
         </div>
