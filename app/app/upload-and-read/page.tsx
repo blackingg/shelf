@@ -44,6 +44,7 @@ export default function UploadAndReadPage() {
   const handleNextPage = useCallback(() => {
     if (fileType === "epub" && currentPage < totalPages) {
       epubControlsRef.current?.next();
+      setCurrentPage((page) => page + 1);
     } else {
       if (currentPage < totalPages) {
         pdfViewerRef.current?.scrollToPage(currentPage + 1);
@@ -52,8 +53,9 @@ export default function UploadAndReadPage() {
   }, [fileType, currentPage, totalPages]);
 
   const handlePrevPage = useCallback(() => {
-    if (fileType === "epub") {
+    if (fileType === "epub" && currentPage > 1) {
       epubControlsRef.current?.prev();
+      setCurrentPage((page) => page - 1);
     } else {
       if (currentPage > 1) {
         pdfViewerRef.current?.scrollToPage(currentPage - 1);

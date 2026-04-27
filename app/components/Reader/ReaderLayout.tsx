@@ -113,7 +113,7 @@ function ReaderLayoutContent({
           onClick={() => setShowControls(!showControls)}
         >
           <div
-            className={`${format === "pdf" ? "max-w-full h-full" : "max-w-3xl"} mx-auto`}
+            className={`${format === "pdf" ? "max-w-full " : "max-w-[85vw]"} mx-auto h-full`}
             style={{
               fontSize: format === "epub" ? `${fontSize}px` : undefined,
             }}
