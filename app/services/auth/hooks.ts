@@ -20,7 +20,6 @@ export const useAuthActions = () => {
     onSuccess: (data, variables) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
           expiresIn: data.tokens.expiresIn,
@@ -37,7 +36,6 @@ export const useAuthActions = () => {
     onSuccess: (data) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
           expiresIn: data.tokens.expiresIn,
@@ -53,7 +51,6 @@ export const useAuthActions = () => {
     onSuccess: (data) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
           expiresIn: data.tokens.expiresIn,

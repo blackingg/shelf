@@ -29,9 +29,8 @@ import { useFolderActions, useMeFolders } from "../services/folders/hooks";
 import { Book, CreateBookRequest } from "../types/book";
 import processDescription from "../helpers/processDescription";
 import { createContext } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../store";
 import { FormSelect } from "./Form/FormSelect";
+import { useGetMeQuery } from "@/app/services";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
@@ -85,7 +84,7 @@ export default function MultipleUploadForm({
   const { actions: folderActions } = useFolderActions();
   const [targetFolderId, setTargetFolderId] = useState<string>("");
 
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
@@ -499,7 +498,7 @@ function FileToBeUploaded({
 }) {
   const { updateFilesStatusObject, filesWithMetadataState } =
     useMultipleFiles();
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const [isExpanded, setIsExpanded] = useState(!state);
 
   // Form State

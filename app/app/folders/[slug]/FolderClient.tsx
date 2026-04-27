@@ -17,12 +17,12 @@ import {
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import {
   useFolderBySlug,
   useFolderActions,
   useIsFolderBookmarked,
   useBookmarkFolderActions,
+  useUser,
 } from "@/app/services";
 import { useFolderPermissions } from "@/app/hooks/useFolderPermissions";
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
@@ -43,7 +43,7 @@ export default function FolderClient() {
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
-  const user = useSelector(selectCurrentUser);
+  const { me: user } = useUser();
   const currentUser = user?.username || "Guest";
 
   const {

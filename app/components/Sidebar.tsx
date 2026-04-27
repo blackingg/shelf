@@ -15,8 +15,9 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, selectIsAuthenticated } from "../store/authSlice";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
+import { useUser } from "@/app/services";
 
 interface SidebarItem {
   label: string;
@@ -32,7 +33,7 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { me: user, isAuthenticated, isHydrated } = useUser();
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
 
   const handleLogout = () => {
@@ -122,59 +123,88 @@ export const Sidebar: React.FC = () => {
           </Link>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {visibleMainItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href!}
-              className={navLinkClass(item.href!)}
-            >
-              <span className="w-4 h-4 shrink-0">{item.icon}</span>
-              <span>{item.label}</span>
-              {item.badge && (
-                <span className="ml-auto text-[10px] bg-gray-200 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300 px-1.5 py-0.5 rounded-md font-medium">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
-
-        <nav className="px-3 py-4 border-t border-gray-100 dark:border-neutral-800 space-y-0.5">
-          {bottomItems.map((item) => {
-            if (item.onClick) {
-              return (
-                <button
-                  key={item.label}
-                  onClick={item.onClick}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
+        {!isHydrated ? (
+          <>
+            <nav className="flex-1 px-3 py-4 space-y-0.5">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center space-x-3 px-3 py-2.5"
+                >
+                  <div className="w-4 h-4 bg-gray-100 dark:bg-white/5 rounded-md animate-pulse shrink-0" />
+                  <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-md w-24 animate-pulse" />
+                </div>
+              ))}
+            </nav>
+            <nav className="px-3 py-4 border-t border-gray-100 dark:border-neutral-800 space-y-0.5">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center space-x-3 px-3 py-2.5"
+                >
+                  <div className="w-4 h-4 bg-gray-100 dark:bg-white/5 rounded-md animate-pulse shrink-0" />
+                  <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-md w-20 animate-pulse" />
+                </div>
+              ))}
+            </nav>
+          </>
+        ) : (
+          <>
+            <nav className="flex-1 px-3 py-4 space-y-0.5">
+              {visibleMainItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href!}
+                  className={navLinkClass(item.href!)}
                 >
                   <span className="w-4 h-4 shrink-0">{item.icon}</span>
                   <span>{item.label}</span>
-                </button>
-              );
-            }
+                  {item.badge && (
+                    <span className="ml-auto text-[10px] bg-gray-200 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300 px-1.5 py-0.5 rounded-md font-medium">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </nav>
 
-            // Use accent styling for guest CTA buttons
-            const isGuestCTA = !isAuthenticated;
-            const isRegister = item.label === "Create account";
+            <nav className="px-3 py-4 border-t border-gray-100 dark:border-neutral-800 space-y-0.5">
+              {bottomItems.map((item) => {
+                if (item.onClick) {
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={item.onClick}
+                      className="flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
+                    >
+                      <span className="w-4 h-4 shrink-0">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                }
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href!}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150 ${
-                  isGuestCTA && isRegister
-                    ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
-                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
-                }`}
-              >
-                <span className="w-4 h-4 shrink-0">{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+                // Use accent styling for guest CTA buttons
+                const isGuestCTA = !isAuthenticated;
+                const isRegister = item.label === "Create account";
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href!}
+                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150 ${
+                      isGuestCTA && isRegister
+                        ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <span className="w-4 h-4 shrink-0">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </>
+        )}
       </aside>
 
       <button
@@ -213,63 +243,79 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
-          {visibleMainItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href!}
-              onClick={() => setShowSideBar(false)}
-              className={navLinkClass(item.href!, true)}
-            >
-              <span className="w-5 h-5 shrink-0">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-              {item.badge && (
-                <span className="ml-auto text-xs bg-gray-200 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300 px-2 py-0.5 rounded-full font-medium">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
-
-        <nav className="absolute bottom-0 w-full px-4 py-5 border-t border-gray-100 dark:border-neutral-800 space-y-1 bg-white dark:bg-neutral-950 pb-8">
-          {bottomItems.map((item) => {
-            if (item.onClick) {
-              return (
-                <button
-                  key={item.label}
-                  onClick={() => {
-                    item.onClick?.();
-                    setShowSideBar(false);
-                  }}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
+        {!isHydrated ? (
+          <nav className="flex-1 px-4 py-6 space-y-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="flex items-center space-x-3 px-4 py-3"
+              >
+                <div className="w-5 h-5 bg-gray-100 dark:bg-white/5 rounded-md animate-pulse shrink-0" />
+                <div className="h-4 bg-gray-100 dark:bg-white/5 rounded-md w-32 animate-pulse" />
+              </div>
+            ))}
+          </nav>
+        ) : (
+          <>
+            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
+              {visibleMainItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href!}
+                  onClick={() => setShowSideBar(false)}
+                  className={navLinkClass(item.href!, true)}
                 >
                   <span className="w-5 h-5 shrink-0">{item.icon}</span>
                   <span className="font-medium">{item.label}</span>
-                </button>
-              );
-            }
+                  {item.badge && (
+                    <span className="ml-auto text-xs bg-gray-200 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300 px-2 py-0.5 rounded-full font-medium">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </nav>
 
-            const isGuestCTA = !isAuthenticated;
-            const isRegister = item.label === "Create account";
+            <nav className="absolute bottom-0 w-full px-4 py-5 border-t border-gray-100 dark:border-neutral-800 space-y-1 bg-white dark:bg-neutral-950 pb-8">
+              {bottomItems.map((item) => {
+                if (item.onClick) {
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        item.onClick?.();
+                        setShowSideBar(false);
+                      }}
+                      className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
+                    >
+                      <span className="w-5 h-5 shrink-0">{item.icon}</span>
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  );
+                }
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href!}
-                onClick={() => setShowSideBar(false)}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base transition-colors duration-150 ${
-                  isGuestCTA && isRegister
-                    ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
-                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
-                }`}
-              >
-                <span className="w-5 h-5 shrink-0">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+                const isGuestCTA = !isAuthenticated;
+                const isRegister = item.label === "Create account";
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href!}
+                    onClick={() => setShowSideBar(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base transition-colors duration-150 ${
+                      isGuestCTA && isRegister
+                        ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <span className="w-5 h-5 shrink-0">{item.icon}</span>
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </>
+        )}
       </div>
     </>
   );

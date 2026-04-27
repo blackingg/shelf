@@ -35,8 +35,7 @@ import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTab";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { selectIsAuthenticated } from "@/app/store";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility, Folder } from "@/app/types/folder";
 import { shareContent } from "@/app/helpers/share";
@@ -74,11 +73,12 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const [bookToDelete, setBookToDelete] = useState<any | null>(null);
   const pageSize = 10;
 
-  const currentUser = useSelector(selectCurrentUser);
+  const { me: currentUser, isLoading: isLoadingMe } = useUser();
   const isOwner = currentUser?.username === username;
+  const isAuthenticated = !!currentUser;
   const { addNotification } = useNotifications();
 
-  const { actions: userActions } = useUser({ enabled: !!currentUser });
+  const { actions: userActions } = useUser({ enabled: isAuthenticated });
   const { actions: folderActions, isDeleting: isDeletingFolder } =
     useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();

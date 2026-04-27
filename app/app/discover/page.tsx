@@ -19,13 +19,12 @@ import {
   useDepartments,
   useFolders,
   useFolderActions,
+  useUser,
 } from "@/app/services";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 
 type RecommendedItem =
@@ -34,7 +33,7 @@ type RecommendedItem =
 
 export default function DiscoverPage() {
   const router = useRouter();
-  const user = useSelector(selectCurrentUser);
+  const { me: user } = useUser();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);

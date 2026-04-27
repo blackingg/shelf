@@ -3,8 +3,8 @@ import { useState } from "react";
 import { Button } from "@/app/components/Form/Button";
 import { FiMail, FiLock } from "react-icons/fi";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
-import { useSelector } from "react-redux";
 import {
+  useGetMeQuery,
   useUpdateMeMutation,
   useChangePasswordMutation,
   useDeleteMeMutation,
@@ -12,13 +12,13 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { useRouter } from "next/navigation";
-import { selectCurrentUser, logout, useAppDispatch } from "@/app/store";
+import { logout, useAppDispatch } from "@/app/store";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const updateMe = useUpdateMeMutation();
   const changePassword = useChangePasswordMutation();
   const deleteMe = useDeleteMeMutation();
@@ -287,7 +287,8 @@ export default function AccountSettingsPage() {
                 Delete Account
               </div>
               <div className="text-sm text-red-600/80 dark:text-red-400/70 max-w-md">
-                Permanently remove your account and all associated data. This action cannot be undone.
+                Permanently remove your account and all associated data. This
+                action cannot be undone.
               </div>
             </div>
             <button

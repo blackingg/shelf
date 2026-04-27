@@ -6,10 +6,8 @@ import Link from "next/link";
 import { FiStar, FiBookmark, FiMoreVertical, FiShare2 } from "react-icons/fi";
 import { shareContent } from "@/app/helpers/share";
 import { useState } from "react";
-import { useIsBookBookmarked, useBookBookmarkActions } from "@/app/services";
+import { useIsBookBookmarked, useBookBookmarkActions, useUser } from "@/app/services";
 import { BookCardProps, BookPreview } from "@/app/types/book";
-import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "@/app/store";
 import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
 
 export const BookCard: React.FC<BookCardProps> = ({
@@ -25,7 +23,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   onDelete,
   className = "",
 }) => {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isAuthenticated } = useUser();
   const { isBookmarked } = useIsBookBookmarked(id || "", {
     enabled: isAuthenticated,
   });

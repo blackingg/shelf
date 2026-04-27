@@ -3,8 +3,7 @@ import { useRatings } from "@/app/services";
 import { FiTrash2, FiSend } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { useGetMeQuery } from "@/app/services";
 
 interface BookReviewsProps {
   bookId: string;
@@ -19,7 +18,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
 }) => {
   const { reviews, isLoading, actions: ratingActions } = useRatings(bookId);
 
-  const currentUser = useSelector(selectCurrentUser);
+  const { data: currentUser } = useGetMeQuery();
   const [newReview, setNewReview] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
