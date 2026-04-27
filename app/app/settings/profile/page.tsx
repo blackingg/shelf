@@ -4,12 +4,8 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { SingleValue } from "react-select";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/app/store";
 import {
-  useGetMeQuery,
-  useUpdateMeMutation,
-  useUploadAvatarMutation,
+  useUser,
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
 } from "@/app/services";
@@ -25,12 +21,7 @@ interface OptionType {
 
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
-  const dispatch = useDispatch();
-  const { data: me } = useGetMeQuery();
-  const profileUser = me || null;
-
-  const updateMe = useUpdateMeMutation();
-  const uploadAvatar = useUploadAvatarMutation();
+  const { me: profileUser, actions: userActions } = useUser();
 
   const [schoolSearch, setSchoolSearch] = useState("");
   const { data: schools = [], isLoading: isLoadingSchools } =
@@ -104,20 +95,11 @@ export default function SettingsProfilePage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      const updatedUser = await updateMe.mutateAsync({
-        fullName: formData.name,
-        username: formData.username,
-        bio: formData.bio,
-      });
-      dispatch(setUser(updatedUser));
-      addNotification("success", "Profile updated successfully!");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update profile"),
-      );
-    }
+    await userActions.updateProfile({
+      fullName: formData.name,
+      username: formData.username,
+      bio: formData.bio,
+    });
   };
 
   const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -127,16 +109,7 @@ export default function SettingsProfilePage() {
     const avatarPayload = new FormData();
     avatarPayload.append("file", file);
 
-    try {
-      const updatedUser = await uploadAvatar.mutateAsync(avatarPayload);
-      dispatch(setUser(updatedUser));
-      addNotification("success", "Avatar updated successfully!");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to upload avatar"),
-      );
-    }
+    await userActions.uploadAvatar(avatarPayload);
   };
 
   return (
@@ -183,9 +156,9 @@ export default function SettingsProfilePage() {
                     className="hidden"
                     accept="image/*"
                     onChange={handleAvatarChange}
-                    disabled={uploadAvatar.isPending}
+                    disabled={userActions.isUploading}
                   />
-                  {uploadAvatar.isPending ? (
+                  {userActions.isUploading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <FiCamera className="w-5 h-5" />
@@ -285,7 +258,7 @@ export default function SettingsProfilePage() {
             <div className="pt-8 border-t border-gray-100 dark:border-neutral-800/50 flex justify-end">
               <Button
                 type="submit"
-                isLoading={updateMe.isPending}
+                isLoading={userActions.isUpdating}
                 disabled={!isDirty}
                 className="w-full sm:w-auto px-10 py-3 text-base font-bold rounded-xl shadow-lg shadow-emerald-900/10 active:scale-95 transition-all"
               >

@@ -14,14 +14,13 @@ import { storage } from "@/app/helpers/storage";
 import {
   useAppDispatch,
   useAppSelector,
-  setOnboardingStatus,
-  selectCurrentUser,
 } from "@/app/store";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
   useGetInterestsQuery,
   useOnboarding,
+  useUser,
 } from "@/app/services";
 
 interface OptionType {
@@ -49,7 +48,7 @@ export default function Onboarding() {
   });
   const [schoolSearch, setSchoolSearch] = useState("");
 
-  const user = useAppSelector(selectCurrentUser);
+  const { me: user } = useUser();
 
   const { data: schools = [], isLoading: isLoadingSchools } =
     useGetSchoolsQuery(schoolSearch);
@@ -118,7 +117,7 @@ export default function Onboarding() {
         interestIds: formData.interestIds,
       });
 
-      dispatch(setOnboardingStatus(true));
+      
       storage.remove("onboarding_step");
       storage.remove("onboarding_data");
       router.push("/app/discover");
@@ -127,7 +126,7 @@ export default function Onboarding() {
 
       // If the user already completed onboarding, just redirect them
       if (user?.onboardingCompleted) {
-        dispatch(setOnboardingStatus(true));
+        // 
         storage.remove("onboarding_step");
         storage.remove("onboarding_data");
         router.push("/app/discover");

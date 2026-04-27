@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector, selectIsAuthenticated } from "@/app/store";
+import { useUser } from "@/app/services";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   FiBook,
@@ -77,7 +77,7 @@ export default function ShelfLanding() {
     { value: "100%", label: "Free to Start", icon: <FiZap /> },
   ];
 
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { isAuthenticated } = useUser();
   const router = useRouter();
 
   return (

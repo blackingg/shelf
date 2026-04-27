@@ -15,12 +15,12 @@ import {
 } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormSelect } from "@/app/components/Form/FormSelect";
-import { useAppSelector, selectCurrentUser } from "@/app/store";
 import {
   useBookBySlug,
   useBookActions,
   useDepartments,
   useDiscoverCategories,
+  useUser,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
@@ -31,7 +31,7 @@ export default function EditBookPage() {
   const slug = params.slug as string;
   const router = useRouter();
   const { addNotification } = useNotifications();
-  const user = useAppSelector(selectCurrentUser);
+  const { me: user } = useUser();
 
   const { book, isLoading: isLoadingBook } = useBookBySlug(slug);
   const {

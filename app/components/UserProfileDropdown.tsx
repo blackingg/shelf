@@ -12,13 +12,14 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
-import { useGetMeQuery } from "@/app/services";
+import { useUser } from "@/app/services";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const { data: user } = useGetMeQuery();
-  const isAuthenticated = !!user;
+  const { me: user, isAuthenticated, isHydrated } = useUser();
+
+  if (!isHydrated) return null;
 
   const userFullName = user?.fullName || "";
   const userName = user?.username || "User";
