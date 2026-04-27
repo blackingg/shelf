@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="public/logo.png" alt="Shelf Logo" width="120" height="120" />
-  <h1>Shelf</h1>
+  <h1>Shelf – Student Resource Hub</h1>
   <p>
     <strong>The Future of Digital Libraries</strong>
   </p>
