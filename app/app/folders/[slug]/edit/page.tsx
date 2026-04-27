@@ -82,7 +82,7 @@ export default function EditFolderPage() {
   );
   const [invitePermissions, setInvitePermissions] = useState<
     FolderPermission[]
-  >(["ADD_BOOKS"]);
+  >(["ADD_BOOKS", "REMOVE_BOOKS"]);
 
   const [showInvitePermissions, setShowInvitePermissions] = useState(false);
   const inviteDropdownRef = useRef<HTMLDivElement>(null);
@@ -94,6 +94,15 @@ export default function EditFolderPage() {
   const [editingPermissions, setEditingPermissions] = useState<
     FolderPermission[]
   >([]);
+  const [editingProfileId, setEditingProfileId] = useState("");
+
+  type PermissionProfile = {
+    id: string;
+    label: string;
+    role: Exclude<FolderRoles, "OWNER">;
+    permissions: FolderPermission[];
+    description: string;
+  };
 
   const AVAILABLE_PERMISSIONS: { id: FolderPermission; label: string }[] = [
     { id: "ADD_BOOKS", label: "Add Books" },
@@ -104,45 +113,130 @@ export default function EditFolderPage() {
     { id: "CHANGE_VISIBILITY", label: "Change Privacy" },
   ];
 
-  const PERMISSION_PROFILES: {
-    id: string;
-    label: string;
-    role: Exclude<FolderRoles, "OWNER">;
-    permissions: FolderPermission[];
-    description: string;
-  }[] = [
-    {
-      id: "reader",
-      label: "Reader",
-      role: "VIEWER",
-      permissions: [],
-      description: "Can view and follow",
-    },
-    {
-      id: "contributor",
-      label: "Contributor",
-      role: "EDITOR",
-      permissions: ["ADD_BOOKS", "EDIT_FOLDER"],
-      description: "Can add books and update details",
-    },
-    {
-      id: "curator",
-      label: "Curator",
-      role: "EDITOR",
-      permissions: ["ADD_BOOKS", "REMOVE_BOOKS", "EDIT_FOLDER"],
-      description: "Can fully manage content",
-    },
-    {
-      id: "admin",
-      label: "Administrator",
-      role: "EDITOR",
-      permissions: AVAILABLE_PERMISSIONS.map((p) => p.id),
-      description: "Full management access",
-    },
-  ];
+  const ACCESS_PROFILES_BY_VISIBILITY: Record<
+    FolderVisibility,
+    PermissionProfile[]
+  > = {
+    PRIVATE: [
+      {
+        id: "private_reader",
+        label: "Reader",
+        role: "VIEWER",
+        permissions: [],
+        description: "Can view content only",
+      },
+      {
+        id: "private_contributor",
+        label: "Contributor",
+        role: "EDITOR",
+        permissions: ["ADD_BOOKS", "REMOVE_BOOKS"],
+        description: "Can add and remove books",
+      },
+      {
+        id: "private_curator",
+        label: "Curator",
+        role: "EDITOR",
+        permissions: ["ADD_BOOKS", "REMOVE_BOOKS", "EDIT_FOLDER"],
+        description: "Can manage books and details",
+      },
+      {
+        id: "private_admin",
+        label: "Administrator",
+        role: "EDITOR",
+        permissions: AVAILABLE_PERMISSIONS.map((p) => p.id),
+        description: "Full collaboration access",
+      },
+    ],
+    PUBLIC: [
+      {
+        id: "public_contributor",
+        label: "Contributor",
+        role: "EDITOR",
+        permissions: ["ADD_BOOKS", "REMOVE_BOOKS"],
+        description: "Can add and remove books",
+      },
+      {
+        id: "public_curator",
+        label: "Curator",
+        role: "EDITOR",
+        permissions: ["ADD_BOOKS", "REMOVE_BOOKS", "EDIT_FOLDER"],
+        description: "Can manage books and details",
+      },
+      {
+        id: "public_admin",
+        label: "Administrator",
+        role: "EDITOR",
+        permissions: AVAILABLE_PERMISSIONS.map((p) => p.id),
+        description: "Full management access",
+      },
+    ],
+    UNLISTED: [],
+  };
+
+  const DEFAULT_PROFILE_BY_VISIBILITY: Record<FolderVisibility, string> = {
+    PRIVATE: "private_contributor",
+    PUBLIC: "public_contributor",
+    UNLISTED: "private_contributor",
+  };
 
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [activeProfile, setActiveProfile] = useState("contributor");
+  const [activeProfile, setActiveProfile] = useState(
+    DEFAULT_PROFILE_BY_VISIBILITY.PUBLIC,
+  );
+
+  const getAvailableProfiles = (
+    targetVisibility: FolderVisibility = visibility,
+  ) =>
+    ACCESS_PROFILES_BY_VISIBILITY[targetVisibility] ||
+    ACCESS_PROFILES_BY_VISIBILITY.PRIVATE;
+
+  const getDefaultProfileId = (
+    targetVisibility: FolderVisibility = visibility,
+  ) =>
+    DEFAULT_PROFILE_BY_VISIBILITY[targetVisibility] ||
+    DEFAULT_PROFILE_BY_VISIBILITY.PRIVATE;
+
+  const getProfileById = (
+    profileId: string,
+    targetVisibility: FolderVisibility = visibility,
+  ) =>
+    getAvailableProfiles(targetVisibility).find(
+      (profile) => profile.id === profileId,
+    );
+
+  const getProfileForAccess = (
+    role: Exclude<FolderRoles, "OWNER">,
+    permissions: FolderPermission[] = [],
+    targetVisibility: FolderVisibility = visibility,
+  ) => {
+    const sortedPermissions = [...permissions].sort().join("|");
+    return getAvailableProfiles(targetVisibility).find((profile) => {
+      const profilePermissions = [...profile.permissions].sort().join("|");
+      return profile.role === role && profilePermissions === sortedPermissions;
+    });
+  };
+
+  const applyInviteProfile = (
+    profileId: string,
+    targetVisibility: FolderVisibility = visibility,
+  ) => {
+    const profile = getProfileById(profileId, targetVisibility);
+    if (!profile) return;
+    setActiveProfile(profile.id);
+    setInviteRole(profile.role);
+    setInvitePermissions(profile.permissions);
+  };
+
+  const applyEditingProfile = (
+    profileId: string,
+    targetVisibility: FolderVisibility = visibility,
+  ) => {
+    const profile = getProfileById(profileId, targetVisibility);
+    if (!profile) return;
+    setEditingProfileId(profile.id);
+    setEditingRole(profile.role);
+    setEditingPermissions(profile.permissions);
+  };
 
   const collaborationMode: "NONE" | "REQUESTS" | "OPEN" = !allowCollaboration
     ? "NONE"
@@ -161,9 +255,14 @@ export default function EditFolderPage() {
     if (folder && !hasInitialized) {
       setName(folder.name || "");
       setDescription(folder.description || "");
-      setVisibility(folder.visibility || "PRIVATE");
+      const initialVisibility = folder.visibility || "PRIVATE";
+      setVisibility(initialVisibility);
       setAllowCollaboration(folder.allowCollaboration ?? false);
       setRequireApproval(folder.requireApproval ?? false);
+      applyInviteProfile(
+        getDefaultProfileId(initialVisibility),
+        initialVisibility,
+      );
       setHasInitialized(true);
     }
 
@@ -175,12 +274,15 @@ export default function EditFolderPage() {
     }
   }, [folder, hasInitialized, isUpdatingSettings, isFolderFetching]);
 
-  // Ensure role is EDITOR if public
   useEffect(() => {
-    if (visibility === "PUBLIC" && inviteRole === "VIEWER") {
-      setInviteRole("EDITOR");
+    const activeProfileInVisibility = getProfileById(activeProfile, visibility);
+    if (activeProfileInVisibility) {
+      applyInviteProfile(activeProfileInVisibility.id, visibility);
+      return;
     }
-  }, [visibility, inviteRole]);
+
+    applyInviteProfile(getDefaultProfileId(visibility), visibility);
+  }, [visibility]);
 
   // Click outside for invite dropdown
   useEffect(() => {
@@ -227,10 +329,10 @@ export default function EditFolderPage() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => router.push("/app/folders")}
+                onClick={() => router.push("/app/library?tab=folders")}
                 className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
               >
-                Back to Folders
+                Back to Library
               </button>
               <button
                 onClick={() => router.back()}
@@ -277,7 +379,10 @@ export default function EditFolderPage() {
       invitePermissions as any,
     );
     setSelectedUser(null);
-    setInvitePermissions(["ADD_BOOKS"]);
+    applyInviteProfile(
+      activeProfile || getDefaultProfileId(visibility),
+      visibility,
+    );
     setShowInvitePermissions(false);
     setActiveTab("invites");
   };
@@ -300,6 +405,16 @@ export default function EditFolderPage() {
     setEditingCollaboratorId(collaborator.id);
     setEditingRole(collaborator.role);
     setEditingPermissions(collaborator.permissions || []);
+
+    const matchingProfile = getProfileForAccess(
+      collaborator.role,
+      collaborator.permissions || [],
+      visibility,
+    );
+    applyEditingProfile(
+      matchingProfile?.id || getDefaultProfileId(visibility),
+      visibility,
+    );
   };
 
   const handleDelete = () => {
@@ -349,6 +464,10 @@ export default function EditFolderPage() {
       setRequireApproval(folder.requireApproval);
     }
   };
+
+  const activeInviteProfile =
+    getProfileById(activeProfile, visibility) ||
+    getProfileById(getDefaultProfileId(visibility), visibility);
 
   return (
     <div>
@@ -607,7 +726,7 @@ export default function EditFolderPage() {
                             className="h-full px-4 py-2.5 rounded-sm border border-gray-100 dark:border-white/10 flex items-center justify-between gap-3 bg-white dark:bg-neutral-900 text-sm font-medium hover:border-emerald-500/50 transition-all min-w-[140px]"
                           >
                             <span className="text-gray-900 dark:text-white uppercase tracking-wider text-[11px] font-bold">
-                              {inviteRole} ({invitePermissions.length})
+                              {activeInviteProfile?.label || "Profile"}
                             </span>
                             <div className="w-4 h-4 text-gray-400">
                               <svg
@@ -627,46 +746,31 @@ export default function EditFolderPage() {
                             <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-xl z-50 p-4 space-y-4 animate-in fade-in zoom-in-95 duration-200">
                               <div className="space-y-2">
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                                  Default Role
+                                  Access Profile
                                 </p>
-                                <div className="flex gap-2">
-                                  {["VIEWER", "EDITOR"].map((role) => (
-                                    <button
-                                      key={role}
-                                      type="button"
-                                      onClick={() => setInviteRole(role as any)}
-                                      className={`flex-1 py-2 rounded-sm text-[10px] font-bold uppercase tracking-wider transition-all ${inviteRole === role ? "bg-emerald-500 text-white" : "bg-gray-100 dark:bg-white/5 text-gray-500 hover:bg-gray-200"}`}
-                                    >
-                                      {role}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                                  Individual Capabilities
-                                </p>
-                                <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto pr-1">
-                                  {AVAILABLE_PERMISSIONS.map((perm) => (
-                                    <button
-                                      key={perm.id}
-                                      type="button"
-                                      onClick={() => {
-                                        setInvitePermissions((prev) =>
-                                          prev.includes(perm.id)
-                                            ? prev.filter((p) => p !== perm.id)
-                                            : [...prev, perm.id],
-                                        );
-                                      }}
-                                      className={`flex items-center justify-between px-3 py-2 rounded-sm text-[10px] font-bold uppercase tracking-tight transition-all ${invitePermissions.includes(perm.id) ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" : "text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5"}`}
-                                    >
-                                      <span>{perm.label}</span>
-                                      {invitePermissions.includes(perm.id) && (
-                                        <FiCheck className="w-3 h-3" />
-                                      )}
-                                    </button>
-                                  ))}
+                                <div className="grid grid-cols-1 gap-2">
+                                  {getAvailableProfiles(visibility).map(
+                                    (profile) => (
+                                      <button
+                                        key={profile.id}
+                                        type="button"
+                                        onClick={() =>
+                                          applyInviteProfile(
+                                            profile.id,
+                                            visibility,
+                                          )
+                                        }
+                                        className={`w-full p-3 rounded-sm text-left transition-all border ${activeProfile === profile.id ? "bg-emerald-500/10 border-emerald-500/40" : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/10 hover:border-emerald-500/40"}`}
+                                      >
+                                        <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+                                          {profile.label}
+                                        </p>
+                                        <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1">
+                                          {profile.description}
+                                        </p>
+                                      </button>
+                                    ),
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -688,57 +792,6 @@ export default function EditFolderPage() {
                                 : "Invite"}
                           </span>
                         </button>
-                      </div>
-
-                      {/* Permission Profiles (Discord-style) */}
-                      <div className="space-y-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                          Access Profile
-                        </p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          {PERMISSION_PROFILES.map((profile) => (
-                            <button
-                              key={profile.id}
-                              type="button"
-                              onClick={() => {
-                                setActiveProfile(profile.id);
-                                setInviteRole(profile.role);
-                                setInvitePermissions(profile.permissions);
-                              }}
-                              className={`p-4 rounded-sm border-l-2 text-left transition-all relative group ${
-                                activeProfile === profile.id
-                                  ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500"
-                                  : "bg-gray-50 dark:bg-neutral-900/50 border-transparent hover:bg-gray-100 dark:hover:bg-white/5"
-                              }`}
-                            >
-                              <div className="flex flex-col">
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className={`text-xs font-bold uppercase tracking-tight ${
-                                      activeProfile === profile.id
-                                        ? "text-emerald-700 dark:text-emerald-400"
-                                        : "text-gray-900 dark:text-gray-100"
-                                    }`}
-                                  >
-                                    {profile.label}
-                                  </span>
-                                  {activeProfile === profile.id && (
-                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                  )}
-                                </div>
-                                <span
-                                  className={`text-[10px] mt-2 font-medium leading-normal ${
-                                    activeProfile === profile.id
-                                      ? "text-emerald-600/80 dark:text-emerald-400/80"
-                                      : "text-gray-500 dark:text-neutral-500"
-                                  }`}
-                                >
-                                  {profile.description}
-                                </span>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
                       </div>
 
                       {/* List Tabs */}
@@ -870,55 +923,33 @@ export default function EditFolderPage() {
                                   {editingCollaboratorId ===
                                     collaborator.id && (
                                     <div className="mt-4 pt-4 border-t border-emerald-500/10 space-y-4 animate-in slide-in-from-top-2 duration-300">
-                                      <div className="flex items-center gap-4">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 min-w-20">
-                                          Role
-                                        </p>
-                                        <div className="flex gap-2">
-                                          {["VIEWER", "EDITOR"].map((role) => (
-                                            <button
-                                              key={role}
-                                              type="button"
-                                              onClick={() =>
-                                                setEditingRole(role as any)
-                                              }
-                                              className={`px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider transition-all ${editingRole === role ? "bg-emerald-500 text-white shadow-sm" : "bg-gray-100 dark:bg-white/5 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10"}`}
-                                            >
-                                              {role}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      </div>
-
-                                      <div className="space-y-2 hidden lg:block">
+                                      <div className="space-y-2">
                                         <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                                          Individual Capabilities
+                                          Access Profile
                                         </p>
-                                        <div className="flex flex-wrap gap-1.5 p-3 bg-white dark:bg-neutral-900 border border-emerald-500/10 rounded-sm">
-                                          {AVAILABLE_PERMISSIONS.map((perm) => (
-                                            <button
-                                              key={perm.id}
-                                              type="button"
-                                              onClick={() => {
-                                                setEditingPermissions((prev) =>
-                                                  prev.includes(perm.id)
-                                                    ? prev.filter(
-                                                        (p) => p !== perm.id,
-                                                      )
-                                                    : [...prev, perm.id],
-                                                );
-                                              }}
-                                              className={`px-2.5 py-1.5 rounded-sm border text-[10px] font-bold uppercase tracking-tight transition-all ${
-                                                editingPermissions.includes(
-                                                  perm.id,
-                                                )
-                                                  ? "bg-emerald-500 border-emerald-500 text-white shadow-sm"
-                                                  : "bg-gray-50 dark:bg-neutral-800 border-gray-100 dark:border-white/5 text-gray-500 hover:border-emerald-500/50"
-                                              }`}
-                                            >
-                                              {perm.label}
-                                            </button>
-                                          ))}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                          {getAvailableProfiles(visibility).map(
+                                            (profile) => (
+                                              <button
+                                                key={profile.id}
+                                                type="button"
+                                                onClick={() =>
+                                                  applyEditingProfile(
+                                                    profile.id,
+                                                    visibility,
+                                                  )
+                                                }
+                                                className={`p-3 rounded-sm text-left transition-all border ${editingProfileId === profile.id ? "bg-emerald-500/10 border-emerald-500/40" : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-white/10 hover:border-emerald-500/30"}`}
+                                              >
+                                                <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+                                                  {profile.label}
+                                                </p>
+                                                <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1">
+                                                  {profile.description}
+                                                </p>
+                                              </button>
+                                            ),
+                                          )}
                                         </div>
                                       </div>
                                     </div>
