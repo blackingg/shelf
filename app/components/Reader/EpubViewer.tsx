@@ -51,6 +51,8 @@ export function EpubViewer({
       width: "100%",
       height: "100%",
       allowScriptedContent: true,
+      flow: "scrolled",
+      manager: "continuous",
     });
     renditionRef.current = rendition;
 
