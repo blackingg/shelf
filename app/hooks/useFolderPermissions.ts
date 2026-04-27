@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { useGetMeQuery } from "@/app/services";
 import { Folder, FolderPermission } from "@/app/types/folder";
 
 export const hasFolderPermission = (
@@ -26,7 +25,7 @@ export const hasFolderPermission = (
 };
 
 export const useFolderPermissions = (folder: Folder | null | undefined) => {
-  const currentUser = useSelector(selectCurrentUser);
+  const { data: currentUser } = useGetMeQuery();
 
   return useMemo(() => {
     const hasPermission = (perm: FolderPermission) =>

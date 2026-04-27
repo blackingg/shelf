@@ -9,8 +9,6 @@ import {
 } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
 import { FolderIcon } from "./FolderIcon";
 import { shareContent } from "@/app/helpers/share";
@@ -18,6 +16,7 @@ import {
   useIsFolderBookmarked,
   useBookmarkFolderActions,
 } from "@/app/services";
+import { useGetMeQuery } from "@/app/services";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
@@ -59,8 +58,8 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onDelete,
   showActions = false,
 }) => {
-  const activeUser = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { data: activeUser } = useGetMeQuery();
+  const isAuthenticated = !!activeUser;
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 

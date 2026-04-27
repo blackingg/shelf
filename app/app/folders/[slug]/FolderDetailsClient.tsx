@@ -16,14 +16,13 @@ import {
   FiArrowLeft,
   FiSearch,
 } from "react-icons/fi";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import { ConfirmModal } from "@/app/components/ConfirmModal";
 import {
   useFolderBySlug,
   useFolderActions,
   useIsFolderBookmarked,
   useBookmarkFolderActions,
+  useUser,
 } from "@/app/services";
 import { useFolderPermissions } from "@/app/hooks/useFolderPermissions";
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
@@ -46,7 +45,7 @@ export default function FolderDetailsClient({
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
-  const activeUser = useSelector(selectCurrentUser);
+  const { me: activeUser } = useUser();
 
   const {
     isOwner,

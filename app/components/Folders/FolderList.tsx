@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import { Folder, Collaborator } from "@/app/types/folder";
 import {
   FiFolder,
@@ -14,6 +12,7 @@ import {
 } from "react-icons/fi";
 import FolderListSkeleton from "@/app/components/Skeletons/FolderListSkeleton";
 import { FolderIcon } from "./FolderIcon";
+import { useGetMeQuery } from "@/app/services";
 
 interface FolderListProps {
   folders: (Folder & { collaborator?: Collaborator })[];
@@ -38,7 +37,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   skeletonCount = 5,
   className = "",
 }) => {
-  const activeUser = useSelector(selectCurrentUser);
+  const { data: activeUser } = useGetMeQuery();
   const [activeMenuId, setActiveMenuId] = React.useState<string | null>(null);
 
   if (isLoading) {
