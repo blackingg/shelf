@@ -5,8 +5,11 @@ import { Book } from "../../types/book";
 import { Folder } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
-import { useAppDispatch } from "../../store/store";
-import { setUser } from "../../store/authSlice";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import {
+  selectIsAuthenticated,
+  selectIsHydrated,
+} from "../../store/authSlice";
 import { getErrorMessage } from "../../helpers/error";
 
 export const userKeys = {
@@ -76,35 +79,52 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
 
 export const useUser = (options?: { enabled?: boolean }) => {
   const { addNotification } = useNotifications();
-  const { data: me, isLoading, isFetching } = useGetMeQuery(options);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isHydrated = useAppSelector(selectIsHydrated);
+
+  const {
+    data: me,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetMeQuery({
+    enabled: options?.enabled ?? (isAuthenticated && isHydrated),
+  });
+
   const updateMutation = useUpdateMeMutation();
   const avatarMutation = useUploadAvatarMutation();
-  const dispatch = useAppDispatch();
 
   const updateProfile = async (data: UpdateUserRequest) => {
     try {
-      const updatedUser = await updateMutation.mutateAsync(data);
-      dispatch(setUser(updatedUser));
+      await updateMutation.mutateAsync(data);
       addNotification("success", "Profile updated successfully");
     } catch (err: any) {
-      addNotification("error", getErrorMessage(err, "Failed to update profile"));
+      addNotification(
+        "error",
+        getErrorMessage(err, "Failed to update profile"),
+      );
     }
   };
 
   const uploadAvatar = async (formData: FormData) => {
     try {
-      const updatedUser = await avatarMutation.mutateAsync(formData);
-      dispatch(setUser(updatedUser));
+      await avatarMutation.mutateAsync(formData);
       addNotification("success", "Avatar updated successfully");
     } catch (err: any) {
-      addNotification("error", getErrorMessage(err, "Failed to upload avatar"));
+      addNotification(
+        "error",
+        getErrorMessage(err, "Failed to upload avatar"),
+      );
     }
   };
 
   return {
     me: me || null,
-    isLoading,
+    isLoading: isLoading || !isHydrated,
     isFetching,
+    error,
+    isAuthenticated,
+    isHydrated,
     actions: {
       updateProfile,
       uploadAvatar,
