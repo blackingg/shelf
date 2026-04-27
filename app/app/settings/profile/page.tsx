@@ -33,7 +33,6 @@ export default function SettingsProfilePage() {
     schoolId: "",
     departmentId: "",
     email: "",
-    bio: "",
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
@@ -47,7 +46,6 @@ export default function SettingsProfilePage() {
         schoolId: profileUser.school?.id || "",
         departmentId: profileUser.department?.id || "",
         email: profileUser.email || "",
-        bio: profileUser.bio || "",
       });
     }
   }, [profileUser]);
@@ -67,7 +65,6 @@ export default function SettingsProfilePage() {
   const isDirty =
     formData.name !== (profileUser?.fullName || "") ||
     formData.username !== (profileUser?.username || "") ||
-    formData.bio !== (profileUser?.bio || "") ||
     formData.schoolId !== (profileUser?.school?.id || "") ||
     formData.departmentId !== (profileUser?.department?.id || "");
 
@@ -98,7 +95,8 @@ export default function SettingsProfilePage() {
     await userActions.updateProfile({
       fullName: formData.name,
       username: formData.username,
-      bio: formData.bio,
+      schoolId: formData.schoolId,
+      departmentId: formData.departmentId,
     });
   };
 
