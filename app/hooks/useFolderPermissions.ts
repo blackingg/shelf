@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useGetMeQuery } from "@/app/services";
 import { Folder, FolderPermission } from "@/app/types/folder";
+import { useIsOwner } from "./useIsOwner";
+import { checkIsOwner } from "@/app/helpers";
 
 export const hasFolderPermission = (
   folder: Folder | null | undefined,
@@ -9,15 +11,14 @@ export const hasFolderPermission = (
 ): boolean => {
   if (!folder || !currentUser) return false;
 
-  const isOwner =
-    folder.user?.id === currentUser.id ||
-    (folder as any).userId === currentUser.id;
+  const isOwner = checkIsOwner(
+    currentUser,
+    folder?.user || (folder as any)?.userId,
+  );
   if (isOwner) return true;
 
-  const collaboration = folder.collaborators?.find(
-    (c) =>
-      c.user?.id === currentUser.id ||
-      (c.user as any)?.username === currentUser.username,
+  const collaboration = folder.collaborators?.find((c) =>
+    checkIsOwner(currentUser, c.user),
   );
 
   if (!collaboration) return false;
@@ -32,15 +33,11 @@ export const useFolderPermissions = (folder: Folder | null | undefined) => {
       hasFolderPermission(folder, currentUser, perm);
 
     // Check if owner
-    const isOwner =
-      folder?.user?.id === currentUser?.id ||
-      (folder as any)?.userId === (currentUser as any)?.id;
+    const isOwner = useIsOwner(folder?.user || (folder as any)?.userId);
 
     // Check collaborator status
-    const collaboration = folder?.collaborators?.find(
-      (c) =>
-        c.user?.id === currentUser?.id ||
-        (c.user as any)?.username === currentUser?.username,
+    const collaboration = folder?.collaborators?.find((c) =>
+      checkIsOwner(currentUser, c.user),
     );
 
     const isCollaborator = !!collaboration;

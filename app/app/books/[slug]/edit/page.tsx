@@ -24,7 +24,8 @@ import {
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useIsOwner } from "@/app/hooks/useIsOwner";
 
 export default function EditBookPage() {
   const params = useParams();
@@ -241,8 +242,7 @@ export default function EditBookPage() {
   }
 
   // Check if current user is the donor
-  const isDonor =
-    user?.id === book.donor?.id || user?.username === book.donor?.username;
+  const isDonor = useIsOwner(book?.donor);
   if (!isDonor && user) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-8 text-center">
