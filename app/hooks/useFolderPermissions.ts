@@ -27,13 +27,11 @@ export const hasFolderPermission = (
 
 export const useFolderPermissions = (folder: Folder | null | undefined) => {
   const { data: currentUser } = useGetMeQuery();
+  const isOwner = useIsOwner(folder?.user || (folder as any)?.userId);
 
   return useMemo(() => {
     const hasPermission = (perm: FolderPermission) =>
       hasFolderPermission(folder, currentUser, perm);
-
-    // Check if owner
-    const isOwner = useIsOwner(folder?.user || (folder as any)?.userId);
 
     // Check collaborator status
     const collaboration = folder?.collaborators?.find((c) =>
@@ -69,5 +67,5 @@ export const useFolderPermissions = (folder: Folder | null | undefined) => {
         hasPermission("EDIT_FOLDER") ||
         hasPermission("MANAGE_COLLABORATORS"),
     };
-  }, [folder, currentUser]);
+  }, [folder, currentUser, isOwner]);
 };
