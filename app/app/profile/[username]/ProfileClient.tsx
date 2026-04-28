@@ -35,7 +35,7 @@ import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTab";
-import { selectIsAuthenticated } from "@/app/store";
+import { useIsOwner } from "@/app/hooks/useIsOwner";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility, Folder } from "@/app/types/folder";
 import { shareContent } from "@/app/helpers/share";
@@ -74,7 +74,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const pageSize = 10;
 
   const { me: currentUser, isLoading: isLoadingMe } = useUser();
-  const isOwner = currentUser?.username === username;
+  const { user, isLoading: isLoadingUser } = useUserByUsername(username);
+  const isOwner = useIsOwner(user);
+
   const isAuthenticated = !!currentUser;
   const { addNotification } = useNotifications();
 
@@ -82,8 +84,6 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const { actions: folderActions, isDeleting: isDeletingFolder } =
     useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
-
-  const { user, isLoading: isLoadingUser } = useUserByUsername(username);
 
   const {
     books,

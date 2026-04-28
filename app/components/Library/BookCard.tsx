@@ -6,9 +6,14 @@ import Link from "next/link";
 import { FiStar, FiBookmark, FiMoreVertical, FiShare2 } from "react-icons/fi";
 import { shareContent } from "@/app/helpers/share";
 import { useState } from "react";
-import { useIsBookBookmarked, useBookBookmarkActions, useUser } from "@/app/services";
-import { BookCardProps, BookPreview } from "@/app/types/book";
+import {
+  useIsBookBookmarked,
+  useBookBookmarkActions,
+  useUser,
+} from "@/app/services";
+import { BookCardProps } from "@/app/types/book";
 import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
+import { useIsOwner } from "@/app/hooks/useIsOwner";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -24,6 +29,9 @@ export const BookCard: React.FC<BookCardProps> = ({
   className = "",
 }) => {
   const { isAuthenticated } = useUser();
+  const isOwner = useIsOwner(donor);
+  const hasActions = isOwner;
+
   const { isBookmarked } = useIsBookBookmarked(id || "", {
     enabled: isAuthenticated,
   });
@@ -87,7 +95,7 @@ export const BookCard: React.FC<BookCardProps> = ({
             </button>
           )}
 
-          {showActions && id && (
+          {showActions && hasActions && id && (
             <div className="relative">
               <button
                 onClick={(e) => {
