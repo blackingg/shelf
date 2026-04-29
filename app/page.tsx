@@ -81,7 +81,7 @@ export default function ShelfLanding() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black overflow-hidden font-onest">
+    <div className="min-h-screen pt-20 bg-white dark:bg-black overflow-hidden font-onest">
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
