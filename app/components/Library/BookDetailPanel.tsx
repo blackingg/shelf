@@ -213,7 +213,7 @@ export const BookDetailPanel: React.FC<{
                     <div className="w-4 h-px bg-current opacity-30" />
                     About this resource
                   </h3>
-                  <p className="text-sm indent-6 text-emerald-50/80 max-h-60 text-ellipsis overflow-clip whitespace-normal text-justify leading-relaxed font-medium">
+                  <p className="text-sm indent-6 text-emerald-50/80 whitespace-normal text-justify leading-relaxed font-medium">
                     {processDescription(String(bookDetails?.description))}
                   </p>
                 </div>
