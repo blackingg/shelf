@@ -961,7 +961,7 @@ export default function EditFolderPage() {
                                   folder.collaborators.length === 0) && (
                                   <div className="text-sm text-gray-400 dark:text-gray-500 italic py-6 px-4">
                                     No collaborators yet. Invite someone to
-                                    contribute!
+                                    start building this folder together.
                                   </div>
                                 )}
                             </>
