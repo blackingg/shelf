@@ -7,7 +7,6 @@ import type { PdfViewerHandle } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { FiUploadCloud } from "react-icons/fi";
 import { motion } from "motion/react";
-import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
   const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
@@ -52,7 +51,7 @@ export default function UploadAndReadPage() {
   }, [fileType, currentPage, totalPages]);
 
   const handlePrevPage = useCallback(() => {
-    if (fileType === "epub") {
+    if (fileType === "epub" && currentPage > 1) {
       epubControlsRef.current?.prev();
     } else {
       if (currentPage > 1) {
@@ -160,6 +159,7 @@ export default function UploadAndReadPage() {
               epubControlsRef.current = controls;
             }}
             onPageDetails={(info) => {
+              setCurrentPage(Number(info.currentPage));
               setTotalPages(Number(info.totalPages));
             }}
           />
