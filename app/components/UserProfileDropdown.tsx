@@ -11,14 +11,13 @@ import {
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useDispatch } from "react-redux";
-import { logout } from "../store/authSlice";
-import { useUser } from "@/app/services";
+import { useUser, useAuthActions } from "@/app/services";
 import { ConfirmModal } from "./ConfirmModal";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const dispatch = useDispatch();
+  const { logout: performLogout } = useAuthActions();
   const { me: user, isAuthenticated, isHydrated } = useUser();
 
   if (!isHydrated) return null;
@@ -45,9 +44,8 @@ export const UserProfileDropdown: React.FC = () => {
   };
 
   const confirmLogout = () => {
-    dispatch(logout());
+    performLogout();
     setShowLogoutModal(false);
-    // router.push("/app/auth/login");
   };
 
   const handleLogin = () => {

@@ -11,10 +11,7 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@/app/store";
+import { useAppDispatch, useAppSelector } from "@/app/store";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
@@ -117,7 +114,6 @@ export default function Onboarding() {
         interestIds: formData.interestIds,
       });
 
-      
       storage.remove("onboarding_step");
       storage.remove("onboarding_data");
       router.push("/app/discover");
@@ -126,7 +122,7 @@ export default function Onboarding() {
 
       // If the user already completed onboarding, just redirect them
       if (user?.onboardingCompleted) {
-        // 
+        //
         storage.remove("onboarding_step");
         storage.remove("onboarding_data");
         router.push("/app/discover");
@@ -206,7 +202,7 @@ export default function Onboarding() {
         }
       />
 
-      <div className="flex flex-col items-center min-h-[calc(100vh-64px)] px-6 py-12">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
         <div className="w-full max-w-[480px]">
           <Card className="p-10">
             <StepHeader

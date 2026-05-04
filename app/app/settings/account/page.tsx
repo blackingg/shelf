@@ -8,20 +8,20 @@ import {
   useUpdateMeMutation,
   useChangePasswordMutation,
   useDeleteMeMutation,
+  useAuthActions,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { useRouter } from "next/navigation";
-import { logout, useAppDispatch } from "@/app/store";
+import { useAppDispatch } from "@/app/store";
 
 export default function AccountSettingsPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
   const { data: user } = useGetMeQuery();
   const updateMe = useUpdateMeMutation();
   const changePassword = useChangePasswordMutation();
   const deleteMe = useDeleteMeMutation();
+  const { logout: performLogout } = useAuthActions();
 
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
@@ -81,8 +81,7 @@ export default function AccountSettingsPage() {
     try {
       await deleteMe.mutateAsync();
       addNotification("success", "Account deleted successfully");
-      dispatch(logout());
-      router.push("/app/auth/login");
+      performLogout();
     } catch (error) {
       addNotification(
         "error",

@@ -39,7 +39,6 @@ export default function EditFolderPage() {
     typeof params.slug === "string" ? params.slug : params.slug?.[0] || "";
   const { addNotification } = useNotifications();
 
-  // API Hooks
   const {
     folder,
     isLoading: isFolderLoading,
@@ -51,6 +50,7 @@ export default function EditFolderPage() {
   );
   const { invites, isLoading: isInvitesLoading } = useFolderInvites(
     folder?.id || "",
+    { status: "PENDING" },
   );
   const { actions, isUpdating, isUpdatingSettings, isDeleting } =
     useFolderActions();
@@ -361,7 +361,7 @@ export default function EditFolderPage() {
           </p>
           <button
             onClick={() => router.push("/app/folders")}
-            className="px-8 py-2.5 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-colors text-sm uppercase tracking-wide"
+            className="px-8 py-2.5 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-colors text-sm"
           >
             Back to Folders
           </button>
@@ -705,12 +705,13 @@ export default function EditFolderPage() {
                           <UserSearchInput
                             onSelect={setSelectedUser}
                             selectedUser={selectedUser}
-                            excludeUserIds={
-                              [
-                                folder?.user?.id,
-                                ...collaborators.map((c) => c.user?.id),
-                              ].filter(Boolean) as string[]
-                            }
+                            // excludeUserIds={
+                            //   [
+                            //     folder?.user?.id,
+                            //     ...collaborators.map((c) => c.user?.id),
+                            //     ...invites.map((i) => i.user?.id),
+                            //   ].filter(Boolean) as string[]
+                            // }
                           />
                         </div>
 
@@ -781,7 +782,7 @@ export default function EditFolderPage() {
                           type="button"
                           onClick={handleInvite}
                           disabled={!selectedUser}
-                          className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wide"
+                          className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                         >
                           <FiPlus className="w-4 h-4" />
                           <span>
@@ -833,9 +834,17 @@ export default function EditFolderPage() {
                                   className={`flex flex-col gap-2 py-4 px-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors rounded-sm group ${editingCollaboratorId === collaborator.id ? "bg-emerald-50/30 dark:bg-emerald-500/5 ring-1 ring-emerald-500/20" : ""}`}
                                 >
                                   <div className="flex items-center gap-4">
-                                    <div
-                                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${collaborator.role === "EDITOR" ? "bg-purple-500" : "bg-blue-500"}`}
-                                    />
+                                    <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
+                                      {collaborator.user?.avatar ? (
+                                        <img
+                                          src={collaborator.user.avatar}
+                                          alt={collaborator.user.username}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      ) : (
+                                        collaborator.user?.username?.[0] || "?"
+                                      )}
+                                    </div>
                                     <div className="flex-1 min-w-0 text-left">
                                       <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -891,7 +900,7 @@ export default function EditFolderPage() {
                                         </button>
                                       </div>
                                     ) : (
-                                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                      <div className="flex items-center gap-1">
                                         <button
                                           type="button"
                                           onClick={() =>
@@ -972,7 +981,17 @@ export default function EditFolderPage() {
                                   key={invite.id}
                                   className="flex items-center gap-4 py-4 px-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors rounded-sm group"
                                 >
-                                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50 shrink-0" />
+                                  <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
+                                    {invite.user?.avatar ? (
+                                      <img
+                                        src={invite.user.avatar}
+                                        alt={invite.user.username}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      invite.user?.username?.[0] || "?"
+                                    )}
+                                  </div>
                                   <div className="flex-1 min-w-0 text-left">
                                     <div className="flex items-center gap-2">
                                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">

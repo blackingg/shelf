@@ -16,8 +16,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
 import { useDispatch } from "react-redux";
-import { logout } from "../store/authSlice";
-import { useUser } from "@/app/services";
+import { useUser, useAuthActions } from "@/app/services";
 import { ConfirmModal } from "./ConfirmModal";
 
 interface SidebarItem {
@@ -33,7 +32,7 @@ interface SidebarItem {
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const dispatch = useDispatch();
+  const { logout: performLogout } = useAuthActions();
   const { me: user, isAuthenticated, isHydrated } = useUser();
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -43,8 +42,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const confirmLogout = () => {
-    dispatch(logout());
-    router.push("/app/auth/login");
+    performLogout();
     setShowLogoutModal(false);
   };
 

@@ -91,7 +91,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 
   return (
     <PersistQueryClientProvider
-      key={currentPersistKey}
       client={queryClient}
       persistOptions={{
         persister,
