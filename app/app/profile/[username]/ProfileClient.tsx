@@ -70,7 +70,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
-  const [bookToDelete, setBookToDelete] = useState<any | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<BookPreview | null>(null);
   const pageSize = 10;
 
   const { me: currentUser, isLoading: isLoadingMe } = useUser();
@@ -149,7 +149,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     ? ownerFoldersTotalPages
     : publicFoldersTotalPages;
 
-  const tabs = [
+  const tabs: { id: ProfileTab; label: string; icon: any; count: number }[] = [
     {
       id: "donated",
       label: "Donated",
@@ -165,7 +165,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     ...(isOwner
       ? [
           {
-            id: "bookmarks",
+            id: "bookmarks" as const,
             label: "Bookmarks",
             icon: FiBookmark,
             count: 0, // Simplified count for bookmarks
@@ -416,7 +416,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                       isActive
                         ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"

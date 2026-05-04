@@ -27,6 +27,7 @@ import {
   useMyRating,
   useRatingActions,
   useGetBookBySlugQuery,
+  useUser,
 } from "@/app/services";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
@@ -43,6 +44,7 @@ export const BookDetailPanel: React.FC<{
   if (!isDonationsPage) {
     isDonationsPage = false;
   }
+  const { isAuthenticated } = useUser();
   const { data: bookDetails } = useGetBookBySlugQuery(String(book?.slug));
   const [bookDeleteOverlayState, showBookDeleteOverlay] = useState(false);
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
@@ -273,7 +275,7 @@ export const BookDetailPanel: React.FC<{
                     </div>
                   )}
 
-                  {!isDonationsPage && (
+                  {!isDonationsPage && isAuthenticated && (
                     <button
                       onClick={handleBookmark}
                       className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md flex items-center justify-center transition-all duration-200 border ${
