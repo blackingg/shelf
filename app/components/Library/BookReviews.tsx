@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useRatings } from "@/app/services";
+import { useRatings, useUser } from "@/app/services";
 import { FiTrash2, FiSend } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
-import { useGetMeQuery } from "@/app/services";
 
 interface BookReviewsProps {
   bookId: string;
@@ -17,8 +16,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
   hideForm = false,
 }) => {
   const { reviews, isLoading, actions: ratingActions } = useRatings(bookId);
-
-  const { data: currentUser } = useGetMeQuery();
+  const { me: currentUser, isAuthenticated } = useUser();
   const [newReview, setNewReview] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +43,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
 
   return (
     <div className="space-y-6">
-      {!hideForm && (
+      {!hideForm && isAuthenticated && (
         <form
           onSubmit={handleSubmit}
           className="relative"

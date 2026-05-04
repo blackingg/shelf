@@ -319,7 +319,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
                     {user.fullName}
                   </h1>
-                  <p className="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em] text-[10px]">
                     @{username}
                   </p>
                 </div>

@@ -19,6 +19,7 @@ import {
   useRatings,
   useBooks,
   useRecommendedBooks,
+  useUser,
 } from "@/app/services";
 import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
@@ -29,6 +30,7 @@ export default function BookClient() {
   const router = useRouter();
   const params = useParams();
   const bookSlug = params.slug as string;
+  const { isAuthenticated } = useUser();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
   const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
@@ -241,28 +243,30 @@ export default function BookClient() {
                       </button>
                     </div>
 
-                    <div className="relative w-full sm:w-auto">
-                      <button
-                        onClick={() =>
-                          setShowFolderDropdown(!showFolderDropdown)
-                        }
-                        className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
-                          showFolderDropdown
-                            ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
-                            : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
-                        }`}
-                      >
-                        <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span>Save to Folder</span>
-                      </button>
+                    {isAuthenticated && (
+                      <div className="relative w-full sm:w-auto">
+                        <button
+                          onClick={() =>
+                            setShowFolderDropdown(!showFolderDropdown)
+                          }
+                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
+                            showFolderDropdown
+                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
+                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                          }`}
+                        >
+                          <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span>Save to Folder</span>
+                        </button>
 
-                      <FolderDropdown
-                        isOpen={showFolderDropdown}
-                        onClose={() => setShowFolderDropdown(false)}
-                        bookId={actualBookId}
-                        className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
-                      />
-                    </div>
+                        <FolderDropdown
+                          isOpen={showFolderDropdown}
+                          onClose={() => setShowFolderDropdown(false)}
+                          bookId={actualBookId}
+                          className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
+                        />
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               </div>
@@ -335,7 +339,7 @@ export default function BookClient() {
                       <div className="pt-1">
                         <StarRating
                           rating={myRating || 0}
-                          interactive
+                          interactive={isAuthenticated}
                           onRate={handleRate}
                           size={22}
                         />

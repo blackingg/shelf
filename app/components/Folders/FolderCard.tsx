@@ -36,9 +36,7 @@ export function FolderCardSkeleton({ count = 1 }: { count?: number }) {
         >
           <div className="relative">
             <div className="relative z-10">
-              <div className="w-full aspect-[278/194] bg-gray-200 dark:bg-neutral-700 rounded-md overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent animate-[shimmer_1.5s_ease-in-out_infinite]" />
-              </div>
+              <div className="w-full aspect-[278/194] bg-gray-200 dark:bg-neutral-700 rounded-md overflow-hidden" />
             </div>
           </div>
           <div className="mt-2 px-1 space-y-1.5">
