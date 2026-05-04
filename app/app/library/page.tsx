@@ -469,7 +469,6 @@ export default function LibraryPage() {
           book={selectedBook!}
           isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
-          isDonationsPage={activeTab === "uploads"}
         />
       )}
 
