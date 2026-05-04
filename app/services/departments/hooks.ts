@@ -19,8 +19,8 @@ export const useGetDepartmentsQuery = (params?: any) => {
   return useQuery<Department[]>({
     queryKey: params ? [...departmentKeys.all, params] : departmentKeys.all,
     queryFn: () => api.get<Department[]>("/departments/", { params }),
-    staleTime: 10 * 60 * 1000, // 10 minutes — departments rarely change
-    gcTime: 30 * 60 * 1000,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 48 * 60 * 60 * 1000,
   });
 };
 
@@ -29,13 +29,18 @@ export const useGetDepartmentBySlugQuery = (slug: string | null) => {
     queryKey: departmentKeys.detail(slug),
     queryFn: () => api.get<Department>(`/departments/${slug}`),
     enabled: !!slug,
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 48 * 60 * 60 * 1000,
   });
 };
 
 export const useDepartments = (params?: any) => {
-  const { data: departments = [], isLoading, isFetching, error } = useGetDepartmentsQuery(params);
+  const {
+    data: departments = [],
+    isLoading,
+    isFetching,
+    error,
+  } = useGetDepartmentsQuery(params);
   return { departments, isLoading, isFetching, error };
 };
 
@@ -45,15 +50,21 @@ export const useGetBooksByDepartmentQuery = (
 ) => {
   return useQuery<DepartmentBooksResponse>({
     queryKey: [...departmentKeys.all, "books", slug, params],
-    queryFn: () => api.get<DepartmentBooksResponse>(`/departments/${slug}/books`, { params }),
+    queryFn: () =>
+      api.get<DepartmentBooksResponse>(`/departments/${slug}/books`, {
+        params,
+      }),
     enabled: !!slug,
     placeholderData: keepPreviousData,
   });
 };
 
 export const useBooksByDepartment = (slug: string | null, params: any) => {
-  const { data, isLoading, isFetching, error } = useGetBooksByDepartmentQuery(slug, params);
-  
+  const { data, isLoading, isFetching, error } = useGetBooksByDepartmentQuery(
+    slug,
+    params,
+  );
+
   return {
     data,
     books: data?.books?.items || [],
@@ -66,6 +77,10 @@ export const useBooksByDepartment = (slug: string | null, params: any) => {
 };
 
 export const useDepartmentBySlug = (slug: string | null) => {
-  const { data: department, isLoading, error } = useGetDepartmentBySlugQuery(slug);
+  const {
+    data: department,
+    isLoading,
+    error,
+  } = useGetDepartmentBySlugQuery(slug);
   return { department, isLoading, error };
 };

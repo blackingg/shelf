@@ -1,79 +1,51 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
-import { Category } from "../../types/categories";
 import { DiscoveryFeedResponse } from "../../types/recommendations";
-import { Book } from "../../types/book";
-import { PaginatedResponse } from "../../types/common";
+import { useUser } from "../user/hooks";
 
 export const discoverKeys = {
   all: ["discover"] as const,
-  recommendations: () => [...discoverKeys.all, "recommendations"] as const,
-  categories: () => [...discoverKeys.all, "categories"] as const,
-  categoryBooks: (slug: string, params?: any) => [...discoverKeys.all, "categoryBooks", slug, params] as const,
+  recommendations: (userId: string = "guest") =>
+    [...discoverKeys.all, "recommendations", userId] as const,
 };
 
-interface CategoryBooksResponse {
-  category: Category;
-  books: PaginatedResponse<Book>;
-}
-
-export const useGetDiscoverFeedQuery = (options?: { enabled?: boolean }) => {
+export const useGetDiscoverFeedQuery = (options?: {
+  enabled?: boolean;
+  userId?: string;
+  staleTime?: number;
+}) => {
   return useQuery<DiscoveryFeedResponse>({
-    queryKey: discoverKeys.recommendations(),
+    queryKey: discoverKeys.recommendations(options?.userId),
     queryFn: () => api.get<DiscoveryFeedResponse>("/recommendations/discover"),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    enabled: options?.enabled ?? true,
-  });
-};
-
-export const useGetDiscoverCategoriesQuery = () => {
-  return useQuery<Category[]>({
-    queryKey: discoverKeys.categories(),
-    queryFn: () => api.get<Category[]>("/categories"),
-    staleTime: 10 * 60 * 1000,
+    staleTime: options?.staleTime ?? 10 * 60 * 1000, // 10 min default
     gcTime: 30 * 60 * 1000,
-  });
-};
-
-export const useGetDiscoverBooksByCategoryQuery = (slug: string, params?: any) => {
-  return useQuery<CategoryBooksResponse>({
-    queryKey: discoverKeys.categoryBooks(slug, params),
-    queryFn: () => api.get<CategoryBooksResponse>(`/categories/${slug}/books`, { params }),
-    enabled: !!slug,
+    enabled: options?.enabled ?? true,
   });
 };
 
 // --- Domain Hooks ---
 
 export const useDiscoverFeed = (options?: { enabled?: boolean }) => {
-  const { data, isLoading, error } = useGetDiscoverFeedQuery(options);
-  
+  const { me, isHydrated } = useUser();
+  const userId = me?.id || "guest";
+
+  const { data, isLoading, error } = useGetDiscoverFeedQuery({
+    ...options,
+    userId,
+    enabled: isHydrated && (options?.enabled ?? true),
+    staleTime: 0, // Ensure we always talk to the server on mount/identity shift
+  });
+
   return {
     recommendations: data || null,
-    isLoading,
-    error
+    isLoading: !isHydrated || isLoading,
+    error,
   };
 };
 
-export const useDiscoverCategories = () => {
-  const { data: categories, isLoading } = useGetDiscoverCategoriesQuery();
-  
-  return {
-    categories: categories || [],
-    isLoading
-  };
-};
-
-export const useDiscoverBooksByCategory = (slug: string, params?: any) => {
-  const { data, isLoading, isFetching, error } = useGetDiscoverBooksByCategoryQuery(slug, params);
-  
-  return {
-    books: data?.books?.items || [],
-    total: data?.books?.total || 0,
-    hasNext: data?.books?.hasNext || false,
-    isLoading,
-    isFetching,
-    error
-  };
-};
+// Re-export from categories service — Discover page should use the shared
+// cache instead of maintaining duplicate query keys.
+export {
+  useCategories,
+  useBooksByCategory as useDiscoverBooksByCategory,
+} from "../categories";
