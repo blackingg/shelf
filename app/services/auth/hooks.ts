@@ -68,6 +68,7 @@ export const useAuthActions = () => {
     mutationFn: () => api.post("/auth/logout", {}),
     onSettled: () => {
       dispatch(logout());
+      window.location.reload();
     },
   });
 
