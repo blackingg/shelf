@@ -260,9 +260,6 @@ export default function AccountSettingsPage() {
                     <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
                       Password
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-neutral-400">
-                      Last changed 3 months ago
-                    </div>
                   </div>
                 </div>
                 <button

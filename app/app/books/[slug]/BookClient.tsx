@@ -334,17 +334,33 @@ export default function BookClient() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                        Your Rating
+                        Rating
                       </span>
-                      <div className="pt-1">
+                      <div className="flex items-center gap-3">
                         <StarRating
-                          rating={myRating || 0}
-                          interactive={isAuthenticated}
-                          onRate={handleRate}
-                          size={22}
+                          rating={book.rating || 0}
+                          size={18}
                         />
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {book.rating?.toFixed(1) || "0.0"}
+                        </span>
                       </div>
                     </div>
+                    {isAuthenticated && (
+                      <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                          Your Rating
+                        </span>
+                        <div className="pt-1">
+                          <StarRating
+                            rating={myRating || 0}
+                            interactive={isAuthenticated}
+                            onRate={handleRate}
+                            size={22}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </section>
 
