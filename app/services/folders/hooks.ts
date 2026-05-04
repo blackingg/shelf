@@ -39,7 +39,9 @@ export const folderKeys = {
   collaborators: (id: string) =>
     [...folderKeys.detail(id), "collaborators"] as const,
   invites: (id: string, params?: any) =>
-    [...folderKeys.detail(id), "invites", params] as const,
+    params
+      ? ([...folderKeys.detail(id), "invites", params] as const)
+      : ([...folderKeys.detail(id), "invites"] as const),
   myInvites: (params?: any) => ["invites", "me", params] as const,
 };
 
@@ -199,10 +201,12 @@ export const useInviteCollaboratorMutation = () => {
       id: string;
       data: InviteCollaboratorRequest;
     }) => api.post(`/collaboration/folders/${id}/invite`, data),
-    onSuccess: (_, { id }) => {
-      // Only collaboration-related caches for this folder
+    onSettled: (_, __, { id }) => {
+      // Refresh all collaboration-related data for this folder
       queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(id) });
       queryClient.invalidateQueries({ queryKey: folderKeys.invites(id) });
+      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
     },
   });
 };
@@ -220,7 +224,33 @@ export const useRemoveCollaboratorMutation = () => {
       api.delete(
         `/collaboration/folders/${folderId}/collaborators/${collaboratorId}`,
       ),
-    onSuccess: (_, { folderId }) => {
+    onMutate: async ({ folderId, collaboratorId }) => {
+      await queryClient.cancelQueries({
+        queryKey: folderKeys.collaborators(folderId),
+      });
+
+      const previousCollaborators = queryClient.getQueryData<Collaborator[]>(
+        folderKeys.collaborators(folderId),
+      );
+
+      if (previousCollaborators) {
+        queryClient.setQueryData<Collaborator[]>(
+          folderKeys.collaborators(folderId),
+          previousCollaborators.filter((c) => c.id !== collaboratorId),
+        );
+      }
+
+      return { previousCollaborators };
+    },
+    onError: (err, { folderId }, context) => {
+      if (context?.previousCollaborators) {
+        queryClient.setQueryData(
+          folderKeys.collaborators(folderId),
+          context.previousCollaborators,
+        );
+      }
+    },
+    onSettled: (_, __, { folderId }) => {
       queryClient.invalidateQueries({
         queryKey: folderKeys.collaborators(folderId),
       });
@@ -273,8 +303,31 @@ export const useUpdateCollaborationSettingsMutation = () => {
       id: string;
       data: UpdateCollaborationSettingsRequest;
     }) => api.patch(`/folders/${id}/collaboration`, data),
-    onSuccess: (_, { id }) => {
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: folderKeys.detail(id) });
+      await queryClient.cancelQueries({ queryKey: folderKeys.slug("") }); // Slug might be unknown here, but detail is primary
+
+      const previousFolder = queryClient.getQueryData<Folder>(
+        folderKeys.detail(id),
+      );
+
+      if (previousFolder) {
+        queryClient.setQueryData<Folder>(folderKeys.detail(id), {
+          ...previousFolder,
+          ...data,
+        });
+      }
+
+      return { previousFolder };
+    },
+    onError: (err, { id }, context) => {
+      if (context?.previousFolder) {
+        queryClient.setQueryData(folderKeys.detail(id), context.previousFolder);
+      }
+    },
+    onSettled: (_, __, { id }) => {
       queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
     },
   });
 };
@@ -295,7 +348,35 @@ export const useUpdatePermissionsMutation = () => {
         `/collaboration/folders/${folderId}/collaborators/${collaboratorId}/permissions`,
         data,
       ),
-    onSuccess: (_, { folderId }) => {
+    onMutate: async ({ folderId, collaboratorId, data }) => {
+      await queryClient.cancelQueries({
+        queryKey: folderKeys.collaborators(folderId),
+      });
+
+      const previousCollaborators = queryClient.getQueryData<Collaborator[]>(
+        folderKeys.collaborators(folderId),
+      );
+
+      if (previousCollaborators) {
+        queryClient.setQueryData<Collaborator[]>(
+          folderKeys.collaborators(folderId),
+          previousCollaborators.map((c) =>
+            c.id === collaboratorId ? { ...c, ...data } : c,
+          ),
+        );
+      }
+
+      return { previousCollaborators };
+    },
+    onError: (err, { folderId }, context) => {
+      if (context?.previousCollaborators) {
+        queryClient.setQueryData(
+          folderKeys.collaborators(folderId),
+          context.previousCollaborators,
+        );
+      }
+    },
+    onSettled: (_, __, { folderId }) => {
       queryClient.invalidateQueries({
         queryKey: folderKeys.collaborators(folderId),
       });
