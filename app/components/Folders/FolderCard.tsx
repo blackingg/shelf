@@ -17,6 +17,7 @@ import {
   useBookmarkFolderActions,
 } from "@/app/services";
 import { useGetMeQuery } from "@/app/services";
+import { useFolderPermissions } from "@/app/hooks";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
@@ -61,11 +62,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
-  const isOwner = activeUser?.id === folder.user?.id;
-  const isEditor = folder.collaborator?.role === "EDITOR";
-  const canEdit = isOwner || isEditor;
-  const canDelete = isOwner;
-  const hasActions = canEdit || canDelete;
+  const { canEditFolder, canDeleteFolder } = useFolderPermissions(folder);
+  const hasMoreActions = canEditFolder || canDeleteFolder;
+
   const { isBookmarked } = useIsFolderBookmarked(folder.id, {
     enabled: isAuthenticated,
   });
@@ -98,68 +97,87 @@ export const FolderCard: React.FC<FolderCardProps> = ({
           </button>
         )}
 
-        {showActions && hasActions && (
+        {showActions && (
           <div className="relative">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMenu(!showMenu);
-              }}
-              className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
-            >
-              <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
-            </button>
-            {showMenu && (
+            {hasMoreActions ? (
               <>
-                <div
-                  className="fixed inset-0 z-10"
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setShowMenu(false);
+                    setShowMenu(!showMenu);
                   }}
-                />
-                <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
-                  {canEdit && (
-                    <button
+                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                >
+                  <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
+                </button>
+                {showMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onEdit?.();
                         setShowMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  {canDelete && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete?.();
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
-                    >
-                      Delete
-                    </button>
-                  )}
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      await shareContent({
-                        title: folder.name,
-                        text: `Check out the ${folder.name} folder on Shelf.`,
-                        url: `${window.location.origin}/app/folders/${folder.slug}`,
-                      });
-                      setShowMenu(false);
-                    }}
-                    className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
-                  >
-                    <FiShare2 className="w-3 h-3" />
-                    <span>Share</span>
-                  </button>
-                </div>
+                    />
+                    <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                      {canEditFolder && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit?.();
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {canDeleteFolder && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete?.();
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                        >
+                          Delete
+                        </button>
+                      )}
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await shareContent({
+                            title: folder.name,
+                            text: `Check out the ${folder.name} folder on Shelf.`,
+                            url: `${window.location.origin}/app/folders/${folder.slug}`,
+                          });
+                          setShowMenu(false);
+                        }}
+                        className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                      >
+                        <FiShare2 className="w-3 h-3" />
+                        <span>Share</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </>
+            ) : (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await shareContent({
+                    title: folder.name,
+                    text: `Check out the ${folder.name} folder on Shelf.`,
+                    url: `${window.location.origin}/app/folders/${folder.slug}`,
+                  });
+                }}
+                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                title="Share Folder"
+              >
+                <FiShare2 className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
+              </button>
             )}
           </div>
         )}

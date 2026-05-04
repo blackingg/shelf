@@ -95,65 +95,85 @@ export const BookCard: React.FC<BookCardProps> = ({
             </button>
           )}
 
-          {showActions && hasActions && id && (
+          {showActions && (
             <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowMenu(!showMenu);
-                }}
-                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
-              >
-                <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
-              </button>
-              {showMenu && (
+              {hasActions ? (
                 <>
-                  <div
-                    className="fixed inset-0 z-10"
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setShowMenu(false);
+                      setShowMenu(!showMenu);
                     }}
-                  />
-                  <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit?.(id);
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete?.(id);
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
-                    >
-                      Delete
-                    </button>
-                    {/* <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (!id) return;
-                        await shareContent({
-                          title: title,
-                          text: `Check out "${title}" by ${author} on Shelf.`,
-                          url: `${window.location.origin}/app/books/${id}`,
-                        });
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
-                    >
-                      <FiShare2 className="w-3 h-3" />
-                      <span>Share</span>
-                    </button> */}
-                  </div>
+                    className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                  >
+                    <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
+                  </button>
+                  {showMenu && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowMenu(false);
+                        }}
+                      />
+                      <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (id) onEdit?.(id);
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (id) onDelete?.(id);
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (!id) return;
+                            await shareContent({
+                              title: title,
+                              text: `Check out "${title}" by ${author} on Shelf.`,
+                              url: `${window.location.origin}/app/books/${id}`,
+                            });
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                        >
+                          <FiShare2 className="w-3 h-3" />
+                          <span>Share</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
+              ) : (
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!id) return;
+                    await shareContent({
+                      title: title,
+                      text: `Check out "${title}" by ${author} on Shelf.`,
+                      url: `${window.location.origin}/app/books/${id}`,
+                    });
+                  }}
+                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                  title="Share Resource"
+                >
+                  <FiShare2 className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
+                </button>
               )}
             </div>
           )}
