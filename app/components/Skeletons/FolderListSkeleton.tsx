@@ -1,110 +1,32 @@
 "use client";
-import { motion } from "motion/react";
 
 interface FolderListSkeletonProps {
   count?: number;
 }
 
-function SkeletonRow({ index }: { index: number }) {
+function SkeletonRow() {
   return (
-    <tr className="border-b border-gray-100 dark:border-neutral-700/50 last:border-b-0">
+    <tr className="border-b border-gray-100 dark:border-neutral-800 last:border-b-0">
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-4">
-          <div className="w-10 h-10 bg-gray-200 dark:bg-neutral-700 rounded-lg relative overflow-hidden">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: index * 0.1,
-              }}
-            />
-          </div>
+          <div className="w-10 h-10 bg-gray-200 dark:bg-neutral-800 rounded-lg" />
           <div className="space-y-2">
-            <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-32 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: index * 0.1 + 0.1,
-                }}
-              />
-            </div>
-            <div className="h-3 bg-gray-100 dark:bg-neutral-700/50 rounded w-24 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: index * 0.1 + 0.2,
-                }}
-              />
-            </div>
+            <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-32" />
+            <div className="h-3 bg-gray-100 dark:bg-neutral-800/50 rounded w-24" />
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-4 bg-gray-100 dark:bg-neutral-700/50 rounded w-16 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 0.1 + 0.3,
-            }}
-          />
-        </div>
+        <div className="h-4 bg-gray-100 dark:bg-neutral-800/50 rounded w-16" />
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-6 bg-gray-100 dark:bg-neutral-700/50 rounded-full w-20 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 0.1 + 0.4,
-            }}
-          />
-        </div>
+        <div className="h-6 bg-gray-100 dark:bg-neutral-800/50 rounded-full w-20" />
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-4 bg-gray-100 dark:bg-neutral-700/50 rounded w-24 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 0.1 + 0.5,
-            }}
-          />
-        </div>
+        <div className="h-4 bg-gray-100 dark:bg-neutral-800/50 rounded w-24" />
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right">
-        <div className="h-8 w-8 bg-gray-100 dark:bg-neutral-700/50 rounded-lg ml-auto relative overflow-hidden">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 0.1 + 0.6,
-            }}
-          />
-        </div>
+        <div className="h-8 w-8 bg-gray-100 dark:bg-neutral-800/50 rounded-lg ml-auto" />
       </td>
     </tr>
   );
@@ -114,10 +36,10 @@ export default function FolderListSkeleton({
   count = 5,
 }: FolderListSkeletonProps) {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700/50 overflow-hidden shadow-sm">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden shadow-sm animate-pulse">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-700/50">
+          <thead className="bg-gray-50/50 dark:bg-neutral-900/30 border-b border-gray-100 dark:border-neutral-800">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                 Folder Name
@@ -136,12 +58,9 @@ export default function FolderListSkeleton({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-neutral-700/50">
+          <tbody className="divide-y divide-gray-100 dark:divide-neutral-800">
             {Array.from({ length: count }).map((_, index) => (
-              <SkeletonRow
-                key={index}
-                index={index}
-              />
+              <SkeletonRow key={index} />
             ))}
           </tbody>
         </table>
