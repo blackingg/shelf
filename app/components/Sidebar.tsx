@@ -18,6 +18,7 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 import { useUser } from "@/app/services";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface SidebarItem {
   label: string;
@@ -35,10 +36,16 @@ export const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const { me: user, isAuthenticated, isHydrated } = useUser();
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     dispatch(logout());
     router.push("/app/auth/login");
+    setShowLogoutModal(false);
   };
 
   const mainItems: SidebarItem[] = [
@@ -68,7 +75,7 @@ export const Sidebar: React.FC = () => {
 
   const authenticatedBottomItems: SidebarItem[] = [
     { label: "Settings", icon: <FiSettings />, href: "/app/settings/profile" },
-    { label: "Logout", icon: <FiLogOut />, onClick: handleLogout },
+    { label: "Logout", icon: <FiLogOut />, onClick: handleLogoutClick },
   ];
 
   const guestBottomItems: SidebarItem[] = [
@@ -317,6 +324,17 @@ export const Sidebar: React.FC = () => {
           </>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out of your session?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isDanger={true}
+      />
     </>
   );
 };

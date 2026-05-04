@@ -13,9 +13,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 import { useUser } from "@/app/services";
+import { ConfirmModal } from "./ConfirmModal";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dispatch = useDispatch();
   const { me: user, isAuthenticated, isHydrated } = useUser();
 
@@ -37,10 +39,15 @@ export const UserProfileDropdown: React.FC = () => {
     router.push("/app/settings/profile");
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogoutClick = () => {
     setIsOpen(false);
-    router.push("/app/auth/login");
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    dispatch(logout());
+    setShowLogoutModal(false);
+    // router.push("/app/auth/login");
   };
 
   const handleLogin = () => {
@@ -158,7 +165,7 @@ export const UserProfileDropdown: React.FC = () => {
 
                   <div className="border-t border-gray-100 dark:border-neutral-800 py-2">
                     <button
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left group"
                     >
                       <FiLogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
@@ -205,6 +212,17 @@ export const UserProfileDropdown: React.FC = () => {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out of your session?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isDanger={true}
+      />
     </div>
   );
 };

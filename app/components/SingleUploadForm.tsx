@@ -13,11 +13,7 @@ import { FolderSelectDropdown } from "@/app/components/Library/FolderSelectDropd
 import { Button } from "@/app/components/Form/Button";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useRouter } from "next/navigation";
-import {
-  useBookActions,
-  useDepartments,
-  useDiscoverCategories,
-} from "@/app/services";
+import { useBookActions, useDepartments, useCategories } from "@/app/services";
 import { useFolderActions, useMeFolders } from "@/app/services/folders/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
@@ -53,7 +49,7 @@ export default function SingleUploadForm({
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
   const { categories: categoriesData, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+    useCategories();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
