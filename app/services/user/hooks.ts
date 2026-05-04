@@ -35,9 +35,15 @@ export const useUpdateMeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateUserRequest) => api.patch<User>("/users/me", data),
-    onSuccess: () => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
-      queryClient.invalidateQueries({ queryKey: userKeys.me(isAuthenticated) });
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      // Optionally update the byUsername cache immediately if we have it
+      if (updatedUser.username) {
+        queryClient.setQueryData(
+          userKeys.byUsername(updatedUser.username),
+          updatedUser,
+        );
+      }
     },
   });
 };
@@ -46,9 +52,15 @@ export const useUploadAvatarMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: FormData) => api.post<User>("/users/me/avatar", data),
-    onSuccess: () => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
-      queryClient.invalidateQueries({ queryKey: userKeys.me(isAuthenticated) });
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      // Update byUsername cache immediately to avoid flash of old avatar
+      if (updatedUser.username) {
+        queryClient.setQueryData(
+          userKeys.byUsername(updatedUser.username),
+          updatedUser,
+        );
+      }
     },
   });
 };
