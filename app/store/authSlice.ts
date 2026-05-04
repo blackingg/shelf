@@ -1,73 +1,67 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../types/user";
 import { storage } from "../helpers/storage";
 
 interface AuthState {
-  user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
+  userId: string | null;
   expiresAt: number | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   rememberMe: boolean;
 }
 
-const getUserFromStorage = (): User | null => {
-  try {
-    const userStr = storage.get("user");
-    return userStr ? JSON.parse(userStr) : null;
-  } catch (error) {
-    console.error("Failed to parse user from storage:", error);
-    storage.remove("user");
-    return null;
-  }
-};
-
-const getExpiresAtFromStorage = (): number | null => {
-  const expiresAt = storage.get("expiresAt");
-  return expiresAt ? parseInt(expiresAt) : null;
-};
-
 const initialState: AuthState = {
-  user: getUserFromStorage(),
-  accessToken: storage.get("accessToken"),
-  refreshToken: storage.get("refreshToken"),
-  expiresAt: getExpiresAtFromStorage(),
-  isAuthenticated: !!storage.get("accessToken"),
-  rememberMe: storage.get("rememberMe") === "true",
+  accessToken: null,
+  refreshToken: null,
+  userId: null,
+  expiresAt: null,
+  isAuthenticated: false,
+  isHydrated: false,
+  rememberMe: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    hydrate: (state) => {
+      const accessToken = storage.get("accessToken");
+      const refreshToken = storage.get("refreshToken");
+      const userId = storage.get("userId");
+      const expiresAt = storage.get("expiresAt");
+      const rememberMe = storage.get("rememberMe") === "true";
+
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
+      state.userId = userId;
+      state.expiresAt = expiresAt ? parseInt(expiresAt) : null;
+      state.rememberMe = rememberMe;
+      state.isAuthenticated = !!accessToken;
+      state.isHydrated = true;
+    },
     setCredentials: (
       state,
       {
-        payload: { user, accessToken, refreshToken, rememberMe, expiresIn },
+        payload: { accessToken, refreshToken, userId, rememberMe, expiresIn },
       }: PayloadAction<{
-        user: User;
         accessToken: string;
         refreshToken: string;
+        userId: string;
         expiresIn: number;
         rememberMe?: boolean;
       }>,
     ) => {
-      state.user = user;
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
+      state.userId = userId;
       state.expiresAt = Date.now() + expiresIn * 1000;
       state.isAuthenticated = true;
       state.rememberMe = !!rememberMe;
 
-      storage.remove("user");
-      storage.remove("accessToken");
-      storage.remove("refreshToken");
-      storage.remove("expiresAt");
-      storage.remove("rememberMe");
-
-      storage.set("user", JSON.stringify(user));
       storage.set("accessToken", accessToken);
       storage.set("refreshToken", refreshToken);
+      storage.set("userId", userId);
       storage.set("expiresAt", state.expiresAt.toString());
       storage.set("rememberMe", state.rememberMe.toString());
     },
@@ -91,51 +85,37 @@ const authSlice = createSlice({
       storage.set("refreshToken", action.payload.refreshToken);
       storage.set("expiresAt", state.expiresAt.toString());
     },
-    setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
-      if (action.payload) {
-        storage.set("user", JSON.stringify(action.payload));
-      } else {
-        storage.remove("user");
-      }
-    },
-    setOnboardingStatus: (state, action: PayloadAction<boolean>) => {
-      if (state.user) {
-        state.user.onboardingCompleted = action.payload;
-        storage.set("user", JSON.stringify(state.user));
-      }
-    },
     logout: (state) => {
-      state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
+      state.userId = null;
       state.expiresAt = null;
       state.isAuthenticated = false;
       state.rememberMe = false;
 
-      storage.remove("user");
       storage.remove("accessToken");
       storage.remove("refreshToken");
+      storage.remove("userId");
       storage.remove("expiresAt");
       storage.remove("rememberMe");
+      storage.remove("user"); // Clean up old user key if it exists
     },
   },
 });
 
 export const {
+  hydrate,
   setCredentials,
   updateAccessToken,
   updateTokens,
-  setUser,
-  setOnboardingStatus,
   logout,
 } = authSlice.actions;
 
 export default authSlice.reducer;
 
-export const selectCurrentUser = (state: { auth: AuthState }) =>
-  state.auth.user;
 export const selectCurrentToken = (state: { auth: AuthState }) =>
   state.auth.accessToken;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
   state.auth.isAuthenticated;
+export const selectIsHydrated = (state: { auth: AuthState }) =>
+  state.auth.isHydrated;

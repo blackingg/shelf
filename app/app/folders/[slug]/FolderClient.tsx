@@ -17,14 +17,14 @@ import {
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import {
   useFolderBySlug,
   useFolderActions,
   useIsFolderBookmarked,
   useBookmarkFolderActions,
+  useUser,
 } from "@/app/services";
-import { useFolderPermissions } from "@/app/hooks/useFolderPermissions";
+import { useFolderPermissions } from "@/app/hooks";
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
@@ -43,7 +43,7 @@ export default function FolderClient() {
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
-  const user = useSelector(selectCurrentUser);
+  const { me: user, isAuthenticated } = useUser();
   const currentUser = user?.username || "Guest";
 
   const {
@@ -81,7 +81,8 @@ export default function FolderClient() {
   const canSeeShare =
     folder?.visibility === "PUBLIC" || isOwner || isCollaborator;
 
-  const hasMenuActions = canEdit || canDelete || canSeeShare;
+  const hasMultipleActions = canEdit || canDelete;
+  const showActions = hasMultipleActions || canSeeShare;
 
   const handleRemoveBook = async (bookId: string) => {
     if (!folder) return;
@@ -213,71 +214,89 @@ export default function FolderClient() {
               </div>
 
               <div className="flex items-center space-x-2 self-end lg:self-start">
-                <button
-                  onClick={handleToggleBookmark}
-                  className={`p-2 rounded-lg transition-all duration-200 border ${
-                    isBookmarked
-                      ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-600"
-                      : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                  }`}
-                  title={
-                    isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"
-                  }
-                >
-                  <FiBookmark
-                    className={`w-6 h-6 md:w-5 md:h-5 ${isBookmarked ? "fill-current" : ""}`}
-                  />
-                </button>
+                {isAuthenticated && (
+                  <button
+                    onClick={handleToggleBookmark}
+                    className={`p-2 rounded-lg transition-all duration-200 border ${
+                      isBookmarked
+                        ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-600"
+                        : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                    title={
+                      isBookmarked
+                        ? "Remove from bookmarks"
+                        : "Add to bookmarks"
+                    }
+                  >
+                    <FiBookmark
+                      className={`w-6 h-6 md:w-5 md:h-5 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                  </button>
+                )}
 
-                {hasMenuActions && (
+                {showActions && (
                   <div className="relative">
-                    <button
-                      onClick={() => setShowMenu(!showMenu)}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400"
-                    >
-                      <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
-                    </button>
+                    {hasMultipleActions ? (
+                      <>
+                        <button
+                          onClick={() => setShowMenu(!showMenu)}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400"
+                        >
+                          <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
+                        </button>
 
-                    {showMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 py-1 z-10">
-                        {canEdit && (
-                          <button
-                            onClick={() =>
-                              router.push(`/app/folders/${folder.slug}/edit`)
-                            }
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
-                          >
-                            <FiEdit2 className="w-4 h-4" />
-                            <span>Edit Folder</span>
-                          </button>
-                        )}
-                        {canSeeShare && (
-                          <button
-                            onClick={handleShare}
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
-                          >
-                            <FiShare2 className="w-4 h-4" />
-                            <span>Share</span>
-                          </button>
-                        )}
-                        {canDelete && (
-                          <>
-                            {(canEdit || canSeeShare) && (
-                              <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                        {showMenu && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 py-1 z-10 shadow-lg">
+                            {canEdit && (
+                              <button
+                                onClick={() =>
+                                  router.push(
+                                    `/app/folders/${folder.slug}/edit`,
+                                  )
+                                }
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                              >
+                                <FiEdit2 className="w-4 h-4" />
+                                <span>Edit Folder</span>
+                              </button>
                             )}
-                            <button
-                              onClick={() => {
-                                setShowMenu(false);
-                                setShowDeleteModal(true);
-                              }}
-                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                              <span>Delete</span>
-                            </button>
-                          </>
+                            {canSeeShare && (
+                              <button
+                                onClick={handleShare}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                              >
+                                <FiShare2 className="w-4 h-4" />
+                                <span>Share</span>
+                              </button>
+                            )}
+                            {canDelete && (
+                              <>
+                                {(canEdit || canSeeShare) && (
+                                  <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                )}
+                                <button
+                                  onClick={() => {
+                                    setShowMenu(false);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
+                                >
+                                  <FiTrash2 className="w-4 h-4" />
+                                  <span>Delete</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         )}
-                      </div>
+                      </>
+                    ) : (
+                      <button
+                        onClick={handleShare}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400 border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
+                        title="Share Folder"
+                      >
+                        <FiShare2 className="w-6 h-6 md:w-5 md:h-5" />
+                      </button>
                     )}
                   </div>
                 )}

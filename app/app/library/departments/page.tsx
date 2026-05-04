@@ -7,23 +7,21 @@ import {
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { SortFilter } from "@/app/components/Library/SortFilter";
-import { useDepartments } from "@/app/services";
+import { useDepartments, useUser } from "@/app/services";
 import { useGetSchoolsQuery } from "@/app/services/onboarding";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
+import { selectIsAuthenticated } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-  const user = useSelector(selectCurrentUser);
+  const { me: user, isAuthenticated } = useUser();
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
     user?.school?.id || "",
   );
-
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const { data: schools = [] } = useGetSchoolsQuery();
   const [viewDepartments, setViewDepartments] = useState(false);
 

@@ -19,6 +19,7 @@ import {
   useRatings,
   useBooks,
   useRecommendedBooks,
+  useUser,
 } from "@/app/services";
 import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
@@ -29,6 +30,7 @@ export default function BookClient() {
   const router = useRouter();
   const params = useParams();
   const bookSlug = params.slug as string;
+  const { isAuthenticated } = useUser();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
   const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
@@ -241,28 +243,30 @@ export default function BookClient() {
                       </button>
                     </div>
 
-                    <div className="relative w-full sm:w-auto">
-                      <button
-                        onClick={() =>
-                          setShowFolderDropdown(!showFolderDropdown)
-                        }
-                        className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
-                          showFolderDropdown
-                            ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
-                            : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
-                        }`}
-                      >
-                        <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span>Save to Folder</span>
-                      </button>
+                    {isAuthenticated && (
+                      <div className="relative w-full sm:w-auto">
+                        <button
+                          onClick={() =>
+                            setShowFolderDropdown(!showFolderDropdown)
+                          }
+                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
+                            showFolderDropdown
+                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
+                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                          }`}
+                        >
+                          <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span>Save to Folder</span>
+                        </button>
 
-                      <FolderDropdown
-                        isOpen={showFolderDropdown}
-                        onClose={() => setShowFolderDropdown(false)}
-                        bookId={actualBookId}
-                        className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
-                      />
-                    </div>
+                        <FolderDropdown
+                          isOpen={showFolderDropdown}
+                          onClose={() => setShowFolderDropdown(false)}
+                          bookId={actualBookId}
+                          className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
+                        />
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               </div>
@@ -330,17 +334,33 @@ export default function BookClient() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                        Your Rating
+                        Rating
                       </span>
-                      <div className="pt-1">
+                      <div className="flex items-center gap-3">
                         <StarRating
-                          rating={myRating || 0}
-                          interactive
-                          onRate={handleRate}
-                          size={22}
+                          rating={book.rating || 0}
+                          size={18}
                         />
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {book.rating?.toFixed(1) || "0.0"}
+                        </span>
                       </div>
                     </div>
+                    {isAuthenticated && (
+                      <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                          Your Rating
+                        </span>
+                        <div className="pt-1">
+                          <StarRating
+                            rating={myRating || 0}
+                            interactive={isAuthenticated}
+                            onRate={handleRate}
+                            size={22}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </section>
 

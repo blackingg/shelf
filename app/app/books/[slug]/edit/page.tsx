@@ -15,23 +15,24 @@ import {
 } from "react-icons/fi";
 import { Button } from "@/app/components/Form/Button";
 import { FormSelect } from "@/app/components/Form/FormSelect";
-import { useAppSelector, selectCurrentUser } from "@/app/store";
 import {
   useBookBySlug,
   useBookActions,
   useDepartments,
-  useDiscoverCategories,
+  useCategories,
+  useUser,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useIsOwner } from "@/app/hooks/useIsOwner";
 
 export default function EditBookPage() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
   const { addNotification } = useNotifications();
-  const user = useAppSelector(selectCurrentUser);
+  const { me: user } = useUser();
 
   const { book, isLoading: isLoadingBook } = useBookBySlug(slug);
   const {
@@ -45,7 +46,7 @@ export default function EditBookPage() {
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
   const { categories: categoriesData, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+    useCategories();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -241,8 +242,7 @@ export default function EditBookPage() {
   }
 
   // Check if current user is the donor
-  const isDonor =
-    user?.id === book.donor?.id || user?.username === book.donor?.username;
+  const isDonor = useIsOwner(book?.donor);
   if (!isDonor && user) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-8 text-center">

@@ -1,48 +1,47 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { useGetMeQuery } from "@/app/services";
 import { Folder, FolderPermission } from "@/app/types/folder";
+import { User } from "@/app/types/user";
+import { useIsOwner } from "./useIsOwner";
+import { checkIsOwner } from "@/app/helpers";
 
 export const hasFolderPermission = (
   folder: Folder | null | undefined,
-  currentUser: any,
+  currentUser: User | null | undefined,
   permission: FolderPermission,
 ): boolean => {
   if (!folder || !currentUser) return false;
 
-  const isOwner =
-    folder.user?.id === currentUser.id ||
-    (folder as any).userId === currentUser.id;
+  const isOwner = checkIsOwner(currentUser, folder?.user);
   if (isOwner) return true;
 
-  const collaboration = folder.collaborators?.find(
-    (c) =>
-      c.user?.id === currentUser.id ||
-      (c.user as any)?.username === currentUser.username,
-  );
+  // Support both plural list (detail view) and singular property (list view context)
+  const collaboration =
+    folder.collaborators?.find((c) => checkIsOwner(currentUser, c.user)) ||
+    ((folder as any).collaborator &&
+    checkIsOwner(currentUser, (folder as any).collaborator.user)
+      ? (folder as any).collaborator
+      : null);
 
   if (!collaboration) return false;
   return collaboration.permissions.includes(permission);
 };
 
 export const useFolderPermissions = (folder: Folder | null | undefined) => {
-  const currentUser = useSelector(selectCurrentUser);
+  const { data: currentUser } = useGetMeQuery();
+  const isOwner = useIsOwner(folder?.user);
 
   return useMemo(() => {
     const hasPermission = (perm: FolderPermission) =>
       hasFolderPermission(folder, currentUser, perm);
 
-    // Check if owner
-    const isOwner =
-      folder?.user?.id === currentUser?.id ||
-      (folder as any)?.userId === (currentUser as any)?.id;
-
     // Check collaborator status
-    const collaboration = folder?.collaborators?.find(
-      (c) =>
-        c.user?.id === currentUser?.id ||
-        (c.user as any)?.username === currentUser?.username,
-    );
+    const collaboration =
+      folder?.collaborators?.find((c) => checkIsOwner(currentUser, c.user)) ||
+      ((folder as any)?.collaborator &&
+      checkIsOwner(currentUser, (folder as any).collaborator.user)
+        ? (folder as any).collaborator
+        : null);
 
     const isCollaborator = !!collaboration;
     const role = isOwner ? "OWNER" : collaboration?.role || null;
@@ -73,5 +72,5 @@ export const useFolderPermissions = (folder: Folder | null | undefined) => {
         hasPermission("EDIT_FOLDER") ||
         hasPermission("MANAGE_COLLABORATORS"),
     };
-  }, [folder, currentUser]);
+  }, [folder, currentUser, isOwner]);
 };

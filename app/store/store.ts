@@ -1,13 +1,16 @@
 import { combineReducers, configureStore, AnyAction } from "@reduxjs/toolkit";
-import authReducer from "./authSlice";
+import authReducer, { logout } from "./authSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const appReducer = combineReducers({
   auth: authReducer,
 });
 
-const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: AnyAction) => {
-  if (action.type === "auth/logout") {
+const rootReducer = (
+  state: ReturnType<typeof appReducer> | undefined,
+  action: AnyAction,
+) => {
+  if (action.type === logout.type) {
     // Reset all state to undefined to clear cache and data
     state = undefined;
   }

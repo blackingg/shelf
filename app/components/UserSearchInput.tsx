@@ -75,8 +75,16 @@ export default function UserSearchInput({
     return (
       <div className="flex items-center justify-between px-3 py-2 bg-white dark:bg-neutral-900 border border-emerald-500 rounded-sm">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-xs font-medium text-purple-600 dark:text-purple-400 border border-purple-500/10 uppercase ring-1 ring-purple-500/20">
-            {selectedUser.username?.[0] || "?"}
+          <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50">
+            {selectedUser.avatar ? (
+              <img
+                src={selectedUser.avatar}
+                alt={selectedUser.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              selectedUser.username?.[0] || "?"
+            )}
           </div>
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -158,8 +166,16 @@ export default function UserSearchInput({
               }
               className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
             >
-              <div className="w-8 h-8 bg-purple-500/10 rounded-sm flex items-center justify-center text-xs font-medium text-purple-600 dark:text-purple-400 border border-purple-500/10 uppercase shrink-0">
-                {foundUser.fullName?.[0] || foundUser.username?.[0] || "?"}
+              <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
+                {foundUser.avatar ? (
+                  <img
+                    src={foundUser.avatar}
+                    alt={foundUser.username}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  foundUser.fullName?.[0] || foundUser.username?.[0] || "?"
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">

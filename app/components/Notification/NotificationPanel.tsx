@@ -77,7 +77,7 @@ export const NotificationPanel: React.FC = () => {
         accept && folderSlug ? `/app/folders/${folderSlug}` : undefined,
       );
     } catch (err: any) {
-      addNotification("error", "Failed to respond to invite");
+      addNotification("error", "Something went wrong. Please try again.");
     }
   };
 

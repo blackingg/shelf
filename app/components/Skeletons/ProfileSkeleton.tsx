@@ -1,17 +1,7 @@
-"use client";
-import React from "react";
-import { motion } from "motion/react";
-
 const SkeletonPulse = ({ className }: { className?: string }) => (
   <div
-    className={`relative overflow-hidden bg-gray-200 dark:bg-neutral-800 rounded ${className}`}
-  >
-    <motion.div
-      className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 dark:via-white/10 to-transparent"
-      animate={{ x: ["-100%", "100%"] }}
-      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-    />
-  </div>
+    className={`bg-gray-200 dark:bg-neutral-800 animate-pulse rounded ${className}`}
+  />
 );
 
 export default function ProfileSkeleton({ isOwner }: { isOwner?: boolean }) {

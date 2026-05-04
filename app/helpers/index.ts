@@ -8,3 +8,4 @@ export * from "./storage";
 export * from "./usePWAInstall";
 export * from "./coverExtraction";
 export * from "./documentHandlingFunctions";
+export * from "./checkIsOwner";

@@ -13,13 +13,7 @@ import { FolderSelectDropdown } from "@/app/components/Library/FolderSelectDropd
 import { Button } from "@/app/components/Form/Button";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
-import {
-  useBookActions,
-  useDepartments,
-  useDiscoverCategories,
-} from "@/app/services";
+import { useBookActions, useDepartments, useCategories } from "@/app/services";
 import { useFolderActions, useMeFolders } from "@/app/services/folders/hooks";
 import { useNotifications } from "@/app/context/NotificationContext";
 import {
@@ -30,6 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Epub from "epubjs";
 import { PDFJSInfo } from "@/app/types/book";
+import { useGetMeQuery } from "@/app/services";
 
 interface SingleUploadFormProps {
   onSwitchToBulk: (files?: FileList) => void;
@@ -48,13 +43,13 @@ export default function SingleUploadForm({
   const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
   const { actions: folderActions } = useFolderActions();
   const { actions: bookActions, isCreating: isUploading } = useBookActions();
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
 
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
   const { categories: categoriesData, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+    useCategories();
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -228,16 +223,20 @@ export default function SingleUploadForm({
       });
 
       if (targetFolderId && result?.id) {
-        await folderActions.addBookToFolder(targetFolderId, result.id, formData.title);
+        await folderActions.addBookToFolder(
+          targetFolderId,
+          result.id,
+          formData.title,
+        );
       }
       setUploadedBookId(result.id);
       setStep(2);
-      
+
       addNotification(
         "info",
         "Essentials Uploaded",
         `${formData.title} is almost ready. Let's refine the metadata to finish the donation.`,
-        1200000
+        1200000,
       );
     } catch (error) {
       addNotification(
@@ -289,7 +288,7 @@ export default function SingleUploadForm({
           "Donation Complete",
           `${formData.title} has been uploaded and saved to your ${targetFolder.name} folder.`,
           1200000,
-          `/app/folders/${targetFolder.slug}`
+          `/app/folders/${targetFolder.slug}`,
         );
       } else {
         addNotification(
@@ -297,7 +296,7 @@ export default function SingleUploadForm({
           "Donation Complete",
           `${formData.title} has been successfully donated.`,
           1200000,
-          `/app/books/${result.slug}`
+          `/app/books/${result.slug}`,
         );
       }
 
@@ -704,7 +703,7 @@ export default function SingleUploadForm({
                 <div className="flex-1 p-8 bg-gray-50/50 dark:bg-neutral-800/30 border border-gray-100 dark:border-neutral-800 relative overflow-hidden group">
                   <div className="relative z-10 space-y-6">
                     <div className="flex gap-6">
-                      <div className="w-24 aspect-[2/3] bg-gray-200 dark:bg-neutral-800 shrink-0 overflow-hidden shadow-2xl">
+                      <div className="w-24 aspect-2/3 bg-gray-200 dark:bg-neutral-800 shrink-0 overflow-hidden shadow-2xl">
                         {coverPreviewUrl && (
                           <img
                             src={coverPreviewUrl}

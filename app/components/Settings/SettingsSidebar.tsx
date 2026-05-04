@@ -22,18 +22,18 @@ const settingsNavItems = [
     icon: <FiMonitor className="w-5 h-5" />,
     description: "Customize the look and feel",
   },
-  {
-    label: "Notifications",
-    href: "/app/settings/notifications",
-    icon: <FiBell className="w-5 h-5" />,
-    description: "Control your notification preferences",
-  },
-  {
-    label: "Security",
-    href: "/app/settings/security",
-    icon: <FiLock className="w-5 h-5" />,
-    description: "Password and security settings",
-  },
+  // {
+  //   label: "Notifications",
+  //   href: "/app/settings/notifications",
+  //   icon: <FiBell className="w-5 h-5" />,
+  //   description: "Control your notification preferences",
+  // },
+  // {
+  //   label: "Security",
+  //   href: "/app/settings/security",
+  //   icon: <FiLock className="w-5 h-5" />,
+  //   description: "Password and security settings",
+  // },
 ];
 
 export const SettingsSidebar = () => {

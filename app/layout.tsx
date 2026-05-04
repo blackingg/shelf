@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ThemeProvider } from "./provider/ThemeProvider";
 import { QueryProvider } from "./provider/QueryProvider";
 import { BufferProvider } from "./context/FileBufferContext";
+import { HydrationGuard } from "./components/Layout/HydrationGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.shelf.ng"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.shelf.ng",
   ),
   icons: {
     icon: "/logo.png",
@@ -112,11 +113,13 @@ export default function RootLayout({
         >
           <StoreProvider>
             <QueryProvider>
-              <BufferProvider>
-                <ErrorBoundaryWithNotification>
-                  <ProtectedRoute>{children}</ProtectedRoute>
-                </ErrorBoundaryWithNotification>
-              </BufferProvider>
+              <ErrorBoundaryWithNotification>
+                <HydrationGuard>
+                  <ProtectedRoute>
+                    <BufferProvider>{children}</BufferProvider>
+                  </ProtectedRoute>
+                </HydrationGuard>
+              </ErrorBoundaryWithNotification>
             </QueryProvider>
           </StoreProvider>
         </ThemeProvider>

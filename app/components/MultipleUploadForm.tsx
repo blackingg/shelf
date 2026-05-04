@@ -20,18 +20,13 @@ import { FolderSelectDropdown } from "./Library/FolderSelectDropdown";
 import { prepareForUpload } from "../helpers";
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
-import {
-  useBookActions,
-  useDepartments,
-  useDiscoverCategories,
-} from "../services";
+import { useBookActions, useDepartments, useCategories } from "../services";
 import { useFolderActions, useMeFolders } from "../services/folders/hooks";
 import { Book, CreateBookRequest } from "../types/book";
 import processDescription from "../helpers/processDescription";
 import { createContext } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../store";
 import { FormSelect } from "./Form/FormSelect";
+import { useGetMeQuery } from "@/app/services";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
@@ -85,12 +80,11 @@ export default function MultipleUploadForm({
   const { actions: folderActions } = useFolderActions();
   const [targetFolderId, setTargetFolderId] = useState<string>("");
 
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
-  const { categories, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+  const { categories, isLoading: isLoadingCategories } = useCategories();
 
   const inputRef = useRef<HTMLInputElement>(null);
   let filesNew = files ? Array.from(files) : null;
@@ -499,7 +493,7 @@ function FileToBeUploaded({
 }) {
   const { updateFilesStatusObject, filesWithMetadataState } =
     useMultipleFiles();
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const [isExpanded, setIsExpanded] = useState(!state);
 
   // Form State

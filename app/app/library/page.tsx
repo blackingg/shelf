@@ -22,10 +22,9 @@ import {
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { useAppSelector } from "@/app/store/store";
-import { selectCurrentUser } from "@/app/store/authSlice";
 import { BookCardListView } from "@/app/components/Donation_ListView";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
+import { useGetMeQuery } from "@/app/services";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 type BookmarkSubTab = "books" | "folders";
@@ -54,7 +53,7 @@ export default function LibraryPage() {
     ? bookmarkParam
     : "books";
 
-  const activeUser = useAppSelector(selectCurrentUser);
+  const { data: activeUser } = useGetMeQuery();
   const [activeTab, setActiveTab] = useState<LibraryTab>(initialTab);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
@@ -470,7 +469,6 @@ export default function LibraryPage() {
           book={selectedBook!}
           isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
-          isDonationsPage={activeTab === "uploads"}
         />
       )}
 
