@@ -20,11 +20,7 @@ import { FolderSelectDropdown } from "./Library/FolderSelectDropdown";
 import { prepareForUpload } from "../helpers";
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
-import {
-  useBookActions,
-  useDepartments,
-  useDiscoverCategories,
-} from "../services";
+import { useBookActions, useDepartments, useCategories } from "../services";
 import { useFolderActions, useMeFolders } from "../services/folders/hooks";
 import { Book, CreateBookRequest } from "../types/book";
 import processDescription from "../helpers/processDescription";
@@ -88,8 +84,7 @@ export default function MultipleUploadForm({
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
-  const { categories, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+  const { categories, isLoading: isLoadingCategories } = useCategories();
 
   const inputRef = useRef<HTMLInputElement>(null);
   let filesNew = files ? Array.from(files) : null;

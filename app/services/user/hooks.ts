@@ -5,16 +5,14 @@ import { Book } from "../../types/book";
 import { Folder } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
-import { useAppDispatch, useAppSelector } from "../../store/store";
-import {
-  selectIsAuthenticated,
-  selectIsHydrated,
-} from "../../store/authSlice";
+import { useAppSelector, store } from "../../store/store";
+import { selectIsAuthenticated, selectIsHydrated } from "../../store/authSlice";
 import { getErrorMessage } from "../../helpers/error";
 
 export const userKeys = {
   all: ["user"] as const,
-  me: () => [...userKeys.all, "me"] as const,
+  me: (isAuthenticated: boolean) =>
+    [...userKeys.all, "me", { authenticated: isAuthenticated }] as const,
   byUsername: (username: string) => [...userKeys.all, username] as const,
   books: (username: string) =>
     [...userKeys.byUsername(username), "books"] as const,
@@ -23,10 +21,11 @@ export const userKeys = {
 };
 
 export const useGetMeQuery = (options?: { enabled?: boolean }) => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   return useQuery<User>({
-    queryKey: userKeys.me(),
+    queryKey: userKeys.me(isAuthenticated),
     queryFn: () => api.get<User>("/users/me"),
-    enabled: options?.enabled ?? true,
+    enabled: options?.enabled ?? isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes — user profile rarely changes mid-session
     gcTime: 30 * 60 * 1000,
   });
@@ -37,7 +36,8 @@ export const useUpdateMeMutation = () => {
   return useMutation({
     mutationFn: (data: UpdateUserRequest) => api.patch<User>("/users/me", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      const isAuthenticated = store.getState().auth.isAuthenticated;
+      queryClient.invalidateQueries({ queryKey: userKeys.me(isAuthenticated) });
     },
   });
 };
@@ -47,7 +47,8 @@ export const useUploadAvatarMutation = () => {
   return useMutation({
     mutationFn: (data: FormData) => api.post<User>("/users/me/avatar", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      const isAuthenticated = store.getState().auth.isAuthenticated;
+      queryClient.invalidateQueries({ queryKey: userKeys.me(isAuthenticated) });
     },
   });
 };
@@ -111,10 +112,7 @@ export const useUser = (options?: { enabled?: boolean }) => {
       await avatarMutation.mutateAsync(formData);
       addNotification("success", "Avatar updated successfully");
     } catch (err: any) {
-      addNotification(
-        "error",
-        getErrorMessage(err, "Failed to upload avatar"),
-      );
+      addNotification("error", getErrorMessage(err, "Failed to upload avatar"));
     }
   };
 

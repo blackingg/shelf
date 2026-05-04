@@ -14,12 +14,12 @@ import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
 import {
   useDiscoverFeed,
-  useDiscoverCategories,
   useDiscoverBooksByCategory,
   useDepartments,
   useFolders,
   useFolderActions,
   useUser,
+  useCategories,
 } from "@/app/services";
 import {
   DepartmentCard,
@@ -35,18 +35,19 @@ export default function DiscoverPage() {
   const router = useRouter();
   const { me: user } = useUser();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
 
-  const { categories } = useDiscoverCategories();
+  const { categories } = useCategories();
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
       setActiveCategory(categories[0].slug);
     }
   }, [categories, activeCategory]);
-  const categoryFetchLimit = useResponsiveLimit(
+  const categoryDisplayLimit = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
     2,
     10,
@@ -56,11 +57,13 @@ export default function DiscoverPage() {
     2,
     8,
   );
-  const publicFoldersFetchLimit = useResponsiveLimit(
+  const publicFoldersDisplayLimit = useResponsiveLimit(
     { base: 2, md: 3, lg: 4 },
     2,
     8,
   );
+
+  const STABLE_FETCH_LIMIT = 12; // Stable limit to prevent query key changes on resize
 
   const { recommendations, isLoading: isLoadingRecommendations } =
     useDiscoverFeed({ enabled: true });
@@ -72,16 +75,21 @@ export default function DiscoverPage() {
   } = useDepartments(user?.school?.id ? { school_id: user.school.id } : {});
 
   const {
-    folders: displayFolders,
+    folders: allPublicFolders,
     total: publicFoldersTotal,
     isFetching: isFetchingPublicFolders,
     isLoading: isLoadingPublicFolders,
   } = useFolders({
     page: 1,
-    limit: publicFoldersFetchLimit,
+    limit: STABLE_FETCH_LIMIT,
     sort_by: "createdAt",
     order: "desc",
   });
+
+  const displayFolders = useMemo(
+    () => allPublicFolders.slice(0, publicFoldersDisplayLimit),
+    [allPublicFolders, publicFoldersDisplayLimit],
+  );
 
   const displayDepartments = useMemo(
     () =>
@@ -99,15 +107,23 @@ export default function DiscoverPage() {
   const hasMorePublicFolders = publicFoldersTotal > displayFolders.length;
 
   const {
-    books: categoryBooks,
+    books: allCategoryBooks,
     total: categoryBooksTotal,
-    hasNext: hasMoreCategoryBooks,
+    hasNext: hasMoreCategoryBooksRaw,
     isLoading: isLoadingCategoryBooks,
     isFetching: isFetchingCategoryBooks,
   } = useDiscoverBooksByCategory(activeCategory, {
     page: 1,
-    limit: categoryFetchLimit,
+    limit: STABLE_FETCH_LIMIT,
   });
+
+  const categoryBooks = useMemo(
+    () => allCategoryBooks.slice(0, categoryDisplayLimit),
+    [allCategoryBooks, categoryDisplayLimit],
+  );
+
+  const hasMoreCategoryBooks =
+    hasMoreCategoryBooksRaw || categoryBooksTotal > categoryBooks.length;
 
   const { actions, isDeleting } = useFolderActions();
 
@@ -239,7 +255,7 @@ export default function DiscoverPage() {
 
             {isCategoryLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-12">
-                <BookCardSkeleton count={categoryFetchLimit} />
+                <BookCardSkeleton count={categoryDisplayLimit} />
               </div>
             ) : categoryBooks.length > 0 ? (
               <>
@@ -340,7 +356,7 @@ export default function DiscoverPage() {
 
             {isLoadingPublicFolders ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                <FolderCardSkeleton count={publicFoldersFetchLimit} />
+                <FolderCardSkeleton count={publicFoldersDisplayLimit} />
               </div>
             ) : displayFolders.length > 0 ? (
               <>

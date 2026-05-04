@@ -19,7 +19,7 @@ import {
   useBookBySlug,
   useBookActions,
   useDepartments,
-  useDiscoverCategories,
+  useCategories,
   useUser,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
@@ -46,7 +46,7 @@ export default function EditBookPage() {
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
   const { categories: categoriesData, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+    useCategories();
 
   const [formData, setFormData] = useState({
     title: "",

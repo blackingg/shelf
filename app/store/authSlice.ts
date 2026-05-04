@@ -4,6 +4,7 @@ import { storage } from "../helpers/storage";
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
+  userId: string | null;
   expiresAt: number | null;
   isAuthenticated: boolean;
   isHydrated: boolean;
@@ -13,6 +14,7 @@ interface AuthState {
 const initialState: AuthState = {
   accessToken: null,
   refreshToken: null,
+  userId: null,
   expiresAt: null,
   isAuthenticated: false,
   isHydrated: false,
@@ -26,11 +28,13 @@ const authSlice = createSlice({
     hydrate: (state) => {
       const accessToken = storage.get("accessToken");
       const refreshToken = storage.get("refreshToken");
+      const userId = storage.get("userId");
       const expiresAt = storage.get("expiresAt");
       const rememberMe = storage.get("rememberMe") === "true";
 
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
+      state.userId = userId;
       state.expiresAt = expiresAt ? parseInt(expiresAt) : null;
       state.rememberMe = rememberMe;
       state.isAuthenticated = !!accessToken;
@@ -39,22 +43,25 @@ const authSlice = createSlice({
     setCredentials: (
       state,
       {
-        payload: { accessToken, refreshToken, rememberMe, expiresIn },
+        payload: { accessToken, refreshToken, userId, rememberMe, expiresIn },
       }: PayloadAction<{
         accessToken: string;
         refreshToken: string;
+        userId: string;
         expiresIn: number;
         rememberMe?: boolean;
       }>,
     ) => {
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
+      state.userId = userId;
       state.expiresAt = Date.now() + expiresIn * 1000;
       state.isAuthenticated = true;
       state.rememberMe = !!rememberMe;
 
       storage.set("accessToken", accessToken);
       storage.set("refreshToken", refreshToken);
+      storage.set("userId", userId);
       storage.set("expiresAt", state.expiresAt.toString());
       storage.set("rememberMe", state.rememberMe.toString());
     },
@@ -81,12 +88,14 @@ const authSlice = createSlice({
     logout: (state) => {
       state.accessToken = null;
       state.refreshToken = null;
+      state.userId = null;
       state.expiresAt = null;
       state.isAuthenticated = false;
       state.rememberMe = false;
 
       storage.remove("accessToken");
       storage.remove("refreshToken");
+      storage.remove("userId");
       storage.remove("expiresAt");
       storage.remove("rememberMe");
       storage.remove("user"); // Clean up old user key if it exists
@@ -110,4 +119,3 @@ export const selectIsAuthenticated = (state: { auth: AuthState }) =>
   state.auth.isAuthenticated;
 export const selectIsHydrated = (state: { auth: AuthState }) =>
   state.auth.isHydrated;
-

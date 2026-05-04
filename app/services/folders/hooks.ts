@@ -20,10 +20,17 @@ import {
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 import { getErrorMessage } from "../../helpers/error";
+import { useAppSelector } from "../../store/store";
+import { selectIsAuthenticated } from "../../store/authSlice";
 
 export const folderKeys = {
   all: ["folders"] as const,
-  me: (params: any) => [...folderKeys.all, "me", params] as const,
+  me: (params: any, isAuthenticated: boolean = true) =>
+    [
+      ...folderKeys.all,
+      "me",
+      { ...params, authenticated: isAuthenticated },
+    ] as const,
   public: (params: any) => [...folderKeys.all, "public", params] as const,
   detail: (id: string) => [...folderKeys.all, "detail", id] as const,
   slug: (slug: string) => [...folderKeys.all, "slug", slug] as const,
@@ -40,11 +47,14 @@ export const useGetMeFoldersQuery = (
   params: any,
   options?: { enabled?: boolean },
 ) => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   return useQuery<PaginatedResponse<Folder>>({
-    queryKey: folderKeys.me(params),
+    queryKey: folderKeys.me(params, isAuthenticated),
     queryFn: () =>
       api.get<PaginatedResponse<Folder>>("/folders/me", { params }),
-    enabled: options?.enabled ?? true,
+    enabled: options?.enabled ?? isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000,
     placeholderData: keepPreviousData,
   });
 };
@@ -54,6 +64,8 @@ export const useGetPublicFoldersQuery = (params: any) => {
     queryKey: folderKeys.public(params),
     queryFn: () =>
       api.get<PaginatedResponse<Folder>>("/folders/public", { params }),
+    staleTime: 10 * 60 * 1000, // 10 min — public folder list changes infrequently
+    gcTime: 30 * 60 * 1000,
     placeholderData: keepPreviousData,
   });
 };
@@ -79,6 +91,8 @@ export const useGetFolderBySlugQuery = (slug: string) => {
     queryKey: folderKeys.slug(slug),
     queryFn: () => api.get<Folder>(`/folders/slug/${slug}`),
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000,
     placeholderData: keepPreviousData,
   });
 };
@@ -89,7 +103,9 @@ export const useCreateFolderMutation = () => {
     mutationFn: (data: CreateFolderRequest) =>
       api.post<Folder>("/folders/", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+      // New folder appears in my-folders list and possibly public list
+      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
     },
   });
 };
@@ -99,8 +115,10 @@ export const useAddBookToFolderMutation = () => {
   return useMutation({
     mutationFn: ({ folderId, bookId }: { folderId: string; bookId: string }) =>
       api.post(`/folders/${folderId}/books`, { bookId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { folderId }) => {
+      // Only the specific folder's contents changed
+      queryClient.invalidateQueries({ queryKey: folderKeys.detail(folderId) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
     },
   });
 };
@@ -110,8 +128,10 @@ export const useRemoveBookFromFolderMutation = () => {
   return useMutation({
     mutationFn: ({ id, bookId }: { id: string; bookId: string }) =>
       api.delete(`/folders/${id}/books/${bookId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { id }) => {
+      // Only the specific folder's contents changed
+      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
     },
   });
 };
@@ -121,8 +141,12 @@ export const useUploadFolderCoverMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: FormData }) =>
       api.post<Folder>(`/folders/${id}/cover`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { id }) => {
+      // Cover change affects detail view + any list showing this folder
+      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
     },
   });
 };
@@ -133,8 +157,11 @@ export const useUpdateFolderMutation = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateFolderRequest }) =>
       api.patch<Folder>(`/folders/${id}/`, data),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+      // Metadata change: refresh this folder + lists that show it
       queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
     },
   });
 };
@@ -144,7 +171,10 @@ export const useDeleteFolderMutation = () => {
   return useMutation({
     mutationFn: (id: string) => api.delete(`/folders/${id}/`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+      // Folder removed from all lists
+      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
   });
 };
@@ -169,8 +199,10 @@ export const useInviteCollaboratorMutation = () => {
       id: string;
       data: InviteCollaboratorRequest;
     }) => api.post(`/collaboration/folders/${id}/invite`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { id }) => {
+      // Only collaboration-related caches for this folder
+      queryClient.invalidateQueries({ queryKey: folderKeys.collaborators(id) });
+      queryClient.invalidateQueries({ queryKey: folderKeys.invites(id) });
     },
   });
 };
@@ -188,8 +220,10 @@ export const useRemoveCollaboratorMutation = () => {
       api.delete(
         `/collaboration/folders/${folderId}/collaborators/${collaboratorId}`,
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { folderId }) => {
+      queryClient.invalidateQueries({
+        queryKey: folderKeys.collaborators(folderId),
+      });
     },
   });
 };
@@ -222,8 +256,9 @@ export const useRespondToInviteMutation = () => {
     mutationFn: ({ inviteId, accept }: { inviteId: string; accept: boolean }) =>
       api.post(`/collaboration/invites/${inviteId}/respond`, { accept }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+      // Accepting adds to my folders; invites list changes
       queryClient.invalidateQueries({ queryKey: folderKeys.myInvites() });
+      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
     },
   });
 };
@@ -238,8 +273,8 @@ export const useUpdateCollaborationSettingsMutation = () => {
       id: string;
       data: UpdateCollaborationSettingsRequest;
     }) => api.patch(`/folders/${id}/collaboration`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
     },
   });
 };
@@ -260,8 +295,10 @@ export const useUpdatePermissionsMutation = () => {
         `/collaboration/folders/${folderId}/collaborators/${collaboratorId}/permissions`,
         data,
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    onSuccess: (_, { folderId }) => {
+      queryClient.invalidateQueries({
+        queryKey: folderKeys.collaborators(folderId),
+      });
     },
   });
 };

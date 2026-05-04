@@ -22,6 +22,7 @@ export const useAuthActions = () => {
         setCredentials({
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
           rememberMe: variables.rememberMe,
         }),
@@ -38,6 +39,7 @@ export const useAuthActions = () => {
         setCredentials({
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
         }),
       );
@@ -53,6 +55,7 @@ export const useAuthActions = () => {
         setCredentials({
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
           rememberMe: true,
         }),
