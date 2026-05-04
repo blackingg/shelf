@@ -85,6 +85,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
+  const displayUser = isOwner && currentUser ? currentUser : user;
+
   const {
     books,
     totalPages,
@@ -205,11 +207,11 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    if (!url || !user) return;
+    if (!url || !displayUser) return;
 
     await shareContent({
-      title: `${user.fullName} (@${user.username})`,
-      text: `Check out ${user.username}'s book folders and library on Shelf.`,
+      title: `${displayUser.fullName} (@${displayUser.username})`,
+      text: `Check out ${displayUser.username}'s book folders and library on Shelf.`,
       url: url,
     });
   };
@@ -240,7 +242,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           <div className="">
             <ProfileSkeleton isOwner={isOwner} />
           </div>
-        ) : !user ? (
+        ) : !displayUser ? (
           <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
               <div className="max-w-xl text-left space-y-5">
@@ -286,10 +288,10 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
               <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
                 <div className="w-full h-full rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-emerald-600 dark:text-emerald-400 overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
-                  {user.avatar ? (
+                  {displayUser.avatar ? (
                     <img
-                      src={user.avatar}
-                      alt={user.fullName}
+                      src={displayUser.avatar}
+                      alt={displayUser.fullName}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -317,7 +319,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="flex-1 pb-2">
                 <div className="flex flex-col gap-1">
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    {user.fullName}
+                    {displayUser.fullName}
                   </h1>
                   <p className="text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em] text-[10px]">
                     @{username}
@@ -347,37 +349,40 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     suppressHydrationWarning
                   >
                     Joined{" "}
-                    {new Date(user.createdAt).toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {new Date(displayUser.createdAt).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        year: "numeric",
+                      },
+                    )}
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {user.school && (
+                  {displayUser.school && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
                         <FiHome className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
                       </div>
                       <span className="text-sm font-medium">
-                        {user.school.name}
-                        {user.school.shortName && (
+                        {displayUser.school.name}
+                        {displayUser.school.shortName && (
                           <span className="ml-2 px-1.5 py-0.5 bg-gray-100 dark:bg-neutral-800 rounded text-[10px] font-bold text-gray-400">
-                            {user.school.shortName}
+                            {displayUser.school.shortName}
                           </span>
                         )}
                       </span>
                     </div>
                   )}
 
-                  {user.department && (
+                  {displayUser.department && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
                         <FiLayers className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
                       </div>
                       <span className="text-sm font-medium leading-tight">
-                        {user.department.name}
+                        {displayUser.department.name}
                       </span>
                     </div>
                   )}
@@ -387,7 +392,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner ? booksTotal : user.counts.donatedBooks}
+                    {isOwner ? booksTotal : user?.counts.donatedBooks}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Donations
@@ -395,7 +400,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner ? ownerFoldersTotal : user.counts.publicFolders}
+                    {isOwner ? ownerFoldersTotal : user?.counts.publicFolders}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Folders
