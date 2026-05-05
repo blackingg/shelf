@@ -8,6 +8,10 @@ import { useNotifications } from "../../context/NotificationContext";
 import { useAppSelector, store } from "../../store/store";
 import { selectIsAuthenticated, selectIsHydrated } from "../../store/authSlice";
 import { getErrorMessage } from "../../helpers/error";
+import { discoverKeys } from "../discover";
+import { departmentKeys } from "../departments";
+import { bookKeys } from "../books";
+import { searchKeys } from "../search";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -35,8 +39,17 @@ export const useUpdateMeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateUserRequest) => api.patch<User>("/users/me", data),
-    onSuccess: (updatedUser) => {
+    onSuccess: (updatedUser, variables) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
+
+      // Invalidate personalized content if department or school changed
+      if (variables.schoolId || variables.departmentId) {
+        queryClient.invalidateQueries({ queryKey: discoverKeys.all });
+        queryClient.invalidateQueries({ queryKey: departmentKeys.all });
+        queryClient.invalidateQueries({ queryKey: [bookKeys.recommended] });
+        queryClient.invalidateQueries({ queryKey: searchKeys.all });
+      }
+
       // Optionally update the byUsername cache immediately if we have it
       if (updatedUser.username) {
         queryClient.setQueryData(
