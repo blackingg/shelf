@@ -9,18 +9,18 @@ import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = [
   "/",
-  "/docs/privacy",
-  "/docs/terms",
-  "/app/discover",
-  "/app/folders",
+  "/privacy",
+  "/terms",
+  "/discover",
+  "/folders",
 ];
 
 const PUBLIC_DYNAMIC_PREFIXES = [
-  "/app/folders",
-  "/app/books",
-  "/app/profile/",
-  "/app/library/departments",
-  "/app/library/categories",
+  "/folders",
+  "/books",
+  "/profile/",
+  "/library/departments",
+  "/library/categories",
 ];
 
 export default function ProtectedRoute({
@@ -37,7 +37,7 @@ export default function ProtectedRoute({
   const isPublicPath = useMemo(() => {
     if (!pathname) return true;
     if (PUBLIC_PATHS.includes(pathname)) return true;
-    if (pathname.startsWith("/app/auth")) return true;
+    if (pathname.startsWith("/auth")) return true;
 
     // Check for sensitive keywords across ALL routes
     const isSensitive =
@@ -53,14 +53,14 @@ export default function ProtectedRoute({
 
       // Depth validation
       if (
-        prefix === "/app/books" ||
-        prefix === "/app/folders" ||
-        prefix === "/app/profile/"
+        prefix === "/books" ||
+        prefix === "/folders" ||
+        prefix === "/profile/"
       ) {
         return segments.length <= 3;
       }
 
-      if (prefix.startsWith("/app/library/")) {
+      if (prefix.startsWith("/library/")) {
         return segments.length <= 4;
       }
 
@@ -80,7 +80,7 @@ export default function ProtectedRoute({
     if (status === 401 || (status === 403 && detail === "Not authenticated")) {
       dispatch(logout());
       router.replace(
-        `/app/auth/login?redirect=${encodeURIComponent(pathname ?? "/")}`,
+        `/auth/login?redirect=${encodeURIComponent(pathname ?? "/")}`,
       );
     }
   }, [meError, dispatch, router, pathname, isPublicPath]);
@@ -91,7 +91,7 @@ export default function ProtectedRoute({
 
     if (!isAuthenticated) {
       router.replace(
-        `/app/auth/login?redirect=${encodeURIComponent(pathname)}`,
+        `/auth/login?redirect=${encodeURIComponent(pathname)}`,
       );
     }
   }, [isAuthenticated, pathname, router, isPublicPath, isChecking]);

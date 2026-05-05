@@ -77,7 +77,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
             >
               <div className="flex justify-between items-start mb-3">
                 <Link
-                  href={`/app/profile/${review.user?.username}`}
+                  href={`/profile/${review.user?.username}`}
                   className="flex items-center space-x-3 transition-opacity hover:opacity-80"
                 >
                   <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-100 dark:bg-emerald-800 relative flex items-center justify-center text-[10px] font-bold shrink-0 border border-gray-200 dark:border-emerald-700/50 text-gray-600 dark:text-emerald-100">

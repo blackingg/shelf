@@ -2,8 +2,8 @@
     "name": "Shelf",
     "short_name": "Shelf",
     "description": "A community-driven digital library for preserving and sharing academic resources.",
-    "id": "/app/discover",
-    "start_url": "/app/discover",
+    "id": "/discover",
+    "start_url": "/discover",
     "display": "standalone",
     "display_override": [
         "standalone",
@@ -73,7 +73,7 @@
             "name": "My Library",
             "short_name": "Library",
             "description": "Open your personal library",
-            "url": "/app/library",
+            "url": "/library",
             "icons": [
                 {
                     "src": "/icons/icon-192x192.png",
@@ -85,7 +85,7 @@
             "name": "Search",
             "short_name": "Search",
             "description": "Search for books and folders",
-            "url": "/app/search",
+            "url": "/search",
             "icons": [
                 {
                     "src": "/icons/icon-192x192.png",
