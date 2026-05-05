@@ -16,7 +16,6 @@ import {
   FiSearch,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useSelector } from "react-redux";
 import {
   useFolderBySlug,
   useFolderActions,
@@ -44,7 +43,6 @@ export default function FolderClient() {
   const { toggleBookmark } = useBookmarkFolderActions();
 
   const { me: user, isAuthenticated } = useUser();
-  const currentUser = user?.username || "Guest";
 
   const {
     isOwner,

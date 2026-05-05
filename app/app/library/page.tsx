@@ -21,8 +21,6 @@ import {
   useBookActions,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
-import { BookCardListView } from "@/app/components/Donation_ListView";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 import { useGetMeQuery } from "@/app/services";
 

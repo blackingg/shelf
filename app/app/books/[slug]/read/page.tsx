@@ -22,7 +22,7 @@ export default function ReaderPage() {
   const epubControlsRef = useRef<{
     next: () => void;
     prev: () => void;
-    goTo?: (p: number) => void;
+    goTo?: (page: number) => void;
   } | null>(null);
 
   const pdfViewerRef = useRef<PdfViewerHandle>(null);

@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { FiMail, FiLock } from "react-icons/fi";
 import Link from "next/link";
-import Image from "next/image";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
-import { PageContainer } from "@/app/components/Layout/PageContainer";
 import { Card } from "@/app/components/Layout/Card";
 import { FormInput } from "@/app/components/Form/FormInput";
 import { Button } from "@/app/components/Form/Button";
