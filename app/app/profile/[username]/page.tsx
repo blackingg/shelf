@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import ProfileClient from "./ProfileClient";
-import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 

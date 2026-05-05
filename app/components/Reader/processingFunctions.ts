@@ -20,7 +20,7 @@ export interface PdfPage {
 
 export async function loadPdf(buffer: ArrayBuffer) {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   const loadingTask = pdfjs.getDocument({ data: buffer });
   return loadingTask.promise;
 }
