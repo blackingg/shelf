@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Onest } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import StoreProvider from "./provider/StoreProvider";
@@ -10,9 +10,9 @@ import { QueryProvider } from "./provider/QueryProvider";
 import { BufferProvider } from "./context/FileBufferContext";
 import { HydrationGuard } from "./components/Layout/HydrationGuard";
 
-const inter = Inter({
+const onest = Onest({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-onest",
 });
 
 export const viewport: Viewport = {
@@ -104,7 +104,7 @@ export default function RootLayout({
           href="https://www.instagram.com/shelf_ng"
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${onest.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

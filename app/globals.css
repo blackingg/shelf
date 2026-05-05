@@ -36,14 +36,14 @@
   --color-emerald-900: #06352f;
   --color-emerald-950: #021f1b; */
 
-  --font-sans: var(--font-inter);
+  --font-onest: var(--font-onest);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family:
-    var(--font-inter),
+    var(--font-onest),
     system-ui,
     -apple-system,
     sans-serif;
