@@ -3,7 +3,7 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
-import { FiSearch, FiArrowLeft, FiGrid, FiList } from "react-icons/fi";
+import { FiSearch, FiArrowLeft } from "react-icons/fi";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { useGetBooksQuery } from "@/app/services";
 import { SortFilter } from "@/app/components/Library/SortFilter";
@@ -24,7 +24,6 @@ function SearchContent() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [sortBy, setSortBy] = useState<string>("-created_at");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
     setPage(1);
@@ -86,31 +85,6 @@ function SearchContent() {
                   : `Located ${totalResults} ${totalResults === 1 ? "match" : "matches"} for "${query}"`}
               </p>
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex items-center bg-gray-50 dark:bg-neutral-800/50 p-1 rounded-md border border-gray-100 dark:border-neutral-800">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-1.5 rounded-sm transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-white dark:bg-neutral-700 text-emerald-600 shadow-sm"
-                      : "text-gray-400 hover:text-gray-600"
-                  }`}
-                >
-                  <FiGrid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-1.5 rounded-sm transition-colors ${
-                    viewMode === "list"
-                      ? "bg-white dark:bg-neutral-700 text-emerald-600 shadow-sm"
-                      : "text-gray-400 hover:text-gray-600"
-                  }`}
-                >
-                  <FiList className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
           </div>
 
           <div className="mb-8 flex justify-end">
@@ -128,7 +102,6 @@ function SearchContent() {
             totalPages={totalPages}
             currentPage={page}
             onPageChange={setPage}
-            viewMode={viewMode}
             onBookClick={(book) => setSelectedBook(book)}
             onFolderClick={(slug) => router.push(`/folders/${slug}`)}
             onUserClick={(username) => router.push(`/profile/${username}`)}
