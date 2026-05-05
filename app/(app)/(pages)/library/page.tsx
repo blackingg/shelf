@@ -333,7 +333,7 @@ export default function LibraryPage() {
             {bookmarkSubTab === "books" && (
               <PaginatedBookGrid
                 books={bookmarkedBooks}
-                isLoading={isFetchingBookmarkedBooks}
+                isLoading={isLoadingBookmarkedBooks}
                 totalPages={bookmarkedBooksTotalPages}
                 currentPage={bookmarkPage}
                 onPageChange={setBookmarkPage}
@@ -352,7 +352,7 @@ export default function LibraryPage() {
             {bookmarkSubTab === "folders" && (
               <PaginatedFolderGrid
                 folders={bookmarkedFolders}
-                isLoading={isFetchingBookmarkedFolders}
+                isLoading={isLoadingBookmarkedFolders}
                 totalPages={bookmarkedFoldersTotalPages}
                 currentPage={bookmarkFolderPage}
                 onPageChange={setBookmarkFolderPage}
@@ -405,7 +405,7 @@ export default function LibraryPage() {
                 currentPage={folderPage}
                 totalPages={myFoldersTotalPages}
                 onPageChange={setFolderPage}
-                isLoading={isFetchingMyFolders}
+                isLoading={isLoadingMyFolders}
                 className="mt-8"
               />
             )}
@@ -433,7 +433,7 @@ export default function LibraryPage() {
 
             <PaginatedBookGrid
               books={myBooks}
-              isLoading={isFetchingMyBooks}
+              isLoading={isLoadingMyBooks}
               totalPages={myBooksTotalPages}
               currentPage={uploadPage}
               onPageChange={setUploadPage}

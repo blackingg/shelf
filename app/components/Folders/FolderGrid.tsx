@@ -25,7 +25,7 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
   skeletonCount = 8,
   className = "",
 }) => {
-  if (isLoading) {
+  if (isLoading && folders.length === 0) {
     return (
       <div
         className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}

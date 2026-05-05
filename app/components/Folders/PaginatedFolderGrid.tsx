@@ -48,7 +48,7 @@ export const PaginatedFolderGrid: React.FC<PaginatedFolderGridProps> = ({
 }) => {
   return (
     <div className={className}>
-      {isLoading ? (
+      {isLoading && folders.length === 0 ? (
         <div className={`grid ${gridCols} gap-4 md:gap-6`}>
           <FolderCardSkeleton count={pageSize} />
         </div>

@@ -43,7 +43,7 @@ export const PaginatedBookGrid: React.FC<PaginatedBookGridProps> = ({
 }) => {
   return (
     <div className={className}>
-      {isLoading ? (
+      {isLoading && books.length === 0 ? (
         <div className={`grid ${gridCols} gap-6 md:gap-8`}>
           <BookCardSkeleton count={pageSize} />
         </div>
