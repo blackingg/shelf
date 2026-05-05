@@ -24,15 +24,14 @@ export default function UserDepartmentBooks({
   const [page, setPage] = useState(1);
   const pageSize = useResponsiveLimit({ base: 2, md: 3, lg: 4, xl: 5 }, 2, 10);
 
-  const {
-    books,
-    totalPages,
-    isFetching,
-  } = useBooksByDepartment(departmentSlug, {
-    page,
-    limit: pageSize,
-    sort_by: sortBy,
-  });
+  const { books, totalPages, isFetching } = useBooksByDepartment(
+    departmentSlug,
+    {
+      page,
+      limit: pageSize,
+      sort_by: sortBy,
+    },
+  );
 
   useEffect(() => {
     setPage(1);
@@ -40,24 +39,29 @@ export default function UserDepartmentBooks({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-3">
-          <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+          <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+            <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+          </div>
+          <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
             {departmentName ? `Books in ${departmentName}` : "Department Books"}
           </h2>
         </div>
-        <SortFilter
-          value={sortBy}
-          onValueChange={(val) =>
-            setSortBy(val as "createdAt" | "rating" | "title")
-          }
-          options={[
-            { value: "createdAt", label: "Recently Added" },
-            { value: "rating", label: "Top Rated" },
-            { value: "title", label: "Alphabetical" },
-          ]}
-        />
+        <div className="w-full lg:w-auto">
+          <SortFilter
+            value={sortBy}
+            onValueChange={(val) =>
+              setSortBy(val as "createdAt" | "rating" | "title")
+            }
+            options={[
+              { value: "createdAt", label: "Recently Added" },
+              { value: "rating", label: "Top Rated" },
+              { value: "title", label: "Alphabetical" },
+            ]}
+            className="w-full lg:w-auto"
+          />
+        </div>
       </div>
 
       <PaginatedBookGrid

@@ -81,7 +81,7 @@ export default function DepartmentsPage() {
               )}
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start lg:items-center gap-4">
               {isHydrated && !isAuthenticated && (
                 <SortFilter
                   value={selectedSchoolId}
@@ -94,21 +94,21 @@ export default function DepartmentsPage() {
                     })),
                   ]}
                   labelPrefix="School:"
-                  className="w-full md:w-auto"
+                  className="w-full sm:w-auto"
                 />
               )}
 
               {isHydrated && isAuthenticated && (
                 <button
                   onClick={toggleViewDepartments}
-                  className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
+                  className="flex items-center gap-3 px-8 py-4 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-800 shadow-sm transition-all group w-full sm:w-auto justify-center sm:justify-start"
                 >
                   {!viewDepartments ? (
                     <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
                   ) : (
                     <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
                   )}
-                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
                     {!viewDepartments ? "Explore All" : "Close Gallery"}
                   </span>
                 </button>
