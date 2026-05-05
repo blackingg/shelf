@@ -3,23 +3,13 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiSearch, FiUser, FiX } from "react-icons/fi";
 import { useGetUserByUsernameQuery } from "@/app/services";
 import { UserMinimal } from "@/app/types/user";
+import { useDebounce } from "@/app/hooks";
 
 interface UserSearchInputProps {
   onSelect: (user: UserMinimal | null) => void;
   selectedUser?: UserMinimal | null;
   excludeUserIds?: string[];
   placeholder?: string;
-}
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
 }
 
 export default function UserSearchInput({

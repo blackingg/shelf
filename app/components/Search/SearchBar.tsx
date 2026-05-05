@@ -1,8 +1,9 @@
 "use client";
 
 import { FiSearch } from "react-icons/fi";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { useDebounce } from "@/app/hooks";
 
 import { motion, AnimatePresence } from "motion/react";
 
@@ -10,14 +11,32 @@ export const SearchBar: React.FC<{
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
-}> = ({ placeholder = "Search books and folders", value, onChange }) => {
+}> = ({ placeholder = "Search books...", value, onChange }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialValue = value ?? searchParams.get("q") ?? "";
   const [localValue, setLocalValue] = useState(initialValue);
+  const debouncedValue = useDebounce(localValue, 400);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Only perform live search if we're already on the search results page
+    if (
+      pathname === "/search" &&
+      debouncedValue !== (searchParams.get("q") ?? "")
+    ) {
+      const params = new URLSearchParams(searchParams);
+      if (debouncedValue.trim()) {
+        params.set("q", debouncedValue.trim());
+      } else {
+        params.delete("q");
+      }
+      router.push(`/search?${params.toString()}`);
+    }
+  }, [debouncedValue, pathname, router, searchParams]);
 
   useEffect(() => {
     if (value !== undefined) {
@@ -102,7 +121,7 @@ export const SearchBar: React.FC<{
                     value={localValue}
                     onChange={(e) => handleChange(e.target.value)}
                     placeholder={placeholder}
-                    className="w-full pl-12 pr-12 py-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-neutral-100 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary/50 text-lg font-medium shadow-2xl transition-all"
+                    className="w-full pl-12 pr-12 py-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-neutral-100 rounded-md focus:outline-none focus:ring-1 focus:ring-primary/30 text-lg font-medium transition-all"
                   />
                   <button
                     type="button"
@@ -133,7 +152,7 @@ export const SearchBar: React.FC<{
           value={localValue}
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
-          className="w-96 lg:w-[40rem] pl-12 pr-4 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-neutral-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-neutral-500"
+          className="w-96 lg:w-[40rem] pl-12 pr-4 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-neutral-100 rounded-md focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-neutral-500"
         />
       </form>
     </>

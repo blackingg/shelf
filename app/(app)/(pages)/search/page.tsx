@@ -5,18 +5,16 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
 import { FiSearch, FiArrowLeft, FiGrid, FiList } from "react-icons/fi";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { useSearchQuery } from "@/app/services";
+import { useGetBooksQuery } from "@/app/services";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { PaginatedSearchResults } from "@/app/components/Search/PaginatedSearchResults";
 
-const searchTypeOptions = [
-  { value: "all", label: "All" },
-  { value: "book", label: "Books" },
-  { value: "folder", label: "Folders" },
-  { value: "user", label: "Users" },
+const sortOptions = [
+  { value: "-created_at", label: "Newest" },
+  { value: "created_at", label: "Oldest" },
+  { value: "title", label: "Title (A-Z)" },
+  { value: "-title", label: "Title (Z-A)" },
 ] as const;
-
-type SearchFilterType = (typeof searchTypeOptions)[number]["value"];
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -25,30 +23,25 @@ function SearchContent() {
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
-  const [filterType, setFilterType] = useState<SearchFilterType>("all");
+  const [sortBy, setSortBy] = useState<string>("-created_at");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
     setPage(1);
-  }, [query, filterType]);
+  }, [query, sortBy]);
 
   const {
-    data: searchResponse,
+    data: booksResponse,
     isLoading,
     isFetching,
-  } = useSearchQuery(
-    {
-      q: query,
-      page,
-      limit: pageSize,
-      type: filterType === "all" ? undefined : filterType,
-    },
-    { enabled: !!query },
-  );
+  } = useGetBooksQuery({ query, page, limit: pageSize, ordering: sortBy });
 
-  const items = searchResponse?.items || [];
-  const totalPages = searchResponse?.totalPages || 1;
-  const totalResults = searchResponse?.total || 0;
+  const items = (booksResponse?.items || []).map((book: any) => ({
+    type: "book" as const,
+    data: book,
+  }));
+  const totalPages = booksResponse?.totalPages || 1;
+  const totalResults = booksResponse?.total || 0;
 
   if (!query) {
     return (
@@ -62,7 +55,7 @@ function SearchContent() {
               Search Shelf
             </h2>
             <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium">
-              Find resources, scholars, and folders across the library.
+              Find books across the Shelf.
             </p>
           </div>
         </div>
@@ -89,7 +82,7 @@ function SearchContent() {
               </div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 ml-10">
                 {isLoading
-                  ? "Scanning..."
+                  ? "Searching library..."
                   : `Located ${totalResults} ${totalResults === 1 ? "match" : "matches"} for "${query}"`}
               </p>
             </div>
@@ -122,12 +115,10 @@ function SearchContent() {
 
           <div className="mb-8 flex justify-end">
             <SortFilter
-              value={filterType}
-              onValueChange={(value) =>
-                setFilterType(value as SearchFilterType)
-              }
-              options={[...searchTypeOptions]}
-              labelPrefix="Filter:"
+              value={sortBy}
+              onValueChange={(value) => setSortBy(value)}
+              options={[...sortOptions]}
+              labelPrefix="Sort by:"
             />
           </div>
 
@@ -141,7 +132,7 @@ function SearchContent() {
             onBookClick={(book) => setSelectedBook(book)}
             onFolderClick={(slug) => router.push(`/folders/${slug}`)}
             onUserClick={(username) => router.push(`/profile/${username}`)}
-            filterType={filterType}
+            filterType="book"
             pageSize={pageSize}
           />
         </div>
