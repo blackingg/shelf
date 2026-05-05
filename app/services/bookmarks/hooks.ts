@@ -110,7 +110,8 @@ export const useAddBookmarkMutation = () => {
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
-      queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "books"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
   });
 };
@@ -131,6 +132,19 @@ export const useRemoveBookmarkMutation = () => {
         bookmarkKeys.bookStatus(bookId, isAuthenticated),
         { bookmarked: false },
       );
+
+      queryClient.setQueriesData(
+        { queryKey: ["bookmarks", "books"] },
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: (old.items || []).filter((item: any) => item.id !== bookId),
+            total: Math.max(0, (old.total || 1) - 1),
+          };
+        },
+      );
+
       return { previous, bookId, isAuthenticated };
     },
     onError: (_err, _bookId, context) => {
@@ -146,7 +160,9 @@ export const useRemoveBookmarkMutation = () => {
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
-      queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
+
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "books"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
   });
 };
@@ -210,7 +226,9 @@ export const useBookmarkFolderMutation = () => {
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });
-      queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
+
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "books"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
   });
 };
@@ -232,6 +250,21 @@ export const useUnbookmarkFolderMutation = () => {
         bookmarkKeys.folderStatus(folderId, isAuthenticated),
         { bookmarked: false },
       );
+
+      queryClient.setQueriesData(
+        { queryKey: ["bookmarks", "folders"] },
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: (old.items || []).filter(
+              (item: any) => item.id !== folderId,
+            ),
+            total: Math.max(0, (old.total || 1) - 1),
+          };
+        },
+      );
+
       return { previous, folderId, isAuthenticated };
     },
     onError: (_err, _folderId, context) => {
@@ -247,7 +280,9 @@ export const useUnbookmarkFolderMutation = () => {
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });
-      queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
+      // Invalidate specifically the lists
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "books"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
   });
 };
