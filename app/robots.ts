@@ -27,8 +27,6 @@ export default function robots(): MetadataRoute.Robots {
         "/app/upload-and-read/",
         "/*edit*",
         "/app/search",
-        "/app/books/",
-        "/app/folders/",
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
