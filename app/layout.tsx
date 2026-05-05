@@ -1,7 +1,12 @@
-import ProtectedRoute from "@/app/components/Auth/ProtectedRoute";
-import { BufferProvider } from "@/app/context/FileBufferContext";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import "@/app/globals.css";
+import StoreProvider from "@/app/provider/StoreProvider";
+import { ErrorBoundaryWithNotification } from "@/app/components/Shared/ErrorBoundary";
+import { ThemeProvider } from "@/app/provider/ThemeProvider";
+import { QueryProvider } from "@/app/provider/QueryProvider";
 import { HydrationGuard } from "@/app/components/Layout/HydrationGuard";
-import { OpenPanelComponent } from "@openpanel/nextjs";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +40,7 @@ export const metadata: Metadata = {
   description: "Community-driven book collections",
 };
 
-export default function AppRootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -45,16 +50,6 @@ export default function AppRootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <head>
-        <link
-          rel="me"
-          href="https://x.com/shelfng_"
-        />
-        <link
-          rel="me"
-          href="https://www.instagram.com/shelf_ng"
-        />
-      </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -62,21 +57,11 @@ export default function AppRootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <OpenPanelComponent
-            clientId={String(process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID)}
-            trackScreenViews={true}
-            sessionReplay={{
-              enabled: true,
-              maskAllInputs: true,
-            }}
-          />
           <StoreProvider>
             <QueryProvider>
               <ErrorBoundaryWithNotification>
                 <HydrationGuard>
-                  <ProtectedRoute>
-                    <BufferProvider>{children}</BufferProvider>
-                  </ProtectedRoute>
+                  {children}
                 </HydrationGuard>
               </ErrorBoundaryWithNotification>
             </QueryProvider>
