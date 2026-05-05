@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/app/provider/ThemeProvider";
 import { QueryProvider } from "@/app/provider/QueryProvider";
 import { BufferProvider } from "@/app/context/FileBufferContext";
 import { HydrationGuard } from "@/app/components/Layout/HydrationGuard";
+import { OpenPanelComponent } from "@openpanel/nextjs";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,10 +49,11 @@ export default function AppRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="me" href="https://x.com/shelfng_" />
+        <link rel="me" href="https://www.instagram.com/shelf_ng" />
+      </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -59,6 +61,14 @@ export default function AppRootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <OpenPanelComponent
+            clientId={String(process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID)}
+            trackScreenViews={true}
+            sessionReplay={{
+              enabled: true,
+              maskAllInputs: true,
+            }}
+          />
           <StoreProvider>
             <QueryProvider>
               <ErrorBoundaryWithNotification>

@@ -31,10 +31,7 @@ export function FolderCardSkeleton({ count = 1 }: { count?: number }) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="animate-pulse"
-        >
+        <div key={i} className="animate-pulse">
           <div className="relative">
             <div className="relative z-10">
               <div className="w-full aspect-[278/194] bg-gray-200 dark:bg-neutral-700 rounded-sm overflow-hidden" />
@@ -76,10 +73,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   };
 
   return (
-    <div
-      onClick={onClick}
-      className="group cursor-pointer relative"
-    >
+    <div onClick={onClick} className="group cursor-pointer relative">
       <div className="absolute top-1.5 right-1.5 z-20 flex items-center space-x-1.5">
         {isAuthenticated && (
           <button
