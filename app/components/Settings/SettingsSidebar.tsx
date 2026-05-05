@@ -6,31 +6,31 @@ import { FiUser, FiSettings, FiBell, FiLock, FiMonitor } from "react-icons/fi";
 const settingsNavItems = [
   {
     label: "Profile",
-    href: "/app/settings/profile",
+    href: "/settings/profile",
     icon: <FiUser className="w-5 h-5" />,
     description: "Personalize your profile details",
   },
   {
     label: "Account",
-    href: "/app/settings/account",
+    href: "/settings/account",
     icon: <FiSettings className="w-5 h-5" />,
     description: "Manage your account settings",
   },
   {
     label: "Appearance",
-    href: "/app/settings/appearance",
+    href: "/settings/appearance",
     icon: <FiMonitor className="w-5 h-5" />,
     description: "Customize the look and feel",
   },
   // {
   //   label: "Notifications",
-  //   href: "/app/settings/notifications",
+  //   href: "/settings/notifications",
   //   icon: <FiBell className="w-5 h-5" />,
   //   description: "Control your notification preferences",
   // },
   // {
   //   label: "Security",
-  //   href: "/app/settings/security",
+  //   href: "/settings/security",
   //   icon: <FiLock className="w-5 h-5" />,
   //   description: "Password and security settings",
   // },

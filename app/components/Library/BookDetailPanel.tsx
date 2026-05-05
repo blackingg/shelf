@@ -111,7 +111,7 @@ export const BookDetailPanel: React.FC<{
                     </p>
                     {book?.donor?.username && (
                       <Link
-                        href={`/app/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
+                        href={`/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
                         className="text-emerald-100/70 text-xs sm:text-sm inline-block"
                         onClick={() => onClose()}
                       >
@@ -181,7 +181,7 @@ export const BookDetailPanel: React.FC<{
                       Reviews & Discussion
                     </h3>
                     <Link
-                      href={`/app/books/${book?.slug}`}
+                      href={`/books/${book?.slug}`}
                       onClick={() => onClose()}
                       className="text-[10px] font-black text-emerald-300 hover:text-emerald-200 uppercase tracking-widest transition-colors flex items-center gap-1 shrink-0"
                     >
@@ -200,7 +200,7 @@ export const BookDetailPanel: React.FC<{
               <div className="space-y-3 sm:space-y-4 mt-auto pt-5 md:pt-8 pb-[max(env(safe-area-inset-bottom),0.25rem)]">
                 <div className="flex gap-2 items-center">
                   <button
-                    onClick={() => router.push(`/app/books/${book?.slug}`)}
+                    onClick={() => router.push(`/books/${book?.slug}`)}
                     className="h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex flex-1 items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <FiBookOpen className="w-4 h-4" />

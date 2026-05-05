@@ -76,37 +76,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/app/discover`,
+      url: `${baseUrl}/discover`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/app/library/departments`,
+      url: `${baseUrl}/library/departments`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/app/library/categories`,
+      url: `${baseUrl}/library/categories`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/app/folders`,
+      url: `${baseUrl}/folders`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/docs/privacy`,
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/docs/terms`,
+      url: `${baseUrl}/terms`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.3,
@@ -115,28 +115,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Map dynamic routes
   const departmentUrls: MetadataRoute.Sitemap = departments.map((dept) => ({
-    url: `${baseUrl}/app/library/departments/${dept.slug}`,
+    url: `${baseUrl}/library/departments/${dept.slug}`,
     lastModified: dept.updatedAt ? new Date(dept.updatedAt) : new Date(),
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
   const categoryUrls: MetadataRoute.Sitemap = categories.map((cat) => ({
-    url: `${baseUrl}/app/library/categories/${cat.slug}`,
+    url: `${baseUrl}/library/categories/${cat.slug}`,
     lastModified: cat.updatedAt ? new Date(cat.updatedAt) : new Date(),
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
   const bookUrls: MetadataRoute.Sitemap = books.map((book) => ({
-    url: `${baseUrl}/app/books/${book.slug}`,
+    url: `${baseUrl}/books/${book.slug}`,
     lastModified: book.updatedAt ? new Date(book.updatedAt) : new Date(),
     changeFrequency: "weekly",
     priority: 0.6,
   }));
 
   const folderUrls: MetadataRoute.Sitemap = folders.map((folder) => ({
-    url: `${baseUrl}/app/folders/${folder.slug}`,
+    url: `${baseUrl}/folders/${folder.slug}`,
     lastModified: folder.updatedAt ? new Date(folder.updatedAt) : new Date(),
     changeFrequency: "weekly",
     priority: 0.6,

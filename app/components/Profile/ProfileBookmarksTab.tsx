@@ -101,7 +101,7 @@ export const ProfileBookmarksTab: React.FC<ProfileBookmarksTabProps> = ({
             currentPage={bookmarkFoldersPage}
             onPageChange={setBookmarkFoldersPage}
             onFolderClick={(folder) =>
-              router.push(`/app/folders/${folder.slug}`)
+              router.push(`/folders/${folder.slug}`)
             }
             pageSize={pageSize}
             emptyMessage="No folders bookmarked."

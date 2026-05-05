@@ -23,7 +23,7 @@ export const DeleteModal: React.FC<{
       await bookActions.deleteBook(id);
       addNotification("success", "Book Deleted Successfully");
       onClose();
-      router.push("/app/library");
+      router.push("/library");
     } else {
       addNotification(
         "error",

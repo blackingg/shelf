@@ -187,7 +187,7 @@ export const BookCard: React.FC<BookCardProps> = ({
       </p>
       {donor?.username && (
         <Link
-          href={`/app/profile/${encodeURIComponent(donor.username.replace(/\s+/g, ""))}`}
+          href={`/profile/${encodeURIComponent(donor.username.replace(/\s+/g, ""))}`}
           onClick={(e) => e.stopPropagation()}
           className="text-[10px] text-gray-400 dark:text-neutral-500 mt-0.5 block truncate"
         >
