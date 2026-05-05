@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
@@ -17,6 +17,8 @@ import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { me: user, isAuthenticated } = useUser();
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
@@ -47,11 +49,30 @@ export default function DepartmentsPage() {
       return;
     }
 
-    const openGallery =
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("view") === "gallery";
-    setViewDepartments(openGallery);
-  }, [isAuthenticated]);
+    const openGallery = searchParams.get("view") === "gallery";
+    if (openGallery !== viewDepartments) {
+      setViewDepartments(openGallery);
+    }
+  }, [isAuthenticated, searchParams]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (viewDepartments) {
+      params.set("view", "gallery");
+    } else {
+      params.delete("view");
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery !== currentQuery) {
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [viewDepartments, pathname, router, searchParams, isAuthenticated]);
 
   const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
