@@ -27,8 +27,6 @@ import {
   useMeFolders,
   useFolderActions,
   useBookActions,
-  useBookmarkedBooks,
-  useBookmarkedFolders,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
@@ -46,10 +44,9 @@ interface ProfileClientProps {
 }
 
 type ProfileTab = "donated" | "folders" | "bookmarks";
-type ProfileQueryTab = "donated" | "folders";
 
-function isProfileQueryTab(value: string | null): value is ProfileQueryTab {
-  return value === "donated" || value === "folders";
+function isProfileQueryTab(value: string | null): value is ProfileTab {
+  return value === "donated" || value === "folders" || value === "bookmarks";
 }
 
 export default function ProfileClient({ username }: ProfileClientProps) {
@@ -57,17 +54,12 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const tabParam = searchParams.get("tab");
-  const initialTab: ProfileTab = isProfileQueryTab(tabParam)
-    ? tabParam
-    : "donated";
-
-  const [activeTab, setActiveTab] = useState<ProfileTab>(initialTab);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [folderPage, setFolderPage] = useState(1);
   const [bookmarkBooksPage, setBookmarkBooksPage] = useState(1);
   const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
+
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
   const [bookToDelete, setBookToDelete] = useState<BookPreview | null>(null);
@@ -76,6 +68,22 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   const { me: currentUser, isLoading: isLoadingMe } = useUser();
   const { user, isLoading: isLoadingUser } = useUserByUsername(username);
   const isOwner = useIsOwner(user);
+
+  const tabParam = searchParams.get("tab");
+  const initialTab: ProfileTab = isProfileQueryTab(tabParam)
+    ? tabParam === "bookmarks" && !isOwner
+      ? "donated"
+      : tabParam
+    : "donated";
+
+  const bookmarkParam = searchParams.get("bookmark");
+  const initialBookmarkSubTab: "books" | "folders" =
+    bookmarkParam === "folders" ? "folders" : "books";
+
+  const [activeTab, setActiveTab] = useState<ProfileTab>(initialTab);
+  const [bookmarkSubTab, setBookmarkSubTab] = useState<"books" | "folders">(
+    initialBookmarkSubTab,
+  );
 
   const isAuthenticated = !!currentUser;
   const { addNotification } = useNotifications();
@@ -118,19 +126,37 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab");
-    if (!isProfileQueryTab(tabFromUrl)) return;
+    const bookmarkFromUrl = searchParams.get("bookmark");
 
-    if (tabFromUrl !== activeTab) {
-      setActiveTab(tabFromUrl);
+    if (isProfileQueryTab(tabFromUrl)) {
+      if (tabFromUrl === "bookmarks" && !isOwner) return;
+      if (tabFromUrl !== activeTab) {
+        setActiveTab(tabFromUrl);
+      }
     }
-  }, [searchParams]);
+
+    if (bookmarkFromUrl === "books" || bookmarkFromUrl === "folders") {
+      if (bookmarkFromUrl !== bookmarkSubTab) {
+        setBookmarkSubTab(bookmarkFromUrl);
+      }
+    }
+  }, [searchParams, isOwner]);
 
   useEffect(() => {
-    // Keep URL-driven tabs limited to public profile sections.
-    if (activeTab !== "donated" && activeTab !== "folders") return;
+    // Keep URL-driven tabs limited to sections the user can actually see.
+    if (activeTab === "bookmarks" && !isOwner) return;
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", activeTab);
+
+    // Only sync public tabs to the URL.
+    if (activeTab === "donated" || activeTab === "folders") {
+      params.set("tab", activeTab);
+      params.delete("bookmark");
+    } else {
+      // For private tabs (like bookmarks), we clear the search params from the URL
+      params.delete("tab");
+      params.delete("bookmark");
+    }
 
     const nextQuery = params.toString();
     const currentQuery = searchParams.toString();
@@ -511,6 +537,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               bookmarkFoldersPage={bookmarkFoldersPage}
               setBookmarkFoldersPage={setBookmarkFoldersPage}
               setSelectedBook={setSelectedBook}
+              activeSubTab={bookmarkSubTab}
+              setActiveSubTab={setBookmarkSubTab}
             />
           )}
         </div>
