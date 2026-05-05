@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { useGetAdminUsersQuery } from "@/app/services";
 import { UserRole } from "@/app/types/user";
-import {
-  FiSearch,
-  FiMoreHorizontal,
-  FiUser,
-} from "react-icons/fi";
+import { FiSearch, FiMoreHorizontal, FiUser } from "react-icons/fi";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 
 export default function AdminUsersPage() {
