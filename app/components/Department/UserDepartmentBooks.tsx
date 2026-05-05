@@ -49,7 +49,7 @@ export default function UserDepartmentBooks({
           <div className="p-2 bg-emerald-50 dark:bg-emerald-900/10 rounded-md shrink-0">
             <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
           </div>
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tighter">
+          <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
             {departmentName ? `Books in ${departmentName}` : "Department Books"}
           </h2>
         </div>
