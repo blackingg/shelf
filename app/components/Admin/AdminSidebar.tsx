@@ -12,7 +12,6 @@ export const AdminSidebar = () => {
     { label: "Dashboard", href: "/admin/dashboard", icon: <FiLayout /> },
     { label: "Users", href: "/admin/users", icon: <FiUsers /> },
     { label: "Resources", href: "/admin/resources", icon: <FiBook /> },
-    { label: "Settings", href: "/admin/settings", icon: <FiSettings /> },
   ];
 
   return (
