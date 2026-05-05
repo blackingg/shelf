@@ -19,13 +19,13 @@ export default function DepartmentsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { me: user, isAuthenticated } = useUser();
+  const { me: user, isAuthenticated, isHydrated } = useUser();
 
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
-    user?.school?.id || "",
-  );
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
   const { data: schools = [] } = useGetSchoolsQuery();
-  const [viewDepartments, setViewDepartments] = useState(false);
+
+  const isGalleryView = searchParams.get("view") === "gallery";
+  const viewDepartments = !isHydrated || !isAuthenticated || isGalleryView;
 
   const { departments: allDepartments, isLoading } = useDepartments(
     selectedSchoolId ? { school_id: selectedSchoolId } : {},
@@ -38,49 +38,27 @@ export default function DepartmentsPage() {
   const userDepartmentSlug = userDepartment?.slug || null;
 
   useEffect(() => {
-    if (user?.school?.id && !selectedSchoolId) {
+    if (isHydrated && user?.school?.id && !selectedSchoolId) {
       setSelectedSchoolId(user.school.id);
     }
-  }, [user?.school?.id]);
+  }, [isHydrated, user?.school?.id, selectedSchoolId]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setViewDepartments(true);
-      return;
-    }
-
-    const openGallery = searchParams.get("view") === "gallery";
-    if (openGallery !== viewDepartments) {
-      setViewDepartments(openGallery);
-    }
-  }, [isAuthenticated, searchParams]);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (viewDepartments) {
-      params.set("view", "gallery");
-    } else {
-      params.delete("view");
-    }
-
-    const nextQuery = params.toString();
-    const currentQuery = searchParams.toString();
-
-    if (nextQuery !== currentQuery) {
-      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
-      router.replace(nextUrl, { scroll: false });
-    }
-  }, [viewDepartments, pathname, router, searchParams, isAuthenticated]);
-
-  const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
     4,
     10,
   );
-  const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
+
+  const toggleViewDepartments = () => {
+    if (!isAuthenticated) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (isGalleryView) {
+      params.delete("view");
+    } else {
+      params.set("view", "gallery");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -104,7 +82,7 @@ export default function DepartmentsPage() {
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-4">
-              {!isAuthenticated && (
+              {isHydrated && !isAuthenticated && (
                 <SortFilter
                   value={selectedSchoolId}
                   onValueChange={setSelectedSchoolId}
@@ -120,7 +98,7 @@ export default function DepartmentsPage() {
                 />
               )}
 
-              {isAuthenticated && (
+              {isHydrated && isAuthenticated && (
                 <button
                   onClick={toggleViewDepartments}
                   className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
