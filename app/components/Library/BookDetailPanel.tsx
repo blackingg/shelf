@@ -19,6 +19,7 @@ import {
   useGetBookBySlugQuery,
   useUser,
 } from "@/app/services";
+import { useOpenPanel } from "@openpanel/nextjs";
 import { StarRating } from "./StarRating";
 import { BookReviews } from "./BookReviews";
 import processDescription from "@/app/helpers/processDescription";
@@ -30,6 +31,7 @@ export const BookDetailPanel: React.FC<{
 }> = ({ book, onClose, isOpen }) => {
   const router = useRouter();
   const { isAuthenticated } = useUser();
+  const openPanel = useOpenPanel();
   const { data: bookDetails } = useGetBookBySlugQuery(String(book?.slug));
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const { isBookmarked } = useIsBookBookmarked(book?.id || "");
@@ -51,6 +53,7 @@ export const BookDetailPanel: React.FC<{
   const handleBookmark = async () => {
     if (!book?.id) return;
     await toggleBookmark(book.id, !!isBookmarked);
+    openPanel.track("book_bookmarked");
   };
 
   return (
