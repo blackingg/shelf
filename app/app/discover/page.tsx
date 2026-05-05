@@ -376,7 +376,7 @@ export default function DiscoverPage() {
                 {hasMorePublicFolders && (
                   <div className="mt-10 flex justify-center">
                     <button
-                      onClick={() => router.push("/app/discover/folders")}
+                      onClick={() => router.push("/app/folders")}
                       className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
                     >
                       View More
@@ -391,7 +391,7 @@ export default function DiscoverPage() {
                   community.
                 </p>
                 <button
-                  onClick={() => router.push("/app/discover/folders")}
+                  onClick={() => router.push("/app/folders")}
                   className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
                 >
                   Browse Folders

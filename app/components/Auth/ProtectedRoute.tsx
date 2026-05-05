@@ -12,7 +12,7 @@ const PUBLIC_PATHS = [
   "/docs/privacy",
   "/docs/terms",
   "/app/discover",
-  "/app/discover/folders",
+  "/app/folders",
 ];
 
 const PUBLIC_DYNAMIC_PREFIXES = [
