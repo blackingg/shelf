@@ -43,9 +43,7 @@ export const SearchBar: React.FC<{
       setLocalValue(value);
     } else {
       const q = searchParams.get("q");
-      if (q !== null) {
-        setLocalValue(q);
-      }
+      setLocalValue(q ?? "");
     }
   }, [value, searchParams]);
 
