@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Epub from "epubjs";
 import { PDFJSInfo } from "@/app/types/book";
 import { useGetMeQuery } from "@/app/services";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 interface SingleUploadFormProps {
   onSwitchToBulk: (files?: FileList) => void;
@@ -34,6 +35,7 @@ export default function SingleUploadForm({
   onSwitchToBulk,
 }: SingleUploadFormProps) {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const { addNotification } = useNotifications();
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
@@ -230,6 +232,7 @@ export default function SingleUploadForm({
         );
       }
       setUploadedBookId(result.id);
+
       setStep(2);
 
       addNotification(
@@ -280,6 +283,7 @@ export default function SingleUploadForm({
       };
 
       const result = await bookActions.updateBook(uploadedBookId, payload);
+      openPanel.track("single_upload_completed");
       const targetFolder = folders.find((f) => f.id === targetFolderId);
 
       if (targetFolder) {

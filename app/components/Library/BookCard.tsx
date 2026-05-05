@@ -14,6 +14,7 @@ import {
 import { BookCardProps } from "@/app/types/book";
 import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
 import { useIsOwner } from "@/app/hooks/useIsOwner";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -38,6 +39,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   const { toggleBookmark } = useBookBookmarkActions();
   const [showMenu, setShowMenu] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const openPanel = useOpenPanel();
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (!isAuthenticated) {
@@ -53,6 +55,7 @@ export const BookCard: React.FC<BookCardProps> = ({
     e.stopPropagation();
     if (!id) return;
     await toggleBookmark(id, isBookmarked);
+    openPanel.track("book_bookmarked");
   };
 
   return (

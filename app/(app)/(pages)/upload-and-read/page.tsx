@@ -7,6 +7,7 @@ import type { PdfViewerHandle } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { FiUploadCloud } from "react-icons/fi";
 import { motion } from "motion/react";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 export default function UploadAndReadPage() {
   const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
@@ -14,6 +15,7 @@ export default function UploadAndReadPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const openPanel = useOpenPanel();
 
   const epubControlsRef = useRef<{
     next: () => void;
@@ -78,6 +80,7 @@ export default function UploadAndReadPage() {
         <button
           onClick={() => {
             fileInputRef.current?.click();
+            openPanel.track("book_viewed_offline");
           }}
           className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all"
         >

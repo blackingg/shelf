@@ -25,6 +25,7 @@ import { StarRating } from "@/app/components/Library/StarRating";
 import { BookReviews } from "@/app/components/Library/BookReviews";
 import BookDetailSkeleton from "@/app/components/Skeletons/BookDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 export default function BookClient() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function BookClient() {
   const bookSlug = params.slug as string;
   const { isAuthenticated } = useUser();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
-
+  const openPanel = useOpenPanel();
   const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function BookClient() {
       text: `Check out ${book.title} by ${book.author} on Shelf.`,
       url: window.location.href,
     });
+    openPanel.track("book_shared");
   };
 
   return (
@@ -208,10 +210,7 @@ export default function BookClient() {
                         Resource Rating
                       </span>
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <StarRating
-                          rating={book.rating || 0}
-                          size={18}
-                        />
+                        <StarRating rating={book.rating || 0} size={18} />
                         <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "5.0"}
                         </span>
@@ -233,7 +232,10 @@ export default function BookClient() {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
                     <div className="w-full sm:w-48">
                       <button
-                        onClick={() => router.push(`/books/${book.slug}/read`)}
+                        onClick={() => {
+                          openPanel.track("book_opened");
+                          router.push(`/books/${book.slug}/read`);
+                        }}
                         className="w-full py-3 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3"
                       >
                         <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
@@ -335,10 +337,7 @@ export default function BookClient() {
                         Rating
                       </span>
                       <div className="flex items-center gap-3">
-                        <StarRating
-                          rating={book.rating || 0}
-                          size={18}
-                        />
+                        <StarRating rating={book.rating || 0} size={18} />
                         <span className="font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "0.0"}
                         </span>

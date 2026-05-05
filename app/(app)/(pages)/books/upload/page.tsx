@@ -72,10 +72,7 @@ export default function UploadPage() {
             Please enter the authorization password to continue to the document
             upload pipeline.
           </p>
-          <form
-            onSubmit={handlePasswordSubmit}
-            className="space-y-6"
-          >
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label>Access Password</Label>
               <div className="relative group">
@@ -104,10 +101,7 @@ export default function UploadPage() {
                 </button>
               </div>
             </div>
-            <Button
-              type="submit"
-              icon={<FiArrowRight className="text-sm" />}
-            >
+            <Button type="submit" icon={<FiArrowRight className="text-sm" />}>
               Continue
             </Button>
           </form>

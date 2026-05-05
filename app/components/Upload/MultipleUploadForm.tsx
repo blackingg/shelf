@@ -27,6 +27,7 @@ import processDescription from "../../helpers/processDescription";
 import { createContext } from "react";
 import { FormSelect } from "../Form/FormSelect";
 import { useGetMeQuery } from "@/app/services";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
@@ -79,7 +80,7 @@ export default function MultipleUploadForm({
   const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
   const { actions: folderActions } = useFolderActions();
   const [targetFolderId, setTargetFolderId] = useState<string>("");
-
+  const openPanel = useOpenPanel();
   const { data: user } = useGetMeQuery();
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
@@ -286,6 +287,7 @@ export default function MultipleUploadForm({
 
       if (failCount === 0 && successCount > 0) {
         const targetFolder = folders.find((f) => f.id === targetFolderId);
+        openPanel.track("bulk_upload_complete");
         addNotification(
           "success",
           "Bulk Upload Complete",
@@ -683,10 +685,7 @@ function FileToBeUploaded({
       <div
         className={`${isExpanded ? "block" : "hidden"} p-6 bg-white dark:bg-neutral-900/50`}
       >
-        <form
-          className="space-y-6"
-          onSubmit={handleUpdate}
-        >
+        <form className="space-y-6" onSubmit={handleUpdate}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-1">
               <Label>Title</Label>
