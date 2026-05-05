@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FiFolder,
   FiUploadCloud,
@@ -12,6 +12,9 @@ import {
   FiPlus,
   FiCamera,
   FiShare2,
+  FiUserX,
+  FiArrowLeft,
+  FiSearch,
 } from "react-icons/fi";
 import { BackButton } from "@/app/components/Layout/BackButton";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
@@ -24,16 +27,13 @@ import {
   useMeFolders,
   useFolderActions,
   useBookActions,
-  useBookmarkedBooks,
-  useBookmarkedFolders,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import ProfileSkeleton from "@/app/components/Skeletons/ProfileSkeleton";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
 import { ProfileBookmarksTab } from "@/app/components/Profile/ProfileBookmarksTab";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
+import { useIsOwner } from "@/app/hooks/useIsOwner";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { FolderVisibility, Folder } from "@/app/types/folder";
 import { shareContent } from "@/app/helpers/share";
@@ -43,31 +43,57 @@ interface ProfileClientProps {
   username: string;
 }
 
+type ProfileTab = "donated" | "folders" | "bookmarks";
+
+function isProfileQueryTab(value: string | null): value is ProfileTab {
+  return value === "donated" || value === "folders" || value === "bookmarks";
+}
+
 export default function ProfileClient({ username }: ProfileClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<
-    "donated" | "folders" | "bookmarks"
-  >("donated");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
   const [folderPage, setFolderPage] = useState(1);
   const [bookmarkBooksPage, setBookmarkBooksPage] = useState(1);
   const [bookmarkFoldersPage, setBookmarkFoldersPage] = useState(1);
+
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
-  const [bookToDelete, setBookToDelete] = useState<any | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<BookPreview | null>(null);
   const pageSize = 10;
 
-  const currentUser = useSelector(selectCurrentUser);
-  const isOwner = currentUser?.username === username;
+  const { me: currentUser, isLoading: isLoadingMe } = useUser();
+  const { user, isLoading: isLoadingUser } = useUserByUsername(username);
+  const isOwner = useIsOwner(user);
+
+  const tabParam = searchParams.get("tab");
+  const initialTab: ProfileTab = isProfileQueryTab(tabParam)
+    ? tabParam === "bookmarks" && !isOwner
+      ? "donated"
+      : tabParam
+    : "donated";
+
+  const bookmarkParam = searchParams.get("bookmark");
+  const initialBookmarkSubTab: "books" | "folders" =
+    bookmarkParam === "folders" ? "folders" : "books";
+
+  const [activeTab, setActiveTab] = useState<ProfileTab>(initialTab);
+  const [bookmarkSubTab, setBookmarkSubTab] = useState<"books" | "folders">(
+    initialBookmarkSubTab,
+  );
+
+  const isAuthenticated = !!currentUser;
   const { addNotification } = useNotifications();
 
-  const { actions: userActions } = useUser({ enabled: !!currentUser });
+  const { actions: userActions } = useUser({ enabled: isAuthenticated });
   const { actions: folderActions, isDeleting: isDeletingFolder } =
     useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
-  const { user, isLoading: isLoadingUser } = useUserByUsername(username);
+  const displayUser = isOwner && currentUser ? currentUser : user;
 
   const {
     books,
@@ -95,7 +121,51 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     include_collaborated: true,
     page: folderPage,
     limit: pageSize,
+    enabled: isOwner && !!currentUser,
   });
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    const bookmarkFromUrl = searchParams.get("bookmark");
+
+    if (isProfileQueryTab(tabFromUrl)) {
+      if (tabFromUrl === "bookmarks" && !isOwner) return;
+      if (tabFromUrl !== activeTab) {
+        setActiveTab(tabFromUrl);
+      }
+    }
+
+    if (bookmarkFromUrl === "books" || bookmarkFromUrl === "folders") {
+      if (bookmarkFromUrl !== bookmarkSubTab) {
+        setBookmarkSubTab(bookmarkFromUrl);
+      }
+    }
+  }, [searchParams, isOwner]);
+
+  useEffect(() => {
+    // Keep URL-driven tabs limited to sections the user can actually see.
+    if (activeTab === "bookmarks" && !isOwner) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    // Only sync public tabs to the URL.
+    if (activeTab === "donated" || activeTab === "folders") {
+      params.set("tab", activeTab);
+      params.delete("bookmark");
+    } else {
+      // For private tabs (like bookmarks), we clear the search params from the URL
+      params.delete("tab");
+      params.delete("bookmark");
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery !== currentQuery) {
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [activeTab, pathname, router, searchParams]);
 
   const folders = isOwner ? ownerFolders : publicFolders;
   const isFetchingFoldersCount = isOwner
@@ -105,7 +175,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     ? ownerFoldersTotalPages
     : publicFoldersTotalPages;
 
-  const tabs = [
+  const tabs: { id: ProfileTab; label: string; icon: any; count: number }[] = [
     {
       id: "donated",
       label: "Donated",
@@ -121,7 +191,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     ...(isOwner
       ? [
           {
-            id: "bookmarks",
+            id: "bookmarks" as const,
             label: "Bookmarks",
             icon: FiBookmark,
             count: 0, // Simplified count for bookmarks
@@ -163,11 +233,11 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    if (!url || !user) return;
+    if (!url || !displayUser) return;
 
     await shareContent({
-      title: `${user.fullName} (@${user.username})`,
-      text: `Check out ${user.username}'s book folders and library on Shelf.`,
+      title: `${displayUser.fullName} (@${displayUser.username})`,
+      text: `Check out ${displayUser.username}'s book folders and library on Shelf.`,
       url: url,
     });
   };
@@ -198,30 +268,56 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           <div className="">
             <ProfileSkeleton isOwner={isOwner} />
           </div>
-        ) : !user ? (
-          <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              User Not Found
-            </h2>
-            <p className="text-gray-600 dark:text-neutral-400 mb-8 max-w-sm mx-auto">
-              The user @{username} doesn&apos;t exist.
-            </p>
-            <button
-              onClick={() => router.push("/app/discover")}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-md font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors"
-            >
-              Back to Library
-            </button>
+        ) : !displayUser ? (
+          <div className="max-w-7xl mx-auto px-6 py-10">
+            <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+              <div className="max-w-xl text-left space-y-5">
+                <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-purple-500" />
+                  <span>404 user missing</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                    <FiUserX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </div>
+                  <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                    User Not Found
+                  </h2>
+                </div>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                  We could not find @{username}.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => router.push("/app/discover")}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                  >
+                    <FiSearch className="w-4 h-4" />
+                    Explore Library
+                  </button>
+                  <button
+                    onClick={() => router.back()}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <FiArrowLeft className="w-4 h-4" />
+                    Go Back
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
             <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
               <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
                 <div className="w-full h-full rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-emerald-600 dark:text-emerald-400 overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
-                  {user.avatar ? (
+                  {displayUser.avatar ? (
                     <img
-                      src={user.avatar}
-                      alt={user.fullName}
+                      src={displayUser.avatar}
+                      alt={displayUser.fullName}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -249,9 +345,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="flex-1 pb-2">
                 <div className="flex flex-col gap-1">
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    {user.fullName}
+                    {displayUser.fullName}
                   </h1>
-                  <p className="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em] text-[10px]">
                     @{username}
                   </p>
                 </div>
@@ -279,37 +375,40 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     suppressHydrationWarning
                   >
                     Joined{" "}
-                    {new Date(user.createdAt).toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {new Date(displayUser.createdAt).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        year: "numeric",
+                      },
+                    )}
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {user.school && (
+                  {displayUser.school && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
                         <FiHome className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
                       </div>
                       <span className="text-sm font-medium">
-                        {user.school.name}
-                        {user.school.shortName && (
+                        {displayUser.school.name}
+                        {displayUser.school.shortName && (
                           <span className="ml-2 px-1.5 py-0.5 bg-gray-100 dark:bg-neutral-800 rounded text-[10px] font-bold text-gray-400">
-                            {user.school.shortName}
+                            {displayUser.school.shortName}
                           </span>
                         )}
                       </span>
                     </div>
                   )}
 
-                  {user.department && (
+                  {displayUser.department && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
                         <FiLayers className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
                       </div>
                       <span className="text-sm font-medium leading-tight">
-                        {user.department.name}
+                        {displayUser.department.name}
                       </span>
                     </div>
                   )}
@@ -319,7 +418,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner ? booksTotal : user.counts.donatedBooks}
+                    {isOwner ? booksTotal : user?.counts.donatedBooks}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Donations
@@ -327,7 +426,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
-                    {isOwner ? ownerFoldersTotal : user.counts.publicFolders}
+                    {isOwner ? ownerFoldersTotal : user?.counts.publicFolders}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Folders
@@ -343,7 +442,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                       isActive
                         ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
@@ -438,6 +537,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               bookmarkFoldersPage={bookmarkFoldersPage}
               setBookmarkFoldersPage={setBookmarkFoldersPage}
               setSelectedBook={setSelectedBook}
+              activeSubTab={bookmarkSubTab}
+              setActiveSubTab={setBookmarkSubTab}
             />
           )}
         </div>

@@ -20,18 +20,13 @@ import { FolderSelectDropdown } from "./Library/FolderSelectDropdown";
 import { prepareForUpload } from "../helpers";
 import { useNotifications } from "../context/NotificationContext";
 import { useRouter } from "next/navigation";
-import {
-  useBookActions,
-  useDepartments,
-  useDiscoverCategories,
-} from "../services";
+import { useBookActions, useDepartments, useCategories } from "../services";
 import { useFolderActions, useMeFolders } from "../services/folders/hooks";
 import { Book, CreateBookRequest } from "../types/book";
 import processDescription from "../helpers/processDescription";
 import { createContext } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../store";
 import { FormSelect } from "./Form/FormSelect";
+import { useGetMeQuery } from "@/app/services";
 
 const processFileType = (fileType: string) => {
   if (fileType.includes("pdf")) return "PDF";
@@ -85,12 +80,11 @@ export default function MultipleUploadForm({
   const { actions: folderActions } = useFolderActions();
   const [targetFolderId, setTargetFolderId] = useState<string>("");
 
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const { departments, isLoading: isLoadingDepts } = useDepartments(
     user?.school?.id ? { school_id: user.school.id } : undefined,
   );
-  const { categories, isLoading: isLoadingCategories } =
-    useDiscoverCategories();
+  const { categories, isLoading: isLoadingCategories } = useCategories();
 
   const inputRef = useRef<HTMLInputElement>(null);
   let filesNew = files ? Array.from(files) : null;
@@ -147,7 +141,11 @@ export default function MultipleUploadForm({
 
         // Add to folder if selected
         if (targetFolderId && result?.id) {
-          await folderActions.addBookToFolder(targetFolderId, result.id);
+          await folderActions.addBookToFolder(
+            targetFolderId,
+            result.id,
+            item.formDataObject.title,
+          );
         }
 
         // Mark as success
@@ -287,9 +285,17 @@ export default function MultipleUploadForm({
       });
 
       if (failCount === 0 && successCount > 0) {
+        const targetFolder = folders.find((f) => f.id === targetFolderId);
         addNotification(
           "success",
-          `Successfully uploaded all ${successCount} files`,
+          "Bulk Upload Complete",
+          targetFolder
+            ? `Successfully uploaded ${successCount} files and added them to your ${targetFolder.name} folder.`
+            : `Successfully uploaded all ${successCount} files to your library.`,
+          1200000,
+          targetFolder
+            ? `/app/folders/${targetFolder.slug}`
+            : "/app/library?tab=uploads",
         );
         updateFilesStatusObject([]);
         updateFilesToBeUploaded([]);
@@ -298,7 +304,7 @@ export default function MultipleUploadForm({
         if (targetSlug) {
           router.push(`/app/folders/${targetSlug}`);
         } else {
-          router.push("/app/library");
+          router.push("/app/library?tab=uploads");
         }
       } else if (successCount > 0) {
         addNotification(
@@ -487,7 +493,7 @@ function FileToBeUploaded({
 }) {
   const { updateFilesStatusObject, filesWithMetadataState } =
     useMultipleFiles();
-  const user = useSelector(selectCurrentUser);
+  const { data: user } = useGetMeQuery();
   const [isExpanded, setIsExpanded] = useState(!state);
 
   // Form State

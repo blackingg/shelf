@@ -5,7 +5,6 @@ import { Button } from "@/app/components/Form/Button";
 import { useUpload } from "@/app/hooks/useUpload";
 import MultipleUploadForm, {
   MultipleFileProvider,
-  useMultipleFiles,
 } from "@/app/components/MultipleUploadForm";
 import SingleUploadForm from "@/app/components/SingleUploadForm";
 import { motion } from "framer-motion";

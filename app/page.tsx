@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector, selectIsAuthenticated } from "@/app/store";
+import { useUser } from "@/app/services";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   FiBook,
@@ -77,11 +77,11 @@ export default function ShelfLanding() {
     { value: "100%", label: "Free to Start", icon: <FiZap /> },
   ];
 
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { isAuthenticated } = useUser();
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black overflow-hidden font-onest">
+    <div className="min-h-screen pt-20 bg-white dark:bg-black overflow-hidden font-onest">
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -90,7 +90,10 @@ export default function ShelfLanding() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center">
+            <Link
+              href="/"
+              className="flex items-center"
+            >
               <LogoStacked className="w-32 h-10 text-[#072c0b] dark:text-[#D0FDC2]" />
             </Link>
 
@@ -307,7 +310,10 @@ export default function ShelfLanding() {
         </div>
       </section>
 
-      <section id="features" className="py-32 px-6 bg-white dark:bg-black">
+      <section
+        id="features"
+        className="py-32 px-6 bg-white dark:bg-black"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
@@ -375,7 +381,10 @@ export default function ShelfLanding() {
 
       <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-50 dark:border-white/5">
         <div className="max-w-7xl mx-auto text-center">
-          <Link href="/" className="inline-flex items-center mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center mb-6"
+          >
             <LogoStacked className="w-20 h-6 text-[#072c0b] dark:text-[#D0FDC2]" />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
@@ -384,13 +393,13 @@ export default function ShelfLanding() {
           </p>
           <div className="flex justify-center space-x-8 mb-8 text-xs font-medium uppercase tracking-widest text-gray-400">
             <Link
-              href="/privacy"
+              href="/docs/privacy"
               className="hover:text-emerald-600 transition-colors"
             >
               Privacy
             </Link>
             <Link
-              href="/terms"
+              href="/docs/terms"
               className="hover:text-emerald-600 transition-colors"
             >
               Terms

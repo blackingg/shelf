@@ -51,11 +51,91 @@ const withPWA = withPWAInit({
         },
       },
     },
+    // ── API Caching (granular, per data volatility) ──
+    // Static reference data — rarely changes, cache aggressively
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/categories/i,
+      handler: "StaleWhileRevalidate",
+      options: {
+        cacheName: "api-categories",
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 60 * 24, // 24 hours
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/departments/i,
+      handler: "StaleWhileRevalidate",
+      options: {
+        cacheName: "api-departments",
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 60 * 24, // 24 hours
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/onboarding/i,
+      handler: "StaleWhileRevalidate",
+      options: {
+        cacheName: "api-onboarding",
+        expiration: {
+          maxEntries: 30,
+          maxAgeSeconds: 60 * 60 * 24, // 24 hours
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    // Discover & public content — moderate freshness
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/recommendations/i,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "api-discover",
+        networkTimeoutSeconds: 8,
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 * 30, // 30 minutes
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/folders\/public/i,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "api-public-folders",
+        networkTimeoutSeconds: 8,
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 30, // 30 minutes
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    // User-specific data — short cache, always prefer network
+    {
+      urlPattern: /^https?:\/\/.*\/api\/v1\/users\/me/i,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "api-user",
+        networkTimeoutSeconds: 5,
+        expiration: {
+          maxEntries: 5,
+          maxAgeSeconds: 60 * 10, // 10 minutes
+        },
+        cacheableResponse: { statuses: [0, 200] },
+      },
+    },
+    // All other API calls — fallback
     {
       urlPattern: /^https?:\/\/.*\/api\/v1\/.*/i,
       handler: "NetworkFirst",
       options: {
-        cacheName: "api-cache",
+        cacheName: "api-general",
         networkTimeoutSeconds: 10,
         expiration: {
           maxEntries: 50,

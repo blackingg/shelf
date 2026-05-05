@@ -8,8 +8,15 @@ export const FolderDropdown: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   bookId: string;
+  bookTitle?: string;
   className?: string;
-}> = ({ isOpen, onClose, bookId, className = "bottom-full mb-2 w-full" }) => {
+}> = ({
+  isOpen,
+  onClose,
+  bookId,
+  bookTitle,
+  className = "bottom-full mb-2 w-full",
+}) => {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [savedFolderIds, setSavedFolderIds] = useState<string[]>([]);
@@ -56,7 +63,7 @@ export const FolderDropdown: React.FC<{
       if (folder && bookId) {
         // Optimistically add to the new folder
         setSavedFolderIds((prev) => [...prev, folder.id]);
-        await actions.addBookToFolder(folder.id, bookId);
+        await actions.addBookToFolder(folder.id, bookId, bookTitle);
       }
       setNewFolderName("");
       setIsCreatingNew(false);
@@ -78,7 +85,7 @@ export const FolderDropdown: React.FC<{
     try {
       // 2. Perform Action
       if (isAdding) {
-        await actions.addBookToFolder(folderId, bookId);
+        await actions.addBookToFolder(folderId, bookId, bookTitle);
       } else {
         await actions.removeBookFromFolder(folderId, bookId);
       }

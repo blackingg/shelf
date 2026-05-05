@@ -5,12 +5,14 @@ import { Book } from "../../types/book";
 import { Folder } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
-import { useAppDispatch } from "../../store/store";
-import { setUser } from "../../store/authSlice";
+import { useAppSelector, store } from "../../store/store";
+import { selectIsAuthenticated, selectIsHydrated } from "../../store/authSlice";
+import { getErrorMessage } from "../../helpers/error";
 
 export const userKeys = {
   all: ["user"] as const,
-  me: () => [...userKeys.all, "me"] as const,
+  me: (isAuthenticated: boolean) =>
+    [...userKeys.all, "me", { authenticated: isAuthenticated }] as const,
   byUsername: (username: string) => [...userKeys.all, username] as const,
   books: (username: string) =>
     [...userKeys.byUsername(username), "books"] as const,
@@ -19,10 +21,11 @@ export const userKeys = {
 };
 
 export const useGetMeQuery = (options?: { enabled?: boolean }) => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   return useQuery<User>({
-    queryKey: userKeys.me(),
+    queryKey: userKeys.me(isAuthenticated),
     queryFn: () => api.get<User>("/users/me"),
-    enabled: options?.enabled ?? true,
+    enabled: options?.enabled ?? isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes — user profile rarely changes mid-session
     gcTime: 30 * 60 * 1000,
   });
@@ -32,8 +35,15 @@ export const useUpdateMeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateUserRequest) => api.patch<User>("/users/me", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      // Optionally update the byUsername cache immediately if we have it
+      if (updatedUser.username) {
+        queryClient.setQueryData(
+          userKeys.byUsername(updatedUser.username),
+          updatedUser,
+        );
+      }
     },
   });
 };
@@ -42,8 +52,15 @@ export const useUploadAvatarMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: FormData) => api.post<User>("/users/me/avatar", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      // Update byUsername cache immediately to avoid flash of old avatar
+      if (updatedUser.username) {
+        queryClient.setQueryData(
+          userKeys.byUsername(updatedUser.username),
+          updatedUser,
+        );
+      }
     },
   });
 };
@@ -75,35 +92,49 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
 
 export const useUser = (options?: { enabled?: boolean }) => {
   const { addNotification } = useNotifications();
-  const { data: me, isLoading, isFetching } = useGetMeQuery(options);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isHydrated = useAppSelector(selectIsHydrated);
+
+  const {
+    data: me,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetMeQuery({
+    enabled: options?.enabled ?? (isAuthenticated && isHydrated),
+  });
+
   const updateMutation = useUpdateMeMutation();
   const avatarMutation = useUploadAvatarMutation();
-  const dispatch = useAppDispatch();
 
   const updateProfile = async (data: UpdateUserRequest) => {
     try {
-      const updatedUser = await updateMutation.mutateAsync(data);
-      dispatch(setUser(updatedUser));
+      await updateMutation.mutateAsync(data);
       addNotification("success", "Profile updated successfully");
     } catch (err: any) {
-      addNotification("error", err.message || "Failed to update profile");
+      addNotification(
+        "error",
+        getErrorMessage(err, "Failed to update profile"),
+      );
     }
   };
 
   const uploadAvatar = async (formData: FormData) => {
     try {
-      const updatedUser = await avatarMutation.mutateAsync(formData);
-      dispatch(setUser(updatedUser));
+      await avatarMutation.mutateAsync(formData);
       addNotification("success", "Avatar updated successfully");
     } catch (err: any) {
-      addNotification("error", err.message || "Failed to upload avatar");
+      addNotification("error", getErrorMessage(err, "Failed to upload avatar"));
     }
   };
 
   return {
     me: me || null,
-    isLoading,
+    isLoading: isLoading || !isHydrated,
     isFetching,
+    error,
+    isAuthenticated,
+    isHydrated,
     actions: {
       updateProfile,
       uploadAvatar,

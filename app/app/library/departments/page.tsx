@@ -1,31 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   DepartmentCard,
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks";
 import { SortFilter } from "@/app/components/Library/SortFilter";
-import { useDepartments } from "@/app/services";
+import { useDepartments, useUser } from "@/app/services";
 import { useGetSchoolsQuery } from "@/app/services/onboarding";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectIsAuthenticated } from "@/app/store";
+import { selectIsAuthenticated } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
-  const user = useSelector(selectCurrentUser);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { me: user, isAuthenticated, isHydrated } = useUser();
 
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
-    user?.school?.id || "",
-  );
-
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
   const { data: schools = [] } = useGetSchoolsQuery();
-  const [viewDepartments, setViewDepartments] = useState(!isAuthenticated);
+
+  const isGalleryView = searchParams.get("view") === "gallery";
+  const viewDepartments = !isHydrated || !isAuthenticated || isGalleryView;
 
   const { departments: allDepartments, isLoading } = useDepartments(
     selectedSchoolId ? { school_id: selectedSchoolId } : {},
@@ -38,18 +38,27 @@ export default function DepartmentsPage() {
   const userDepartmentSlug = userDepartment?.slug || null;
 
   useEffect(() => {
-    if (user?.school?.id && !selectedSchoolId) {
+    if (isHydrated && user?.school?.id && !selectedSchoolId) {
       setSelectedSchoolId(user.school.id);
     }
-  }, [user?.school?.id]);
+  }, [isHydrated, user?.school?.id, selectedSchoolId]);
 
-  const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
   const departmentSkeletonCount = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
     4,
     10,
   );
-  const toggleViewDepartments = () => setViewDepartments((prev) => !prev);
+
+  const toggleViewDepartments = () => {
+    if (!isAuthenticated) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (isGalleryView) {
+      params.delete("view");
+    } else {
+      params.set("view", "gallery");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -72,8 +81,8 @@ export default function DepartmentsPage() {
               )}
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              {!isAuthenticated && (
+            <div className="flex flex-col sm:flex-row items-start lg:items-center gap-4">
+              {isHydrated && !isAuthenticated && (
                 <SortFilter
                   value={selectedSchoolId}
                   onValueChange={setSelectedSchoolId}
@@ -85,21 +94,21 @@ export default function DepartmentsPage() {
                     })),
                   ]}
                   labelPrefix="School:"
-                  className="w-full md:w-auto"
+                  className="w-full sm:w-auto"
                 />
               )}
 
-              {isAuthenticated && (
+              {isHydrated && isAuthenticated && (
                 <button
                   onClick={toggleViewDepartments}
-                  className="flex items-center gap-3 px-6 py-3 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group"
+                  className="flex items-center gap-3 px-8 py-4 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-800 shadow-sm transition-all group w-full sm:w-auto justify-center sm:justify-start"
                 >
                   {!viewDepartments ? (
                     <FiList className="w-5 h-5 text-emerald-600 dark:text-emerald-500 group-hover:scale-110 transition-transform" />
                   ) : (
                     <FiX className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
                   )}
-                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
                     {!viewDepartments ? "Explore All" : "Close Gallery"}
                   </span>
                 </button>

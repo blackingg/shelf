@@ -40,7 +40,7 @@ export const ConfirmModal = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-lg p-8 border border-gray-200 dark:border-neutral-800 z-50"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-md p-8 border border-gray-200 dark:border-neutral-800 z-50"
           >
             <div className="flex items-center space-x-4 mb-8">
               {isDanger && (

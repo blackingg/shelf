@@ -33,13 +33,19 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   // Auto-close only for top notification
   useEffect(() => {
     if (stackIndex === 0) {
-      const timer = setTimeout(
-        () => handleClose(),
-        notification.duration || 5000,
-      );
+      // If the notification persists in the panel for a long time (local alerts),
+      // we only want it to show as a popup for a few seconds.
+      const popupDuration =
+        notification.duration && notification.duration < 15000
+          ? notification.duration
+          : notification.type === "error"
+            ? 10000
+            : 6000;
+
+      const timer = setTimeout(() => handleClose(), popupDuration);
       return () => clearTimeout(timer);
     }
-  }, [stackIndex, notification.duration, handleClose]);
+  }, [stackIndex, notification.duration, notification.type, handleClose]);
 
   const icons = {
     success: (
@@ -114,10 +120,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         >
           {icons[notification.type]}
         </div>
-        <div className="flex-1 pt-1.5">
-          <p className="text-xs font-bold text-gray-900 dark:text-white leading-tight uppercase tracking-wider">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-gray-900 dark:text-white leading-tight uppercase tracking-wider truncate">
             {notification.message}
           </p>
+          {notification.description && (
+            <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1 leading-relaxed line-clamp-2">
+              {notification.description}
+            </p>
+          )}
         </div>
         {stackIndex === 0 && (
           <button

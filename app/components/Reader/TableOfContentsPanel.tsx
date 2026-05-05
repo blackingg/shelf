@@ -10,11 +10,54 @@ export function TableOfContentsPanel() {
     setIsTableOfContentsOpen,
     tableOfContentsItems,
     onTableOfContentsNavigate,
+    currentTheme,
+    themeName,
   } = useReader();
+
+  const borderClass =
+    themeName === "sepia"
+      ? "border-[#dccfb4]"
+      : themeName === "dark"
+        ? "border-[#404040]"
+        : "border-gray-200";
+
+  const mutedTextClass =
+    themeName === "sepia"
+      ? "text-[#8c6b5d]"
+      : themeName === "dark"
+        ? "text-neutral-400"
+        : "text-gray-600";
+
+  const nestedItemTextClass =
+    themeName === "sepia"
+      ? "text-[#8c6b5d]"
+      : themeName === "dark"
+        ? "text-neutral-400"
+        : "text-gray-700";
+
+  const topLevelItemTextClass =
+    themeName === "sepia"
+      ? "text-[#5b4636]"
+      : themeName === "dark"
+        ? "text-neutral-200"
+        : "text-gray-900";
+
+  const itemHoverBgClass =
+    themeName === "sepia"
+      ? "hover:bg-[#dccfb4]/35"
+      : themeName === "dark"
+        ? "hover:bg-white/5"
+        : "hover:bg-black/5";
+
+  const itemHoverTextClass =
+    themeName === "sepia"
+      ? "group-hover:text-[#8c6b5d]"
+      : themeName === "dark"
+        ? "group-hover:text-emerald-400"
+        : "group-hover:text-emerald-700";
 
   const handleItemClick = (href: string) => {
     onTableOfContentsNavigate?.(href);
-    // Close panel on mobile after navigation
     if (window.innerWidth < 768) {
       setIsTableOfContentsOpen(false);
     }
@@ -24,60 +67,60 @@ export function TableOfContentsPanel() {
     <AnimatePresence>
       {isTableOfContentsOpen && (
         <>
-          {/* Backdrop for mobile */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsTableOfContentsOpen(false)}
-            className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] md:hidden"
+            className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-60 md:hidden"
           />
 
-          {/* Panel */}
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 bottom-0 w-80 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 z-[70] flex flex-col shadow-2xl"
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className={`fixed top-0 left-0 bottom-0 w-80 ${currentTheme.bg} border-r ${borderClass} z-70 flex flex-col`}
           >
-            {/* Header */}
-            <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-              <h2 className="font-semibold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider text-xs">
+            <div
+              className={`p-4 h-14 border-b ${borderClass} flex items-center justify-between`}
+            >
+              <h2
+                className={`font-medium ${currentTheme.text} uppercase tracking-[0.2em] text-[10px]`}
+              >
                 Table of Contents
               </h2>
               <button
                 onClick={() => setIsTableOfContentsOpen(false)}
-                className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+                className={`p-1 ${itemHoverBgClass} rounded-sm transition-colors`}
                 title="Close sidebar"
               >
-                <FiX className="w-4 h-4 text-neutral-500" />
+                <FiX className={`w-4 h-4 ${mutedTextClass}`} />
               </button>
             </div>
 
-            {/* List */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
               {tableOfContentsItems.length === 0 ? (
                 <div className="p-8 text-center">
-                  <p className="text-sm text-neutral-400 italic">
-                    No table of contents available for this book.
+                  <p className={`text-xs italic font-medium ${mutedTextClass}`}>
+                    No chapters identified.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-0.5">
+                <div className="space-y-px">
                   {tableOfContentsItems.map((item, index) => (
                     <button
                       key={`${item.href}-${index}`}
                       onClick={() => handleItemClick(item.href)}
-                      className="w-full text-left px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group"
-                      style={{ paddingLeft: `${item.level * 1.5 + 0.75}rem` }}
+                      className={`w-full text-left px-4 py-2.5 rounded-sm ${itemHoverBgClass} transition-colors group`}
+                      style={{ paddingLeft: `${item.level * 1.25 + 1}rem` }}
                     >
                       <span
-                        className={`text-sm ${
+                        className={`text-xs tracking-tight ${
                           item.level === 0
-                            ? "font-medium text-neutral-700 dark:text-neutral-200"
-                            : "text-neutral-500 dark:text-neutral-400"
-                        } group-hover:text-emerald-600 dark:group-hover:text-emerald-400 line-clamp-2`}
+                            ? `font-medium ${topLevelItemTextClass}`
+                            : nestedItemTextClass
+                        } ${itemHoverTextClass} line-clamp-2 transition-colors`}
                       >
                         {item.label}
                       </span>

@@ -12,16 +12,18 @@ import {
   FiShare2,
   FiBookmark,
   FiLock,
+  FiArrowLeft,
+  FiSearch,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/app/store";
 import {
   useFolderBySlug,
   useFolderActions,
   useIsFolderBookmarked,
   useBookmarkFolderActions,
+  useUser,
 } from "@/app/services";
+import { useFolderPermissions } from "@/app/hooks";
 import { FolderIcon } from "@/app/components/Folders/FolderIcon";
 import FolderDetailSkeleton from "@/app/components/Skeletons/FolderDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
@@ -40,8 +42,19 @@ export default function FolderClient() {
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
 
-  const user = useSelector(selectCurrentUser);
-  const currentUser = user?.username || "Guest";
+  const { me: user, isAuthenticated } = useUser();
+
+  const {
+    isOwner,
+    isCollaborator,
+    canEditFolder,
+    canDeleteFolder,
+    canAddBooks,
+    canRemoveBooks,
+  } = useFolderPermissions(folder);
+
+  const canEdit = canEditFolder;
+  const canDelete = canDeleteFolder;
 
   const isForbidden = (error as any)?.status === 403;
 
@@ -63,21 +76,11 @@ export default function FolderClient() {
 
   const books = folder?.items?.map((item: any) => item.book) || [];
 
-  const isOwner = folder?.user?.username === currentUser;
-  const isCollaborator = !!folder?.collaborators?.some(
-    (c: any) => c.user.username === currentUser,
-  );
-  const userCollaborator = folder?.collaborators?.find(
-    (c: any) => c.user.username === currentUser,
-  );
-  const isEditor = userCollaborator?.role === "EDITOR";
-
-  const canEdit = isOwner || isEditor;
-  const canDelete = isOwner;
   const canSeeShare =
     folder?.visibility === "PUBLIC" || isOwner || isCollaborator;
 
-  const hasMenuActions = canEdit || canDelete || canSeeShare;
+  const hasMultipleActions = canEdit || canDelete;
+  const showActions = hasMultipleActions || canSeeShare;
 
   const handleRemoveBook = async (bookId: string) => {
     if (!folder) return;
@@ -127,23 +130,43 @@ export default function FolderClient() {
             </div>
           </div>
         ) : !folder ? (
-          <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
-            <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-6">
-              <FiFolder className="w-10 h-10 text-gray-300 dark:text-neutral-600" />
+          <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 min-h-[48vh] flex items-center justify-center px-6 py-12">
+            <div className="w-full max-w-xl text-left space-y-5">
+              <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                <span>404 folder missing</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                  <FiFolder className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </div>
+                <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                  Folder Not Found
+                </h2>
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                The folder you are looking for does not exist.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/app/folders")}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                >
+                  <FiSearch className="w-4 h-4" />
+                  Browse Folders
+                </button>
+                <button
+                  onClick={() => router.back()}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  <FiArrowLeft className="w-4 h-4" />
+                  Go Back
+                </button>
+              </div>
             </div>
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-              Folder Not Found
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 max-w-sm">
-              The folder you are looking for doesn&apos;t exist or has been
-              removed from our system.
-            </p>
-            <button
-              onClick={() => router.push("/app/folders")}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-md font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
-            >
-              Back to Folders
-            </button>
           </div>
         ) : (
           <div className="space-y-6 md:space-y-10">
@@ -189,71 +212,89 @@ export default function FolderClient() {
               </div>
 
               <div className="flex items-center space-x-2 self-end lg:self-start">
-                <button
-                  onClick={handleToggleBookmark}
-                  className={`p-2 rounded-lg transition-all duration-200 border ${
-                    isBookmarked
-                      ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-600"
-                      : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                  }`}
-                  title={
-                    isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"
-                  }
-                >
-                  <FiBookmark
-                    className={`w-6 h-6 md:w-5 md:h-5 ${isBookmarked ? "fill-current" : ""}`}
-                  />
-                </button>
+                {isAuthenticated && (
+                  <button
+                    onClick={handleToggleBookmark}
+                    className={`p-2 rounded-lg transition-all duration-200 border ${
+                      isBookmarked
+                        ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-600"
+                        : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                    title={
+                      isBookmarked
+                        ? "Remove from bookmarks"
+                        : "Add to bookmarks"
+                    }
+                  >
+                    <FiBookmark
+                      className={`w-6 h-6 md:w-5 md:h-5 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                  </button>
+                )}
 
-                {hasMenuActions && (
+                {showActions && (
                   <div className="relative">
-                    <button
-                      onClick={() => setShowMenu(!showMenu)}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400"
-                    >
-                      <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
-                    </button>
+                    {hasMultipleActions ? (
+                      <>
+                        <button
+                          onClick={() => setShowMenu(!showMenu)}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400"
+                        >
+                          <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
+                        </button>
 
-                    {showMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 py-1 z-10">
-                        {canEdit && (
-                          <button
-                            onClick={() =>
-                              router.push(`/app/folders/${folder.slug}/edit`)
-                            }
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
-                          >
-                            <FiEdit2 className="w-4 h-4" />
-                            <span>Edit Folder</span>
-                          </button>
-                        )}
-                        {canSeeShare && (
-                          <button
-                            onClick={handleShare}
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2"
-                          >
-                            <FiShare2 className="w-4 h-4" />
-                            <span>Share</span>
-                          </button>
-                        )}
-                        {canDelete && (
-                          <>
-                            {(canEdit || canSeeShare) && (
-                              <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                        {showMenu && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/10 py-1 z-10 shadow-lg">
+                            {canEdit && (
+                              <button
+                                onClick={() =>
+                                  router.push(
+                                    `/app/folders/${folder.slug}/edit`,
+                                  )
+                                }
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                              >
+                                <FiEdit2 className="w-4 h-4" />
+                                <span>Edit Folder</span>
+                              </button>
                             )}
-                            <button
-                              onClick={() => {
-                                setShowMenu(false);
-                                setShowDeleteModal(true);
-                              }}
-                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                              <span>Delete</span>
-                            </button>
-                          </>
+                            {canSeeShare && (
+                              <button
+                                onClick={handleShare}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                              >
+                                <FiShare2 className="w-4 h-4" />
+                                <span>Share</span>
+                              </button>
+                            )}
+                            {canDelete && (
+                              <>
+                                {(canEdit || canSeeShare) && (
+                                  <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                )}
+                                <button
+                                  onClick={() => {
+                                    setShowMenu(false);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
+                                >
+                                  <FiTrash2 className="w-4 h-4" />
+                                  <span>Delete</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         )}
-                      </div>
+                      </>
+                    ) : (
+                      <button
+                        onClick={handleShare}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400 border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
+                        title="Share Folder"
+                      >
+                        <FiShare2 className="w-6 h-6 md:w-5 md:h-5" />
+                      </button>
                     )}
                   </div>
                 )}
@@ -263,11 +304,11 @@ export default function FolderClient() {
             <div>
               <BooksTable
                 books={books}
-                canEdit={canEdit}
+                canEdit={canRemoveBooks}
                 folderId={folder.id}
                 onRemoveBook={handleRemoveBook}
                 onBookClick={(bookId) => {
-                  const book = books.find((b) => b.id === bookId);
+                  const book = books.find((b: any) => b.id === bookId);
                   router.push(`/app/books/${book?.slug || bookId}/read`);
                 }}
               />

@@ -7,7 +7,6 @@ import type { PdfViewerHandle } from "@/app/components/Reader/PdfViewer";
 import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { FiUploadCloud } from "react-icons/fi";
 import { motion } from "motion/react";
-import { useReader } from "@/app/components/Reader/ReaderContext";
 
 export default function UploadAndReadPage() {
   const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
@@ -52,7 +51,7 @@ export default function UploadAndReadPage() {
   }, [fileType, currentPage, totalPages]);
 
   const handlePrevPage = useCallback(() => {
-    if (fileType === "epub") {
+    if (fileType === "epub" && currentPage > 1) {
       epubControlsRef.current?.prev();
     } else {
       if (currentPage > 1) {
@@ -80,7 +79,7 @@ export default function UploadAndReadPage() {
           onClick={() => {
             fileInputRef.current?.click();
           }}
-          className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all shadow-lg shadow-emerald-600/20"
+          className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all"
         >
           <FiUploadCloud className="w-5 h-5" />
           <span className="hidden sm:inline">
@@ -102,44 +101,47 @@ export default function UploadAndReadPage() {
 
   if (!fileType) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full bg-white dark:bg-black font-onest">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center space-y-6 p-12"
+          transition={{ duration: 0.4 }}
+          className="text-center space-y-8 p-12"
         >
-          <div className="w-24 h-24 mx-auto rounded-3xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-            <FiUploadCloud className="w-12 h-12 text-emerald-600" />
+          <div className="w-20 h-20 mx-auto rounded-sm bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+            <FiUploadCloud className="w-8 h-8 text-emerald-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Upload &amp; Read
+            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
+              Upload & Read
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 max-w-sm">
-              Upload a PDF or EPUB file to start reading.
+            <p className="text-base text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+              Upload a PDF or EPUB file to start reading directly in your
+              browser.
             </p>
           </div>
-          <label className="inline-flex items-center space-x-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition-all shadow-lg shadow-emerald-600/20">
-            <FiUploadCloud className="w-5 h-5" />
-            <span>Choose a file</span>
-            <input
-              type="file"
-              accept=".epub, .pdf"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-          </label>
-          <p className="text-xs text-gray-400 dark:text-gray-500">
-            Supports .pdf and .epub formats
-          </p>
+          <div className="flex flex-col items-center gap-4">
+            <label className="inline-flex items-center space-x-3 px-8 py-4 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer transition-colors">
+              <FiUploadCloud className="w-5 h-5" />
+              <span>Choose a file</span>
+              <input
+                type="file"
+                accept=".epub, .pdf"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+            </label>
+            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">
+              Supports .PDF and .EPUB
+            </p>
+          </div>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="absolute top-0 left-0 inset-0 z-100">
+    <div className="absolute top-0 left-0 inset-0 z-100 bg-white dark:bg-black">
       <ReaderLayout
         title={fileName || "Untitled"}
         currentPage={currentPage}
@@ -157,6 +159,7 @@ export default function UploadAndReadPage() {
               epubControlsRef.current = controls;
             }}
             onPageDetails={(info) => {
+              setCurrentPage(Number(info.currentPage));
               setTotalPages(Number(info.totalPages));
             }}
           />

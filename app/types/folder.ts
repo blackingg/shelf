@@ -60,22 +60,32 @@ export interface AddBookToFolderRequest {
 
 export type FolderRoles = "OWNER" | "EDITOR" | "VIEWER";
 
+export type FolderPermission =
+  | "ADD_BOOKS"
+  | "REMOVE_BOOKS"
+  | "EDIT_FOLDER"
+  | "DELETE_FOLDER"
+  | "MANAGE_COLLABORATORS"
+  | "CHANGE_VISIBILITY";
+
 export interface InviteCollaboratorRequest {
   userId: string;
-  role?: FolderRoles;
-  permissions?: string[];
+  role?: Exclude<FolderRoles, "OWNER">;
+  permissions?: FolderPermission[];
   message?: string;
 }
+
+export type InviteStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
 
 export interface Invite {
   id: string;
   folderId: string;
   userId: string;
-  invitedBy: string;
-  role: string;
-  permissions: string[];
+  invitedBy: string | UserMinimal;
+  role: Exclude<FolderRoles, "OWNER">;
+  permissions: FolderPermission[];
   message: string | null;
-  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
+  status: InviteStatus;
   expiresAt: string;
   respondedAt: string | null;
   createdAt: string;
@@ -86,16 +96,16 @@ export interface Invite {
 
 export interface Collaborator {
   id: string;
-  role: string;
-  permissions: string[];
+  role: Exclude<FolderRoles, "OWNER">;
+  permissions: FolderPermission[];
   user: UserMinimal;
   invitedAt: string;
   acceptedAt: string | null;
 }
 
 export interface UpdatePermissionsRequest {
-  role?: string;
-  permissions?: string[];
+  role?: Exclude<FolderRoles, "OWNER">;
+  permissions?: FolderPermission[];
 }
 
 export interface UpdateCollaborationSettingsRequest {

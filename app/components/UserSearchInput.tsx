@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FiSearch, FiUser } from "react-icons/fi";
+import { FiSearch, FiUser, FiX } from "react-icons/fi";
 import { useGetUserByUsernameQuery } from "@/app/services";
 import { UserMinimal } from "@/app/types/user";
 
 interface UserSearchInputProps {
-  onSelect: (user: UserMinimal) => void;
+  onSelect: (user: UserMinimal | null) => void;
+  selectedUser?: UserMinimal | null;
   excludeUserIds?: string[];
   placeholder?: string;
 }
@@ -23,6 +24,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export default function UserSearchInput({
   onSelect,
+  selectedUser,
   excludeUserIds = [],
   placeholder = "Search by username...",
 }: UserSearchInputProps) {
@@ -69,8 +71,43 @@ export default function UserSearchInput({
 
   const showDropdown = isOpen && debouncedQuery.length >= 2;
 
+  if (selectedUser) {
+    return (
+      <div className="flex items-center justify-between px-3 py-2 bg-white dark:bg-neutral-900 border border-emerald-500 rounded-sm">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50">
+            {selectedUser.avatar ? (
+              <img
+                src={selectedUser.avatar}
+                alt={selectedUser.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              selectedUser.username?.[0] || "?"
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              @{selectedUser.username}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => onSelect(null)}
+          className="p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-sm hover:bg-red-50 dark:hover:bg-red-500/5"
+        >
+          <FiX className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div ref={containerRef} className="relative flex-1">
+    <div
+      ref={containerRef}
+      className="relative flex-1"
+    >
       <div className="relative">
         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500 pointer-events-none" />
         <input
@@ -85,20 +122,32 @@ export default function UserSearchInput({
             if (query.trim().length >= 2) setIsOpen(true);
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 focus:border-emerald-500 bg-white dark:bg-neutral-900 outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 transition-colors"
+          className="w-full pl-10 pr-10 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 focus:border-emerald-500 bg-white dark:bg-neutral-900 outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 transition-colors"
         />
-        {isFetching && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setIsOpen(false);
+              }}
+              className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <FiX className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {isFetching && (
             <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md shadow-lg overflow-hidden">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-sm overflow-hidden">
           {isFetching ? (
             <div className="flex items-center space-x-3 px-4 py-3 animate-pulse">
-              <div className="w-8 h-8 bg-gray-200 dark:bg-neutral-700 rounded-md shrink-0" />
+              <div className="w-8 h-8 bg-gray-200 dark:bg-neutral-700 rounded-sm shrink-0" />
               <div className="flex-1 space-y-1.5">
                 <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-28" />
                 <div className="h-3 bg-gray-100 dark:bg-neutral-800 rounded w-20" />
@@ -117,17 +166,17 @@ export default function UserSearchInput({
               }
               className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
             >
-              {foundUser.avatar ? (
-                <img
-                  src={foundUser.avatar}
-                  alt={foundUser.username}
-                  className="w-8 h-8 rounded-md object-cover shrink-0"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-md flex items-center justify-center text-xs font-medium text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 uppercase shrink-0">
-                  {foundUser.fullName?.[0] || foundUser.username?.[0] || "?"}
-                </div>
-              )}
+              <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
+                {foundUser.avatar ? (
+                  <img
+                    src={foundUser.avatar}
+                    alt={foundUser.username}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  foundUser.fullName?.[0] || foundUser.username?.[0] || "?"
+                )}
+              </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                   {foundUser.fullName}

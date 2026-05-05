@@ -20,9 +20,9 @@ export const useAuthActions = () => {
     onSuccess: (data, variables) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
           rememberMe: variables.rememberMe,
         }),
@@ -37,9 +37,9 @@ export const useAuthActions = () => {
     onSuccess: (data) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
         }),
       );
@@ -53,9 +53,9 @@ export const useAuthActions = () => {
     onSuccess: (data) => {
       dispatch(
         setCredentials({
-          user: data.user,
           accessToken: data.tokens.accessToken,
           refreshToken: data.tokens.refreshToken,
+          userId: data.user.id,
           expiresIn: data.tokens.expiresIn,
           rememberMe: true,
         }),
@@ -68,6 +68,7 @@ export const useAuthActions = () => {
     mutationFn: () => api.post("/auth/logout", {}),
     onSettled: () => {
       dispatch(logout());
+      window.location.reload();
     },
   });
 

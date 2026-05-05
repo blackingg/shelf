@@ -10,22 +10,20 @@ import {
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectCurrentUser,
-  selectIsAuthenticated,
-  logout,
-} from "../store/authSlice";
+import { useDispatch } from "react-redux";
+import { useUser, useAuthActions } from "@/app/services";
+import { ConfirmModal } from "./ConfirmModal";
 
 export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout: performLogout } = useAuthActions();
+  const { me: user, isAuthenticated, isHydrated } = useUser();
+
+  if (!isHydrated) return null;
 
   const userFullName = user?.fullName || "";
   const userName = user?.username || "User";
-  const userEmail = user?.email || "";
   const userAvatar = user?.avatar || null;
 
   const router = useRouter();
@@ -40,10 +38,14 @@ export const UserProfileDropdown: React.FC = () => {
     router.push("/app/settings/profile");
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogoutClick = () => {
     setIsOpen(false);
-    router.push("/app/auth/login");
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    performLogout();
+    setShowLogoutModal(false);
   };
 
   const handleLogin = () => {
@@ -161,7 +163,7 @@ export const UserProfileDropdown: React.FC = () => {
 
                   <div className="border-t border-gray-100 dark:border-neutral-800 py-2">
                     <button
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left group"
                     >
                       <FiLogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
@@ -208,6 +210,17 @@ export const UserProfileDropdown: React.FC = () => {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out of your session?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isDanger={true}
+      />
     </div>
   );
 };

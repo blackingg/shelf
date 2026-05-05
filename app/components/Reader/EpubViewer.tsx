@@ -6,6 +6,7 @@ import { useReader } from "./ReaderContext";
 import { useNotifications } from "@/app/context/NotificationContext";
 
 export async function generateLocations(book: Book) {
+  await book.ready;
   return await book.locations.generate(1024);
 }
 
@@ -50,13 +51,10 @@ export function EpubViewer({
       width: "100%",
       height: "100%",
       allowScriptedContent: true,
-      manager: "continuous",
       flow: "scrolled",
+      manager: "continuous",
     });
     renditionRef.current = rendition;
-
-    // Start rendering
-    rendition.display();
 
     // Register themes
     rendition.themes.register("light", epubThemes.light);
@@ -66,64 +64,66 @@ export function EpubViewer({
     rendition.themes.fontSize(`${fontSize}px`);
 
     // Parse book structure
-    book.ready.then(() => {
-      // Generate locations for progress tracking
-      book.locations.generate(1024).then(() => {
+    Promise.all([book.ready, generateLocations(book)])
+      .then(() => {
+        console.log(book);
         const total = book.locations.length();
         onPageDetails?.({ totalPages: total });
-      });
-
-      // Parse Table of Contents
-      const toc = book.navigation.toc;
-      if (toc && toc.length > 0) {
-        const flattenTableOfContents = (items: any[], level: number = 0) => {
-          let result: any[] = [];
-          items.forEach((item) => {
-            result.push({
-              label: item.label?.trim() ?? "Untitled",
-              href: item.href,
-              level,
+        return rendition.display();
+      })
+      .then(() => {
+        // Parse Table of Contents
+        const toc = book.navigation.toc;
+        if (toc && toc.length > 0) {
+          const flattenTableOfContents = (items: any[], level: number = 0) => {
+            let result: any[] = [];
+            items.forEach((item) => {
+              result.push({
+                label: item.label?.trim() ?? "Untitled",
+                href: item.href,
+                level,
+              });
+              if (item.subitems && item.subitems.length > 0) {
+                result = result.concat(
+                  flattenTableOfContents(item.subitems, level + 1),
+                );
+              }
             });
-            if (item.subitems && item.subitems.length > 0) {
-              result = result.concat(
-                flattenTableOfContents(item.subitems, level + 1),
-              );
+            return result;
+          };
+          setTableOfContentsItems(flattenTableOfContents(toc, 0));
+        }
+
+        // Provide controls to parent
+        onReady?.({
+          next: () => {
+            if (viewRef.current) {
+              viewRef.current.scrollBy({
+                top: viewRef.current.clientHeight * 0.9,
+                behavior: "smooth",
+              });
+              rendition.next();
             }
-          });
-          return result;
-        };
-        setTableOfContentsItems(flattenTableOfContents(toc, 0));
-      }
-
-      // Provide controls to parent
-      onReady?.({
-        next: () => {
-          if (viewRef.current) {
-            viewRef.current.scrollBy({
-              top: viewRef.current.clientHeight * 0.9,
-              behavior: "smooth",
-            });
-          }
-        },
-        prev: () => {
-          if (viewRef.current) {
-            viewRef.current.scrollBy({
-              top: -(viewRef.current.clientHeight * 0.9),
-              behavior: "smooth",
-            });
-          }
-        },
-        goTo: (p: number) => {
-          const cfi = book.locations.cfiFromLocation(p);
-          if (cfi) {
+          },
+          prev: () => {
+            if (viewRef.current) {
+              viewRef.current.scrollBy({
+                top: -(viewRef.current.clientHeight * 0.9),
+                behavior: "smooth",
+              });
+              rendition.prev();
+            }
+          },
+          goTo: (p: number) => {
+            const cfi = book.locations.cfiFromLocation(p);
             rendition.display(cfi);
-          }
-        },
+          },
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        addNotification("success", "Book contents loaded successfully");
       });
-
-      setLoading(false);
-      addNotification("success", "Book contents loaded successfully");
-    });
 
     // Set up Table of Contents navigation
     setTableOfContentsNavigator((href: string) => {
@@ -146,16 +146,7 @@ export function EpubViewer({
       rendition.destroy();
       book.destroy();
     };
-  }, [
-    buffer,
-    setTableOfContentsItems,
-    setTableOfContentsNavigator,
-    themeName,
-    fontSize,
-    addNotification,
-    onPageDetails,
-    onReady,
-  ]);
+  }, [buffer, fontSize, themeName]);
 
   // Update theme when changed in context
   useEffect(() => {
@@ -182,9 +173,14 @@ export function EpubViewer({
 
       <div
         ref={viewRef}
-        className="w-full h-full overflow-y-auto custom-scrollbar"
+        className="w-full overflow-y-auto custom-scrollbar"
         style={{
-          visibility: loading ? "hidden" : "visible",
+          height: "100%",
+          width: "100%",
+          maxWidth: "80vw",
+          display: !loading ? "block" : "none",
+          overflowX: "hidden",
+          textAlign: "justify",
         }}
       />
     </div>

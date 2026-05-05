@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
@@ -21,20 +21,38 @@ import {
   useBookActions,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { getErrorMessage } from "@/app/helpers/error";
-import { useAppSelector } from "@/app/store/store";
-import { selectCurrentUser } from "@/app/store/authSlice";
-import { BookCardListView } from "@/app/components/Donation_ListView";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
+import { useGetMeQuery } from "@/app/services";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
+type BookmarkSubTab = "books" | "folders";
+
+function isLibraryTab(value: string | null): value is LibraryTab {
+  return value === "bookmarks" || value === "folders" || value === "uploads";
+}
+
+function isBookmarkSubTab(value: string | null): value is BookmarkSubTab {
+  return value === "books" || value === "folders";
+}
 
 export default function LibraryPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
 
-  const activeUser = useAppSelector(selectCurrentUser);
-  const [activeTab, setActiveTab] = useState<LibraryTab>("bookmarks");
+  const tabParam = searchParams.get("tab");
+  const bookmarkParam = searchParams.get("bookmark");
+
+  const initialTab: LibraryTab = isLibraryTab(tabParam)
+    ? tabParam
+    : "bookmarks";
+  const initialBookmarkSubTab: BookmarkSubTab = isBookmarkSubTab(bookmarkParam)
+    ? bookmarkParam
+    : "books";
+
+  const { data: activeUser } = useGetMeQuery();
+  const [activeTab, setActiveTab] = useState<LibraryTab>(initialTab);
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
   // Uploads state
@@ -45,8 +63,8 @@ export default function LibraryPage() {
   // Bookmarks state
   const [bookmarkPage, setBookmarkPage] = useState(1);
   const [bookmarkFolderPage, setBookmarkFolderPage] = useState(1);
-  const [bookmarkSubTab, setBookmarkSubTab] = useState<"books" | "folders">(
-    "books",
+  const [bookmarkSubTab, setBookmarkSubTab] = useState<BookmarkSubTab>(
+    initialBookmarkSubTab,
   );
 
   // Folders state
@@ -64,6 +82,45 @@ export default function LibraryPage() {
     setBookmarkFolderPage(1);
     setFolderPage(1);
   }, [pageSize]);
+
+  useEffect(() => {
+    const nextTabParam = searchParams.get("tab");
+    const nextBookmarkParam = searchParams.get("bookmark");
+
+    const tabFromUrl: LibraryTab = isLibraryTab(nextTabParam)
+      ? nextTabParam
+      : "bookmarks";
+    const bookmarkFromUrl: BookmarkSubTab = isBookmarkSubTab(nextBookmarkParam)
+      ? nextBookmarkParam
+      : "books";
+
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+
+    if (tabFromUrl === "bookmarks" && bookmarkFromUrl !== bookmarkSubTab) {
+      setBookmarkSubTab(bookmarkFromUrl);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", activeTab);
+
+    if (activeTab === "bookmarks") {
+      params.set("bookmark", bookmarkSubTab);
+    } else {
+      params.delete("bookmark");
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery !== currentQuery) {
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [activeTab, bookmarkSubTab, pathname, router, searchParams]);
 
   const {
     books: bookmarkedBooks,
@@ -410,7 +467,6 @@ export default function LibraryPage() {
           book={selectedBook!}
           isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
-          isDonationsPage={activeTab === "uploads"}
         />
       )}
 

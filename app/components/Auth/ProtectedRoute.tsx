@@ -3,8 +3,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectCurrentUser, selectIsAuthenticated } from "@/app/store";
-import { useGetMeQuery } from "@/app/services";
+import { logout, selectIsHydrated } from "@/app/store";
+import { useUser } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
 const PUBLIC_PATHS = [
@@ -12,7 +12,7 @@ const PUBLIC_PATHS = [
   "/docs/privacy",
   "/docs/terms",
   "/app/discover",
-  "/app/discover/folders",
+  "/app/folders",
 ];
 
 const PUBLIC_DYNAMIC_PREFIXES = [
@@ -31,9 +31,8 @@ export default function ProtectedRoute({
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const currentUser = useSelector(selectCurrentUser);
-  const [isChecking, setIsChecking] = useState(true);
+  const isHydrated = useSelector(selectIsHydrated);
+  const { me: currentUser, isAuthenticated, isLoading: isLoadingMe, error: meError } = useUser();
 
   const isPublicPath = useMemo(() => {
     if (!pathname) return true;
@@ -41,7 +40,6 @@ export default function ProtectedRoute({
     if (pathname.startsWith("/app/auth")) return true;
 
     // Check for sensitive keywords across ALL routes
-    // (Ensure we don't accidentally block auth routes if we ever name them similarly)
     const isSensitive =
       pathname.includes("/edit") ||
       pathname.includes("/read") ||
@@ -53,8 +51,7 @@ export default function ProtectedRoute({
     return PUBLIC_DYNAMIC_PREFIXES.some((prefix) => {
       if (!pathname.startsWith(prefix)) return false;
 
-      // Depth validation to prevent access to sub-pages
-      // /app/books/[slug] is 3 segments
+      // Depth validation
       if (
         prefix === "/app/books" ||
         prefix === "/app/folders" ||
@@ -63,7 +60,6 @@ export default function ProtectedRoute({
         return segments.length <= 3;
       }
 
-      // /app/library/departments/[slug] is 4 segments
       if (prefix.startsWith("/app/library/")) {
         return segments.length <= 4;
       }
@@ -72,10 +68,8 @@ export default function ProtectedRoute({
     });
   }, [pathname]);
 
-  const shouldFetchMe = isAuthenticated && !isPublicPath;
-  const { error: meError, isLoading: isLoadingMe } = useGetMeQuery({
-    enabled: shouldFetchMe,
-  });
+  // Wait for hydration before doing anything
+  const isChecking = !isHydrated;
 
   // Handle 401/403 — token is expired or invalid, force logout
   useEffect(() => {
@@ -89,23 +83,18 @@ export default function ProtectedRoute({
         `/app/auth/login?redirect=${encodeURIComponent(pathname ?? "/")}`,
       );
     }
-  }, [meError, dispatch, router, pathname]);
+  }, [meError, dispatch, router, pathname, isPublicPath]);
 
   // Redirect unauthenticated users away from protected routes
   useEffect(() => {
-    if (!pathname) return;
-    if (isPublicPath) {
-      setIsChecking(false);
-      return;
-    }
+    if (isChecking || !pathname || isPublicPath) return;
+
     if (!isAuthenticated) {
       router.replace(
         `/app/auth/login?redirect=${encodeURIComponent(pathname)}`,
       );
-    } else {
-      setIsChecking(false);
     }
-  }, [isAuthenticated, pathname, router, isPublicPath]);
+  }, [isAuthenticated, pathname, router, isPublicPath, isChecking]);
 
   if (isPublicPath) return <>{children}</>;
   if (isChecking) return <LoadingScreen />;

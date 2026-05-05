@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import { AppHeader } from "@/app/components/Layout/AppHeader";
 import { Card } from "@/app/components/Layout/Card";
 import { FormInput } from "@/app/components/Form/FormInput";

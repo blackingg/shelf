@@ -2,15 +2,10 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { SingleValue } from "react-select";
-import { useTheme } from "next-themes";
 import { Button } from "@/app/components/Form/Button";
 import { FiCamera, FiBook, FiBriefcase } from "react-icons/fi";
-import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, setUser } from "@/app/store";
 import {
-  useGetMeQuery,
-  useUpdateMeMutation,
-  useUploadAvatarMutation,
+  useUser,
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
 } from "@/app/services";
@@ -18,7 +13,6 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
 import { Department } from "@/app/types/departments";
 import { FormSelect } from "@/app/components/Form/FormSelect";
-import { useCompleteOnboardingMutation } from "@/app/services";
 
 interface OptionType {
   value: string;
@@ -27,40 +21,34 @@ interface OptionType {
 
 export default function SettingsProfilePage() {
   const { addNotification } = useNotifications();
-  const user = useSelector(selectCurrentUser);
-  const dispatch = useDispatch();
-
-  const updateMe = useUpdateMeMutation();
-  const uploadAvatar = useUploadAvatarMutation();
+  const { me: profileUser, actions: userActions } = useUser();
 
   const [schoolSearch, setSchoolSearch] = useState("");
   const { data: schools = [], isLoading: isLoadingSchools } =
     useGetSchoolsQuery(schoolSearch);
 
   const [formData, setFormData] = useState({
-    name: user?.fullName || "",
-    username: user?.username || "",
-    schoolId: user?.school?.id || "",
-    departmentId: user?.department?.id || "",
-    email: user?.email || "",
-    bio: user?.bio || "",
+    name: "",
+    username: "",
+    schoolId: "",
+    departmentId: "",
+    email: "",
   });
 
   const { data: departments = [], isLoading: isLoadingDepartments } =
     useGetOnboardingDepartmentsQuery(formData.schoolId);
 
   useEffect(() => {
-    if (user) {
+    if (profileUser) {
       setFormData({
-        name: user?.fullName || "",
-        username: user?.username || "",
-        schoolId: user?.school?.id || "",
-        departmentId: user?.department?.id || "",
-        email: user?.email || "",
-        bio: user?.bio || "",
+        name: profileUser.fullName || "",
+        username: profileUser.username || "",
+        schoolId: profileUser.school?.id || "",
+        departmentId: profileUser.department?.id || "",
+        email: profileUser.email || "",
       });
     }
-  }, [user]);
+  }, [profileUser]);
 
   const schoolOptions: OptionType[] = schools?.map((school: any) => ({
     value: school.id,
@@ -75,11 +63,10 @@ export default function SettingsProfilePage() {
   );
 
   const isDirty =
-    formData.name !== (user?.fullName || "") ||
-    formData.username !== (user?.username || "") ||
-    formData.bio !== (user?.bio || "") ||
-    formData.schoolId !== (user?.school?.id || "") ||
-    formData.departmentId !== (user?.department?.id || "");
+    formData.name !== (profileUser?.fullName || "") ||
+    formData.username !== (profileUser?.username || "") ||
+    formData.schoolId !== (profileUser?.school?.id || "") ||
+    formData.departmentId !== (profileUser?.department?.id || "");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -105,21 +92,12 @@ export default function SettingsProfilePage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      const updatedUser = await updateMe.mutateAsync({
-        fullName: formData.name,
-        username: formData.username,
-        bio: formData.bio,
-      });
-      await useCompleteOnboardingMutation();
-      dispatch(setUser(updatedUser));
-      addNotification("success", "Profile updated successfully!");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to update profile"),
-      );
-    }
+    await userActions.updateProfile({
+      fullName: formData.name,
+      username: formData.username,
+      schoolId: formData.schoolId,
+      departmentId: formData.departmentId,
+    });
   };
 
   const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -129,16 +107,7 @@ export default function SettingsProfilePage() {
     const avatarPayload = new FormData();
     avatarPayload.append("file", file);
 
-    try {
-      const updatedUser = await uploadAvatar.mutateAsync(avatarPayload);
-      dispatch(setUser(updatedUser));
-      addNotification("success", "Avatar updated successfully!");
-    } catch (error) {
-      addNotification(
-        "error",
-        getErrorMessage(error, "Failed to upload avatar"),
-      );
-    }
+    await userActions.uploadAvatar(avatarPayload);
   };
 
   return (
@@ -161,16 +130,16 @@ export default function SettingsProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
-                  {user?.avatar ? (
+                  {profileUser?.avatar ? (
                     <img
-                      src={user.avatar}
+                      src={profileUser.avatar}
                       alt={formData.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
-                      {user?.fullName?.charAt(0) ||
-                        user?.username?.charAt(0) ||
+                      {profileUser?.fullName?.charAt(0) ||
+                        profileUser?.username?.charAt(0) ||
                         "?"}
                     </div>
                   )}
@@ -185,9 +154,9 @@ export default function SettingsProfilePage() {
                     className="hidden"
                     accept="image/*"
                     onChange={handleAvatarChange}
-                    disabled={uploadAvatar.isPending}
+                    disabled={userActions.isUploading}
                   />
-                  {uploadAvatar.isPending ? (
+                  {userActions.isUploading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <FiCamera className="w-5 h-5" />
@@ -249,10 +218,10 @@ export default function SettingsProfilePage() {
                     ? schoolOptions.find(
                         (opt) => opt.value === formData.schoolId,
                       ) ||
-                      (user?.school
+                      (profileUser?.school
                         ? {
-                            value: user.school.id as string,
-                            label: user.school.name,
+                            value: profileUser.school.id as string,
+                            label: profileUser.school.name,
                           }
                         : null)
                     : null
@@ -270,10 +239,10 @@ export default function SettingsProfilePage() {
                     ? departmentOptions.find(
                         (opt) => opt.value === formData.departmentId,
                       ) ||
-                      (user?.department
+                      (profileUser?.department
                         ? {
-                            value: user.department.id as string,
-                            label: user.department.name,
+                            value: profileUser.department.id as string,
+                            label: profileUser.department.name,
                           }
                         : null)
                     : null
@@ -287,7 +256,7 @@ export default function SettingsProfilePage() {
             <div className="pt-8 border-t border-gray-100 dark:border-neutral-800/50 flex justify-end">
               <Button
                 type="submit"
-                isLoading={updateMe.isPending}
+                isLoading={userActions.isUpdating}
                 disabled={!isDirty}
                 className="w-full sm:w-auto px-10 py-3 text-base font-bold rounded-xl shadow-lg shadow-emerald-900/10 active:scale-95 transition-all"
               >
