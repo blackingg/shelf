@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, selectIsHydrated } from "@/app/store";
+import { UserRole } from "@/app/types/user";
 import { useUser } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 
@@ -25,8 +26,10 @@ const PUBLIC_DYNAMIC_PREFIXES = [
 
 export default function ProtectedRoute({
   children,
+  roles,
 }: {
   children: React.ReactNode;
+  roles?: UserRole[];
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -100,6 +103,16 @@ export default function ProtectedRoute({
   if (isChecking) return <LoadingScreen />;
   if (!isAuthenticated) return null;
   if (isLoadingMe && !currentUser) return <LoadingScreen />;
+
+  // // Role validation
+  // if (roles && currentUser && !roles.includes(currentUser.role)) {
+  //   // If user is trying to access admin/moderator but doesn't have role, 
+  //   // send them to library or a dedicated not-authorized page
+  //   if (pathname?.startsWith("/admin") || pathname?.startsWith("/moderator")) {
+  //     router.replace("/library");
+  //     return null;
+  //   }
+  // }
 
   return <>{children}</>;
 }
