@@ -11,6 +11,7 @@ import {
   FiBriefcase,
   FiLogIn,
   FiUserPlus,
+  FiShield,
 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -65,6 +66,20 @@ export const Sidebar: React.FC = () => {
       requiresAuth: true,
     },
   ];
+
+  const hasModeratorAccess =
+    user?.role === "MODERATOR" ||
+    user?.role === "ADMIN" ||
+    user?.role === "SUPER_ADMIN";
+
+  if (isAuthenticated && hasModeratorAccess) {
+    mainItems.push({
+      label: "Moderator Center",
+      icon: <FiShield />,
+      href: "/moderator",
+      requiresAuth: true,
+    });
+  }
 
   const visibleMainItems = mainItems.filter(
     (item) => !item.requiresAuth || isAuthenticated,
