@@ -33,7 +33,7 @@ function SearchContent() {
     data: booksResponse,
     isLoading,
     isFetching,
-  } = useGetBooksQuery({ query, page, limit: pageSize, ordering: sortBy });
+  } = useGetBooksQuery({ q: query, page: 1, limit: pageSize, ordering: sortBy });
 
   const items = (booksResponse?.items || []).map((book: any) => ({
     type: "book" as const,
