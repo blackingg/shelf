@@ -42,7 +42,7 @@ export const PasswordStrengthIndicator: React.FC<{
   if (!password) return null;
 
   return (
-    <div className="mt-2">
+    <div className="mt-1">
       <div className="flex items-center space-x-2 mb-1">
         <div className="flex-1 bg-gray-200 rounded-full h-2">
           <div
