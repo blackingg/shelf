@@ -199,7 +199,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                 <button
                   type="submit"
                   disabled={!folderName.trim()}
-                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-md font-medium text-sm hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-sm font-medium text-sm hover:opacity-90 transition-colors disabled:opacity-50"
                 >
                   Create Folder
                 </button>
