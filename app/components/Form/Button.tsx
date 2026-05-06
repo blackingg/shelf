@@ -23,11 +23,10 @@ export const Button: React.FC<{
     "w-full py-3 px-4 rounded-sm font-medium transition-colors duration-150 flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantStyles = {
-    primary: "bg-emerald-600 text-white hover:bg-emerald-700",
+    primary: "bg-primary text-primary-foreground hover:opacity-90",
     secondary:
       "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10",
-    outline:
-      "border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/10",
+    outline: "border border-primary text-primary hover:bg-primary/5",
   };
 
   const activeStyles =

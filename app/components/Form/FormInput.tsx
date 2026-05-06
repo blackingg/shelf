@@ -57,7 +57,7 @@ export const FormInput: React.FC<{
           } py-3 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
             error
               ? "border-red-500"
-              : "border-gray-100 dark:border-white/5 focus:border-emerald-500"
+              : "border-gray-100 dark:border-white/5 focus:border-primary"
           }`}
           placeholder={placeholder}
           autoComplete={autoComplete}

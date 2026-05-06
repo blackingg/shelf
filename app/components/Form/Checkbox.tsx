@@ -10,7 +10,7 @@ export const Checkbox: React.FC<{
       type="checkbox"
       checked={checked}
       onChange={(e) => onChange(e.target.checked)}
-      className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:checked:bg-emerald-600 rounded transition-colors cursor-pointer"
+      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:checked:bg-primary rounded transition-colors cursor-pointer"
     />
     <label
       htmlFor={id}

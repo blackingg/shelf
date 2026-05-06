@@ -81,7 +81,7 @@ export const BookDetailPanel: React.FC<{
                 className="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:bg-white/10 rounded-md transition-colors duration-200 group"
                 aria-label="Close"
               >
-                <FiX className="w-6 h-6 text-emerald-100 group-hover:text-white" />
+                <FiX className="w-6 h-6 text-white/60 group-hover:text-white transition-colors" />
               </button>
 
               <div className="flex-1 overflow-y-auto custom-scrollbar pt-10 md:pt-12 pr-1">
@@ -106,13 +106,13 @@ export const BookDetailPanel: React.FC<{
                     <h2 className="text-xl sm:text-2xl font-bold leading-tight mb-2 wrap-break-word px-2">
                       {book?.title}
                     </h2>
-                    <p className="text-emerald-300 font-medium mb-2 text-sm sm:text-base px-2 wrap-break-word">
+                    <p className="text-[#d0fdc2] font-medium mb-2 text-sm sm:text-base px-2 wrap-break-word">
                       {book?.author}
                     </p>
                     {book?.donor?.username && (
                       <Link
                         href={`/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
-                        className="text-emerald-100/70 text-xs sm:text-sm inline-block"
+                        className="text-[#d0fdc2]/70 text-xs sm:text-sm inline-block"
                         onClick={() => onClose()}
                       >
                         Donated by{" "}
@@ -123,7 +123,7 @@ export const BookDetailPanel: React.FC<{
                     )}
 
                     <div className="mt-5 md:mt-6 flex flex-col items-center">
-                      <p className="text-[10px] text-emerald-300/50 uppercase tracking-widest mb-3 font-bold">
+                      <p className="text-[10px] text-[#d0fdc2]/50 uppercase tracking-widest mb-3 font-bold">
                         Your Rating
                       </p>
                       <StarRating
@@ -141,7 +141,7 @@ export const BookDetailPanel: React.FC<{
                     <p className="text-lg font-bold text-white leading-none mb-1">
                       {book?.pages || "-"}
                     </p>
-                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                    <p className="text-[10px] text-[#d0fdc2] font-bold uppercase tracking-wider">
                       Pages
                     </p>
                   </div>
@@ -151,7 +151,7 @@ export const BookDetailPanel: React.FC<{
                         ? book.rating.toFixed(1)
                         : "-"}
                     </p>
-                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                    <p className="text-[10px] text-[#d0fdc2] font-bold uppercase tracking-wider">
                       Rating
                     </p>
                   </div>
@@ -159,14 +159,14 @@ export const BookDetailPanel: React.FC<{
                     <p className="text-lg font-bold text-white leading-none mb-1 capitalize truncate">
                       {book?.category || "-"}
                     </p>
-                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                    <p className="text-[10px] text-[#d0fdc2] font-bold uppercase tracking-wider">
                       Category
                     </p>
                   </div>
                 </div>
 
                 <div className="mb-10 md:mb-12">
-                  <h3 className="text-[10px] font-black text-emerald-300/60 uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
+                  <h3 className="text-[10px] font-black text-[#d0fdc2]/60 uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
                     <div className="w-4 h-px bg-current opacity-30" />
                     About this resource
                   </h3>
@@ -177,13 +177,13 @@ export const BookDetailPanel: React.FC<{
 
                 <div className="border-t border-emerald-800/70 pt-6 md:pt-8 mb-6 md:mb-8">
                   <div className="flex items-center justify-between gap-3 mb-6 md:mb-8">
-                    <h3 className="text-[10px] font-black text-emerald-300/60 uppercase tracking-widest">
+                    <h3 className="text-[10px] font-black text-[#d0fdc2]/60 uppercase tracking-widest">
                       Reviews & Discussion
                     </h3>
                     <Link
                       href={`/books/${book?.slug}`}
                       onClick={() => onClose()}
-                      className="text-[10px] font-black text-emerald-300 hover:text-emerald-200 uppercase tracking-widest transition-colors flex items-center gap-1 shrink-0"
+                      className="text-[10px] font-black text-[#d0fdc2] hover:text-[#d0fdc2]/80 uppercase tracking-widest transition-colors flex items-center gap-1 shrink-0"
                     >
                       Expand Thread
                       <FiChevronDown className="-rotate-90 w-3 h-3" />
@@ -201,7 +201,7 @@ export const BookDetailPanel: React.FC<{
                 <div className="flex gap-2 items-center">
                   <button
                     onClick={() => router.push(`/books/${book?.slug}`)}
-                    className="h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex flex-1 items-center justify-center gap-2 sm:gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                    className="h-12 sm:h-14 bg-white text-neutral-950 font-black text-[10px] sm:text-[11px] uppercase tracking-widest rounded-md flex flex-1 items-center justify-center gap-2 sm:gap-3 transition-all duration-200"
                   >
                     <FiBookOpen className="w-4 h-4" />
                     <span>Read Now</span>
@@ -212,8 +212,8 @@ export const BookDetailPanel: React.FC<{
                       onClick={handleBookmark}
                       className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md flex items-center justify-center transition-all duration-200 border ${
                         isBookmarked
-                          ? "bg-emerald-600 border-emerald-600 text-white"
-                          : "bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 hover:border-emerald-500 hover:text-emerald-600"
+                          ? "bg-white text-primary dark:bg-primary dark:text-primary-foreground border-transparent shadow-sm"
+                          : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-primary hover:border-primary"
                       }`}
                       title={isBookmarked ? "Remove Bookmark" : "Bookmark"}
                     >
@@ -227,7 +227,7 @@ export const BookDetailPanel: React.FC<{
                 <div className="relative">
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
-                    className=" w-full bg-emerald-700/50 hover:bg-emerald-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-emerald-600/50"
+                    className="w-full bg-white/5 hover:bg-white/10 text-white/90 text-[#d0fdc2] font-semibold py-3 px-4 sm:px-6 rounded-md flex items-center justify-between transition-all duration-200 border border-white/10 hover:border-primary/50"
                   >
                     <div className="flex items-center gap-3">
                       <FiFolderPlus />
