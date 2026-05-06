@@ -1,4 +1,4 @@
-import { LogoStacked } from "@/app/components/Logo";
+import { LogoStacked } from "@/app/components/Shared/Logo";
 import Link from "next/link";
 
 export const AppHeader: React.FC<{

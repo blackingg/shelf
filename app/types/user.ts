@@ -1,3 +1,5 @@
+export type UserRole = "USER" | "MODERATOR" | "ADMIN";
+
 export interface User {
   id: string;
   uuid: string;
@@ -6,6 +8,7 @@ export interface User {
   username: string;
   avatar: string | null;
   bio: string | null;
+  role: UserRole;
   booksCount: number;
   foldersCount: number;
   onboardingCompleted: boolean;
@@ -45,6 +48,7 @@ export interface UserPublic {
   username: string;
   avatar: string | null;
   bio: string | null;
+  role: UserRole;
   booksCount: number;
   foldersCount: number;
   onboardingCompleted: boolean;

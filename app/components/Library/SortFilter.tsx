@@ -56,7 +56,7 @@ export const SortFilter: React.FC<SortFilterProps> = ({
           <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
             {labelPrefix}
           </span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-gray-700 dark:text-neutral-200">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-700 dark:text-neutral-200">
             {selectedOption?.label}
           </span>
         </div>
@@ -87,7 +87,7 @@ export const SortFilter: React.FC<SortFilterProps> = ({
                     className={`w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/5 group`}
                   >
                     <span
-                      className={`text-[10px] font-black uppercase tracking-widest ${
+                      className={`text-[10px] font-bold uppercase tracking-widest ${
                         isActive
                           ? "text-emerald-600 dark:text-emerald-500"
                           : "text-gray-500 dark:text-neutral-400 group-hover:text-gray-900 dark:group-hover:text-white"

@@ -1,4 +1,4 @@
-import { LogoStacked2 } from "@/app/components/Logo";
+import { LogoStacked2 } from "@/app/components/Shared/Logo";
 
 export const LoadingScreen = () => {
   return (

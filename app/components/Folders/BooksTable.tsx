@@ -157,7 +157,7 @@ const BooksTable = ({
                   <span>Read Book</span>
                 </button>
                 <Link
-                  href={`/app/books/${book.slug}`}
+                  href={`/books/${book.slug}`}
                   onClick={() => setActiveMenuId(null)}
                   className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
                 >

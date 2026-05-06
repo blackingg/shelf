@@ -25,12 +25,12 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
     const redirect = redirectPath
       ? `?redirect=${encodeURIComponent(redirectPath)}`
       : "";
-    router.push(`/app/auth/login${redirect}`);
+    router.push(`/auth/login${redirect}`);
     onClose();
   };
 
   const handleRegister = () => {
-    router.push("/app/auth/register");
+    router.push("/auth/register");
     onClose();
   };
 

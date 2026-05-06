@@ -74,7 +74,7 @@ export const NotificationPanel: React.FC = () => {
           ? "You can now access and contribute to this folder."
           : undefined,
         1200000,
-        accept && folderSlug ? `/app/folders/${folderSlug}` : undefined,
+        accept && folderSlug ? `/folders/${folderSlug}` : undefined,
       );
     } catch (err: any) {
       addNotification("error", "Something went wrong. Please try again.");
@@ -85,11 +85,11 @@ export const NotificationPanel: React.FC = () => {
     actions.markAsRead(notification.id);
 
     if (notification.resourceType === "book") {
-      router.push(`/app/books/${notification.resourceSlug}`);
+      router.push(`/books/${notification.resourceSlug}`);
     } else if (notification.resourceType === "folder") {
-      router.push(`/app/folders/${notification.resourceSlug}`);
+      router.push(`/folders/${notification.resourceSlug}`);
     } else if (notification.resourceType === "department") {
-      router.push(`/app/library/departments/${notification.resourceSlug}`);
+      router.push(`/library/departments/${notification.resourceSlug}`);
     }
     setIsOpen(false);
   };

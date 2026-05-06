@@ -514,7 +514,7 @@ export const useFolderActions = () => {
         "Folder created successfully",
         "Your new folder is ready. Start adding books to organize your library.",
         1200000,
-        `/app/folders/${folder.slug}`,
+        `/folders/${folder.slug}`,
       );
       return folder;
     } catch (err: any) {
@@ -557,7 +557,7 @@ export const useFolderActions = () => {
           ? `${bookTitle} was successfully added to your collection.`
           : "The book was successfully added to your collection.",
         1200000,
-        `/app/folders/${folderId}`,
+        `/folders/${folderId}`,
       );
     } catch (err: any) {
       addNotification("error", getErrorMessage(err, "Failed to add book"));
