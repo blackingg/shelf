@@ -229,7 +229,7 @@ export default function DiscoverPage() {
             ) : (
               <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
                 <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
-                  <FiBook className="w-6 h-6 text-emerald-500" />
+                  <FiBook className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   No Recommendations Yet
@@ -273,7 +273,7 @@ export default function DiscoverPage() {
                   <div className="mt-10 flex justify-center">
                     <button
                       onClick={handleViewMoreCategories}
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
                     >
                       View More
                     </button>
@@ -322,7 +322,7 @@ export default function DiscoverPage() {
                       onClick={() =>
                         router.push("/library/departments?view=gallery")
                       }
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
                     >
                       View All
                     </button>
@@ -377,7 +377,7 @@ export default function DiscoverPage() {
                   <div className="mt-10 flex justify-center">
                     <button
                       onClick={() => router.push("/folders")}
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 hover:border-emerald-500 transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
                     >
                       View More
                     </button>
@@ -392,7 +392,7 @@ export default function DiscoverPage() {
                 </p>
                 <button
                   onClick={() => router.push("/folders")}
-                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
+                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors shadow-sm"
                 >
                   Browse Folders
                 </button>

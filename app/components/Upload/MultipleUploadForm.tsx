@@ -451,7 +451,7 @@ export default function MultipleUploadForm({
           </div>
 
           <button
-            className="px-12 py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:bg-gray-200 dark:disabled:bg-neutral-800 disabled:text-gray-400 flex items-center gap-3"
+            className="px-12 py-4 bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-widest transition-all rounded-sm hover:opacity-90 disabled:opacity-50 disabled:bg-gray-200 dark:disabled:bg-neutral-800 disabled:text-gray-400 flex items-center gap-3"
             onClick={uploadAllItems}
             disabled={isLoading || filesWithMetadataState.length === 0}
           >
@@ -853,7 +853,7 @@ function FileToBeUploaded({
               type="button"
               onClick={handleUpdate}
               disabled={!isValid}
-              className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-gray-900 dark:disabled:hover:bg-white"
+              className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold uppercase tracking-widest hover:bg-primary dark:hover:bg-primary hover:text-primary-foreground transition-all rounded-sm disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-gray-900 dark:disabled:hover:bg-white"
             >
               Update Metadata
             </button>

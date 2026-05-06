@@ -102,7 +102,7 @@ export const NotificationPanel: React.FC = () => {
       case "book_added_to_folder":
       case "trending_book":
         return (
-          <FiBook className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <FiBook className="w-4 h-4 text-primary" />
         );
       case "folder_created":
       case "folder_invite":
@@ -149,9 +149,9 @@ export const NotificationPanel: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors group"
       >
-        <FiBell className="w-5 h-5 text-gray-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
+        <FiBell className="w-5 h-5 text-gray-500 group-hover:text-primary transition-colors" />
         {totalUnread > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-emerald-500 text-white text-[9px] font-bold rounded-full border-2 border-white dark:border-neutral-900 flex items-center justify-center px-1 shadow-sm">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full border-2 border-white dark:border-neutral-900 flex items-center justify-center px-1 shadow-sm">
             {bucketedCount}
           </span>
         )}
@@ -172,7 +172,7 @@ export const NotificationPanel: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="absolute top-full -right-20 mt-3 w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 shadow-sm"
+              className="absolute top-full -right-20 mt-3 w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 shadow-sm"
             >
               <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between bg-gray-50/50 dark:bg-neutral-800/20">
                 <div className="flex items-center gap-2">
@@ -180,7 +180,7 @@ export const NotificationPanel: React.FC = () => {
                     Notifications
                   </h3>
                   {totalUnread > 0 && (
-                    <span className="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold rounded-sm">
+                    <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded-sm">
                       {totalUnread}
                     </span>
                   )}
@@ -188,7 +188,7 @@ export const NotificationPanel: React.FC = () => {
                 {unreadCount > 0 && (
                   <button
                     onClick={() => actions.markAllAsRead()}
-                    className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-emerald-600 uppercase tracking-widest transition-colors"
+                    className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-primary uppercase tracking-widest transition-colors"
                   >
                     Mark All as Read
                   </button>
@@ -205,7 +205,7 @@ export const NotificationPanel: React.FC = () => {
                       </p>
                       <button
                         onClick={() => clearAllNotifications()}
-                        className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline uppercase tracking-widest"
+                        className="text-[9px] font-bold text-primary hover:underline uppercase tracking-widest"
                       >
                         Clear All
                       </button>
@@ -250,7 +250,7 @@ export const NotificationPanel: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-1">
                             {local.actionLink && (
-                              <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 opacity-0 group-hover/alert:opacity-100 transition-opacity whitespace-nowrap">
+                              <span className="text-[9px] font-bold text-primary opacity-0 group-hover/alert:opacity-100 transition-opacity whitespace-nowrap">
                                 VIEW
                               </span>
                             )}
@@ -298,7 +298,7 @@ export const NotificationPanel: React.FC = () => {
                             </p>
                             <p className="text-[11px] text-gray-600 dark:text-neutral-400 mb-3 leading-relaxed">
                               wants you to join{" "}
-                              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                              <span className="font-bold text-primary">
                                 {invite.folder?.name || "a folder"}
                               </span>
                             </p>
@@ -311,7 +311,7 @@ export const NotificationPanel: React.FC = () => {
                                     invite.folder?.slug,
                                   )
                                 }
-                                className="flex-1 py-1.5 bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-sm hover:bg-emerald-700 transition-all flex items-center justify-center gap-1"
+                                className="flex-1 py-1.5 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider rounded-sm hover:opacity-90 transition-all flex items-center justify-center gap-1"
                               >
                                 <FiCheck className="w-3 h-3" /> Accept
                               </button>
@@ -351,7 +351,7 @@ export const NotificationPanel: React.FC = () => {
                       key={notification.id}
                       className={`px-5 py-4 border-b border-gray-50 dark:border-neutral-800/50 hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-colors cursor-pointer group ${
                         !notification.read
-                          ? "bg-emerald-50/10 dark:bg-emerald-900/5"
+                          ? "bg-primary/5"
                           : ""
                       }`}
                       onClick={() => handleNotificationClick(notification)}
@@ -360,7 +360,7 @@ export const NotificationPanel: React.FC = () => {
                         <div
                           className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 border transition-colors ${
                             !notification.read
-                              ? "bg-white dark:bg-neutral-800 border-emerald-100 dark:border-emerald-800/50 shadow-sm"
+                              ? "bg-white dark:bg-neutral-800 border-primary/20 shadow-sm"
                               : "bg-gray-50 dark:bg-neutral-800/50 border-gray-100 dark:border-neutral-800"
                           }`}
                         >
@@ -378,7 +378,7 @@ export const NotificationPanel: React.FC = () => {
                               {notification.title}
                             </p>
                             {!notification.read && (
-                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shrink-0 mt-1"></span>
+                              <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0 mt-1"></span>
                             )}
                           </div>
                           <p

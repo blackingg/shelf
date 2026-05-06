@@ -119,7 +119,7 @@ const BooksTable = ({
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <button
                     onClick={(e) => handleMenuToggle(e, book.id)}
-                    className="p-1.5 hover:bg-white dark:hover:bg-neutral-800 rounded-md transition-colors text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-500 border border-transparent hover:border-gray-100 dark:hover:border-white/10"
+                    className="p-1.5 hover:bg-white dark:hover:bg-neutral-800 rounded-sm transition-colors text-gray-400 hover:text-primary border border-transparent hover:border-gray-100 dark:hover:border-white/10"
                   >
                     <FiMoreVertical className="w-4 h-4" />
                   </button>

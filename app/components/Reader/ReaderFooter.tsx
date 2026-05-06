@@ -120,7 +120,7 @@ export function ReaderFooter({
                     handleJump();
                   }
                 }}
-                className={`w-12 text-center py-1 rounded-sm border border-transparent focus:border-emerald-600 ${inputBgClass} outline-none transition-all text-xs font-medium ${currentTheme.text}`}
+                className={`w-12 text-center py-1 rounded-sm border border-transparent focus:border-primary ${inputBgClass} outline-none transition-all text-xs font-medium ${currentTheme.text}`}
               />
             </div>
             <span
@@ -134,7 +134,7 @@ export function ReaderFooter({
             className={`w-32 sm:w-48 h-0.5 ${progressTrackBgClass} mt-2 overflow-hidden`}
           >
             <div
-              className="h-full bg-emerald-600 transition-all duration-300"
+              className="h-full bg-primary transition-all duration-300"
               style={{ width: `${(currentPage / totalPages) * 100}%` }}
             />
           </div>
@@ -165,7 +165,7 @@ export function ReaderFooter({
                         }}
                         className={`w-full text-left px-4 py-2 rounded-sm text-xs tracking-tight transition-all flex justify-between items-center ${
                           currentPage === p
-                            ? "bg-emerald-600 text-white font-medium"
+                            ? "bg-primary text-primary-foreground font-medium"
                             : `${hoverBgClass} ${currentTheme.text}`
                         }`}
                       >

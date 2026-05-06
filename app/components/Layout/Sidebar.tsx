@@ -109,7 +109,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const navLinkClass = (href: string, isMobile: boolean = false) =>
-    `flex items-center space-x-3 ${isMobile ? "px-4 py-3 text-base" : "px-3 py-2.5 text-sm"} rounded-md transition-colors duration-150 ${
+    `flex items-center space-x-3 ${isMobile ? "px-4 py-3 text-base" : "px-3 py-2.5 text-sm"} rounded-sm transition-colors duration-150 ${
       isActive(href)
         ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white font-medium"
         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
@@ -197,7 +197,7 @@ export const Sidebar: React.FC = () => {
                     href={item.href!}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150 ${
                       isGuestCTA && isRegister
-                        ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                        ? "text-primary dark:text-primary hover:bg-primary/5 font-medium"
                         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
@@ -308,7 +308,7 @@ export const Sidebar: React.FC = () => {
                     onClick={() => setShowSideBar(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base transition-colors duration-150 ${
                       isGuestCTA && isRegister
-                        ? "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 font-medium"
+                        ? "text-primary dark:text-primary hover:bg-primary/5 font-medium"
                         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
