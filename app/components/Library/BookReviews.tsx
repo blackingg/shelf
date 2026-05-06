@@ -33,7 +33,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
 
   if (isLoading)
     return (
-      <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-emerald-400/50">
+      <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-primary/60">
         Loading reviews...
       </div>
     );
@@ -52,12 +52,12 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
             placeholder="Write a review..."
-            className="w-full bg-gray-50 dark:bg-emerald-900/20 border border-gray-200 dark:border-emerald-800/50 rounded-md px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-emerald-100/30 outline-none focus:border-emerald-500/50 min-h-20 resize-none transition-colors"
+            className="w-full bg-gray-50 dark:bg-primary/5 border border-gray-200 dark:border-primary/20 rounded-md px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-primary/30 outline-none focus:border-primary/50 min-h-20 resize-none transition-colors"
           />
           <button
             type="submit"
             disabled={ratingActions.isSubmittingReview || !newReview.trim()}
-            className="absolute bottom-3 right-3 p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors disabled:opacity-50"
+            className="absolute bottom-3 right-3 p-2 bg-primary hover:opacity-90 text-primary-foreground rounded-md transition-colors disabled:opacity-50"
           >
             <FiSend className="w-4 h-4" />
           </button>
@@ -66,21 +66,21 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
 
       <div className="space-y-3">
         {displayReviews.length === 0 ? (
-          <div className="text-center py-6 text-gray-400 dark:text-emerald-100/30 text-xs italic font-medium">
+          <div className="text-center py-6 text-gray-400 dark:text-primary/30 text-xs italic font-medium">
             No reviews yet.
           </div>
         ) : (
           displayReviews.map((review: any) => (
             <div
               key={review.id}
-              className="bg-white dark:bg-emerald-900/10 rounded-md p-4 border border-gray-100 dark:border-emerald-800/30"
+              className="bg-white dark:bg-primary/5 rounded-md p-4 border border-gray-100 dark:border-primary/15"
             >
               <div className="flex justify-between items-start mb-3">
                 <Link
                   href={`/profile/${review.user?.username}`}
                   className="flex items-center space-x-3 transition-opacity hover:opacity-80"
                 >
-                  <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-100 dark:bg-emerald-800 relative flex items-center justify-center text-[10px] font-bold shrink-0 border border-gray-200 dark:border-emerald-700/50 text-gray-600 dark:text-emerald-100">
+                  <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-100 dark:bg-primary/15 relative flex items-center justify-center text-[10px] font-bold shrink-0 border border-gray-200 dark:border-primary/20 text-gray-600 dark:text-primary-foreground">
                     {review.user?.avatar ? (
                       <Image
                         src={review.user.avatar}
@@ -96,7 +96,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
                     <h4 className="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-1">
                       @{review.user?.username || "user"}
                     </h4>
-                    <p className="text-[9px] text-gray-400 dark:text-emerald-400 font-bold uppercase tracking-wider opacity-60">
+                    <p className="text-[9px] text-gray-400 dark:text-primary/60 font-bold uppercase tracking-wider opacity-60">
                       {new Date(review.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -104,13 +104,13 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
                 {currentUser?.id === review.userId && (
                   <button
                     onClick={() => handleDelete(review.id)}
-                    className="text-gray-400 dark:text-emerald-500/30 hover:text-red-500 transition-colors p-1"
+                    className="text-gray-400 dark:text-primary/40 hover:text-red-500 transition-colors p-1"
                   >
                     <FiTrash2 className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
-              <p className="text-sm text-gray-600 dark:text-emerald-100/90 leading-relaxed font-medium">
+              <p className="text-sm text-gray-600 dark:text-white/90 leading-relaxed font-medium">
                 {review.content}
               </p>
             </div>
@@ -119,7 +119,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
 
         {limit && totalReviews > limit && (
           <div className="pt-2 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400/60">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-primary dark:text-primary/60">
               And {totalReviews - limit} more reviews
             </p>
           </div>
