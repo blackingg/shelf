@@ -117,13 +117,13 @@ export default function FolderClient() {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => router.push("/folders")}
-                className="px-6 py-2.5 bg-emerald-600 text-white rounded-md text-xs font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors shadow-sm"
+                className="px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-colors shadow-sm"
               >
                 Explore Folders
               </button>
               <button
                 onClick={() => router.back()}
-                className="px-6 py-2.5 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-md text-xs font-bold uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700/50"
+                className="px-6 py-2.5 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700/50"
               >
                 Go Back
               </button>
@@ -151,17 +151,17 @@ export default function FolderClient() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => router.push("/folders")}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
-                >
+                  <button
+                    onClick={() => router.push("/folders")}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
+                  >
                   <FiSearch className="w-4 h-4" />
                   Browse Folders
                 </button>
-                <button
-                  onClick={() => router.back()}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
-                >
+                  <button
+                    onClick={() => router.back()}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  >
                   <FiArrowLeft className="w-4 h-4" />
                   Go Back
                 </button>
@@ -176,7 +176,7 @@ export default function FolderClient() {
                   <FolderIcon
                     visibility={folder.visibility}
                     booksCount={folder.booksCount}
-                    className="w-20 h-20 md:w-24 md:h-24 rounded-md overflow-hidden"
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-sm overflow-hidden"
                   />
                 </div>
                 <div>
@@ -188,12 +188,12 @@ export default function FolderClient() {
                   </p>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400 dark:text-neutral-500">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       <span>{folder.booksCount} books</span>
                     </div>
                     <span className="hidden md:inline">•</span>
                     <div className="flex items-center gap-1.5">
-                      <FiBookmark className="w-3 h-3 text-emerald-500" />
+                      <FiBookmark className="w-3 h-3 text-primary" />
                       <span>{folder.bookmarksCount} bookmarks</span>
                     </div>
                     <span className="hidden md:inline">•</span>
@@ -215,9 +215,9 @@ export default function FolderClient() {
                 {isAuthenticated && (
                   <button
                     onClick={handleToggleBookmark}
-                    className={`p-2 rounded-lg transition-all duration-200 border ${
+                    className={`p-2 rounded-sm transition-all duration-200 border ${
                       isBookmarked
-                        ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-600"
+                        ? "bg-primary/10 border-primary/20 text-primary"
                         : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     }`}
                     title={

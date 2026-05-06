@@ -245,17 +245,16 @@ export default function ProfileClient({ username }: ProfileClientProps) {
   return (
     <div className="flex-1 min-h-full w-full">
       <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
-        <div className="relative h-48 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-950">
-          <div className="absolute inset-0 bg-black/10" />
+        <div className="relative h-48 bg-linear-to-br from-primary via-primary/95 to-primary/85">
           <div className="max-w-7xl mx-auto px-6 pt-6 relative z-10 flex justify-between items-start">
-            <BackButton className="text-white/80 hover:text-white" />
+            <BackButton className="text-primary-foreground/80 hover:text-primary-foreground" />
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
                 handleShare();
               }}
-              className="p-2 bg-black/20 hover:bg-black/40 text-white/80 hover:text-white rounded-md transition-colors backdrop-blur-xs border border-white/10 cursor-pointer flex items-center justify-center"
+              className="p-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground/80 hover:text-primary-foreground rounded-sm transition-colors backdrop-blur-xs border border-primary-foreground/10 cursor-pointer flex items-center justify-center"
               title="Share Profile"
               aria-label="Share Profile"
             >
@@ -270,7 +269,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           </div>
         ) : !displayUser ? (
           <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+            <div className="border border-gray-200 dark:border-neutral-800 rounded-sm bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
               <div className="max-w-xl text-left space-y-5">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-purple-500" />
@@ -278,7 +277,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
                     <FiUserX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   </div>
                   <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
@@ -293,14 +292,14 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => router.push("/discover")}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                   >
                     <FiSearch className="w-4 h-4" />
                     Explore Library
                   </button>
                   <button
                     onClick={() => router.back()}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <FiArrowLeft className="w-4 h-4" />
                     Go Back
@@ -312,8 +311,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
         ) : (
           <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
             <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
-              <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
-                <div className="w-full h-full rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-emerald-600 dark:text-emerald-400 overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
+              <div className="w-32 h-32 rounded-sm bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
+                <div className="w-full h-full rounded-sm bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-primary overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
                   {displayUser.avatar ? (
                     <img
                       src={displayUser.avatar}
@@ -325,7 +324,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   )}
 
                   {isOwner && (
-                    <label className="absolute bottom-1 right-1 w-8 h-8 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-700 shadow-xs flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer z-10">
+                    <label className="absolute bottom-1 right-1 w-8 h-8 bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-700 shadow-xs flex items-center justify-center text-primary hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer z-10">
                       <input
                         type="file"
                         className="hidden"
@@ -334,7 +333,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                         disabled={userActions.isUpdating}
                       />
                       {userActions.isUpdating ? (
-                        <div className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                       ) : (
                         <FiCamera className="w-4 h-4" />
                       )}
@@ -347,7 +346,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
                     {displayUser.fullName}
                   </h1>
-                  <p className="text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em] text-[10px]">
+                  <p className="text-primary font-bold tracking-[0.2em] text-[10px]">
                     @{username}
                   </p>
                 </div>
@@ -357,7 +356,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => router.push("/settings/profile")}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700/50"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700/50"
                   >
                     <FiEdit2 className="w-3.5 h-3.5" />
                     Edit Profile
@@ -369,7 +368,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-500 dark:text-neutral-500">
-                  <FiCalendar className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+                  <FiCalendar className="w-4 h-4 text-primary" />
                   <span
                     className="text-xs font-bold uppercase tracking-widest"
                     suppressHydrationWarning
@@ -389,7 +388,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   {displayUser.school && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
-                        <FiHome className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
+                        <FiHome className="w-3 h-3 text-primary" />
                       </div>
                       <span className="text-sm font-medium">
                         {displayUser.school.name}
@@ -405,7 +404,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   {displayUser.department && (
                     <div className="flex items-center gap-3 text-gray-600 dark:text-neutral-300">
                       <div className="w-6 h-6 rounded-md bg-gray-50 dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50">
-                        <FiLayers className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
+                        <FiLayers className="w-3 h-3 text-primary" />
                       </div>
                       <span className="text-sm font-medium leading-tight">
                         {displayUser.department.name}
@@ -453,9 +452,9 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     {tab.label}
                     {tab.count > 0 && (
                       <span
-                        className={`ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                        className={`ml-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider ${
                           isActive
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                            ? "bg-primary/10 text-primary"
                             : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
                         }`}
                       >
@@ -488,7 +487,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 isOwner && (
                   <button
                     onClick={() => router.push("/books/upload")}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-colors"
                   >
                     <FiPlus className="w-4 h-4" />
                     Upload Your First Book
@@ -519,7 +518,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 isOwner && (
                   <button
                     onClick={() => setShowCreateFolderModal(true)}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-colors"
                   >
                     <FiPlus className="w-4 h-4" />
                     Create Your First Folder

@@ -79,7 +79,7 @@ export default function UploadAndReadPage() {
           onClick={() => {
             fileInputRef.current?.click();
           }}
-          className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all"
+          className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-primary text-primary-foreground font-medium transition-all hover:opacity-90 active:opacity-100"
         >
           <FiUploadCloud className="w-5 h-5" />
           <span className="hidden sm:inline">
@@ -109,7 +109,7 @@ export default function UploadAndReadPage() {
           className="text-center space-y-8 p-12"
         >
           <div className="w-20 h-20 mx-auto rounded-sm bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-            <FiUploadCloud className="w-8 h-8 text-emerald-600" />
+            <FiUploadCloud className="w-8 h-8 text-primary" />
           </div>
           <div>
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
@@ -121,7 +121,7 @@ export default function UploadAndReadPage() {
             </p>
           </div>
           <div className="flex flex-col items-center gap-4">
-            <label className="inline-flex items-center space-x-3 px-8 py-4 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer transition-colors">
+            <label className="inline-flex items-center space-x-3 px-8 py-4 rounded-sm bg-primary text-primary-foreground font-medium cursor-pointer transition-colors hover:opacity-90 active:opacity-100">
               <FiUploadCloud className="w-5 h-5" />
               <span>Choose a file</span>
               <input

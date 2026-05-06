@@ -282,7 +282,7 @@ export default function LibraryPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-150 shrink-0 ${
                     isActive
                       ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
                       : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
@@ -308,7 +308,7 @@ export default function LibraryPage() {
                   <button
                     key={tab.id}
                     onClick={() => setBookmarkSubTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-150 shrink-0 ${
                       isActive
                         ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
                         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
@@ -317,9 +317,9 @@ export default function LibraryPage() {
                     <Icon className="w-3.5 h-3.5" />
                     {tab.label}
                     <span
-                      className={`ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                      className={`ml-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider ${
                         isActive
-                          ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                          ? "bg-primary/10 text-primary"
                           : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
                       }`}
                     >
@@ -382,7 +382,7 @@ export default function LibraryPage() {
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
+                className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
               >
                 <span>Create Folder</span>
               </button>
@@ -423,7 +423,7 @@ export default function LibraryPage() {
               {(myBooksTotal || 0) > 0 && (
                 <button
                   onClick={() => router.push("/books/upload")}
-                  className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150"
+                  className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                 >
                   <FiHeart className="w-4 h-4" />
                   <span>Donate Another</span>
@@ -451,7 +451,7 @@ export default function LibraryPage() {
               emptyAction={
                 <button
                   onClick={() => router.push("/books/upload")}
-                  className="flex items-center text-sm space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-md font-medium transition-colors duration-150"
+                  className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                 >
                   <FiHeart className="w-4 h-4" />
                   <span>Donate a Book</span>

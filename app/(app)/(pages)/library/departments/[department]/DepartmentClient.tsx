@@ -86,14 +86,14 @@ export default function DepartmentClient({
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => router.push("/library/departments")}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                   >
                     <FiSearch className="w-4 h-4" />
                     Browse Departments
                   </button>
                   <button
                     onClick={() => router.back()}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <FiArrowLeft className="w-4 h-4" />
                     Go Back
@@ -106,7 +106,7 @@ export default function DepartmentClient({
               <div className="mb-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                   <div className="max-w-3xl">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
+                    <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
                       {department.faculty}
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
@@ -120,7 +120,7 @@ export default function DepartmentClient({
 
                   <div className="flex items-center gap-4">
                     <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
-                      <span className="block text-3xl font-black text-emerald-600 dark:text-emerald-500 tracking-tighter">
+                      <span className="block text-3xl font-black text-primary tracking-tighter">
                         {totalBooks || 0}
                       </span>
                       <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
@@ -143,13 +143,13 @@ export default function DepartmentClient({
 
               <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
                 <div className="relative w-full md:w-96 group">
-                  <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" />
+                  <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                   <input
                     type="text"
                     placeholder="Search within department..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
+                    className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
                   />
                 </div>
 
@@ -166,7 +166,7 @@ export default function DepartmentClient({
 
                   <button
                     onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
+                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-sm border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
                     title={order === "asc" ? "Ascending" : "Descending"}
                   >
                     <span className="text-sm font-black">
