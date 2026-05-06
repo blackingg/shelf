@@ -116,7 +116,7 @@ export function ReaderHeader({
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-2 rounded-sm transition-colors ${
                   showSettings
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-primary text-primary-foreground"
                     : `${hoverBgClass} ${currentTheme.text}`
                 }`}
                 title="Reader Settings"
@@ -153,7 +153,7 @@ export function ReaderHeader({
                               onClick={() => setTheme(t)}
                               className={`flex-1 flex flex-col items-center gap-2 p-2 rounded-sm border transition-all ${
                                 themeName === t
-                                  ? "border-emerald-500 bg-emerald-500/5 shadow-[0_0_0_1px_rgba(16,185,129,0.5)]"
+                                  ? "border-primary bg-primary/5 shadow-[0_0_0_1px_rgba(var(--primary-rgb),0.5)]"
                                   : `border-transparent ${hoverBgClass}`
                               }`}
                             >
@@ -200,7 +200,7 @@ export function ReaderHeader({
                             onChange={(e) =>
                               setFontSize(parseInt(e.target.value))
                             }
-                            className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-emerald-600`}
+                            className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-primary`}
                           />
                         </div>
                       </>
@@ -229,7 +229,7 @@ export function ReaderHeader({
                           onChange={(e) =>
                             setPdfScale(parseFloat(e.target.value))
                           }
-                          className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-emerald-600`}
+                          className={`w-full h-1 ${sliderTrackBgClass} rounded-none appearance-none cursor-pointer accent-primary`}
                         />
                         <div className="flex justify-between text-[8px] uppercase tracking-widest opacity-20 px-1">
                           <span>0.5x</span>
@@ -250,7 +250,7 @@ export function ReaderHeader({
                 onClick={() => setIsTableOfContentsOpen(!isTableOfContentsOpen)}
                 className={`p-2 rounded-sm transition-all duration-300 ${
                   isTableOfContentsOpen
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-primary text-primary-foreground"
                     : `${hoverBgClass} ${currentTheme.text}`
                 }`}
                 title={
