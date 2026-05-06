@@ -14,6 +14,7 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 interface FormData {
   email: string;
@@ -32,6 +33,7 @@ export default function LoginPage() {
 
 function LoginPageContent() {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
@@ -77,6 +79,12 @@ function LoginPageContent() {
         email: userInfo.email,
         fullName: userInfo.name,
         avatar: userInfo.picture,
+      });
+
+      openPanel.identify({
+        profileID: userInfo.sub,
+        email: userInfo.email,
+        name: userInfo.name,
       });
 
       router.push(getPostLoginRoute(result.user.onboardingCompleted));
@@ -127,6 +135,12 @@ function LoginPageContent() {
         email: formData.email,
         password: formData.password,
         rememberMe,
+      });
+      openPanel.identify({
+        profileID: result.user.id,
+        name: result.user.fullName,
+        email: result.user.email,
+        onboarded: result.user.onboardingCompleted,
       });
 
       router.push(getPostLoginRoute(result.user.onboardingCompleted));

@@ -23,6 +23,7 @@ import {
 import { useNotifications } from "@/app/context/NotificationContext";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 import { useGetMeQuery } from "@/app/services";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 type BookmarkSubTab = "books" | "folders";
@@ -40,7 +41,7 @@ export default function LibraryPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { addNotification } = useNotifications();
-
+  const openPanel = useOpenPanel();
   const tabParam = searchParams.get("tab");
   const bookmarkParam = searchParams.get("bookmark");
 
@@ -223,6 +224,7 @@ export default function LibraryPage() {
       try {
         await bookActions.deleteBook(bookToDelete.id);
         addNotification("success", "Resource deleted successfully");
+        openPanel.track("book_deleted");
       } catch (err: any) {
         // handled in actions
       }
