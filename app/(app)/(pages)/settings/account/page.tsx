@@ -112,8 +112,8 @@ export default function AccountSettingsPage() {
             {isEditingEmail ? (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full">
-                    <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="p-3 bg-primary/5 rounded-sm">
+                    <FiMail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
@@ -123,7 +123,7 @@ export default function AccountSettingsPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
+                      className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -146,8 +146,8 @@ export default function AccountSettingsPage() {
             ) : (
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center space-x-3 overflow-hidden">
-                  <div className="p-2.5 md:p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
-                    <FiMail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="p-2.5 md:p-3 bg-primary/5 rounded-sm flex-shrink-0">
+                    <FiMail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
@@ -160,7 +160,7 @@ export default function AccountSettingsPage() {
                 </div>
                 <button
                   onClick={handleStartEditingEmail}
-                  className="px-3 md:px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-all duration-200 flex-shrink-0"
+                  className="px-3 md:px-4 py-2 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-sm transition-all duration-200 flex-shrink-0"
                 >
                   Edit
                 </button>
@@ -177,8 +177,8 @@ export default function AccountSettingsPage() {
             {isEditingPassword ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-full mt-1">
-                    <FiLock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="p-3 bg-primary/5 rounded-sm mt-1">
+                    <FiLock className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
@@ -195,7 +195,7 @@ export default function AccountSettingsPage() {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -212,7 +212,7 @@ export default function AccountSettingsPage() {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -229,7 +229,7 @@ export default function AccountSettingsPage() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                   </div>
@@ -253,8 +253,8 @@ export default function AccountSettingsPage() {
             ) : (
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center space-x-3 overflow-hidden">
-                  <div className="p-2.5 md:p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
-                    <FiLock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="p-2.5 md:p-3 bg-primary/5 rounded-sm flex-shrink-0">
+                    <FiLock className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
@@ -264,7 +264,7 @@ export default function AccountSettingsPage() {
                 </div>
                 <button
                   onClick={() => setIsEditingPassword(true)}
-                  className="px-3 md:px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-lg transition-all duration-200 flex-shrink-0"
+                  className="px-3 md:px-4 py-2 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-sm transition-all duration-200 flex-shrink-0"
                 >
                   Change
                 </button>
@@ -277,7 +277,7 @@ export default function AccountSettingsPage() {
           <h3 className="text-lg font-bold text-red-600 dark:text-red-500 mb-4 flex items-center space-x-2">
             <span>Danger Zone</span>
           </h3>
-          <div className="bg-red-50/50 dark:bg-red-950/10 rounded-2xl border border-red-100 dark:border-red-900/20 p-5 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="bg-red-50/50 dark:bg-red-950/10 rounded-sm border border-red-100 dark:border-red-900/20 p-5 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1">
               <div className="font-bold text-red-900 dark:text-red-400">
                 Delete Account
@@ -290,7 +290,7 @@ export default function AccountSettingsPage() {
             <button
               onClick={() => setIsDeleteModalOpen(true)}
               disabled={deleteMe.isPending}
-              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all duration-200 shadow-sm shadow-red-200 dark:shadow-none whitespace-nowrap text-sm disabled:opacity-50 active:scale-[0.98]"
+              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-sm font-bold transition-all duration-200 shadow-sm shadow-red-200 dark:shadow-none whitespace-nowrap text-sm disabled:opacity-50 active:scale-[0.98]"
             >
               {deleteMe.isPending ? "Deleting..." : "Delete Account"}
             </button>
