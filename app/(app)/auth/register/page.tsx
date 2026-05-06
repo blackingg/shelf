@@ -159,7 +159,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
@@ -171,7 +171,7 @@ export default function SignupPage() {
         }
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 md:px-6 py-4 md:py-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
           <div className="mb-4 md:mb-6 text-center">
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
