@@ -32,7 +32,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
     </>
   );
 
-  const baseClasses = `group inline-flex items-center space-x-2 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors py-2 cursor-pointer relative z-20 ${className}`;
+  const baseClasses = `group inline-flex items-center space-x-2 text-gray-500 dark:text-neutral-400 hover:text-primary transition-colors py-2 cursor-pointer relative z-20 ${className}`;
 
   if (href) {
     return (
