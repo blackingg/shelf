@@ -259,14 +259,16 @@ export default function BookClient() {
                           }`}
                         >
                           <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-                          <span>Save to Folder</span>
+                          <span className="whitespace-nowrap">
+                            Save to Folder
+                          </span>
                         </button>
 
                         <FolderDropdown
                           isOpen={showFolderDropdown}
                           onClose={() => setShowFolderDropdown(false)}
                           bookId={actualBookId}
-                          className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)]"
+                          className="top-full mt-3 w-full sm:w-80 max-w-[calc(100vw-2rem)] md:left-auto md:right-0"
                         />
                       </div>
                     )}

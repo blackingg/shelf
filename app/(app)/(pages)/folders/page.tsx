@@ -53,7 +53,7 @@ export default function FoldersPage() {
           <div className="mb-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
               <div className="max-w-3xl">
-                <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em] mb-4">
+                <p className="text-[11px] font-bold text-primary uppercase tracking-[0.3em] mb-4">
                   Community Library
                 </p>
                 <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
@@ -67,7 +67,7 @@ export default function FoldersPage() {
 
               <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 min-w-[200px]">
                 <div className="w-12 h-12 rounded-md bg-white dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50 shadow-sm">
-                  <FiFolder className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                  <FiFolder className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <span className="block text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
@@ -83,13 +83,13 @@ export default function FoldersPage() {
 
           <div className="flex flex-col md:flex-row items-center gap-4 mb-16">
             <div className="relative w-full md:w-96 group">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" />
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
                 placeholder="Search folders..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md focus:border-primary focus:ring-1 focus:ring-primary outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
               />
             </div>
 
@@ -106,7 +106,7 @@ export default function FoldersPage() {
 
               <button
                 onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
+                className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
                 title={order === "asc" ? "Ascending" : "Descending"}
               >
                 <span className="text-sm font-black">

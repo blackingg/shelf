@@ -10,6 +10,8 @@ import { BookPreview } from "@/app/types/book";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
+import { FaBuilding } from "react-icons/fa6";
+import { useDepartmentColor } from "@/app/helpers/colors";
 
 export default function DepartmentClient({
   params,
@@ -43,6 +45,7 @@ export default function DepartmentClient({
   }, [sortBy, order, slug]);
 
   const { department, isLoading: isLoadingDept } = useDepartmentBySlug(slug);
+  const departmentIconColor = useDepartmentColor(department?.slug);
   const {
     books,
     totalPages,
@@ -106,12 +109,21 @@ export default function DepartmentClient({
               <div className="mb-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                   <div className="max-w-3xl">
-                    <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-4 block">
-                      {department.faculty}
-                    </span>
-                    <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight text-balance">
-                      {department.name}
-                    </h1>
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-8 h-8 shrink-0 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70 flex items-center justify-center">
+                        <FaBuilding
+                          className={`w-3.5 h-3.5 ${departmentIconColor}`}
+                        />
+                      </div>
+                      <div>
+                        <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-2 block">
+                          {department.faculty}
+                        </span>
+                        <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-tight text-balance">
+                          {department.name}
+                        </h1>
+                      </div>
+                    </div>
                     <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
                       {department.description ||
                         `Browse through our curated library of resources for ${department.name}.`}

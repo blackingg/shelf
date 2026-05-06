@@ -1,7 +1,7 @@
 "use client";
 import { FaBuilding } from "react-icons/fa6";
 import { Department } from "@/app/types/departments";
-import { getDepartmentColor } from "@/app/helpers/colors";
+import { useDepartmentColor } from "@/app/helpers/colors";
 import { useUser } from "@/app/services";
 
 interface DepartmentCardProps {
@@ -14,7 +14,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   onClick,
 }) => {
   const { isAuthenticated } = useUser();
-  const iconColorClass = getDepartmentColor(department.slug);
+  const iconColorClass = useDepartmentColor(department.slug);
   const resourcesCount = department.booksCount || 0;
 
   return (

@@ -70,7 +70,7 @@ export default function DepartmentsPage() {
                 Departments
               </h1>
               {userDepartmentName ? (
-                <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
                   Browse resources by your school's department
                 </p>
               ) : (
@@ -104,11 +104,11 @@ export default function DepartmentsPage() {
                   className="flex items-center gap-3 px-6 py-3.5 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group w-full sm:w-auto justify-center sm:justify-start"
                 >
                   {!viewDepartments ? (
-                    <FiList className="w-4 h-4 text-emerald-600 dark:text-emerald-500 transition-transform" />
+                    <FiList className="w-4 h-4 text-primary transition-transform" />
                   ) : (
-                    <FiX className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+                    <FiX className="w-4 h-4 text-primary" />
                   )}
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-primary transition-colors">
                     {!viewDepartments ? "Explore All" : "Close Gallery"}
                   </span>
                 </button>
