@@ -133,7 +133,7 @@ export default function ForgotPassword() {
   const isLastStep = currentStep === "newPassword";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
@@ -145,17 +145,8 @@ export default function ForgotPassword() {
         }
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-8 md:py-12">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[440px]">
-          <div className="mb-4 md:mb-10 text-center">
-            <Link
-              href="/"
-              className="inline-block mb-4 md:mb-8"
-            >
-              <LogoStacked className="w-28 h-8 text-[#072c0b] dark:text-[#D0FDC2]" />
-            </Link>
-          </div>
-
           <Card className="!p-4 md:!p-8">
             {currentStep === "email" && (
               <>
@@ -173,7 +164,7 @@ export default function ForgotPassword() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                  icon={<FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -215,7 +206,7 @@ export default function ForgotPassword() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  icon={<FiKey className="w-5 h-5 text-gray-400" />}
+                  icon={<FiKey className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
                   placeholder="123456"
                   autoComplete="one-time-code"
                 />
@@ -244,7 +235,7 @@ export default function ForgotPassword() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                      icon={<FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
                       placeholder="••••••••"
                       autoComplete="new-password"
                       showPasswordToggle
@@ -260,7 +251,7 @@ export default function ForgotPassword() {
                     onKeyPress={(e) =>
                       e.key === "Enter" && canProceed() && handleNext()
                     }
-                    icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                    icon={<FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
                     placeholder="••••••••"
                     autoComplete="new-password"
                     showPasswordToggle
@@ -280,7 +271,7 @@ export default function ForgotPassword() {
           </Card>
 
           {currentStep === "email" && (
-            <p className="mt-8 text-center text-sm text-gray-500">
+            <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
               Remember your password?{" "}
               <Link
                 href="/auth/login"
