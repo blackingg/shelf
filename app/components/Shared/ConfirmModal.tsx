@@ -77,7 +77,7 @@ export const ConfirmModal = ({
                 className={`flex-1 px-4 py-3 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isDanger
                     ? "bg-red-600 hover:bg-red-700"
-                    : "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-primary hover:opacity-90 text-primary-foreground"
                 }`}
               >
                 {isLoading ? (
