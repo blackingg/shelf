@@ -191,12 +191,7 @@ export const BookDetailPanel: React.FC<{
                       <FiChevronDown className="-rotate-90 w-3 h-3" />
                     </Link>
                   </div>
-
-                  <BookReviews
-                    bookId={book?.id || ""}
-                    limit={3}
-                    hideForm
-                  />
+                  <BookReviews bookId={book?.id || ""} limit={3} hideForm />
                 </div>
               </div>
 
