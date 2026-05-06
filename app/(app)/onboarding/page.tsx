@@ -193,7 +193,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-onest">
+    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">
@@ -202,17 +202,17 @@ export default function Onboarding() {
         }
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 md:px-6 py-6 md:py-12">
         <div className="w-full max-w-[480px]">
-          <Card className="p-10">
+          <Card className="p-6 md:p-10">
             <StepHeader
               icon={
                 currentStep === 0 ? (
-                  <FiBook className="w-6 h-6 text-emerald-600" />
+                  <FiBook className="w-6 h-6 text-primary" />
                 ) : currentStep === 1 ? (
-                  <FiBriefcase className="w-6 h-6 text-emerald-600" />
+                  <FiBriefcase className="w-6 h-6 text-primary" />
                 ) : (
-                  <FiHeart className="w-6 h-6 text-emerald-600" />
+                  <FiHeart className="w-6 h-6 text-primary" />
                 )
               }
               title={

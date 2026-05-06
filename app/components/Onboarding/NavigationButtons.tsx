@@ -34,14 +34,14 @@ export const NavigationButtons: React.FC<{
       disabled={!canProceed || isLoading}
       className={`flex-1 flex items-center space-x-2 px-8 py-3 rounded-sm font-medium transition-all ${
         canProceed && !isLoading
-          ? "bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer"
+          ? "bg-primary text-primary-foreground hover:opacity-90 cursor-pointer"
           : "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
       }`}
     >
       <div className="flex items-center justify-center w-full space-x-2">
         {isLoading ? (
           <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
             <span>Processing...</span>
           </>
         ) : (
