@@ -67,17 +67,17 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(4, 76, 65, 0.1);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(4, 76, 65, 0.4);
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(4, 76, 65, 0.6);
+  background: color-mix(in srgb, var(--primary) 60%, transparent);
 }
 
 .no-scrollbar::-webkit-scrollbar {

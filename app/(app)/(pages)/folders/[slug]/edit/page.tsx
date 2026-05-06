@@ -483,7 +483,7 @@ export default function EditFolderPage() {
         <div className="pb-8 mb-8 border-b border-gray-100 dark:border-white/5">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-sm flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-sm flex items-center justify-center text-primary">
                 <FiFolder className="w-6 h-6" />
               </div>
               <div>
@@ -513,7 +513,7 @@ export default function EditFolderPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-0 py-2 border-b-2 border-gray-100 dark:border-white/10 focus:border-emerald-500 bg-transparent transition-all outline-none text-xl font-medium text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-white/20 pb-4"
+                  className="w-full px-0 py-2 border-b-2 border-gray-100 dark:border-white/10 focus:border-primary bg-transparent transition-all outline-none text-xl font-medium text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-white/20 pb-4"
                   placeholder="e.g. Summer Reading List"
                   required
                 />
@@ -523,7 +523,7 @@ export default function EditFolderPage() {
                       type="button"
                       onClick={() => handleFieldSave("name")}
                       disabled={isUpdating || !name.trim()}
-                      className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-sm hover:bg-emerald-700 transition-all disabled:opacity-50"
+                      className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-sm hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
                       {isUpdating ? "Saving..." : "Save Name"}
                     </button>
@@ -558,7 +558,7 @@ export default function EditFolderPage() {
                       type="button"
                       onClick={() => handleFieldSave("description")}
                       disabled={isUpdating}
-                      className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-sm hover:bg-emerald-700 transition-all disabled:opacity-50"
+                      className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-sm hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
                       {isUpdating ? "Saving..." : "Save Description"}
                     </button>
@@ -586,7 +586,7 @@ export default function EditFolderPage() {
                   onClick={() => handleVisibilityChange("PRIVATE")}
                   className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
                     visibility === "PRIVATE"
-                      ? "bg-emerald-600 text-white shadow-none"
+                      ? "bg-primary text-primary-foreground shadow-none"
                       : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
                   }`}
                 >
@@ -598,7 +598,7 @@ export default function EditFolderPage() {
                   onClick={() => handleVisibilityChange("PUBLIC")}
                   className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
                     visibility === "PUBLIC"
-                      ? "bg-emerald-600 text-white shadow-none"
+                      ? "bg-primary text-primary-foreground shadow-none"
                       : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
                   }`}
                 >
@@ -618,7 +618,7 @@ export default function EditFolderPage() {
             <div className="pt-8 border-t border-gray-100 dark:border-white/5 space-y-10">
               <div className="space-y-8">
                 <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center space-x-2">
-                  <FiUsers className="w-4 h-4 text-emerald-500" />
+                  <FiUsers className="w-4 h-4 text-primary" />
                   <span>Collaboration Settings</span>
                 </h3>
 
@@ -630,13 +630,13 @@ export default function EditFolderPage() {
                       onClick={() => handleCollaborationUpdate("NONE")}
                       className={`flex flex-col p-4 rounded-sm border transition-all text-left ${
                         collaborationMode === "NONE"
-                          ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/5"
+                          ? "border-primary bg-primary/10 dark:bg-primary/20"
                           : "border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${collaborationMode === "NONE" ? "bg-emerald-500" : "bg-gray-300 dark:bg-neutral-700"}`}
+                          className={`w-1.5 h-1.5 rounded-full ${collaborationMode === "NONE" ? "bg-primary" : "bg-gray-300 dark:bg-neutral-700"}`}
                         />
                         <span
                           className={`text-sm font-medium ${collaborationMode === "NONE" ? "text-gray-900 dark:text-white" : "text-gray-500"}`}
@@ -761,7 +761,7 @@ export default function EditFolderPage() {
                                             visibility,
                                           )
                                         }
-                                        className={`w-full p-3 rounded-sm text-left transition-all border ${activeProfile === profile.id ? "bg-emerald-500/10 border-emerald-500/40" : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/10 hover:border-emerald-500/40"}`}
+                                        className={`w-full p-3 rounded-sm text-left transition-all border ${activeProfile === profile.id ? "bg-primary/10 border-primary/40" : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/10 hover:border-primary/40"}`}
                                       >
                                         <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
                                           {profile.label}
@@ -883,7 +883,7 @@ export default function EditFolderPage() {
                                               collaborator.id,
                                             )
                                           }
-                                          className="p-2 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 rounded-sm transition-all"
+                                          className="p-2 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 rounded-sm transition-all"
                                           title="Save changes"
                                         >
                                           <FiCheck className="w-4 h-4" />
@@ -908,7 +908,7 @@ export default function EditFolderPage() {
                                               collaborator,
                                             )
                                           }
-                                          className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-sm transition-all"
+                                          className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 rounded-sm transition-all"
                                           title="Edit permissions"
                                         >
                                           <FiEdit2 className="w-4 h-4" />
@@ -948,7 +948,7 @@ export default function EditFolderPage() {
                                                     visibility,
                                                   )
                                                 }
-                                                className={`p-3 rounded-sm text-left transition-all border ${editingProfileId === profile.id ? "bg-emerald-500/10 border-emerald-500/40" : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-white/10 hover:border-emerald-500/30"}`}
+                                                className={`p-3 rounded-sm text-left transition-all border ${editingProfileId === profile.id ? "bg-primary/10 border-primary/40" : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-white/10 hover:border-primary/30"}`}
                                               >
                                                 <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
                                                   {profile.label}
