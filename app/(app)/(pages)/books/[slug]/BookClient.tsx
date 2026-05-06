@@ -210,7 +210,10 @@ export default function BookClient() {
                         Resource Rating
                       </span>
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <StarRating rating={book.rating || 0} size={18} />
+                        <StarRating
+                          rating={book.rating || 0}
+                          size={18}
+                        />
                         <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "5.0"}
                         </span>
@@ -236,7 +239,7 @@ export default function BookClient() {
                           openPanel.track("book_opened");
                           router.push(`/books/${book.slug}/read`);
                         }}
-                        className="w-full py-3 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3"
+                        className="w-full py-3 sm:py-4 bg-primary text-primary-foreground rounded-md font-bold text-sm uppercase tracking-widest transition-colors hover:opacity-90 flex items-center justify-center gap-2 sm:gap-3"
                       >
                         <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                         <span>Read Now</span>
@@ -337,7 +340,10 @@ export default function BookClient() {
                         Rating
                       </span>
                       <div className="flex items-center gap-3">
-                        <StarRating rating={book.rating || 0} size={18} />
+                        <StarRating
+                          rating={book.rating || 0}
+                          size={18}
+                        />
                         <span className="font-bold text-gray-900 dark:text-white">
                           {book.rating?.toFixed(1) || "0.0"}
                         </span>
