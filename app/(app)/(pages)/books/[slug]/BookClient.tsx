@@ -111,12 +111,12 @@ export default function BookClient() {
   return (
     <div className="flex min-h-full bg-white dark:bg-neutral-900 w-full">
       <div className="flex-1 flex flex-col">
-        <div className="bg-gray-50/50 dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
+        <div className="bg-white dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 flex justify-between items-start">
             <BackButton />
             <button
               onClick={handleShare}
-              className="p-2 sm:p-2.5 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-500 dark:text-neutral-400 rounded-md transition-colors border border-gray-100 dark:border-neutral-700/50 shadow-xs"
+              className="p-2 sm:p-2.5 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-500 dark:text-neutral-400 rounded-sm transition-colors border border-gray-100 dark:border-neutral-700/50 shadow-xs"
               title="Share Resource"
             >
               <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -152,14 +152,14 @@ export default function BookClient() {
                   <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => router.push("/discover")}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                     >
                       <FiSearch className="w-4 h-4" />
                       Explore Library
                     </button>
                     <button
                       onClick={() => router.back()}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                     >
                       <FiArrowLeft className="w-4 h-4" />
                       Go Back
@@ -176,7 +176,7 @@ export default function BookClient() {
                   animate={{ opacity: 1, y: 0 }}
                   className="w-full max-w-60 sm:max-w-[280px] md:max-w-none md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0"
                 >
-                  <div className="relative aspect-2/3 w-full rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
+                  <div className="relative aspect-2/3 w-full rounded-sm overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50">
                     <img
                       src={book.coverImage || "/dummycover.png"}
                       alt={book.title}
@@ -192,7 +192,7 @@ export default function BookClient() {
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                      <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md text-[10px] font-bold uppercase tracking-widest border border-emerald-100 dark:border-emerald-800/50">
+                      <span className="px-3 py-1 bg-primary/5 text-primary rounded-sm text-[10px] font-bold uppercase tracking-widest border border-primary/10">
                         {book.category}
                       </span>
                     </div>
@@ -221,7 +221,7 @@ export default function BookClient() {
                         Total Pages
                       </span>
                       <div className="flex items-center text-gray-900 dark:text-neutral-200">
-                        <FiFileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-emerald-500" />
+                        <FiFileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary" />
                         <span className="text-base sm:text-lg font-bold">
                           {book.pages}
                         </span>
@@ -249,10 +249,10 @@ export default function BookClient() {
                           onClick={() =>
                             setShowFolderDropdown(!showFolderDropdown)
                           }
-                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-md font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
+                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border rounded-sm font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 sm:gap-3 ${
                             showFolderDropdown
-                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-600"
-                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                              ? "bg-primary/5 border-primary text-primary"
+                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-300 hover:border-primary hover:text-primary transition-colors"
                           }`}
                         >
                           <FiFolderPlus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -279,7 +279,7 @@ export default function BookClient() {
             <div className="grid lg:grid-cols-3 gap-12 lg:gap-16">
               <div className="lg:col-span-2 space-y-12 sm:space-y-16 min-w-0">
                 <section className="min-w-0">
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-4 sm:mb-6">
+                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-4 sm:mb-6">
                     Overview
                   </h3>
                   <p className="text-gray-600 dark:text-neutral-300 leading-relaxed text-base sm:text-lg font-medium wrap-break-word">
@@ -289,7 +289,7 @@ export default function BookClient() {
 
                 <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-6 sm:p-8 md:p-12 rounded-lg border border-gray-100 dark:border-neutral-800 min-w-0">
                   <div className="mb-8 sm:mb-10">
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-2">
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">
                       Community
                     </p>
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white wrap-break-word">
@@ -301,8 +301,8 @@ export default function BookClient() {
               </div>
 
               <div className="space-y-8 sm:space-y-12 min-w-0">
-                <section className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-lg border border-gray-100 dark:border-neutral-800">
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-6 sm:mb-8">
+                <section className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-sm border border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6 sm:mb-8">
                     Resource Stats
                   </h3>
                   <div className="space-y-6 sm:space-y-8">
@@ -315,7 +315,7 @@ export default function BookClient() {
                           href={`/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
                           className="font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3 min-w-0"
                         >
-                          <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-[11px] font-bold shrink-0">
+                          <div className="w-7 h-7 rounded-sm bg-primary/5 border border-primary/20 flex items-center justify-center text-[11px] font-bold shrink-0 text-primary">
                             {book.donor.username.charAt(0).toUpperCase()}
                           </div>
                           <span className="truncate underline-offset-2 hover:underline">
@@ -362,7 +362,7 @@ export default function BookClient() {
                 </section>
 
                 <section className="min-w-0">
-                  <h3 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-6 sm:mb-8">
+                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6 sm:mb-8">
                     Recommended Resources
                   </h3>
                   <div className="space-y-4">
@@ -372,7 +372,7 @@ export default function BookClient() {
                           key={i}
                           className="flex items-center space-x-4 animate-pulse p-3"
                         >
-                          <div className="w-14 h-20 bg-gray-100 dark:bg-neutral-800 rounded-md shrink-0" />
+                          <div className="w-14 h-20 bg-gray-100 dark:bg-neutral-800 rounded-sm shrink-0" />
                           <div className="flex-1 space-y-2">
                             <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded w-3/4" />
                             <div className="h-3 bg-gray-100 dark:bg-neutral-800 rounded w-1/2" />
@@ -388,7 +388,7 @@ export default function BookClient() {
                           }
                           className="flex items-center space-x-3 sm:space-x-4 group cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors min-w-0"
                         >
-                          <div className="w-12 h-16 sm:w-14 sm:h-20 bg-gray-100 dark:bg-neutral-800 rounded-md shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
+                          <div className="w-12 h-16 sm:w-14 sm:h-20 bg-gray-100 dark:bg-neutral-800 rounded-sm shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
                             {similarBook.coverImage ? (
                               <img
                                 src={similarBook.coverImage}
@@ -396,13 +396,13 @@ export default function BookClient() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center font-bold text-emerald-500/10 text-[10px]">
+                              <div className="w-full h-full bg-primary/5 flex items-center justify-center font-bold text-primary/10 text-[10px]">
                                 SHELF
                               </div>
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-emerald-600 transition-colors truncate text-sm">
+                            <p className="font-bold text-gray-900 dark:text-neutral-200 group-hover:text-primary transition-colors truncate text-sm">
                               {similarBook.title}
                             </p>
                             <p className="text-[10px] font-bold uppercase text-gray-400 mt-1 tracking-wider opacity-60 truncate">

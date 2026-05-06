@@ -63,7 +63,7 @@ export const BookCard: React.FC<BookCardProps> = ({
       onClick={handleCardClick}
       className={`group cursor-pointer transition-colors duration-200 ${className} relative`}
     >
-      <div className="relative h-64 md:h-72 rounded-md overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
+      <div className="relative h-64 md:h-72 rounded-sm overflow-hidden mb-3 border border-gray-100 dark:border-white/10">
         <img
           src={coverImage || "/dummycover.png"}
           alt={title}
@@ -74,7 +74,7 @@ export const BookCard: React.FC<BookCardProps> = ({
 
         {rating && (
           <div className="absolute top-2 left-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-10">
-            <div className="bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
+            <div className="bg-black/60 px-2 py-1 rounded-sm flex items-center space-x-1 backdrop-blur-sm">
               <FiStar className="w-3 h-3 text-yellow-400 fill-yellow-400" />
               <span className="text-xs text-white font-medium">{rating}</span>
             </div>
@@ -85,10 +85,10 @@ export const BookCard: React.FC<BookCardProps> = ({
           {isAuthenticated && id && (
             <button
               onClick={handleBookmark}
-              className={`p-1.5 rounded-md transition-all duration-200 ${
+              className={`p-1.5 rounded-sm transition-all duration-200 ${
                 isBookmarked
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-emerald-600 hover:text-white border border-gray-100 dark:border-white/5"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-primary hover:text-white border border-gray-100 dark:border-white/5"
               }`}
               title={isBookmarked ? "Remove Bookmark" : "Bookmark Book"}
             >

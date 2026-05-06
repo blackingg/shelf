@@ -66,7 +66,7 @@ export const UserProfileDropdown: React.FC = () => {
       >
         {isAuthenticated && user ? (
           <>
-            <div className="w-8 h-8 md:w-9 md:h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-md overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm font-bold border border-emerald-100 dark:border-emerald-800/50">
+            <div className="w-8 h-8 md:w-9 md:h-9 bg-primary/5 rounded-sm overflow-hidden relative flex items-center justify-center text-primary text-sm font-bold border border-primary/10">
               {userAvatar ? (
                 <img
                   src={userAvatar}
@@ -145,7 +145,7 @@ export const UserProfileDropdown: React.FC = () => {
                       onClick={handleViewProfile}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                     >
-                      <FiUser className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                      <FiUser className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                         View Profile
                       </span>
@@ -154,7 +154,7 @@ export const UserProfileDropdown: React.FC = () => {
                       onClick={handleSettings}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
                     >
-                      <FiSettings className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                      <FiSettings className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                         Settings
                       </span>
@@ -189,7 +189,7 @@ export const UserProfileDropdown: React.FC = () => {
                       onClick={handleLogin}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
                     >
-                      <FiLogIn className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                      <FiLogIn className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
                         Log in
                       </span>
@@ -198,8 +198,8 @@ export const UserProfileDropdown: React.FC = () => {
                       onClick={handleRegister}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
                     >
-                      <FiUserPlus className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
-                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-500 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
+                      <FiUserPlus className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                      <span className="text-sm font-medium text-primary group-hover:text-primary">
                         Create account
                       </span>
                     </button>

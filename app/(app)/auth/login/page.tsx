@@ -160,21 +160,21 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-onest">
+    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
             href="/auth/register"
-            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
+            className="text-primary hover:opacity-80 text-sm font-medium transition-opacity"
           >
             Sign Up
           </Link>
         }
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
-          <div className="mb-10 text-center">
+          <div className="mb-4 md:mb-6 text-center">
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
               Welcome Back
             </h1>
@@ -183,13 +183,13 @@ function LoginPageContent() {
             </p>
           </div>
 
-          <Card className="p-8!">
+          <Card className="p-4 md:p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmit();
               }}
-              className="space-y-6"
+              className="space-y-4 md:space-y-6"
             >
               <FormInput
                 label="Email Address"
@@ -211,7 +211,7 @@ function LoginPageContent() {
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-xs text-gray-400 hover:text-emerald-600 transition-colors"
+                    className="text-xs text-gray-400 hover:text-primary transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -264,7 +264,7 @@ function LoginPageContent() {
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"
-              className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+              className="text-primary font-medium hover:opacity-80 transition-opacity"
             >
               Create Account
             </Link>

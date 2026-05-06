@@ -72,21 +72,21 @@ export default function ShelfLanding() {
   ];
 
   const stats = [
-    { value: "1000+", label: "Active Users", icon: <FiUsers /> },
-    { value: "5+", label: "Key Features", icon: <FiStar /> },
-    { value: "100%", label: "Free to Start", icon: <FiZap /> },
+    { value: "50k+", label: "Resources", icon: <FiBook /> },
+    { value: "", label: "Customizable Folders", icon: <FiFolder /> },
+    { value: "100%", label: "Community Driven", icon: <FiUsers /> },
   ];
 
   const { isAuthenticated } = useUser();
   const router = useRouter();
 
   return (
-    <div className="min-h-screen pt-20 bg-white dark:bg-black overflow-hidden font-onest">
+    <div className="min-h-screen pt-16 bg-white dark:bg-black overflow-hidden selection:bg-primary/10 selection:text-primary">
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-0 w-full bg-white dark:bg-black border-b border-gray-100 dark:border-white/5 z-50 px-6"
+        className="fixed top-0 w-full bg-white/80 dark:bg-black/80 backdrop-blur-sm border-b border-gray-100 dark:border-white/5 z-50 px-6"
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center h-16">
@@ -94,27 +94,27 @@ export default function ShelfLanding() {
               href="/"
               className="flex items-center"
             >
-              <LogoStacked className="w-32 h-10 text-[#072c0b] dark:text-[#D0FDC2]" />
+              <LogoStacked className="w-28 h-8 text-primary" />
             </Link>
 
             {isAuthenticated ? (
               <button
                 onClick={() => router.push("/discover")}
-                className="px-6 py-2 bg-emerald-600 text-white rounded-sm text-sm font-medium hover:bg-emerald-700 transition-colors"
+                className="px-5 py-2 bg-primary text-primary-foreground rounded-sm text-sm font-medium hover:opacity-90 transition-opacity"
               >
                 Go to App
               </button>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-4">
                 <button
                   onClick={() => router.push("/auth/login")}
-                  className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 transition-colors"
+                  className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-colors"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-sm text-sm font-medium hover:bg-emerald-700 transition-colors"
+                  className="px-5 py-2 bg-primary text-primary-foreground rounded-sm text-sm font-medium hover:opacity-90 transition-opacity"
                 >
                   Get Started
                 </button>
@@ -124,24 +124,24 @@ export default function ShelfLanding() {
         </div>
       </motion.nav>
 
-      <section className="relative min-h-screen flex items-center justify-center pt-16 px-6">
+      <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center pt-8 px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center space-x-2 border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-sm mb-8">
-              <FiBook className="w-4 h-4 text-emerald-600" />
-              <span className="text-[10px] uppercase font-medium tracking-widest text-emerald-700">
+            <div className="inline-flex items-center space-x-2 border border-primary/20 bg-primary/5 px-3 py-1.5 rounded-sm mb-8">
+              <FiBook className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[10px] uppercase font-medium tracking-widest text-primary">
                 Your Personal E-Library
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-medium mb-8 leading-none tracking-tighter text-gray-900 dark:text-white">
+            <h1 className="text-6xl md:text-8xl font-medium mb-8 leading-[0.9] tracking-tighter text-gray-900 dark:text-white">
               Knowledge <br />
               for Students <br />
-              <span className="text-emerald-600">& Readers</span>
+              <span className="text-primary">& Readers</span>
             </h1>
 
             <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 leading-relaxed max-w-lg">
@@ -153,9 +153,9 @@ export default function ShelfLanding() {
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-3 bg-gray-50 dark:bg-white/5 px-4 py-2 rounded-sm border border-gray-100 dark:border-white/5"
+                  className="flex items-center space-x-3 bg-gray-100 dark:bg-white/5 px-4 py-2 rounded-sm border border-gray-100 dark:border-white/10"
                 >
-                  <div className="text-emerald-600 w-4 h-4">{stat.icon}</div>
+                  <div className="text-primary w-4 h-4">{stat.icon}</div>
                   <div className="text-sm font-medium text-gray-900 dark:text-white">
                     {stat.value} {stat.label}
                   </div>
@@ -163,34 +163,26 @@ export default function ShelfLanding() {
               ))}
             </div>
 
-            {isAuthenticated ? (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => router.push("/discover")}
-                  className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>Go to App</span>
-                  <FiArrowRight className="w-5 h-5" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => router.push("/auth/register")}
-                  className="px-8 py-4 bg-emerald-600 text-white rounded-sm font-medium text-base hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>Start Reading</span>
-                  <FiArrowRight className="w-5 h-5" />
-                </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() =>
+                  router.push(isAuthenticated ? "/discover" : "/auth/register")
+                }
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-sm font-medium text-base hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
+              >
+                <span>{isAuthenticated ? "Go to App" : "Start Reading"}</span>
+                <FiArrowRight className="w-5 h-5" />
+              </button>
 
+              {!isAuthenticated && (
                 <button
                   onClick={() => router.push("/auth/login")}
-                  className="px-8 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-sm font-medium text-base hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                  className="px-8 py-4 bg-white dark:bg-black border border-gray-100 dark:border-white/10 text-gray-900 dark:text-white rounded-sm font-medium text-base hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                 >
                   Sign In
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </motion.div>
 
           <motion.div
@@ -199,53 +191,51 @@ export default function ShelfLanding() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <div className="relative bg-emerald-600 dark:bg-emerald-950 rounded-sm p-10 lg:p-12 border border-emerald-500/20">
-              <div className="relative z-10">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
+            <div className="relative bg-white dark:bg-neutral-900 rounded-sm p-1 border border-gray-100 dark:border-white/10 overflow-hidden">
+              <div className="bg-gray-100 dark:bg-white/5 p-8 lg:p-10 border border-gray-100 dark:border-white/5 rounded-sm">
+                <div className="flex items-center justify-between mb-12">
                   <div>
-                    <LogoStacked className="w-28 h-8 mb-3 text-[#072c0b] dark:text-[#D0FDC2]" />
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/60 font-medium">
+                    <LogoStacked className="w-24 h-7 mb-2 text-primary" />
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-medium">
                       Everywhere, Always
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[
                     {
-                      icon: <FiFolder />,
+                      color: "bg-blue-500",
                       title: "MTH 201 2021/2022",
                       count: "17 documents",
                     },
                     {
-                      icon: <FiFolder />,
+                      color: "bg-yellow-400",
                       title: "Summer Break Novels",
                       count: "89 documents",
                     },
                     {
-                      icon: <FiFolder />,
-                      title: "Magazines",
+                      color: "bg-purple-500",
+                      title: "Magazines & Research",
                       count: "45 documents",
                     },
                   ].map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between bg-white/10 rounded-sm p-4 border border-white/10 hover:bg-white/15 transition-all cursor-pointer group"
+                      className="flex items-center justify-between bg-white dark:bg-black rounded-sm p-4 border border-gray-100 dark:border-white/10 transition-colors group cursor-default"
                     >
                       <div className="flex items-center space-x-4">
-                        <div className="text-white text-lg group-hover:scale-110 transition-transform">
-                          {item.icon}
-                        </div>
+                        <div className={`w-2 h-2 rounded-full ${item.color}`} />
                         <div>
-                          <div className="text-white text-sm font-medium">
+                          <div className="text-gray-900 dark:text-white text-sm font-medium">
                             {item.title}
                           </div>
-                          <div className="text-emerald-50 text-[10px] font-medium opacity-60">
+                          <div className="text-gray-400 text-[10px] font-medium">
                             {item.count}
                           </div>
                         </div>
                       </div>
-                      <FiArrowRight className="text-white/40 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <FiArrowRight className="text-gray-300 w-4 h-4" />
                     </div>
                   ))}
                 </div>
@@ -255,7 +245,7 @@ export default function ShelfLanding() {
         </div>
 
         <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
@@ -276,11 +266,11 @@ export default function ShelfLanding() {
         </motion.div>
       </section>
 
-      <section className="py-32 px-6 bg-white dark:bg-black border-t border-gray-50 dark:border-white/5">
+      <section className="py-32 px-6 bg-white dark:bg-black border-t border-gray-100 dark:border-white/5">
         <div className="max-w-4xl mx-auto">
           <div className="mb-16">
-            <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
-              <span className="text-emerald-700 font-medium text-[10px] uppercase tracking-widest">
+            <div className="inline-block border border-primary/20 bg-primary/5 px-3 py-1 rounded-sm mb-6">
+              <span className="text-primary font-medium text-[10px] uppercase tracking-widest">
                 WHY CHOOSE SHELF
               </span>
             </div>
@@ -292,14 +282,14 @@ export default function ShelfLanding() {
             </p>
           </div>
 
-          <div className="divide-y divide-gray-50 dark:divide-white/5 border-t border-b border-gray-50 dark:border-white/5">
+          <div className="divide-y divide-gray-100 dark:divide-white/5 border-t border-b border-gray-100 dark:border-white/5">
             {benefits.map((benefit, index) => (
               <div
                 key={index}
                 className="flex items-start space-x-6 py-8 group transition-colors"
               >
-                <div className="w-6 h-6 rounded-sm bg-emerald-500/10 flex items-center justify-center shrink-0 mt-1">
-                  <FiCheck className="w-4 h-4 text-emerald-600" />
+                <div className="w-5 h-5 flex items-center justify-center shrink-0 mt-1">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <p className="text-lg text-gray-700 dark:text-gray-300 font-medium leading-tight">
                   {benefit}
@@ -312,12 +302,12 @@ export default function ShelfLanding() {
 
       <section
         id="features"
-        className="py-32 px-6 bg-white dark:bg-black"
+        className="py-32 px-6 bg-white dark:bg-black border-t border-gray-100 dark:border-white/5"
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-block border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded-sm mb-6">
-              <span className="text-emerald-700 font-medium text-[10px] uppercase tracking-widest">
+            <div className="inline-block border border-primary/20 bg-primary/5 px-3 py-1 rounded-sm mb-6">
+              <span className="text-primary font-medium text-[10px] uppercase tracking-widest">
                 POWERFUL FEATURES
               </span>
             </div>
@@ -329,13 +319,13 @@ export default function ShelfLanding() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-black p-8 border border-gray-100 dark:border-white/5 rounded-sm hover:border-emerald-500/30 transition-colors"
+                className="bg-white dark:bg-black p-8 border border-gray-100 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group"
               >
-                <div className="w-10 h-10 bg-emerald-500 flex items-center justify-center rounded-sm text-white mb-6">
+                <div className="w-10 h-10 text-primary mb-6">
                   {feature.icon}
                 </div>
 
@@ -351,27 +341,27 @@ export default function ShelfLanding() {
         </div>
       </section>
 
-      <section className="py-40 px-6 bg-emerald-600 dark:bg-emerald-900/10 border-t border-emerald-500/20">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block border border-white/20 bg-white/10 px-3 py-1 rounded-sm mb-8">
-            <span className="text-white font-medium text-[10px] uppercase tracking-widest flex items-center space-x-2">
+      <section className="py-40 px-6 bg-white dark:bg-black border-t border-gray-100 dark:border-white/5 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <div className="inline-block border border-primary/20 bg-primary/5 px-3 py-1 rounded-sm mb-8">
+            <span className="text-primary font-medium text-[10px] uppercase tracking-widest flex items-center space-x-2">
               <FiZap className="w-3 h-3" />
               <span>START YOUR JOURNEY TODAY</span>
             </span>
           </div>
 
-          <h2 className="text-5xl md:text-7xl font-medium text-white mb-8 tracking-tighter leading-tight">
+          <h2 className="text-5xl md:text-7xl font-medium text-gray-900 dark:text-white mb-8 tracking-tighter leading-[0.9]">
             Ready to Transform <br />
             Your Reading?
           </h2>
-          <p className="text-lg text-emerald-50 dark:text-emerald-200/60 max-w-xl mx-auto mb-12">
+          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto mb-12">
             Join thousands of students and readers already using Shelf to
             organize and discover amazing content.
           </p>
 
           <button
             onClick={() => (window.location.href = "/auth/register")}
-            className="px-10 py-5 bg-white text-emerald-600 rounded-sm font-medium text-lg hover:bg-emerald-50 transition-colors inline-flex items-center space-x-2"
+            className="px-10 py-5 bg-primary text-primary-foreground rounded-sm font-medium text-lg hover:opacity-90 transition-opacity inline-flex items-center space-x-2"
           >
             <span>Create Free Account</span>
             <FiArrowRight className="w-5 h-5" />
@@ -379,28 +369,28 @@ export default function ShelfLanding() {
         </div>
       </section>
 
-      <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-50 dark:border-white/5">
+      <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-100 dark:border-white/5">
         <div className="max-w-7xl mx-auto text-center">
           <Link
             href="/"
             className="inline-flex items-center mb-6"
           >
-            <LogoStacked className="w-20 h-6 text-[#072c0b] dark:text-[#D0FDC2]" />
+            <LogoStacked className="w-20 h-6 text-primary" />
           </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
             Building the future of digital libraries. Knowledge for students and
             readers, everywhere.
           </p>
-          <div className="flex justify-center space-x-8 mb-8 text-xs font-medium uppercase tracking-widest text-gray-400">
+          <div className="flex justify-center space-x-8 mb-8 text-[10px] font-medium uppercase tracking-widest text-gray-400">
             <Link
               href="/privacy"
-              className="hover:text-emerald-600 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="hover:text-emerald-600 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               Terms
             </Link>
@@ -408,7 +398,7 @@ export default function ShelfLanding() {
               href="https://x.com/shelfng_"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-emerald-600 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               X (Twitter)
             </a>
@@ -416,7 +406,7 @@ export default function ShelfLanding() {
               href="https://www.instagram.com/shelf_ng"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-emerald-600 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               Instagram
             </a>

@@ -20,7 +20,7 @@ export const AdminSidebar = () => {
       <div className="p-6 border-b border-gray-100 dark:border-neutral-800">
         <Link href="/admin/dashboard" className="flex items-center space-x-3">
           <LogoStacked className="w-28 h-auto text-[#072c0b] dark:text-[#D0FDC2]" />
-          <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mt-1 ml-1">
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1 ml-1">
             Admin
           </span>
         </Link>
@@ -35,11 +35,11 @@ export const AdminSidebar = () => {
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                 isActive
-                  ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
+                  ? "bg-primary/5 text-primary"
                   : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
-              <span className={`text-lg ${isActive ? "text-emerald-600" : "text-gray-400"}`}>
+              <span className={`text-lg ${isActive ? "text-primary" : "text-gray-400"}`}>
                 {item.icon}
               </span>
               <span>{item.label}</span>

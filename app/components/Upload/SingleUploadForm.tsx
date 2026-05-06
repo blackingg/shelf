@@ -360,7 +360,7 @@ export default function SingleUploadForm({
         </div>
         <button
           onClick={() => onSwitchToBulk()}
-          className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-2 border border-emerald-500/20 px-4 py-2 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10"
+          className="text-[10px] font-bold uppercase tracking-widest text-primary hover:opacity-80 transition-colors flex items-center gap-2 border border-primary/20 px-4 py-2 hover:bg-primary/5 rounded-sm"
         >
           Switch to Bulk Upload
         </button>
@@ -378,7 +378,7 @@ export default function SingleUploadForm({
             <div
               className={`flex items-center gap-2 px-4 py-2 border ${
                 step === i + 1
-                  ? "border-emerald-500 text-emerald-600"
+                  ? "border-primary text-primary"
                   : "border-gray-200 dark:border-neutral-800 text-gray-400"
               } transition-all duration-300`}
             >
@@ -758,7 +758,7 @@ export default function SingleUploadForm({
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-emerald-600 transition-colors"
+                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-primary transition-colors"
               >
                 <FiArrowLeft />
                 Back to essentials

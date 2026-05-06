@@ -129,7 +129,7 @@ export default function SettingsProfilePage() {
           >
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
-                <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-emerald-900/5">
+                <div className="w-24 h-24 md:w-28 md:h-28 rounded-sm bg-linear-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-primary/5">
                   {profileUser?.avatar ? (
                     <img
                       src={profileUser.avatar}
@@ -137,7 +137,7 @@ export default function SettingsProfilePage() {
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                    <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary uppercase">
                       {profileUser?.fullName?.charAt(0) ||
                         profileUser?.username?.charAt(0) ||
                         "?"}
@@ -146,7 +146,7 @@ export default function SettingsProfilePage() {
                 </div>
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-600 dark:bg-emerald-500 rounded-xl border-4 border-white dark:border-neutral-900 shadow-lg flex items-center justify-center text-white hover:bg-emerald-700 dark:hover:bg-emerald-400 transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary text-primary-foreground rounded-sm border-4 border-white dark:border-neutral-900 shadow-lg flex items-center justify-center hover:opacity-90 transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95"
                 >
                   <input
                     type="file"
@@ -184,7 +184,7 @@ export default function SettingsProfilePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
+                  className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                 />
               </div>
               <div className="space-y-1">
@@ -258,7 +258,7 @@ export default function SettingsProfilePage() {
                 type="submit"
                 isLoading={userActions.isUpdating}
                 disabled={!isDirty}
-                className="w-full sm:w-auto px-10 py-3 text-base font-bold rounded-xl shadow-lg shadow-emerald-900/10 active:scale-95 transition-all"
+                className="w-full sm:w-auto px-10 py-3 text-base font-bold rounded-sm shadow-lg shadow-primary/10 active:scale-95 transition-all"
               >
                 Save Changes
               </Button>

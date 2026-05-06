@@ -89,7 +89,7 @@ export const SortFilter: React.FC<SortFilterProps> = ({
                     <span
                       className={`text-[10px] font-bold uppercase tracking-widest ${
                         isActive
-                          ? "text-emerald-600 dark:text-emerald-500"
+                          ? "text-primary"
                           : "text-gray-500 dark:text-neutral-400 group-hover:text-gray-900 dark:group-hover:text-white"
                       }`}
                     >

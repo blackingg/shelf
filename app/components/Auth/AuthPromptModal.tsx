@@ -60,7 +60,7 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full max-w-sm bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 overflow-hidden">
+            <div className="relative w-full max-w-sm bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
               {/* Close button */}
               <button
                 onClick={onClose}
@@ -72,8 +72,8 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
 
               {/* Content */}
               <div className="px-8 pt-10 pb-6 text-center">
-                <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-md flex items-center justify-center mx-auto mb-5 border border-gray-100 dark:border-white/10">
-                  <FiBookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-sm flex items-center justify-center mx-auto mb-5 border border-gray-100 dark:border-white/10">
+                  <FiBookOpen className="w-5 h-5 text-primary" />
                 </div>
 
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -88,7 +88,7 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
               <div className="px-8 pb-10 space-y-2.5">
                 <button
                   onClick={handleLogin}
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-md flex items-center justify-center gap-2.5 transition-colors active:scale-[0.98]"
+                  className="w-full h-11 bg-primary hover:opacity-90 text-primary-foreground font-medium text-sm rounded-sm flex items-center justify-center gap-2.5 transition-colors active:scale-[0.98]"
                 >
                   <FiLogIn className="w-4 h-4" />
                   Log in
@@ -96,7 +96,7 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
 
                 <button
                   onClick={handleRegister}
-                  className="w-full h-11 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-neutral-200 font-medium text-sm rounded-md flex items-center justify-center gap-2.5 transition-colors border border-gray-200 dark:border-white/10 active:scale-[0.98]"
+                  className="w-full h-11 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-neutral-200 font-medium text-sm rounded-sm flex items-center justify-center gap-2.5 transition-colors border border-gray-200 dark:border-white/10 active:scale-[0.98]"
                 >
                   <FiUserPlus className="w-4 h-4" />
                   Create account

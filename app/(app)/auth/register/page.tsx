@@ -17,7 +17,8 @@ import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 
 interface FormData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -27,7 +28,8 @@ export default function SignupPage() {
   const router = useRouter();
   const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -83,13 +85,13 @@ export default function SignupPage() {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.fullName.trim()) {
-      addNotification("error", "Full name is required");
+    if (!formData.firstName.trim()) {
+      addNotification("error", "First name is required");
       return false;
     }
 
-    if (formData.fullName.trim().length < 2) {
-      addNotification("error", "Full name must be at least 2 characters");
+    if (!formData.lastName.trim()) {
+      addNotification("error", "Last name is required");
       return false;
     }
 
@@ -140,7 +142,7 @@ export default function SignupPage() {
       await register({
         email: formData.email,
         password: formData.password,
-        fullName: formData.fullName,
+        fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         agreeToTerms: acceptTerms,
       });
 
@@ -157,21 +159,21 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-onest">
+    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
             href="/auth/login"
-            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
+            className="text-primary hover:opacity-80 text-sm font-medium transition-opacity"
           >
             Sign In
           </Link>
         }
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 py-12">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
-          <div className="mb-10 text-center">
+          <div className="mb-4 md:mb-6 text-center">
             <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
               Create Account
             </h1>
@@ -180,25 +182,39 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <Card className="p-8!">
+          <Card className="p-4 md:p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmit();
               }}
-              className="space-y-6"
+              className="space-y-4 md:space-y-6"
             >
-              <FormInput
-                label="Full Name"
-                name="fullName"
-                type="text"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                icon={<FiUser className="w-5 h-5 text-gray-400" />}
-                placeholder="John Doe"
-                autoComplete="name"
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <FormInput
+                  label="First Name"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                  placeholder="John"
+                  autoComplete="given-name"
+                />
+
+                <FormInput
+                  label="Last Name"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                  placeholder="Doe"
+                  autoComplete="family-name"
+                />
+              </div>
 
               <FormInput
                 label="Email Address"
@@ -212,7 +228,7 @@ export default function SignupPage() {
                 autoComplete="email"
               />
 
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <FormInput
                   label="Password"
                   name="password"
@@ -250,14 +266,14 @@ export default function SignupPage() {
                     I agree to the{" "}
                     <Link
                       href="/terms"
-                      className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+                      className="text-primary font-medium hover:opacity-80 transition-opacity"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/privacy"
-                      className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+                      className="text-primary font-medium hover:opacity-80 transition-opacity"
                     >
                       Privacy Policy
                     </Link>
@@ -292,7 +308,7 @@ export default function SignupPage() {
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+              className="text-primary font-medium hover:opacity-80 transition-opacity"
             >
               Sign In
             </Link>
