@@ -222,32 +222,33 @@ export default function ShelfLanding() {
         </motion.div>
       </section>
 
-      <section className="py-20 md:py-32 px-6 bg-white dark:bg-black border-t border-gray-100 dark:border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-10">
+      <section className="py-24 md:py-40 px-6 bg-white dark:bg-black border-t border-gray-100 dark:border-white/5">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-24">
+          <div className="lg:sticky lg:top-32 h-fit">
             <div className="inline-block border border-primary/20 bg-primary/5 px-3 py-1 rounded-sm mb-6">
               <span className="text-primary font-medium text-[10px] uppercase tracking-widest">
                 WHY CHOOSE SHELF
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-6 tracking-tight">
-              Everything You Need
+            <h2 className="text-5xl md:text-7xl font-medium text-gray-900 dark:text-white mb-8 tracking-tighter leading-[0.9]">
+              Everything <br /> You Need
             </h2>
-            <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl">
-              Build your perfect digital library with powerful features
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-sm">
+              Build your perfect digital library with features designed for
+              modern academic life.
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="divide-y divide-gray-100 dark:divide-white/10">
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className="flex items-start space-x-4 md:space-x-6 group transition-colors"
+                className="py-10 first:pt-0 last:pb-0 flex items-start space-x-6 group transition-colors"
               >
-                <div className="w-5 h-5 flex items-center justify-center shrink-0 mt-1">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                <div className="w-6 h-6 flex items-center justify-center shrink-0 mt-1 border border-primary/20 rounded-full group-hover:border-primary transition-colors">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
-                <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 font-medium leading-tight">
+                <p className="text-lg md:text-2xl text-gray-800 dark:text-gray-200 font-medium leading-tight tracking-tight">
                   {benefit}
                 </p>
               </div>
