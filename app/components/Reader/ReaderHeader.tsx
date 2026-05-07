@@ -134,7 +134,7 @@ export function ReaderHeader({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
-                    className={`absolute right-0 mt-2 w-72 p-6 rounded-md border ${currentTheme.bg} ${currentTheme.border} z-60`}
+                    className={`absolute right-0 mt-2 md:w-72 w-60 md:p-6 p-4 rounded-md border ${currentTheme.bg} ${currentTheme.border} z-60`}
                   >
                     <h3
                       className={`text-[10px] font-medium uppercase tracking-[0.2em] mb-6 opacity-40 ${currentTheme.text}`}

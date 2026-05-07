@@ -29,6 +29,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
   function PdfViewer({ buffer, onPageInfo }, ref) {
     const { pdfScale, setTableOfContentsItems, setTableOfContentsNavigator } =
       useReader();
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [doc, setDoc] = useState<PdfDocument | null>(null);
     const [pageDimensions, setPageDimensions] = useState<

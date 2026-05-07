@@ -53,7 +53,7 @@ export function usePersistentReaderSettings(defaults?: {
     readFromStorage<number>(STORAGE_KEYS.fontSize, defaults?.fontSize ?? 18),
   );
   const [pdfScale, _setPdfScale] = useState<number>(() =>
-    readFromStorage<number>(STORAGE_KEYS.pdfScale, defaults?.pdfScale ?? 1.2),
+    readFromStorage<number>(STORAGE_KEYS.pdfScale, defaults?.pdfScale ?? 0.65),
   );
 
   const setTheme = useCallback((t: ReaderThemeName) => {
