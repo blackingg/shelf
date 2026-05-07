@@ -3,15 +3,33 @@
 import { useState } from "react";
 import { useGetAdminUsersQuery } from "@/app/services";
 import { UserRole } from "@/app/types/user";
-import { FiSearch, FiFilter, FiMoreHorizontal, FiUser, FiShield } from "react-icons/fi";
+import {
+  FiSearch,
+  FiMoreHorizontal,
+  FiUser,
+} from "react-icons/fi";
+import { FormSelect } from "@/app/components/Form/FormSelect";
 
 export default function AdminUsersPage() {
+  interface RoleOption {
+    value: UserRole | "";
+    label: string;
+  }
+
+  const roleOptions: RoleOption[] = [
+    { value: "", label: "All Roles" },
+    { value: "USER", label: "Regular Users" },
+    { value: "MODERATOR", label: "Moderators" },
+    { value: "ADMIN", label: "Admins" },
+    { value: "SUPER_ADMIN", label: "Super Admins" },
+  ];
+
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<UserRole | "">("");
-  
+  const [roleFilter, setRoleFilter] = useState<RoleOption>(roleOptions[0]);
+
   const { data: userData, isLoading } = useGetAdminUsersQuery({
     q: search || undefined,
-    role: roleFilter || undefined,
+    role: roleFilter.value || undefined,
   });
 
   const users = userData?.items;
@@ -39,17 +57,14 @@ export default function AdminUsersPage() {
           />
         </div>
         <div className="flex items-center space-x-3">
-          <select
+          <FormSelect<RoleOption>
+            options={roleOptions}
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm text-gray-600 dark:text-neutral-400 focus:outline-none focus:border-emerald-500/50 transition-colors"
-          >
-            <option value="">All Roles</option>
-            <option value="USER">Regular Users</option>
-            <option value="MODERATOR">Moderators</option>
-            <option value="ADMIN">Admins</option>
-            <option value="SUPER_ADMIN">Super Admins</option>
-          </select>
+            onChange={(option) => option && setRoleFilter(option)}
+            isClearable={false}
+            isSearchable={false}
+            className="w-48"
+          />
         </div>
       </div>
 
@@ -70,31 +85,48 @@ export default function AdminUsersPage() {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-gray-50 dark:border-neutral-800/50">
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">User</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">Role</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">Status</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 text-right">Actions</th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    User
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    Role
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/30">
                 {users?.map((user) => (
-                  <tr key={user.id} className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors">
+                  <tr
+                    key={user.id}
+                    className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-xs">
                           {user.username.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">{user.fullName}</p>
-                          <p className="text-xs text-gray-500 dark:text-neutral-500">@{user.username}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {user.fullName}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500">
+                            @{user.username}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
-                        <div className={`w-1.5 h-1.5 rounded-full ${user.role === 'USER' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${user.role === "USER" ? "bg-purple-500" : "bg-blue-500"}`}
+                        />
                         <span className="text-xs text-gray-600 dark:text-neutral-300 capitalize">
-                          {user.role.toLowerCase().replace('_', ' ')}
+                          {user.role.toLowerCase().replace("_", " ")}
                         </span>
                       </div>
                     </td>
