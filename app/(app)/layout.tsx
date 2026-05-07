@@ -1,4 +1,12 @@
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import "@/app/globals.css";
+import StoreProvider from "@/app/provider/StoreProvider";
+import { ErrorBoundaryWithNotification } from "@/app/components/Shared/ErrorBoundary";
 import ProtectedRoute from "@/app/components/Auth/ProtectedRoute";
+import { ThemeProvider } from "@/app/provider/ThemeProvider";
+import { QueryProvider } from "@/app/provider/QueryProvider";
 import { BufferProvider } from "@/app/context/FileBufferContext";
 import { HydrationGuard } from "@/app/components/Layout/HydrationGuard";
 import { OpenPanelComponent } from "@openpanel/nextjs";
