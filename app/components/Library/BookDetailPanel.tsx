@@ -76,8 +76,7 @@ export const BookDetailPanel: React.FC<{
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              style={{ backgroundColor: "#002c22" }}
-              className="fixed inset-x-0 top-0 bottom-0 h-full md:top-0 md:bottom-auto md:inset-x-auto md:right-0 md:h-full w-full md:w-lg max-w-full text-gray-900 dark:text-white p-4 sm:p-6 md:p-8 flex flex-col border-t md:border-t-0 md:border-l border-gray-200 dark:border-neutral-800 z-50"
+              className="fixed bg-[#072c0b] inset-x-0 top-0 bottom-0 h-full md:top-0 md:bottom-auto md:inset-x-auto md:right-0 md:h-full w-full md:w-lg max-w-full text-gray-900 dark:text-white p-4 sm:p-6 md:p-8 flex flex-col border-t md:border-t-0 md:border-l border-gray-200 dark:border-neutral-800 z-50"
             >
               <button
                 onClick={onClose}
@@ -191,7 +190,11 @@ export const BookDetailPanel: React.FC<{
                       <FiChevronDown className="-rotate-90 w-3 h-3" />
                     </Link>
                   </div>
-                  <BookReviews bookId={book?.id || ""} limit={3} hideForm />
+                  <BookReviews
+                    bookId={book?.id || ""}
+                    limit={3}
+                    hideForm
+                  />
                 </div>
               </div>
 
