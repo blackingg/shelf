@@ -189,6 +189,8 @@ export default function EditBookPage() {
     </label>
   );
 
+  const isDonor = useIsOwner(book?.donor);
+
   if (isLoadingBook) {
     return (
       <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
@@ -241,8 +243,6 @@ export default function EditBookPage() {
     );
   }
 
-  // Check if current user is the donor
-  const isDonor = useIsOwner(book?.donor);
   if (!isDonor && user) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-8 text-center">
