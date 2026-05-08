@@ -1,5 +1,5 @@
 "use client";
-import { useContext, ChangeEvent, useState, useCallback, useRef } from "react";
+import { useContext, ChangeEvent, useCallback, useRef } from "react";
 import { FileBufferContext } from "@/app/context/FileBufferContext";
 import { ReaderLayout } from "@/app/components/Reader/ReaderLayout";
 import { PdfViewer } from "@/app/components/Reader/PdfViewer";
@@ -8,14 +8,17 @@ import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { FiUploadCloud } from "react-icons/fi";
 import { motion } from "motion/react";
 import { useOpenPanel } from "@openpanel/nextjs";
+import {
+  ReaderProvider,
+  useReader,
+} from "@/app/components/Reader/ReaderContext";
 
-export default function UploadAndReadPage() {
-  const { buffer, updateBuffer, fileType, setFileType, fileName, setFileName } =
-    useContext(FileBufferContext);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const openPanel = useOpenPanel();
+function UploadAndReadInner({
+  UploadButton,
+}: {
+  UploadButton: React.ReactNode;
+}) {
+  const { buffer, fileType, fileName } = useContext(FileBufferContext);
 
   const epubControlsRef = useRef<{
     next: () => void;
@@ -25,22 +28,7 @@ export default function UploadAndReadPage() {
 
   const pdfViewerRef = useRef<PdfViewerHandle>(null);
 
-  async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
-    const files: FileList | null = e.target.files;
-    const file = files ? files[0] : null;
-
-    if (file?.type === "application/pdf") {
-      setFileType("pdf");
-    } else {
-      setFileType("epub");
-    }
-    if (file) {
-      setFileName(file.name);
-      setCurrentPage(1);
-      const buf = await file.arrayBuffer();
-      updateBuffer(buf);
-    }
-  }
+  const { currentPage, totalPages, updateProgress } = useReader();
 
   const handleNextPage = useCallback(() => {
     if (fileType === "epub" && currentPage < totalPages) {
@@ -60,13 +48,12 @@ export default function UploadAndReadPage() {
         pdfViewerRef.current?.scrollToPage(currentPage - 1);
       }
     }
-  }, [fileType, currentPage, totalPages]);
+  }, [fileType, currentPage]);
 
   const handlePageChange = useCallback(
     (page: number) => {
       if (fileType === "epub") {
         epubControlsRef.current?.goTo?.(page);
-        setCurrentPage(page);
       } else {
         pdfViewerRef.current?.scrollToPage(page);
       }
@@ -74,33 +61,84 @@ export default function UploadAndReadPage() {
     [fileType],
   );
 
-  function UploadButton() {
-    return (
-      <>
-        <button
-          onClick={() => {
-            fileInputRef.current?.click();
-            openPanel.track("book_viewed_offline");
-          }}
-          className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-primary text-primary-foreground font-medium transition-all hover:opacity-90 active:opacity-100"
-        >
-          <FiUploadCloud className="w-5 h-5" />
-          <span className="hidden sm:inline">
-            {fileName ? "Change File" : "Upload"}
-          </span>
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".epub, .pdf"
-          className="hidden"
-          onChange={(e) => {
-            handleFileUpload(e);
-          }}
-        />
-      </>
-    );
+  return (
+    <div className="absolute top-0 left-0 inset-0 z-100 bg-white dark:bg-black">
+      <ReaderLayout
+        title={fileName || "Untitled"}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+        onPageChange={handlePageChange}
+        extraHeaderActions={UploadButton}
+      >
+        {fileType === "epub" ? (
+          <EpubViewer
+            buffer={buffer}
+            onReady={(controls) => {
+              epubControlsRef.current = controls;
+            }}
+            onPageDetails={(info) => {
+              updateProgress(Number(info.currentPage), Number(info.totalPages));
+            }}
+          />
+        ) : (
+          <PdfViewer
+            ref={pdfViewerRef}
+            buffer={buffer}
+            onPageInfo={({ currentPage: cp, totalPages: tp }) => {
+              updateProgress(cp, tp);
+            }}
+          />
+        )}
+      </ReaderLayout>
+    </div>
+  );
+}
+
+export default function UploadAndReadPage() {
+  const { updateBuffer, fileType, setFileType, fileName, setFileName } =
+    useContext(FileBufferContext);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const openPanel = useOpenPanel();
+
+  async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
+    const files: FileList | null = e.target.files;
+    const file = files ? files[0] : null;
+
+    if (file?.type === "application/pdf") {
+      setFileType("pdf");
+    } else {
+      setFileType("epub");
+    }
+    if (file) {
+      setFileName(file.name);
+      const buf = await file.arrayBuffer();
+      updateBuffer(buf);
+    }
   }
+
+  const uploadButtonElement = (
+    <>
+      <button
+        onClick={() => {
+          fileInputRef.current?.click();
+          openPanel.track("book_viewed_offline");
+        }}
+        className="flex items-center space-x-2 px-4 py-2 rounded-sm bg-primary text-primary-foreground font-medium transition-all hover:opacity-90 active:opacity-100"
+      >
+        <FiUploadCloud className="w-5 h-5" />
+        <span className="hidden sm:inline">
+          {fileName ? "Change File" : "Upload"}
+        </span>
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".epub, .pdf"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+    </>
+  );
 
   if (!fileType) {
     return (
@@ -144,39 +182,8 @@ export default function UploadAndReadPage() {
   }
 
   return (
-    <div className="absolute top-0 left-0 inset-0 z-100 bg-white dark:bg-black">
-      <ReaderLayout
-        title={fileName || "Untitled"}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onNextPage={handleNextPage}
-        onPrevPage={handlePrevPage}
-        onPageChange={handlePageChange}
-        extraHeaderActions={<UploadButton />}
-        format={fileType as "pdf" | "epub"}
-      >
-        {fileType === "epub" ? (
-          <EpubViewer
-            buffer={buffer}
-            onReady={(controls) => {
-              epubControlsRef.current = controls;
-            }}
-            onPageDetails={(info) => {
-              setCurrentPage(Number(info.currentPage));
-              setTotalPages(Number(info.totalPages));
-            }}
-          />
-        ) : (
-          <PdfViewer
-            ref={pdfViewerRef}
-            buffer={buffer}
-            onPageInfo={({ currentPage: cp, totalPages: tp }) => {
-              setCurrentPage(cp);
-              setTotalPages(tp);
-            }}
-          />
-        )}
-      </ReaderLayout>
-    </div>
+    <ReaderProvider initialFormat={fileType as "pdf" | "epub"}>
+      <UploadAndReadInner UploadButton={uploadButtonElement} />
+    </ReaderProvider>
   );
 }
