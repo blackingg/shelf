@@ -36,7 +36,7 @@ export default function ShelfLanding() {
       icon: <FiSearch className="w-5 h-5" />,
       title: "Smart Search",
       description:
-        "Search by course, topic, genre, or keyword. Find what you need in seconds.",
+        "Search books, users, and folders. Find what you need in seconds.",
     },
     {
       icon: <FiBookmark className="w-5 h-5" />,
