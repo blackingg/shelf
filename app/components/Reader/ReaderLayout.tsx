@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ReaderHeader } from "./ReaderHeader";
 import { ReaderFooter } from "./ReaderFooter";
 import { TableOfContentsPanel } from "./TableOfContentsPanel";
-import { ReaderProvider, useReader } from "./ReaderContext";
+import { useReader } from "./ReaderContext";
 
 interface ReaderLayoutProps {
   /** Title shown in the header */
@@ -12,10 +12,6 @@ interface ReaderLayoutProps {
   subtitle?: string;
   /** Prefix shown before the title in lighter text (e.g. "Reviewing:") */
   titlePrefix?: string;
-  /** Current page number */
-  currentPage: number;
-  /** Total number of pages */
-  totalPages: number;
   /** Called when user navigates to the next page */
   onNextPage: () => void;
   /** Called when user navigates to the previous page */
@@ -30,24 +26,12 @@ interface ReaderLayoutProps {
   extraPanels?: React.ReactNode;
   /** Whether the content area should shrink for a side panel (e.g. moderator review panel) */
   contentShrink?: boolean;
-  /** The format of the file being read */
-  format?: "pdf" | "epub";
 }
 
-export function ReaderLayout(props: ReaderLayoutProps) {
-  return (
-    <ReaderProvider initialFormat={props.format}>
-      <ReaderLayoutContent {...props} />
-    </ReaderProvider>
-  );
-}
-
-function ReaderLayoutContent({
+export function ReaderLayout({
   title,
   subtitle,
   titlePrefix,
-  currentPage,
-  totalPages,
   onNextPage,
   onPrevPage,
   onPageChange,
@@ -56,7 +40,14 @@ function ReaderLayoutContent({
   extraPanels,
   contentShrink = false,
 }: ReaderLayoutProps) {
-  const { fontSize, currentTheme, format, isTableOfContentsOpen } = useReader();
+  const {
+    fontSize,
+    currentTheme,
+    format,
+    isTableOfContentsOpen,
+    currentPage,
+    totalPages,
+  } = useReader();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
