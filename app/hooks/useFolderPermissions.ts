@@ -67,6 +67,7 @@ export const useFolderPermissions = (folder: Folder | null | undefined) => {
       canDeleteFolder: hasPermission("DELETE_FOLDER"),
       canManageCollaborators: hasPermission("MANAGE_COLLABORATORS"),
       canChangeVisibility: hasPermission("CHANGE_VISIBILITY"),
+      canMoveFolder: hasPermission("EDIT_FOLDER"),
       canViewSettings:
         isOwner ||
         hasPermission("EDIT_FOLDER") ||
