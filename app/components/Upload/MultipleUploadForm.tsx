@@ -79,7 +79,7 @@ export default function MultipleUploadForm({
   const { actions: bookActions } = useBookActions();
   const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
   const { actions: folderActions } = useFolderActions();
-  const [targetFolderId, setTargetFolderId] = useState<string>("");
+  const [targetFolderId, setTargetFolderId] = useState<string | null>(null);
   const openPanel = useOpenPanel();
   const { data: user } = useGetMeQuery();
   const { departments, isLoading: isLoadingDepts } = useDepartments(
