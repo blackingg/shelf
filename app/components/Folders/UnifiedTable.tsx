@@ -189,7 +189,12 @@ export const UnifiedTable = ({
                         <div className="text-[10px] text-gray-400 dark:text-neutral-500 truncate mt-0.5">
                           {res.type === "book"
                             ? res.data.description
-                            : `${res.data.booksCount} resources • ${res.data.childrenCount || 0} subfolders`}
+                            : `${res.data.booksCount} resources • ${
+                                (res.data as Folder).children &&
+                                (res.data as Folder).children!.length > 0
+                                  ? (res.data as Folder).children!.length
+                                  : (res.data as Folder).childrenCount || 0
+                              } subfolders`}
                         </div>
                       </div>
                     </div>

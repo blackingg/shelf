@@ -24,23 +24,7 @@ export async function generateMetadata({
   const folder = await getFolder(slug);
 
   if (!folder) {
-    const title = "Folder Not Found";
-    const description = "This folder could not be found.";
-    return {
-      title,
-      description,
-      openGraph: {
-        title,
-        description,
-        images: ["/logo.png"],
-      },
-      twitter: {
-        card: "summary",
-        title,
-        description,
-        images: ["/logo.png"],
-      },
-    };
+    return {};
   }
 
   const title = folder.name;

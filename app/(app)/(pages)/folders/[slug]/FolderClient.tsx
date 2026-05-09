@@ -312,7 +312,12 @@ export default function FolderClient() {
                     <span className="hidden md:inline">•</span>
                     <div className="flex items-center gap-1.5">
                       <FiFolder className="w-3 h-3 text-primary" />
-                      <span>{folder.childrenCount || 0} subfolders</span>
+                      <span>
+                        {children.length > 0
+                          ? children.length
+                          : folder.childrenCount || 0}{" "}
+                        subfolders
+                      </span>
                     </div>
                     <span className="hidden md:inline">•</span>
                     <Link
