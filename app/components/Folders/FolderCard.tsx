@@ -259,10 +259,16 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 {folder.booksCount} {folder.booksCount === 1 ? "book" : "books"}
               </span>
             </div>
-            {folder.childrenCount !== undefined && folder.childrenCount > 0 && (
+            {((folder.children && folder.children.length > 0) ||
+              (folder.childrenCount !== undefined &&
+                folder.childrenCount > 0)) && (
               <div className="flex items-center space-x-1">
                 <FiFolder className="w-3 h-3" />
-                <span>{folder.childrenCount}</span>
+                <span>
+                  {folder.children && folder.children.length > 0
+                    ? folder.children.length
+                    : folder.childrenCount}
+                </span>
               </div>
             )}
             {folder.bookmarksCount > 0 && (
