@@ -320,6 +320,14 @@ export const useGetMyInvitesQuery = (params?: { status?: string }) => {
   });
 };
 
+export const useGetInviteByIdQuery = (id: string) => {
+  return useQuery<Invite>({
+    queryKey: ["invites", "detail", id],
+    queryFn: () => api.get<Invite>(`/collaboration/invites/${id}`),
+    enabled: !!id,
+  });
+};
+
 export const useRespondToInviteMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -543,6 +551,26 @@ export const useMyInvites = (params?: { status?: string }) => {
 
   return {
     invites,
+    isLoading,
+    isError,
+    error,
+    actions: {
+      respondToInvite,
+    },
+    isResponding: respondMutation.isPending,
+  };
+};
+
+export const useInviteById = (id: string) => {
+  const { data: invite, isLoading, isError, error } = useGetInviteByIdQuery(id);
+  const respondMutation = useRespondToInviteMutation();
+
+  const respondToInvite = async (accept: boolean) => {
+    return respondMutation.mutateAsync({ inviteId: id, accept });
+  };
+
+  return {
+    invite,
     isLoading,
     isError,
     error,
