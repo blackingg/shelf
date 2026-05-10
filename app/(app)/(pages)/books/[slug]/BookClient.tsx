@@ -26,6 +26,7 @@ import { BookReviews } from "@/app/components/Library/BookReviews";
 import BookDetailSkeleton from "@/app/components/Skeletons/BookDetailSkeleton";
 import { shareContent } from "@/app/helpers/share";
 import { useOpenPanel } from "@openpanel/nextjs";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export default function BookClient() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function BookClient() {
   const { isAuthenticated } = useUser();
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const openPanel = useOpenPanel();
+  const { addNotification } = useNotifications();
   const { book, isLoading: isLoadingBook } = useBookBySlug(bookSlug);
 
   useEffect(() => {
@@ -100,11 +102,14 @@ export default function BookClient() {
 
   const handleShare = async () => {
     if (!book) return;
-    await shareContent({
+    const result = await shareContent({
       title: `${book.title}`,
       text: `Check out ${book.title} by ${book.author} on Shelf.`,
       url: window.location.href,
     });
+    if (result === "copied") {
+      addNotification("success", "Link copied to clipboard");
+    }
     openPanel.track("book_shared");
   };
 

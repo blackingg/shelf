@@ -19,6 +19,7 @@ import {
 } from "@/app/services";
 import { useGetMeQuery } from "@/app/services";
 import { useFolderPermissions } from "@/app/hooks";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
@@ -66,6 +67,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
 }) => {
   const { data: activeUser } = useGetMeQuery();
   const isAuthenticated = !!activeUser;
+  const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
@@ -187,11 +189,14 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await shareContent({
+                          const result = await shareContent({
                             title: folder.name,
                             text: `Check out the ${folder.name} folder on Shelf.`,
                             url: `${window.location.origin}/folders/${folder.slug}`,
                           });
+                          if (result === "copied") {
+                            addNotification("success", "Link copied to clipboard");
+                          }
                           setShowMenu(false);
                         }}
                         className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
@@ -207,11 +212,14 @@ export const FolderCard: React.FC<FolderCardProps> = ({
               <button
                 onClick={async (e) => {
                   e.stopPropagation();
-                  await shareContent({
+                  const result = await shareContent({
                     title: folder.name,
                     text: `Check out the ${folder.name} folder on Shelf.`,
                     url: `${window.location.origin}/folders/${folder.slug}`,
                   });
+                  if (result === "copied") {
+                    addNotification("success", "Link copied to clipboard");
+                  }
                 }}
                 className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
                 title="Share Folder"
