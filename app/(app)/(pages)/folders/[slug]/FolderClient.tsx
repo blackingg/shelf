@@ -98,11 +98,16 @@ export default function FolderClient() {
   const handleShare = async () => {
     if (!folder) return;
 
-    await shareContent({
+    const result = await shareContent({
       title: folder.name,
       text: `Check out the ${folder.name} folder on Shelf.`,
       url: window.location.href,
     });
+
+    if (result === "copied") {
+      addNotification("success", "Link copied to clipboard");
+    }
+
     setShowMenu(false);
   };
 

@@ -235,11 +235,15 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     const url = typeof window !== "undefined" ? window.location.href : "";
     if (!url || !displayUser) return;
 
-    await shareContent({
+    const result = await shareContent({
       title: `${displayUser.fullName} (@${displayUser.username})`,
       text: `Check out ${displayUser.username}'s book folders and library on Shelf.`,
       url: url,
     });
+
+    if (result === "copied") {
+      addNotification("success", "Link copied to clipboard");
+    }
   };
 
   return (
