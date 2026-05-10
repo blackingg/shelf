@@ -101,9 +101,7 @@ export const NotificationPanel: React.FC = () => {
       case "book_added_to_department":
       case "book_added_to_folder":
       case "trending_book":
-        return (
-          <FiBook className="w-4 h-4 text-primary" />
-        );
+        return <FiBook className="w-4 h-4 text-primary" />;
       case "folder_created":
       case "folder_invite":
       case "collab_accepted":
@@ -350,9 +348,7 @@ export const NotificationPanel: React.FC = () => {
                     <div
                       key={notification.id}
                       className={`px-5 py-4 border-b border-gray-50 dark:border-neutral-800/50 hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-colors cursor-pointer group ${
-                        !notification.read
-                          ? "bg-primary/5"
-                          : ""
+                        !notification.read ? "bg-primary/5" : ""
                       }`}
                       onClick={() => handleNotificationClick(notification)}
                     >
@@ -399,6 +395,16 @@ export const NotificationPanel: React.FC = () => {
                   ))
                 )}
               </div>
+
+              <button
+                onClick={() => {
+                  router.push("/notifications");
+                  setIsOpen(false);
+                }}
+                className="w-full py-4 bg-gray-50/50 dark:bg-neutral-800/20 border-t border-gray-100 dark:border-neutral-800 text-[10px] font-bold text-gray-400 dark:text-neutral-500 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+              >
+                See all notifications
+              </button>
             </motion.div>
           </>
         )}

@@ -40,7 +40,7 @@ export default function SingleUploadForm({
   const [step, setStep] = useState(1);
   const [uploadedBookId, setUploadedBookId] = useState<string | null>(null);
   const [isExtractingMetadata, setIsExtractingMetadata] = useState(false);
-  const [targetFolderId, setTargetFolderId] = useState<string>("");
+  const [targetFolderId, setTargetFolderId] = useState<string | null>(null);
 
   const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
   const { actions: folderActions } = useFolderActions();

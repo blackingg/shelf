@@ -10,11 +10,12 @@ import { Button } from "@/app/components/Form/Button";
 import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
-import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
+import { FiCheckCircle } from "react-icons/fi";
+import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 
 interface FormData {
   firstName: string;
@@ -35,6 +36,7 @@ export default function SignupPage() {
     confirmPassword: "",
   });
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const {
     register,
     googleAuth,
@@ -115,6 +117,18 @@ export default function SignupPage() {
       return false;
     }
 
+    const hasLetter = /[a-zA-Z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(formData.password);
+
+    if (!hasLetter || !hasNumber || !hasSymbol) {
+      addNotification(
+        "error",
+        "Password must contain letters, numbers, and symbols",
+      );
+      return false;
+    }
+
     if (!formData.confirmPassword) {
       addNotification("error", "Please confirm your password");
       return false;
@@ -146,7 +160,7 @@ export default function SignupPage() {
         agreeToTerms: acceptTerms,
       });
 
-      router.push("/onboarding");
+      setIsSubmitted(true);
     } catch (error: any) {
       console.error("Signup failed:", error);
     }
@@ -182,58 +196,104 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <Card className="p-4 md:p-8!">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
-              className="space-y-4 md:space-y-6"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <FormInput
-                  label="First Name"
-                  name="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                  icon={<FiUser className="w-5 h-5 text-gray-400" />}
-                  placeholder="John"
-                  autoComplete="given-name"
-                />
-
-                <FormInput
-                  label="Last Name"
-                  name="lastName"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                  icon={<FiUser className="w-5 h-5 text-gray-400" />}
-                  placeholder="Doe"
-                  autoComplete="family-name"
-                />
-              </div>
-
-              <FormInput
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                icon={<FiMail className="w-5 h-5 text-gray-400" />}
-                placeholder="you@example.com"
-                autoComplete="email"
+          {isSubmitted ? (
+            <Card className="p-4! md:p-8! text-center">
+              <StepHeader
+                icon={
+                  <FiCheckCircle className="w-12 h-12 text-emerald-500 mb-2" />
+                }
+                title="Verify Your Email"
+                description={`We've sent a verification link to ${formData.email}. Please check your inbox and click the link to activate your account.`}
               />
 
-              <div className="space-y-3 md:space-y-4">
+              <div className="mt-8 space-y-4">
+                <Button
+                  variant="primary"
+                  className="w-full py-4"
+                  onClick={() => router.push("/auth/login")}
+                >
+                  Continue to Login
+                </Button>
+
+                <p className="text-sm text-gray-500">
+                  Didn't receive the email?{" "}
+                  <button
+                    onClick={() => handleSubmit()}
+                    disabled={isRegisterPending}
+                    className="text-primary font-medium hover:opacity-80 transition-opacity disabled:opacity-50"
+                  >
+                    Resend verification link
+                  </button>
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <Card className="p-4! md:p-8!">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+                className="space-y-4 md:space-y-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  <FormInput
+                    label="First Name"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                    placeholder="John"
+                    autoComplete="given-name"
+                  />
+
+                  <FormInput
+                    label="Last Name"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                    placeholder="Doe"
+                    autoComplete="family-name"
+                  />
+                </div>
+
                 <FormInput
-                  label="Password"
-                  name="password"
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+
+                <div className="space-y-3 md:space-y-4">
+                  <FormInput
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    showPasswordToggle={true}
+                  />
+                </div>
+
+                <FormInput
+                  label="Confirm Password"
+                  name="confirmPassword"
                   type="password"
-                  value={formData.password}
+                  value={formData.confirmPassword}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
                   icon={<FiLock className="w-5 h-5 text-gray-400" />}
@@ -241,68 +301,54 @@ export default function SignupPage() {
                   autoComplete="new-password"
                   showPasswordToggle={true}
                 />
-                <PasswordStrengthIndicator password={formData.password} />
-              </div>
 
-              <FormInput
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                icon={<FiLock className="w-5 h-5 text-gray-400" />}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                showPasswordToggle={true}
-              />
+                <Checkbox
+                  id="accept-terms"
+                  checked={acceptTerms}
+                  onChange={setAcceptTerms}
+                  label={
+                    <span className="text-xs text-gray-500">
+                      I agree to the{" "}
+                      <Link
+                        href="/terms"
+                        className="text-primary font-medium hover:opacity-80 transition-opacity"
+                      >
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy"
+                        className="text-primary font-medium hover:opacity-80 transition-opacity"
+                      >
+                        Privacy Policy
+                      </Link>
+                    </span>
+                  }
+                />
 
-              <Checkbox
-                id="accept-terms"
-                checked={acceptTerms}
-                onChange={setAcceptTerms}
-                label={
-                  <span className="text-xs text-gray-500">
-                    I agree to the{" "}
-                    <Link
-                      href="/terms"
-                      className="text-primary font-medium hover:opacity-80 transition-opacity"
-                    >
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                      href="/privacy"
-                      className="text-primary font-medium hover:opacity-80 transition-opacity"
-                    >
-                      Privacy Policy
-                    </Link>
-                  </span>
-                }
-              />
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={isRegisterPending}
+                  disabled={isLoading}
+                  className="py-4"
+                  loader={<SpinnerLoader />}
+                >
+                  Create Account
+                </Button>
+              </form>
 
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isRegisterPending}
+              <Divider text="or sign up with" />
+
+              <SocialLoginButton
+                provider="google"
+                onClick={handleGoogleAuth}
+                isLoading={isGooglePending}
                 disabled={isLoading}
-                className="py-4"
                 loader={<SpinnerLoader />}
-              >
-                Create Account
-              </Button>
-            </form>
-
-            <Divider text="or sign up with" />
-
-            <SocialLoginButton
-              provider="google"
-              onClick={handleGoogleAuth}
-              isLoading={isGooglePending}
-              disabled={isLoading}
-              loader={<SpinnerLoader />}
-            />
-          </Card>
+              />
+            </Card>
+          )}
 
           <p className="mt-8 text-center text-sm text-gray-500">
             Already have an account?{" "}

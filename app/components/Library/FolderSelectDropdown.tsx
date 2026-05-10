@@ -3,27 +3,167 @@ import React, { useState, useRef, useEffect } from "react";
 import { FiFolder, FiPlus, FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 import { useMeFolders, useFolderActions } from "@/app/services";
+import { Folder } from "@/app/types/folder";
 
 interface FolderSelectDropdownProps {
-  selectedFolderId: string;
-  onSelect: (folderId: string) => void;
+  selectedFolderId: string | null;
+  onSelect: (folderId: string | null) => void;
   label?: string;
+  className?: string;
 }
 
 export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
   selectedFolderId,
   onSelect,
   label = "Add to Folder (Optional)",
+  className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { folders, isLoading } = useMeFolders({ limit: 100 });
+  const { folders, isLoading } = useMeFolders({ limit: 100, root_only: false });
   const { actions, isUpdating: isCreating } = useFolderActions();
 
-  const selectedFolder = folders.find((f) => f.id === selectedFolderId);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleFolder = (e: React.MouseEvent, folderId: string) => {
+    e.stopPropagation();
+    const newExpanded = new Set(expandedFolders);
+    if (newExpanded.has(folderId)) {
+      newExpanded.delete(folderId);
+    } else {
+      newExpanded.add(folderId);
+    }
+    setExpandedFolders(newExpanded);
+  };
+
+  // Recursive renderer
+  const renderFolderTree = (items: Folder[], depth = 0) => {
+    // Helper to build a tree from potentially flat data
+    const buildTree = (inputItems: Folder[]) => {
+      const map = new Map<string, Folder>();
+      const roots: Folder[] = [];
+
+      inputItems.forEach((item) => {
+        map.set(item.id, {
+          ...item,
+          children: item.children ? [...item.children] : [],
+        });
+      });
+
+      inputItems.forEach((item) => {
+        const pId = item.parentId || item.parent_id || item.parent?.id;
+        if (pId && map.has(pId)) {
+          const parent = map.get(pId)!;
+          if (!parent.children?.some((c) => c.id === item.id)) {
+            parent.children = [...(parent.children || []), map.get(item.id)!];
+          }
+        }
+      });
+
+      inputItems.forEach((item) => {
+        const pId = item.parentId || item.parent_id || item.parent?.id;
+        if (!pId || !map.has(pId)) {
+          roots.push(map.get(item.id)!);
+        }
+      });
+
+      return roots;
+    };
+
+    const tree = depth === 0 ? buildTree(items) : items;
+
+    return tree.map((folder) => {
+      const hasChildren = folder.children && folder.children.length > 0;
+      const isExpanded = expandedFolders.has(folder.id);
+
+      return (
+        <div key={folder.id}>
+          <button
+            type="button"
+            onClick={() => {
+              onSelect(folder.id);
+              setIsOpen(false);
+            }}
+            className={`w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-150 group ${
+              selectedFolderId === folder.id
+                ? "bg-primary/5 dark:bg-primary/10"
+                : ""
+            }`}
+          >
+            <div
+              className="flex items-center space-x-3 flex-1 min-w-0"
+              style={{ marginLeft: `${depth * 24}px` }}
+            >
+              <FiFolder
+                className={`w-4 h-4 shrink-0 transition-colors ${
+                  selectedFolderId === folder.id
+                    ? "text-primary"
+                    : "text-gray-400 dark:text-neutral-600 group-hover:text-primary"
+                }`}
+              />
+              <div className="text-left truncate">
+                <p
+                  className={`font-medium text-sm truncate ${
+                    selectedFolderId === folder.id
+                      ? "text-primary"
+                      : "text-gray-900 dark:text-neutral-100"
+                  }`}
+                >
+                  {folder.name}
+                </p>
+                <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-bold uppercase tracking-wider">
+                  {folder.booksCount} books
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 shrink-0">
+              {hasChildren && (
+                <div
+                  onClick={(e) => toggleFolder(e, folder.id)}
+                  className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-sm transition-colors cursor-pointer text-gray-400"
+                >
+                  <FiChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      isExpanded ? "" : "-rotate-90"
+                    }`}
+                  />
+                </div>
+              )}
+              {selectedFolderId === folder.id && (
+                <FiCheck className="text-primary w-4 h-4" />
+              )}
+            </div>
+          </button>
+
+          {hasChildren && isExpanded && (
+            <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+              {renderFolderTree(folder?.children || [], depth + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  // Helper to find selected folder in nested data
+  const findFolderById = (items: any[], id: string): any | null => {
+    for (const item of items) {
+      if (item.id === id) return item;
+      if (item.children) {
+        const found = findFolderById(item.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const selectedFolder = findFolderById(folders, selectedFolderId || "");
 
   // Click outside handler
   useEffect(() => {
@@ -57,7 +197,7 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
 
   return (
     <div
-      className="relative"
+      className={`relative ${className}`}
       ref={dropdownRef}
     >
       {label && (
@@ -68,11 +208,15 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-12 flex items-center justify-between px-4 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-neutral-800 rounded-sm hover:border-emerald-500 transition-all text-sm group"
+        className={`w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-neutral-800/50 border border-transparent rounded-sm transition-all duration-200 group ${
+          isOpen
+            ? "ring-1 ring-primary border-primary"
+            : "hover:bg-gray-100 dark:hover:bg-neutral-800 border-gray-200 dark:border-neutral-800"
+        }`}
       >
         <div className="flex items-center gap-3">
           <FiFolder
-            className={`w-4 h-4 ${selectedFolder ? "text-emerald-500" : "text-gray-400"}`}
+            className={`w-4 h-4 ${selectedFolder ? "text-primary" : "text-gray-400"}`}
           />
           <span
             className={
@@ -126,48 +270,19 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
                 <div className="px-4 py-8 flex justify-center">
                   <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
                 </div>
-              ) : folders.length === 0 ? (
-                <div className="px-4 py-8 text-center">
-                  <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-700 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
-                    No folders yet
-                  </p>
-                </div>
               ) : (
-                folders.map((folder) => (
-                  <button
-                    key={folder.id}
-                    type="button"
-                    onClick={() => {
-                      onSelect(folder.id);
-                      setIsOpen(false);
-                    }}
-                    className={`w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-150 group ${
-                      selectedFolderId === folder.id
-                        ? "bg-emerald-50/30 dark:bg-emerald-950/20"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <FiFolder
-                        className={`w-4 h-4 transition-colors ${selectedFolderId === folder.id ? "text-emerald-500" : "text-gray-400 dark:text-neutral-600 group-hover:text-emerald-500"}`}
-                      />
-                      <div className="text-left">
-                        <p
-                          className={`font-medium text-sm ${selectedFolderId === folder.id ? "text-emerald-600 dark:text-emerald-400" : "text-gray-900 dark:text-neutral-100"}`}
-                        >
-                          {folder.name}
-                        </p>
-                        <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-bold uppercase tracking-wider">
-                          {folder.booksCount} books
-                        </p>
-                      </div>
+                <div className="space-y-1 py-1">
+                  {folders.length === 0 ? (
+                    <div className="px-4 py-8 text-center">
+                      <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-700 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+                        No folders yet
+                      </p>
                     </div>
-                    {selectedFolderId === folder.id && (
-                      <FiCheck className="text-emerald-500 w-4 h-4" />
-                    )}
-                  </button>
-                ))
+                  ) : (
+                    renderFolderTree(folders)
+                  )}
+                </div>
               )}
             </div>
 

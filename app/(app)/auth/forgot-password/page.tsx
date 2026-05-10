@@ -8,39 +8,22 @@ import { Card } from "@/app/components/Layout/Card";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
 import { FormInput } from "@/app/components/Form/FormInput";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
-import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
-import { FiMail, FiLock, FiKey, FiCheckCircle } from "react-icons/fi";
+import { useAuthActions } from "@/app/services/auth";
+import { FiMail, FiCheckCircle } from "react-icons/fi";
 
-type Step = "email" | "sent" | "otp" | "newPassword";
+type Step = "email" | "sent";
 
 export default function ForgotPassword() {
   const router = useRouter();
   const { addNotification } = useNotifications();
+  const { forgotPassword, isForgotPending } = useAuthActions();
   const [currentStep, setCurrentStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };
-
-  const validatePasswords = (): boolean => {
-    if (newPassword.length < 8) {
-      addNotification("error", "Password must be at least 8 characters");
-      return false;
-    }
-
-    if (newPassword !== confirmPassword) {
-      addNotification("error", "Passwords do not match");
-      return false;
-    }
-
-    return true;
   };
 
   const handleEmailSubmit = async () => {
@@ -49,88 +32,40 @@ export default function ForgotPassword() {
       return;
     }
 
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await forgotPassword({ email });
       setCurrentStep("sent");
-      addNotification("success", `Verification code sent to ${email}`);
-    }, 1500);
-  };
-
-  const handleOtpSubmit = async () => {
-    if (otp.length !== 6) {
-      addNotification("error", "Please enter a valid 6-digit code");
-      return;
+      addNotification(
+        "success",
+        `Password reset instructions sent to ${email}`,
+      );
+    } catch (error: any) {
+      addNotification("error", error.message || "Failed to send reset email");
     }
-
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setCurrentStep("newPassword");
-      addNotification("success", "Code verified successfully");
-    }, 1500);
-  };
-
-  const handlePasswordSubmit = async () => {
-    if (!validatePasswords()) {
-      return;
-    }
-
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      addNotification("success", "Password reset successfully! Please log in.");
-      // Redirect to login
-      router.push("/auth/login");
-    }, 1500);
-  };
-
-  const handleResendCode = async () => {
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      addNotification("success", "Verification code resent to your email");
-      setCurrentStep("otp");
-    }, 1500);
   };
 
   const handleNext = () => {
     if (currentStep === "email") {
       handleEmailSubmit();
     } else if (currentStep === "sent") {
-      setCurrentStep("otp");
-    } else if (currentStep === "otp") {
-      handleOtpSubmit();
-    } else if (currentStep === "newPassword") {
-      handlePasswordSubmit();
+      router.push("/auth/login");
     }
   };
 
   const handleBack = () => {
     if (currentStep === "sent") {
       setCurrentStep("email");
-    } else if (currentStep === "otp") {
-      setCurrentStep("sent");
-    } else if (currentStep === "newPassword") {
-      setCurrentStep("otp");
     }
   };
 
   const canProceed = () => {
     if (currentStep === "email") return email.length > 0;
     if (currentStep === "sent") return true;
-    if (currentStep === "otp") return otp.length === 6;
-    if (currentStep === "newPassword")
-      return newPassword.length >= 8 && confirmPassword.length >= 8;
     return false;
   };
 
   const canGoBack = currentStep !== "email";
-  const isLastStep = currentStep === "newPassword";
+  const isLastStep = currentStep === "sent";
 
   return (
     <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
@@ -147,7 +82,7 @@ export default function ForgotPassword() {
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[440px]">
-          <Card className="!p-4 md:!p-8">
+          <Card className="p-4! md:p-8!">
             {currentStep === "email" && (
               <>
                 <StepHeader
@@ -164,7 +99,9 @@ export default function ForgotPassword() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  icon={<FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
+                  icon={
+                    <FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  }
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -176,86 +113,13 @@ export default function ForgotPassword() {
                 <StepHeader
                   icon={<FiCheckCircle className="w-6 h-6 text-primary" />}
                   title="Check Your Email"
-                  description={`We've sent a 6-digit verification code to ${email}`}
+                  description="We've sent password reset instructions to your email"
                 />
                 <div className="bg-primary/5 border border-primary/10 rounded-sm p-4 mb-6">
                   <p className="text-xs text-primary/80 dark:text-primary text-center leading-relaxed">
-                    Didn&apos;t receive the code? Check your spam folder or
-                    click continue to enter the code.
+                    Didn&apos;t receive the email? Check your spam folder or try
+                    again with a different email address.
                   </p>
-                </div>
-              </>
-            )}
-
-            {currentStep === "otp" && (
-              <>
-                <StepHeader
-                  icon={<FiKey className="w-6 h-6 text-primary" />}
-                  title="Verification Code"
-                  description="Enter the 6-digit code we sent to your email"
-                />
-                <FormInput
-                  label="Verification Code"
-                  name="otp"
-                  type="text"
-                  value={otp}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-                    setOtp(value);
-                  }}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && canProceed() && handleNext()
-                  }
-                  icon={<FiKey className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
-                  placeholder="123456"
-                  autoComplete="one-time-code"
-                />
-                <button
-                  onClick={handleResendCode}
-                  disabled={isLoading}
-                  className="text-xs text-primary hover:opacity-80 font-medium mt-4 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
-                >
-                  Resend code
-                </button>
-              </>
-            )}
-
-            {currentStep === "newPassword" && (
-              <>
-                <StepHeader
-                  icon={<FiLock className="w-6 h-6 text-primary" />}
-                  title="New Password"
-                  description="Create a strong, secure password for your account"
-                />
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <FormInput
-                      label="New Password"
-                      name="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      icon={<FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
-                      placeholder="••••••••"
-                      autoComplete="new-password"
-                      showPasswordToggle
-                    />
-                    <PasswordStrengthIndicator password={newPassword} />
-                  </div>
-                  <FormInput
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onKeyPress={(e) =>
-                      e.key === "Enter" && canProceed() && handleNext()
-                    }
-                    icon={<FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                    showPasswordToggle
-                  />
                 </div>
               </>
             )}
@@ -266,7 +130,8 @@ export default function ForgotPassword() {
               canGoBack={canGoBack}
               canProceed={canProceed()}
               isLastStep={isLastStep}
-              isLoading={isLoading}
+              isLoading={isForgotPending}
+              nextLabel={currentStep === "sent" ? "Back to Login" : "Continue"}
             />
           </Card>
 
