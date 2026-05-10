@@ -7,6 +7,8 @@ export const NavigationButtons: React.FC<{
   canProceed: boolean;
   isLastStep: boolean;
   isLoading?: boolean;
+  nextLabel?: string;
+  backLabel?: string;
 }> = ({
   onBack,
   onNext,
@@ -14,6 +16,8 @@ export const NavigationButtons: React.FC<{
   canProceed,
   isLastStep,
   isLoading = false,
+  nextLabel,
+  backLabel,
 }) => (
   <div className="flex justify-between items-center mt-10 space-x-4">
     <button
@@ -26,7 +30,7 @@ export const NavigationButtons: React.FC<{
       }`}
     >
       <FiArrowLeft className="w-4 h-4" />
-      <span>Back</span>
+      <span>{backLabel || "Back"}</span>
     </button>
 
     <button
@@ -46,7 +50,7 @@ export const NavigationButtons: React.FC<{
           </>
         ) : (
           <>
-            <span>{isLastStep ? "Get Started" : "Continue"}</span>
+            <span>{nextLabel || (isLastStep ? "Get Started" : "Continue")}</span>
             {isLastStep ? (
               <FiCheck className="w-4 h-4" />
             ) : (

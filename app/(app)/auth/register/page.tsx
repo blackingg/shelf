@@ -10,7 +10,6 @@ import { Button } from "@/app/components/Form/Button";
 import { Checkbox } from "@/app/components/Form/Checkbox";
 import { Divider } from "@/app/components/Form/Divider";
 import { SocialLoginButton } from "@/app/components/Form/SocialLoginButton";
-import { PasswordStrengthIndicator } from "@/app/components/Form/PasswordStrengthIndicator";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 import { useAuthActions } from "@/app/services";
@@ -115,6 +114,18 @@ export default function SignupPage() {
       return false;
     }
 
+    const hasLetter = /[a-zA-Z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(formData.password);
+
+    if (!hasLetter || !hasNumber || !hasSymbol) {
+      addNotification(
+        "error",
+        "Password must contain letters, numbers, and symbols",
+      );
+      return false;
+    }
+
     if (!formData.confirmPassword) {
       addNotification("error", "Please confirm your password");
       return false;
@@ -182,7 +193,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <Card className="p-4 md:p-8!">
+          <Card className="p-4! md:p-8!">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -241,7 +252,6 @@ export default function SignupPage() {
                   autoComplete="new-password"
                   showPasswordToggle={true}
                 />
-                <PasswordStrengthIndicator password={formData.password} />
               </div>
 
               <FormInput
