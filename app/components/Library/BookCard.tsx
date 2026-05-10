@@ -15,6 +15,7 @@ import { BookCardProps } from "@/app/types/book";
 import { AuthPromptModal } from "@/app/components/Auth/AuthPromptModal";
 import { useIsOwner } from "@/app/hooks/useIsOwner";
 import { useOpenPanel } from "@openpanel/nextjs";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 export const BookCard: React.FC<BookCardProps> = ({
   id,
@@ -40,6 +41,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const openPanel = useOpenPanel();
+  const { addNotification } = useNotifications();
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (!isAuthenticated) {
@@ -145,11 +147,14 @@ export const BookCard: React.FC<BookCardProps> = ({
                           onClick={async (e) => {
                             e.stopPropagation();
                             if (!id) return;
-                            await shareContent({
+                            const result = await shareContent({
                               title: title,
                               text: `Check out "${title}" by ${author} on Shelf.`,
-                              url: `${window.location.origin}/app/books/${id}`,
+                              url: `${window.location.origin}/books/${id}`,
                             });
+                            if (result === "copied") {
+                              addNotification("success", "Link copied to clipboard");
+                            }
                             setShowMenu(false);
                           }}
                           className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
@@ -166,11 +171,14 @@ export const BookCard: React.FC<BookCardProps> = ({
                   onClick={async (e) => {
                     e.stopPropagation();
                     if (!id) return;
-                    await shareContent({
+                    const result = await shareContent({
                       title: title,
                       text: `Check out "${title}" by ${author} on Shelf.`,
-                      url: `${window.location.origin}/app/books/${id}`,
+                      url: `${window.location.origin}/books/${id}`,
                     });
+                    if (result === "copied") {
+                      addNotification("success", "Link copied to clipboard");
+                    }
                   }}
                   className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
                   title="Share Resource"
