@@ -7,6 +7,7 @@ import {
   GoogleOAuthRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  VerifyEmailRequest,
 } from "../../types/auth";
 import { useAppDispatch } from "../../store/store";
 import { setCredentials, logout } from "../../store/authSlice";
@@ -86,6 +87,17 @@ export const useAuthActions = () => {
     },
   });
 
+  const verifyEmailMutation = useMutation({
+    mutationFn: (data: VerifyEmailRequest) =>
+      api.post("/auth/verify-email", data),
+    onSuccess: () => {
+      addNotification(
+        "success",
+        "Email verified successfully! You can now log in.",
+      );
+    },
+  });
+
   return {
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
@@ -93,17 +105,20 @@ export const useAuthActions = () => {
     logout: logoutMutation.mutateAsync,
     forgotPassword: forgotPasswordMutation.mutateAsync,
     resetPassword: resetPasswordMutation.mutateAsync,
+    verifyEmail: verifyEmailMutation.mutateAsync,
     isLoginPending: loginMutation.isPending,
     isRegisterPending: registerMutation.isPending,
     isGooglePending: googleAuthMutation.isPending,
     isForgotPending: forgotPasswordMutation.isPending,
     isResetPending: resetPasswordMutation.isPending,
+    isVerifyPending: verifyEmailMutation.isPending,
     isLoading:
       loginMutation.isPending ||
       registerMutation.isPending ||
       googleAuthMutation.isPending ||
       forgotPasswordMutation.isPending ||
-      resetPasswordMutation.isPending,
+      resetPasswordMutation.isPending ||
+      verifyEmailMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
   };
 };
