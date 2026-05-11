@@ -12,17 +12,22 @@ import { fileTypeFromBuffer } from "file-type";
 import { FiArrowLeft } from "react-icons/fi";
 
 import { getErrorMessage } from "@/app/helpers/error";
+import {
+  ReaderProvider,
+  useReader,
+} from "@/app/components/Reader/ReaderContext";
 
-export default function ModeratorReaderPage() {
-  const params = useParams();
+function ModeratorReaderPageInner({
+  data,
+  buffer,
+  fileType,
+}: {
+  data: any;
+  buffer: ArrayBuffer;
+  fileType: "epub" | "pdf";
+}) {
   const router = useRouter();
-  const { id } = params;
-
-  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
-  const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isFetchingFile, setIsFetchingFile] = useState(false);
+  const { currentPage, totalPages, updateProgress } = useReader();
 
   const epubControlsRef = useRef<{
     next: () => void;
@@ -31,6 +36,86 @@ export default function ModeratorReaderPage() {
   } | null>(null);
 
   const pdfViewerRef = useRef<PdfViewerHandle>(null);
+
+  const handleNextPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.next();
+    } else {
+      if (currentPage < totalPages) {
+        pdfViewerRef.current?.scrollToPage(currentPage + 1);
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
+
+  const handlePrevPage = useCallback(() => {
+    if (fileType === "epub") {
+      epubControlsRef.current?.prev();
+    } else {
+      if (currentPage > 1) {
+        pdfViewerRef.current?.scrollToPage(currentPage - 1);
+      }
+    }
+  }, [fileType, currentPage, totalPages]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (fileType === "epub") {
+        epubControlsRef.current?.goTo?.(page);
+      } else {
+        pdfViewerRef.current?.scrollToPage(page);
+      }
+    },
+    [fileType],
+  );
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-white dark:bg-neutral-950">
+      <ReaderLayout
+        title={`[REVIEW] ${data.title}`}
+        subtitle={data.author}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+        onPageChange={handlePageChange}
+      >
+        {fileType === "epub" ? (
+          <EpubViewer
+            buffer={buffer}
+            onReady={(controls) => {
+              epubControlsRef.current = controls;
+            }}
+            onPageDetails={(info) => {
+              if (info.currentPage && info.totalPages) {
+                updateProgress(info.currentPage, Number(info.totalPages));
+              }
+            }}
+          />
+        ) : (
+          <PdfViewer
+            ref={pdfViewerRef}
+            buffer={buffer}
+            onPageInfo={({ currentPage: cp, totalPages: tp }) => {
+              updateProgress(cp, tp);
+            }}
+          />
+        )}
+      </ReaderLayout>
+
+      {/* Moderator context banner */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg z-[110]">
+        Moderator Review Mode
+      </div>
+    </div>
+  );
+}
+
+export default function ModeratorReaderPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { id } = params;
+
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
+  const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
+  const [isFetchingFile, setIsFetchingFile] = useState(false);
 
   const { data, isLoading, error } = useGetBookByIdQuery(String(id));
 
@@ -61,51 +146,26 @@ export default function ModeratorReaderPage() {
     }
   }, [data]);
 
-  const handleNextPage = useCallback(() => {
-    if (fileType === "epub") {
-      epubControlsRef.current?.next();
-    } else {
-      if (currentPage < totalPages) {
-        pdfViewerRef.current?.scrollToPage(currentPage + 1);
-      }
-    }
-  }, [fileType, currentPage, totalPages]);
-
-  const handlePrevPage = useCallback(() => {
-    if (fileType === "epub") {
-      epubControlsRef.current?.prev();
-    } else {
-      if (currentPage > 1) {
-        pdfViewerRef.current?.scrollToPage(currentPage - 1);
-      }
-    }
-  }, [fileType, currentPage, totalPages]);
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      if (fileType === "epub") {
-        epubControlsRef.current?.goTo?.(page);
-        setCurrentPage(page);
-      } else {
-        pdfViewerRef.current?.scrollToPage(page);
-      }
-    },
-    [fileType],
-  );
-
   if (isLoading || isFetchingFile) {
     return <LoadingScreen />;
   }
 
   if (!data || !buffer) {
-    const errorMessage = getErrorMessage(error, "The requested document could not be retrieved.");
+    const errorMessage = getErrorMessage(
+      error,
+      "The requested document could not be retrieved.",
+    );
 
     return (
       <div className="flex items-center justify-center min-h-screen bg-white dark:bg-neutral-950">
         <div className="text-center space-y-4 max-w-md px-6">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white">Review Load Failure</h2>
-          <p className="text-sm text-gray-500 dark:text-neutral-400">{errorMessage}</p>
-          <button 
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white">
+            Review Load Failure
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-neutral-400">
+            {errorMessage}
+          </p>
+          <button
             onClick={() => router.back()}
             className="inline-flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-medium pt-4"
           >
@@ -118,41 +178,12 @@ export default function ModeratorReaderPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white dark:bg-neutral-950">
-      <ReaderLayout
-        title={`[REVIEW] ${data.title}`}
-        subtitle={data.author}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onNextPage={handleNextPage}
-        onPrevPage={handlePrevPage}
-        onPageChange={handlePageChange}
-        format={fileType as "pdf" | "epub"}
-      >
-        {fileType === "epub" ? (
-          <EpubViewer
-            buffer={buffer}
-            onReady={(controls) => {
-              epubControlsRef.current = controls;
-            }}
-            onPageDetails={(info) => setTotalPages(Number(info.totalPages))}
-          />
-        ) : (
-          <PdfViewer
-            ref={pdfViewerRef}
-            buffer={buffer}
-            onPageInfo={({ currentPage: cp, totalPages: tp }) => {
-              setCurrentPage(cp);
-              setTotalPages(tp);
-            }}
-          />
-        )}
-      </ReaderLayout>
-      
-      {/* Moderator context banner */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg z-[110]">
-        Moderator Review Mode
-      </div>
-    </div>
+    <ReaderProvider initialFormat={fileType as "pdf" | "epub"}>
+      <ModeratorReaderPageInner
+        data={data}
+        buffer={buffer}
+        fileType={fileType as "pdf" | "epub"}
+      />
+    </ReaderProvider>
   );
 }
