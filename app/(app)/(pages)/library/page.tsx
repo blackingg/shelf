@@ -1,10 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FiBook, FiBookmark, FiFolder, FiHeart } from "react-icons/fi";
+import {
+  FiBook,
+  FiBookmark,
+  FiFolder,
+  FiHeart,
+  FiCheckSquare,
+} from "react-icons/fi";
 import { FolderGrid } from "@/app/components/Folders/FolderGrid";
 import { CreateFolderModal } from "@/app/components/Folders/CreateFolderModal";
 import { ConfirmModal } from "@/app/components/Shared/ConfirmModal";
+import { MoveFoldersModal } from "@/app/components/Folders/MoveFoldersModal";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
 import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
 import { PaginatedFolderGrid } from "@/app/components/Folders/PaginatedFolderGrid";
@@ -24,6 +31,7 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { DeleteModal } from "@/app/components/Library/DeleteConfirmationModal";
 import { useGetMeQuery } from "@/app/services";
 import { useOpenPanel } from "@openpanel/nextjs";
+import { motion, AnimatePresence } from "motion/react";
 
 type LibraryTab = "bookmarks" | "folders" | "uploads";
 type BookmarkSubTab = "books" | "folders";
@@ -72,7 +80,21 @@ export default function LibraryPage() {
   const [folderPage, setFolderPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showMoveModal, setShowMoveModal] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [folderToMove, setFolderToMove] = useState<Folder | null>(null);
+  const [selectedFolderIds, setSelectedFolderIds] = useState<string[]>([]);
+  const [showMoveFoldersModal, setShowMoveFoldersModal] = useState(false);
+  const [isProcessingBulk, setIsProcessingBulk] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+
+  const isAnyModalOpen =
+    showCreateModal ||
+    showDeleteModal ||
+    showMoveModal ||
+    showBookDeleteModal ||
+    showMoveFoldersModal;
+
   const [viewState, updateViewState] = useState("grid");
 
   const pageSize = useResponsiveLimit({ base: 2, md: 4, lg: 5 }, 2, 8);
@@ -141,7 +163,7 @@ export default function LibraryPage() {
     isLoading: isLoadingBookmarkedFolders,
     isFetching: isFetchingBookmarkedFolders,
   } = useBookmarkedFolders(
-    { page: bookmarkFolderPage, limit: pageSize },
+    { page: bookmarkFolderPage, limit: pageSize, root_only: true },
     { enabled: activeTab === "bookmarks" && bookmarkSubTab === "folders" },
   );
 
@@ -156,10 +178,14 @@ export default function LibraryPage() {
     page: folderPage,
     limit: pageSize,
     enabled: activeTab === "folders",
+    root_only: true,
   });
 
-  const { actions: folderActions, isDeleting: isDeletingFolder } =
-    useFolderActions();
+  const {
+    actions: folderActions,
+    isDeleting: isDeletingFolder,
+    isMoving,
+  } = useFolderActions();
   const { actions: bookActions, isDeleting: isDeletingBook } = useBookActions();
 
   // ── Uploads queries ──
@@ -196,6 +222,38 @@ export default function LibraryPage() {
   const handleFolderDelete = (folder: Folder) => {
     setFolderToDelete(folder);
     setShowDeleteModal(true);
+  };
+
+  const handleFolderMove = (folder: Folder) => {
+    setFolderToMove(folder);
+    setShowMoveModal(true);
+  };
+
+  const confirmMove = async (newParentId: string | null) => {
+    if (folderToMove) {
+      await folderActions.moveFolder(folderToMove.id, newParentId);
+      setShowMoveModal(false);
+      setFolderToMove(null);
+    }
+  };
+
+  const handleBulkMoveFolders = async (newParentId: string | null) => {
+    setIsProcessingBulk(true);
+    try {
+      for (const fId of selectedFolderIds) {
+        await folderActions.moveFolder(fId, newParentId);
+      }
+      addNotification(
+        "success",
+        `Moved ${selectedFolderIds.length} folders successfully`,
+      );
+      setSelectedFolderIds([]);
+      setShowMoveFoldersModal(false);
+    } catch (err) {
+      addNotification("error", "Failed to move some folders");
+    } finally {
+      setIsProcessingBulk(false);
+    }
   };
 
   const confirmDelete = async () => {
@@ -382,12 +440,52 @@ export default function LibraryPage() {
               <p className="text-sm text-gray-500 dark:text-neutral-400">
                 {myFolders.length} folder{myFolders.length !== 1 ? "s" : ""}
               </p>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
-              >
-                <span>Create Folder</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    const newMode = !isSelectionMode;
+                    setIsSelectionMode(newMode);
+                    if (!newMode) {
+                      setSelectedFolderIds([]);
+                    }
+                  }}
+                  className={`flex items-center text-[10px] uppercase tracking-widest space-x-2 px-4 py-2 rounded-sm font-bold transition-all border ${
+                    isSelectionMode
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-white dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 border-gray-100 dark:border-neutral-700 hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  <FiCheckSquare className="w-3.5 h-3.5" />
+                  <span>
+                    {isSelectionMode ? "Exit Selection" : "Select Items"}
+                  </span>
+                </button>
+
+                {isSelectionMode && (
+                  <button
+                    onClick={() => {
+                      if (selectedFolderIds.length === myFolders.length) {
+                        setSelectedFolderIds([]);
+                      } else {
+                        setSelectedFolderIds(myFolders.map((f) => f.id));
+                      }
+                    }}
+                    className="flex items-center text-[10px] uppercase tracking-widest space-x-2 px-4 py-2 rounded-sm font-bold transition-all border border-gray-100 dark:border-neutral-700 text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                  >
+                    <span>
+                      {selectedFolderIds.length === myFolders.length
+                        ? "Deselect All"
+                        : "Select All"}
+                    </span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
+                >
+                  <span>Create Folder</span>
+                </button>
+              </div>
             </div>
 
             <FolderGrid
@@ -397,8 +495,13 @@ export default function LibraryPage() {
                 router.push(`/folders/${folder.slug}/edit`)
               }
               onFolderDelete={handleFolderDelete}
+              onFolderMove={handleFolderMove}
               showActions={true}
               isLoading={isLoadingMyFolders}
+              selectedIds={selectedFolderIds}
+              onSelectionChange={
+                isSelectionMode ? setSelectedFolderIds : undefined
+              }
               emptyMessage="No folders found. Create your first folder!"
             />
 
@@ -529,6 +632,64 @@ export default function LibraryPage() {
         isDanger={true}
         isLoading={isDeletingBook}
       />
+
+      {folderToMove && (
+        <MoveFoldersModal
+          isOpen={showMoveModal}
+          onClose={() => setShowMoveModal(false)}
+          onConfirm={confirmMove}
+          folderIds={[folderToMove.id]}
+          isMoving={isMoving}
+        />
+      )}
+
+      <MoveFoldersModal
+        isOpen={showMoveFoldersModal}
+        onClose={() => setShowMoveFoldersModal(false)}
+        onConfirm={handleBulkMoveFolders}
+        selectedCount={selectedFolderIds.length}
+        isMoving={isProcessingBulk}
+        folderIds={selectedFolderIds}
+      />
+
+      <AnimatePresence>
+        {!isAnyModalOpen &&
+          activeTab === "folders" &&
+          selectedFolderIds.length > 0 && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-2xl p-4 flex items-center space-x-6 min-w-[400px]"
+            >
+              <div className="flex items-center space-x-3 pr-6 border-r border-gray-100 dark:border-white/5">
+                <div className="w-8 h-8 bg-primary/10 rounded-sm flex items-center justify-center text-primary font-bold text-xs">
+                  {selectedFolderIds.length}
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  Folders Selected
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setShowMoveFoldersModal(true)}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-sm text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-colors flex items-center space-x-2"
+                >
+                  <FiFolder className="w-3.5 h-3.5" />
+                  <span>Move Folders</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedFolderIds([])}
+                  className="px-4 py-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          )}
+      </AnimatePresence>
     </>
   );
 }

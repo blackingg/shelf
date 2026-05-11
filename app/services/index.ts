@@ -9,6 +9,7 @@ export * from "./discover";
 export * from "./folders";
 export * from "./notifications";
 export * from "./onboarding";
+export * from "./progress";
 export * from "./ratings";
 export * from "./search";
 export * from "./user";

@@ -37,6 +37,7 @@ export default function FoldersPage() {
     sort_by: sortBy,
     order,
     q: debouncedSearch,
+    root_only: true,
   });
 
   return (

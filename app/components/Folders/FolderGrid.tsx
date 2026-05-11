@@ -7,11 +7,14 @@ interface FolderGridProps {
   onFolderClick: (folder: Folder) => void;
   onFolderEdit?: (folder: Folder) => void;
   onFolderDelete?: (folder: Folder) => void;
+  onFolderMove?: (folder: Folder) => void;
   showActions?: boolean;
   emptyMessage?: string;
   isLoading?: boolean;
   skeletonCount?: number;
   className?: string;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 export const FolderGrid: React.FC<FolderGridProps> = ({
@@ -19,11 +22,14 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
   onFolderClick,
   onFolderEdit,
   onFolderDelete,
+  onFolderMove,
   showActions = false,
   emptyMessage = "No folders yet",
   isLoading = false,
   skeletonCount = 8,
   className = "",
+  selectedIds = [],
+  onSelectionChange,
 }) => {
   if (isLoading && folders.length === 0) {
     return (
@@ -63,7 +69,22 @@ export const FolderGrid: React.FC<FolderGridProps> = ({
           onClick={() => onFolderClick(folder)}
           onEdit={() => onFolderEdit?.(folder)}
           onDelete={() => onFolderDelete?.(folder)}
+          onMove={() => onFolderMove?.(folder)}
           showActions={showActions}
+          isSelected={selectedIds.includes(folder.id)}
+          onSelect={
+            onSelectionChange
+              ? (selected) => {
+                  if (selected) {
+                    onSelectionChange([...selectedIds, folder.id]);
+                  } else {
+                    onSelectionChange(
+                      selectedIds.filter((id) => id !== folder.id),
+                    );
+                  }
+                }
+              : undefined
+          }
         />
       ))}
     </div>

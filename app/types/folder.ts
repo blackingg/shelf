@@ -18,6 +18,16 @@ export interface FolderCounts {
   collaborators: number;
 }
 
+export interface FolderMinimal {
+  id: string;
+  slug: string;
+  name: string;
+  coverImage: string | null;
+  visibility: FolderVisibility;
+  booksCount: number;
+  childrenCount: number;
+}
+
 export interface Folder {
   id: string;
   slug: string;
@@ -32,6 +42,11 @@ export interface Folder {
   createdAt: string;
   updatedAt: string;
   user?: UserMinimal;
+  parentId?: string;
+  parent?: FolderMinimal;
+  children?: Folder[];
+  childrenCount?: number;
+  parent_id?: string;
   items?: FolderItem[];
   collaborators?: Collaborator[];
   counts?: FolderCounts;
@@ -41,7 +56,12 @@ export interface FolderItem {
   id: string;
   order: number;
   addedAt: string;
-  book: Partial<Book> & { id: string; slug: string; title: string; author: string };
+  book: Partial<Book> & {
+    id: string;
+    slug: string;
+    title: string;
+    author: string;
+  };
 }
 
 export interface CreateFolderRequest {
@@ -50,6 +70,7 @@ export interface CreateFolderRequest {
   coverImage?: string;
   visibility?: FolderVisibility;
   allowCollaboration?: boolean;
+  parentId?: string;
 }
 
 export interface UpdateFolderRequest extends Partial<CreateFolderRequest> {}

@@ -43,6 +43,9 @@ export const folderKeys = {
       ? ([...folderKeys.detail(id), "invites", params] as const)
       : ([...folderKeys.detail(id), "invites"] as const),
   myInvites: (params?: any) => ["invites", "me", params] as const,
+  children: (id: string) => [...folderKeys.detail(id), "children"] as const,
+  breadcrumbs: (id: string) =>
+    [...folderKeys.detail(id), "breadcrumbs"] as const,
 };
 
 export const useGetMeFoldersQuery = (
@@ -173,11 +176,48 @@ export const useDeleteFolderMutation = () => {
   return useMutation({
     mutationFn: (id: string) => api.delete(`/folders/${id}/`),
     onSuccess: () => {
-      // Folder removed from all lists
-      queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
-      queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
+      // Folder removed from all lists and details
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
       queryClient.invalidateQueries({ queryKey: ["bookmarks", "folders"] });
     },
+  });
+};
+
+export const useMoveFolderMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      folderId,
+      newParentId,
+    }: {
+      folderId: string;
+      newParentId: string | null;
+    }) => api.patch<Folder>(`/folders/${folderId}/move`, { newParentId }),
+    onSuccess: () => {
+      // Moving folder affects its detail (parent change), old parent, and new parent
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
+    },
+  });
+};
+
+export const useGetFolderChildrenQuery = (id: string) => {
+  return useQuery<Folder[]>({
+    queryKey: folderKeys.children(id),
+    queryFn: () => api.get<Folder[]>(`/folders/${id}/children`),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useGetFolderBreadcrumbsQuery = (id: string) => {
+  return useQuery<{ id: string; slug: string; name: string }[]>({
+    queryKey: folderKeys.breadcrumbs(id),
+    queryFn: () =>
+      api.get<{ id: string; slug: string; name: string }[]>(
+        `/folders/${id}/breadcrumbs`,
+      ),
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
   });
 };
 
@@ -277,6 +317,14 @@ export const useGetMyInvitesQuery = (params?: { status?: string }) => {
     queryFn: () => api.get<Invite[]>("/collaboration/invites", { params }),
     staleTime: 30 * 1000,
     refetchInterval: 30 * 1000,
+  });
+};
+
+export const useGetInviteByIdQuery = (id: string) => {
+  return useQuery<Invite>({
+    queryKey: ["invites", "detail", id],
+    queryFn: () => api.get<Invite>(`/collaboration/invites/${id}`),
+    enabled: !!id,
   });
 };
 
@@ -468,6 +516,26 @@ export const useFolderInvites = (id: string, params?: { status?: string }) => {
   return { invites, isLoading, isError, error };
 };
 
+export const useFolderChildren = (id: string) => {
+  const {
+    data: children = [],
+    isLoading,
+    isError,
+    error,
+  } = useGetFolderChildrenQuery(id);
+  return { children, isLoading, isError, error };
+};
+
+export const useFolderBreadcrumbs = (id: string) => {
+  const {
+    data: breadcrumbs = [],
+    isLoading,
+    isError,
+    error,
+  } = useGetFolderBreadcrumbsQuery(id);
+  return { breadcrumbs, isLoading, isError, error };
+};
+
 export const useMyInvites = (params?: { status?: string }) => {
   const {
     data: invites = [],
@@ -493,6 +561,26 @@ export const useMyInvites = (params?: { status?: string }) => {
   };
 };
 
+export const useInviteById = (id: string) => {
+  const { data: invite, isLoading, isError, error } = useGetInviteByIdQuery(id);
+  const respondMutation = useRespondToInviteMutation();
+
+  const respondToInvite = async (accept: boolean) => {
+    return respondMutation.mutateAsync({ inviteId: id, accept });
+  };
+
+  return {
+    invite,
+    isLoading,
+    isError,
+    error,
+    actions: {
+      respondToInvite,
+    },
+    isResponding: respondMutation.isPending,
+  };
+};
+
 export const useFolderActions = () => {
   const { addNotification } = useNotifications();
   const createMutation = useCreateFolderMutation();
@@ -505,6 +593,7 @@ export const useFolderActions = () => {
   const uninviteMutation = useRemoveCollaboratorMutation();
   const settingsMutation = useUpdateCollaborationSettingsMutation();
   const updatePermissionsMutation = useUpdatePermissionsMutation();
+  const moveMutation = useMoveFolderMutation();
 
   const createFolder = async (data: CreateFolderRequest) => {
     try {
@@ -656,6 +745,15 @@ export const useFolderActions = () => {
     }
   };
 
+  const moveFolder = async (folderId: string, newParentId: string | null) => {
+    try {
+      await moveMutation.mutateAsync({ folderId, newParentId });
+      addNotification("success", "Folder moved successfully");
+    } catch (err: any) {
+      addNotification("error", getErrorMessage(err, "Failed to move folder"));
+    }
+  };
+
   return {
     actions: {
       createFolder,
@@ -668,6 +766,7 @@ export const useFolderActions = () => {
       removeCollaborator,
       updateSettings,
       updatePermissions,
+      moveFolder,
     },
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
@@ -679,5 +778,6 @@ export const useFolderActions = () => {
     isUninviting: uninviteMutation.isPending,
     isUpdatingSettings: settingsMutation.isPending,
     isUpdatingPermissions: updatePermissionsMutation.isPending,
+    isMoving: moveMutation.isPending,
   };
 };

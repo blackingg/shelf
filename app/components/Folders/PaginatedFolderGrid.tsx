@@ -18,6 +18,7 @@ interface PaginatedFolderGridProps {
   onFolderClick: (folder: Folder) => void;
   onFolderEdit?: (folder: Folder) => void;
   onFolderDelete?: (folder: Folder) => void;
+  onFolderMove?: (folder: Folder) => void;
   showActions?: boolean;
   pageSize?: number;
   emptyIcon?: ReactNode;
@@ -37,6 +38,7 @@ export const PaginatedFolderGrid: React.FC<PaginatedFolderGridProps> = ({
   onFolderClick,
   onFolderEdit,
   onFolderDelete,
+  onFolderMove,
   showActions = false,
   pageSize = 8,
   emptyIcon,
@@ -61,6 +63,7 @@ export const PaginatedFolderGrid: React.FC<PaginatedFolderGridProps> = ({
               onClick={() => onFolderClick(folder)}
               onEdit={() => onFolderEdit?.(folder)}
               onDelete={() => onFolderDelete?.(folder)}
+              onMove={() => onFolderMove?.(folder)}
               showActions={showActions}
             />
           ))}

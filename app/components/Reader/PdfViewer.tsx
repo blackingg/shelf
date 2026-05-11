@@ -1,15 +1,17 @@
 "use client";
-import React, {
+import {
   useRef,
   useState,
   useEffect,
   useCallback,
   useImperativeHandle,
   forwardRef,
+  useLayoutEffect,
 } from "react";
 import { parsePdf, getPdfPage } from "./processingFunctions";
 import { renderPdfPage } from "./pdfRenderer";
 import { useReader } from "./ReaderContext";
+import { SpinnerLoader } from "../Loader/SpinnerLoader";
 import type { PdfDocument } from "./processingFunctions";
 
 export interface PdfViewerHandle {
@@ -19,6 +21,7 @@ export interface PdfViewerHandle {
 interface PdfViewerProps {
   buffer: ArrayBuffer;
   onPageInfo?: (info: { currentPage: number; totalPages: number }) => void;
+  initialPage?: number;
 }
 
 /**
@@ -26,9 +29,15 @@ interface PdfViewerProps {
  * Uses IntersectionObserver to render pages on demand and track the current page.
  */
 export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
-  function PdfViewer({ buffer, onPageInfo }, ref) {
-    const { pdfScale, setTableOfContentsItems, setTableOfContentsNavigator } =
-      useReader();
+  function PdfViewer({ buffer, onPageInfo, initialPage }, ref) {
+    const {
+      pdfScale,
+      setTableOfContentsItems,
+      setTableOfContentsNavigator,
+      updateProgress,
+      setIsReady,
+    } = useReader();
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [doc, setDoc] = useState<PdfDocument | null>(null);
     const [pageDimensions, setPageDimensions] = useState<
@@ -60,7 +69,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
       parsePdf(buffer).then(async (parsed) => {
         setDoc(parsed);
         onPageInfoRef.current?.({
-          currentPage: 1,
+          currentPage: initialPage ?? 1,
           totalPages: parsed.numPages,
         });
 
@@ -72,6 +81,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
           dims.push({ width: vp.width, height: vp.height });
         }
         setPageDimensions(dims);
+        setIsReady(true);
 
         // Extract Table of Contents (outline) if available
         try {
@@ -101,7 +111,22 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
           // No outline available
         }
       });
-    }, [buffer, setTableOfContentsItems]);
+    }, [buffer, setTableOfContentsItems, initialPage]);
+
+    // Jump to initial page immediately when dimensions are ready
+    useLayoutEffect(() => {
+      if (
+        initialPage &&
+        initialPage > 1 &&
+        pageDimensions.length >= initialPage &&
+        containerRef.current
+      ) {
+        const el = pageElementRefs.current.get(initialPage);
+        if (el) {
+          el.scrollIntoView({ behavior: "auto", block: "start" });
+        }
+      }
+    }, [pageDimensions, initialPage]);
 
     // Table of Contents navigate handler — resolve destination to page and scroll
     useEffect(() => {
@@ -193,6 +218,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
             }
           });
           if (mostVisiblePage > 0) {
+            updateProgress(mostVisiblePage, doc.numPages);
             onPageInfoRef.current?.({
               currentPage: mostVisiblePage,
               totalPages: doc.numPages,
@@ -217,7 +243,11 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
     }, [doc, pageDimensions, renderPage]);
 
     if (!doc || pageDimensions.length === 0) {
-      return <p className="text-center py-12 opacity-60">Loading PDF…</p>;
+      return (
+        <div className="flex h-full items-center justify-center bg-white dark:bg-neutral-900 transition-opacity duration-500">
+          <SpinnerLoader />
+        </div>
+      );
     }
 
     return (

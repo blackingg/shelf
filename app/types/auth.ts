@@ -36,3 +36,16 @@ export interface AuthResponse {
   user: User;
   tokens: TokenResponse;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}

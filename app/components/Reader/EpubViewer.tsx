@@ -4,6 +4,7 @@ import ePub, { Book, Location, Rendition } from "epubjs";
 import { epubThemes } from "./readerThemes";
 import { useReader } from "./ReaderContext";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { SpinnerLoader } from "../Loader/SpinnerLoader";
 
 export async function generateLocations(book: Book) {
   await book.ready;
@@ -18,18 +19,22 @@ interface EpubViewerProps {
     goTo?: (page: number) => void;
   }) => void;
   onPageDetails?: (info: { currentPage?: number; totalPages?: number }) => void;
+  initialPage?: number;
 }
 
 export function EpubViewer({
   buffer,
   onReady,
   onPageDetails,
+  initialPage,
 }: EpubViewerProps) {
   const {
     themeName,
     fontSize,
     setTableOfContentsItems,
     setTableOfContentsNavigator,
+    updateProgress,
+    setIsReady,
   } = useReader();
 
   const [loading, setLoading] = useState(true);
@@ -68,8 +73,13 @@ export function EpubViewer({
       .then(() => {
         console.log(book);
         const total = book.locations.length();
+        updateProgress(initialPage ?? 1, total);
         onPageDetails?.({ totalPages: total });
-        return rendition.display();
+
+        const initialLocation = initialPage
+          ? book.locations.cfiFromLocation(initialPage)
+          : undefined;
+        return rendition.display(initialLocation);
       })
       .then(() => {
         // Parse Table of Contents
@@ -122,6 +132,7 @@ export function EpubViewer({
       })
       .finally(() => {
         setLoading(false);
+        setIsReady(true);
         addNotification("success", "Book contents loaded successfully");
       });
 
@@ -134,9 +145,12 @@ export function EpubViewer({
     rendition.on("relocated", (location: Location) => {
       if (book.locations.length() > 0) {
         const currentLoc = book.locations.locationFromCfi(location.start.cfi);
+        const cp = Number(currentLoc);
+        const tp = book.locations.length();
+        updateProgress(cp, tp);
         onPageDetails?.({
-          currentPage: Number(currentLoc),
-          totalPages: book.locations.length(),
+          currentPage: cp,
+          totalPages: tp,
         });
       }
     });
@@ -162,12 +176,7 @@ export function EpubViewer({
     <div className="w-full h-full relative">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-neutral-900 z-10 transition-opacity duration-500">
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-            <p className="text-sm font-medium text-neutral-500 animate-pulse">
-              Loading book content...
-            </p>
-          </div>
+          <SpinnerLoader />
         </div>
       )}
 

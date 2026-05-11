@@ -6,6 +6,7 @@ import {
   FiBook,
   FiBookmark,
   FiShare2,
+  FiFolder,
 } from "react-icons/fi";
 import { useState } from "react";
 import Image from "next/image";
@@ -18,23 +19,30 @@ import {
 } from "@/app/services";
 import { useGetMeQuery } from "@/app/services";
 import { useFolderPermissions } from "@/app/hooks";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 interface FolderCardProps {
   folder: Folder & { collaborator?: Collaborator };
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onMove?: () => void;
   showActions?: boolean;
+  isSelected?: boolean;
+  onSelect?: (selected: boolean) => void;
 }
 
 export function FolderCardSkeleton({ count = 1 }: { count?: number }) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="animate-pulse">
+        <div
+          key={i}
+          className="animate-pulse"
+        >
           <div className="relative">
             <div className="relative z-10">
-              <div className="w-full aspect-278/194 bg-gray-200 dark:bg-neutral-700 rounded-md overflow-hidden" />
+              <div className="w-full aspect-278/194 bg-gray-200 dark:bg-neutral-700 rounded-sm overflow-hidden" />
             </div>
           </div>
           <div className="mt-2 px-1 space-y-1.5">
@@ -52,15 +60,20 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onClick,
   onEdit,
   onDelete,
+  onMove,
   showActions = false,
+  isSelected = false,
+  onSelect,
 }) => {
   const { data: activeUser } = useGetMeQuery();
   const isAuthenticated = !!activeUser;
+  const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
   const isPublic = folder.visibility === "PUBLIC";
 
-  const { canEditFolder, canDeleteFolder } = useFolderPermissions(folder);
-  const hasMoreActions = canEditFolder || canDeleteFolder;
+  const { canEditFolder, canDeleteFolder, canMoveFolder } =
+    useFolderPermissions(folder);
+  const hasMoreActions = canEditFolder || canDeleteFolder || canMoveFolder;
 
   const { isBookmarked } = useIsFolderBookmarked(folder.id, {
     enabled: isAuthenticated,
@@ -73,7 +86,30 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   };
 
   return (
-    <div onClick={onClick} className="group cursor-pointer relative">
+    <div
+      onClick={(e) => {
+        if (onSelect) {
+          e.stopPropagation();
+          onSelect(!isSelected);
+        } else {
+          onClick();
+        }
+      }}
+      className="group cursor-pointer relative"
+    >
+      {onSelect && (
+        <div className="absolute top-1.5 left-1.5 z-20">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={(e) => {
+              e.stopPropagation();
+              onSelect(e.target.checked);
+            }}
+            className="w-4 h-4 rounded-sm border-gray-200 dark:border-white/10 text-primary focus:ring-primary dark:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
+          />
+        </div>
+      )}
       <div className="absolute top-1.5 right-1.5 z-20 flex items-center space-x-1.5">
         {isAuthenticated && (
           <button
@@ -100,7 +136,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                     e.stopPropagation();
                     setShowMenu(!showMenu);
                   }}
-                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
                 >
                   <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
                 </button>
@@ -113,7 +149,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                         setShowMenu(false);
                       }}
                     />
-                    <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                    <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-sm border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
                       {canEditFolder && (
                         <button
                           onClick={(e) => {
@@ -138,14 +174,29 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                           Delete
                         </button>
                       )}
+                      {canMoveFolder && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onMove?.();
+                            setShowMenu(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                        >
+                          Move to Folder
+                        </button>
+                      )}
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await shareContent({
+                          const result = await shareContent({
                             title: folder.name,
                             text: `Check out the ${folder.name} folder on Shelf.`,
-                            url: `${window.location.origin}/app/folders/${folder.slug}`,
+                            url: `${window.location.origin}/folders/${folder.slug}`,
                           });
+                          if (result === "copied") {
+                            addNotification("success", "Link copied to clipboard");
+                          }
                           setShowMenu(false);
                         }}
                         className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
@@ -161,13 +212,16 @@ export const FolderCard: React.FC<FolderCardProps> = ({
               <button
                 onClick={async (e) => {
                   e.stopPropagation();
-                  await shareContent({
+                  const result = await shareContent({
                     title: folder.name,
                     text: `Check out the ${folder.name} folder on Shelf.`,
-                    url: `${window.location.origin}/app/folders/${folder.slug}`,
+                    url: `${window.location.origin}/folders/${folder.slug}`,
                   });
+                  if (result === "copied") {
+                    addNotification("success", "Link copied to clipboard");
+                  }
                 }}
-                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
                 title="Share Folder"
               >
                 <FiShare2 className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
@@ -178,12 +232,19 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       </div>
 
       <div className="relative">
-        <div className="relative z-10 transition-opacity duration-200">
+        <div
+          className={`relative z-10 transition-all duration-200 ${
+            isSelected ? "opacity-60 scale-[0.98]" : ""
+          }`}
+        >
           <FolderIcon
             visibility={folder.visibility}
             booksCount={folder.booksCount}
           />
         </div>
+        {isSelected && (
+          <div className="absolute inset-0 z-0 bg-primary/10 rounded-sm ring-2 ring-primary/50" />
+        )}
       </div>
 
       <div className="mt-2 px-1">
@@ -206,6 +267,18 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                 {folder.booksCount} {folder.booksCount === 1 ? "book" : "books"}
               </span>
             </div>
+            {((folder.children && folder.children.length > 0) ||
+              (folder.childrenCount !== undefined &&
+                folder.childrenCount > 0)) && (
+              <div className="flex items-center space-x-1">
+                <FiFolder className="w-3 h-3" />
+                <span>
+                  {folder.children && folder.children.length > 0
+                    ? folder.children.length
+                    : folder.childrenCount}
+                </span>
+              </div>
+            )}
             {folder.bookmarksCount > 0 && (
               <div className="flex items-center space-x-1">
                 <FiBookmark className="w-3 h-3" />
