@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { BookPreview } from "@/app/types/book";
 import { FiSearch, FiArrowLeft } from "react-icons/fi";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { useGetBooksQuery } from "@/app/services";
+import { useSearchQuery, useSearchTypeQuery } from "@/app/services";
+import { SearchResultType } from "@/app/types/search";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { PaginatedSearchResults } from "@/app/components/Search/PaginatedSearchResults";
 
@@ -19,6 +20,7 @@ const sortOptions = [
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
+  const type = (searchParams.get("type") as SearchResultType) || "all";
   const router = useRouter();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
   const [page, setPage] = useState(1);
@@ -27,20 +29,79 @@ function SearchContent() {
 
   useEffect(() => {
     setPage(1);
-  }, [query, sortBy]);
+  }, [query, sortBy, type]);
 
+  const isGlobal = type === "all";
+  const apiType = isGlobal ? "books" : (type as "books" | "folders" | "users");
+
+  const commonParams = {
+    q: query,
+    page,
+    limit: pageSize,
+    sort_by: sortBy.startsWith("-") ? sortBy.substring(1) : sortBy,
+    order: sortBy.startsWith("-") ? ("desc" as const) : ("asc" as const),
+  };
+
+  // 1. Global Search
   const {
-    data: booksResponse,
-    isLoading,
-    isFetching,
-  } = useGetBooksQuery({ q: query, page: 1, limit: pageSize, ordering: sortBy });
+    data: globalData,
+    isLoading: isGlobalLoading,
+    isFetching: isGlobalFetching,
+  } = useSearchQuery(
+    { ...commonParams, types: ["books", "folders", "users"] },
+    { enabled: isGlobal },
+  );
 
-  const items = (booksResponse?.items || []).map((book: any) => ({
-    type: "book" as const,
-    data: book,
-  }));
-  const totalPages = booksResponse?.totalPages || 1;
-  const totalResults = booksResponse?.total || 0;
+  // 2. Type-specific Search
+  const {
+    data: typeData,
+    isLoading: isTypeLoading,
+    isFetching: isTypeFetching,
+  } = useSearchTypeQuery<any>(apiType, commonParams, { enabled: !isGlobal });
+
+  const isLoading = isGlobal ? isGlobalLoading : isTypeLoading;
+  const isFetching = isGlobal ? isGlobalFetching : isTypeFetching;
+
+  // Process items and pagination
+  let items: any[] = [];
+  let totalResults = 0;
+  let totalPages = 1;
+
+  if (isGlobal && globalData) {
+    items = [
+      ...globalData.books.map((b) => ({ type: "books" as const, data: b })),
+      ...globalData.folders.map((f) => ({ type: "folders" as const, data: f })),
+      ...globalData.users.map((u) => ({ type: "users" as const, data: u })),
+    ];
+    totalResults =
+      globalData.total_books +
+      globalData.total_folders +
+      globalData.total_users;
+
+    const maxTotal = Math.max(
+      globalData.total_books,
+      globalData.total_folders,
+      globalData.total_users,
+    );
+    totalPages = Math.ceil(maxTotal / pageSize);
+  } else if (!isGlobal && typeData) {
+    items = (typeData.items || []).map((item) => ({
+      type: type as "books" | "folders" | "users",
+      data: item,
+    }));
+    totalResults = typeData.total;
+    totalPages = Math.ceil(totalResults / pageSize);
+  }
+
+  const handleTypeChange = (newType: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (newType === "all") {
+      params.delete("type");
+    } else {
+      params.set("type", newType);
+    }
+    router.push(`/search?${params.toString()}`);
+  };
 
   if (!query) {
     return (
@@ -54,13 +115,20 @@ function SearchContent() {
               Search Shelf
             </h2>
             <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium">
-              Find books across the Shelf.
+              Find books, folders, and users across the Shelf.
             </p>
           </div>
         </div>
       </main>
     );
   }
+
+  const tabs = [
+    { id: "all", label: "All" },
+    { id: "books", label: "Books" },
+    { id: "folders", label: "Folders" },
+    { id: "users", label: "Users" },
+  ];
 
   return (
     <>
@@ -87,13 +155,34 @@ function SearchContent() {
             </div>
           </div>
 
-          <div className="mb-8 flex justify-end">
-            <SortFilter
-              value={sortBy}
-              onValueChange={(value) => setSortBy(value)}
-              options={[...sortOptions]}
-              labelPrefix="Sort by:"
-            />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-100 dark:border-neutral-800 pb-2">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTypeChange(tab.id)}
+                  className={`px-4 py-2.5 text-sm font-medium transition-all whitespace-nowrap relative ${
+                    type === tab.id
+                      ? "text-gray-900 dark:text-white"
+                      : "text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                  {type === tab.id && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-500" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-end">
+              <SortFilter
+                value={sortBy}
+                onValueChange={(value) => setSortBy(value)}
+                options={[...sortOptions]}
+                labelPrefix="Sort by:"
+              />
+            </div>
           </div>
 
           <PaginatedSearchResults
@@ -105,14 +194,14 @@ function SearchContent() {
             onBookClick={(book) => setSelectedBook(book)}
             onFolderClick={(slug) => router.push(`/folders/${slug}`)}
             onUserClick={(username) => router.push(`/profile/${username}`)}
-            filterType="book"
+            filterType={type}
             pageSize={pageSize}
           />
         </div>
       </main>
 
       <BookDetailPanel
-        book={selectedBook!}
+        book={selectedBook}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />
@@ -122,7 +211,11 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense>
+    <Suspense
+      fallback={
+        <div className="flex-1 bg-white dark:bg-neutral-900 animate-pulse" />
+      }
+    >
       <SearchContent />
     </Suspense>
   );

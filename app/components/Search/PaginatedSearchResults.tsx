@@ -36,7 +36,6 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
   totalPages,
   currentPage,
   onPageChange,
-
   onBookClick,
   onFolderClick,
   onUserClick,
@@ -45,10 +44,11 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
   className = "",
 }) => {
   const renderGridSkeleton = () => {
-    if (filterType === "book") return <BookCardSkeleton count={pageSize / 2} />;
-    if (filterType === "folder")
+    if (filterType === "books")
+      return <BookCardSkeleton count={pageSize / 2} />;
+    if (filterType === "folders")
       return <FolderCardSkeleton count={pageSize / 2} />;
-    if (filterType === "user")
+    if (filterType === "users")
       return <ProfileCardSkeleton count={pageSize / 2} />;
 
     return (
@@ -69,7 +69,7 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
       ) : items.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
           {items.map((item, idx) => {
-            if (item.type === "book") {
+            if (item.type === "books") {
               return (
                 <BookCard
                   key={`grid-book-${item.data.id}-${idx}`}
@@ -77,7 +77,7 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
                   onClick={() => onBookClick(item.data as BookPreview)}
                 />
               );
-            } else if (item.type === "folder") {
+            } else if (item.type === "folders") {
               return (
                 <FolderCard
                   key={`grid-folder-${item.data.id}-${idx}`}
@@ -86,7 +86,7 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
                   showActions={true}
                 />
               );
-            } else if (item.type === "user") {
+            } else if (item.type === "users") {
               return (
                 <ProfileCard
                   key={`grid-user-${item.data.id}-${idx}`}

@@ -11,7 +11,7 @@ export const SearchBar: React.FC<{
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
-}> = ({ placeholder = "Search books...", value, onChange }) => {
+}> = ({ placeholder = "Search Shelf...", value, onChange }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -34,6 +34,7 @@ export const SearchBar: React.FC<{
       } else {
         params.delete("q");
       }
+      params.set("page", "1"); // Reset to page 1 on search
       router.push(`/search?${params.toString()}`);
     }
   }, [debouncedValue, pathname, router, searchParams]);
@@ -41,11 +42,13 @@ export const SearchBar: React.FC<{
   useEffect(() => {
     if (value !== undefined) {
       setLocalValue(value);
-    } else {
+    } else if (pathname === "/search") {
+      // Only sync from URL params when on the search page.
+      // This prevents clearing the query when navigating away.
       const q = searchParams.get("q");
       setLocalValue(q ?? "");
     }
-  }, [value, searchParams]);
+  }, [value, searchParams, pathname]);
 
   useEffect(() => {
     if (isExpanded && inputRef.current) {
@@ -64,7 +67,10 @@ export const SearchBar: React.FC<{
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (localValue.trim()) {
-      router.push(`/search?q=${encodeURIComponent(localValue.trim())}`);
+      const params = new URLSearchParams(searchParams);
+      params.set("q", localValue.trim());
+      params.set("page", "1"); // Reset to page 1 on search
+      router.push(`/search?${params.toString()}`);
       setIsExpanded(false);
     }
   };

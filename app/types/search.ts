@@ -2,26 +2,37 @@ import { Book } from "./book";
 import { Folder } from "./folder";
 import { UserMinimal } from "./user";
 
-export type SearchResultType = "book" | "folder" | "user";
+export type SearchResultType = "books" | "folders" | "users" | "all";
 
 export type SearchResultItem =
-  | { type: "book"; data: Book }
-  | { type: "folder"; data: Folder }
-  | { type: "user"; data: UserMinimal };
+  | { type: "books"; data: Book }
+  | { type: "folders"; data: Folder }
+  | { type: "users"; data: UserMinimal };
 
-export interface SearchResponse {
-  items: SearchResultItem[];
+export interface GlobalSearchResponse {
+  query: string;
+  books: Book[];
+  folders: Folder[];
+  users: UserMinimal[];
+  total_books: number;
+  total_folders: number;
+  total_users: number;
+}
+
+export interface TypeSpecificSearchResponse<T> {
+  items: T[];
   total: number;
   page: number;
   pageSize: number;
-  totalPages: number;
+  query: string;
 }
 
 export interface SearchParams {
   q: string;
-  type?: "all" | "book" | "folder" | "user";
+  types?: string | string[]; // Can be "books" or ["books", "folders"]
+  category?: string;
   page?: number;
   limit?: number;
-  max_limit?: number;
-  pageSize?: number;
+  sort_by?: string;
+  order?: "asc" | "desc";
 }
