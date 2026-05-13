@@ -325,12 +325,15 @@ export default function FolderClient() {
                       </span>
                     </div>
                     <span className="hidden md:inline">•</span>
-                    <Link
-                      href={`/profile/${encodeURIComponent((folder.user?.username || "").replace(/\s+/g, ""))}`}
-                      className="underline-offset-2 hover:underline"
-                    >
-                      Created by {folder.user?.username}
-                    </Link>
+                    <span>
+                      Created by{" "}
+                      <Link
+                        href={`/profile/${encodeURIComponent((folder.user?.username || "").replace(/\s+/g, ""))}`}
+                        className="underline-offset-2 hover:underline"
+                      >
+                        {folder.user?.username}
+                      </Link>
+                    </span>
                     <span className="hidden md:inline">•</span>
                     <span className="capitalize">
                       {folder.visibility.toLowerCase()}

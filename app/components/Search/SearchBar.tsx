@@ -22,8 +22,14 @@ export const SearchBar: React.FC<{
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
+  const userIsTyping = React.useRef(false);
+
   useEffect(() => {
-    // Only perform live search if we're already on the search results page
+    // Only perform live search if the user actively typed something.
+    // This prevents stale debouncedValue from clearing the URL on back navigation.
+    if (!userIsTyping.current) return;
+    userIsTyping.current = false;
+
     if (
       pathname === "/search" &&
       debouncedValue !== (searchParams.get("q") ?? "")
@@ -34,7 +40,7 @@ export const SearchBar: React.FC<{
       } else {
         params.delete("q");
       }
-      params.set("page", "1"); // Reset to page 1 on search
+      params.set("page", "1");
       router.push(`/search?${params.toString()}`);
     }
   }, [debouncedValue, pathname, router, searchParams]);
@@ -43,10 +49,10 @@ export const SearchBar: React.FC<{
     if (value !== undefined) {
       setLocalValue(value);
     } else if (pathname === "/search") {
-      // Only sync from URL params when on the search page.
-      // This prevents clearing the query when navigating away.
       const q = searchParams.get("q");
       setLocalValue(q ?? "");
+    } else {
+      setLocalValue("");
     }
   }, [value, searchParams, pathname]);
 
@@ -76,6 +82,7 @@ export const SearchBar: React.FC<{
   };
 
   const handleChange = (val: string) => {
+    userIsTyping.current = true;
     setLocalValue(val);
     if (onChange) {
       onChange(val);
