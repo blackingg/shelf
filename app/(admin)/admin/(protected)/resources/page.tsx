@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useGetBooksQuery } from "@/app/services";
-import { FiSearch, FiFilter, FiBook, FiExternalLink, FiMoreHorizontal } from "react-icons/fi";
+import {
+  FiSearch,
+  FiFilter,
+  FiBook,
+  FiExternalLink,
+  FiMoreHorizontal,
+} from "react-icons/fi";
 import Link from "next/link";
 
 export default function AdminResourcesPage() {
@@ -54,23 +60,42 @@ export default function AdminResourcesPage() {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-gray-50 dark:border-neutral-800/50">
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">Resource</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">Category</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">Donor</th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest text-right">Actions</th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    Resource
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    Category
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    Donor
+                  </th>
+                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/30">
                 {books?.map((book) => (
-                  <tr key={book.id} className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors">
+                  <tr
+                    key={book.id}
+                    className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-14 bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 rounded-sm overflow-hidden flex-shrink-0">
-                          <img src={book.coverImage || "/dummycover.png"} className="w-full h-full object-cover" alt="" />
+                        <div className="w-10 h-14 bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 rounded-sm overflow-hidden shrink-0">
+                          <img
+                            src={book.coverImage || "/dummycover.png"}
+                            className="w-full h-full object-cover"
+                            alt=""
+                          />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white line-clamp-1">{book.title}</p>
-                          <p className="text-xs text-gray-500 dark:text-neutral-500">{book.author}</p>
+                          <p className="font-medium text-gray-900 dark:text-white line-clamp-1">
+                            {book.title}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-neutral-500">
+                            {book.author}
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -80,11 +105,13 @@ export default function AdminResourcesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-xs text-gray-600 dark:text-neutral-300">@{book.donor?.username || "anonymous"}</p>
+                      <p className="text-xs text-gray-600 dark:text-neutral-300">
+                        @{book.donor?.username || "anonymous"}
+                      </p>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-1">
-                        <Link 
+                        <Link
                           href={`/admin/books/${book.id}`}
                           className="p-2 text-gray-400 hover:text-emerald-500 transition-colors"
                           title="System Details"

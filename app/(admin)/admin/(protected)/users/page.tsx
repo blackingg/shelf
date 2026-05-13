@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useGetAdminUsersQuery } from "@/app/services";
+import { useAdminActions, useGetAdminUsersQuery } from "@/app/services";
 import { UserRole } from "@/app/types/user";
-import {
-  FiSearch,
-  FiMoreHorizontal,
-  FiUser,
-} from "react-icons/fi";
+import { FiSearch, FiMoreHorizontal, FiUser, FiX } from "react-icons/fi";
 import { FormSelect } from "@/app/components/Form/FormSelect";
+import UserComponent from "./UserComponent";
+import { AdminUserResponse } from "@/app/types/admin";
+import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
+import { isatty } from "tty";
+interface UserActionInterface {
+  action_type: string;
+  action_is_on: AdminUserResponse;
+}
 
 export default function AdminUsersPage() {
   interface RoleOption {
@@ -31,11 +35,24 @@ export default function AdminUsersPage() {
     q: search || undefined,
     role: roleFilter.value || undefined,
   });
+  const { banUser, unbanUser, deleteUser, assignRole } = useAdminActions();
+
+  const [actionObj, attemptAction] = useState<UserActionInterface>({
+    action_type: "",
+    action_is_on: {} as AdminUserResponse,
+  });
+
+  const [isActionModalShown, showActionModal] = useState(false);
 
   const users = userData?.items;
 
   return (
     <div className="space-y-10">
+      <ActionProcessingModal
+        action={actionObj}
+        isShown={isActionModalShown}
+        onClick={() => showActionModal(false)}
+      />
       <section>
         <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
           User Management
@@ -101,52 +118,18 @@ export default function AdminUsersPage() {
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/30">
                 {users?.map((user) => (
-                  <tr
+                  <UserComponent
+                    user={user}
                     key={user.id}
-                    className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-xs">
-                          {user.username.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {user.fullName}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-neutral-500">
-                            @{user.username}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${user.role === "USER" ? "bg-purple-500" : "bg-blue-500"}`}
-                        />
-                        <span className="text-xs text-gray-600 dark:text-neutral-300 capitalize">
-                          {user.role.toLowerCase().replace("_", " ")}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {user.isBanned ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-500/20">
-                          Banned
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
-                          Active
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-gray-400 dark:text-neutral-600 hover:text-gray-900 dark:hover:text-white transition-colors">
-                        <FiMoreHorizontal />
-                      </button>
-                    </td>
-                  </tr>
+                    onClick={(action_type) => {
+                      showActionModal(true);
+                      attemptAction({
+                        ...actionObj,
+                        action_type: action_type,
+                        action_is_on: user,
+                      });
+                    }}
+                  />
                 ))}
               </tbody>
             </table>
@@ -154,5 +137,155 @@ export default function AdminUsersPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function ActionProcessingModal({
+  isShown,
+  onClick,
+  action,
+}: {
+  action: UserActionInterface;
+  onClick: () => void;
+  isShown: boolean;
+}) {
+  const { action_type, action_is_on: user } = action;
+  const {
+    isAssigning,
+    isBanning,
+    isDeleting,
+    isUnbanning,
+    banUser,
+    deleteUser,
+    assignRole,
+    unbanUser,
+  } = useAdminActions();
+  const roleTypes: UserRole[] = ["USER", "MODERATOR", "ADMIN", "SUPER_ADMIN"];
+  const [roleState, updateRole] = useState<UserRole>("USER");
+  const [banType, changeBanType] = useState(true);
+  const [banReason, updateBanReason] = useState("");
+
+  const handleUpdateRole = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value.includes("USER")) {
+      updateRole("USER");
+    }
+    if (value.includes("MOD")) {
+      updateRole("MODERATOR");
+    }
+    if (value == "ADMIN") {
+      updateRole("ADMIN");
+    }
+    if (value.includes("SUPER")) {
+      updateRole("SUPER_ADMIN");
+    }
+  };
+
+  return (
+    isShown && (
+      <div className="fixed top-0 left-0 z-30 bg-red-400/60 p-4 grid place-items-center min-h-screen w-screen">
+        <div className="w-1/2 h-1/2 rounded-xl border-4 border-zinc-600  p-2 flex flex-col bg-background">
+          <span
+            className="w-full text-right p-2 grid justify-end"
+            onClick={onClick}
+          >
+            <FiX className="w-8 h-8 text-xl font-bold text-white hover:text-red" />
+          </span>
+          <p className="capitalize font-semibold text-lg">
+            {action_type} Confirmation
+          </p>
+          <p>
+            You are about to {action_type} this user{" "}
+            <span className="text-xl font-bold">{user.username}</span>.
+          </p>
+          <p>Proceed with caution</p>
+          {action_type.includes("ban") && (
+            <div className="flex flex-col">
+              <label className="block my-3">Reason for Ban</label>
+              <input
+                type="text"
+                className="w-3/4 rounded-lg block p-2 my-2 border-2 border-gray"
+                onChange={(e) => updateBanReason(e.target.value)}
+              />
+              <div>
+                <input
+                  type="radio"
+                  name="banType"
+                  id="permanent"
+                  onChange={(e) => changeBanType(false)}
+                />{" "}
+                <label>Temporary</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="banType"
+                  id="temporary"
+                  onChange={(e) => changeBanType(true)}
+                />{" "}
+                <label>Permanent</label>
+              </div>
+              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
+                <button>Cancel</button>
+                <button
+                  className="flex gap-x-4"
+                  onClick={() =>
+                    banUser({
+                      userId: user.id,
+                      reason: "lorem",
+                      permanent: banType,
+                    })
+                  }
+                >
+                  {isBanning && <SpinnerLoader className="shrink-0" />}
+                  <span>{isBanning ? "Enacting Ban..." : "Confirm"}</span>
+                </button>
+              </div>
+            </div>
+          )}
+          {action_type.includes("assign") && (
+            <div className="flex flex-col">
+              <select onChange={handleUpdateRole}>
+                {roleTypes.map((role) => (
+                  <option value={role} key={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
+                <button>Cancel</button>
+                <button
+                  className="gap-x-4 flex"
+                  onClick={() =>
+                    assignRole({
+                      userId: user.id,
+                      role: roleState,
+                    })
+                  }
+                >
+                  {isAssigning && <SpinnerLoader />}
+                  <span>{isAssigning ? "Assigning Role..." : "Confirm"}</span>
+                </button>
+              </div>
+            </div>
+          )}
+          {action_type.includes("delete") && (
+            <div className="flex flex-col">
+              <p>You are about to delete this user: </p>
+              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
+                <button>Cancel</button>
+                <button
+                  onClick={() => deleteUser(user.id)}
+                  className="flex gap-x-4"
+                >
+                  {isDeleting && <SpinnerLoader className="shrink-0" />}
+                  <span>{isDeleting ? "Deleting..." : "Confirm Deletion"}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    )
   );
 }
