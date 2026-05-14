@@ -1,79 +1,94 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api/fetcher";
 import {
   LoginRequest,
   RegisterRequest,
-  AuthResponse,
   GoogleOAuthRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
   VerifyEmailRequest,
 } from "../../types/auth";
-import { useAppDispatch } from "../../store/store";
-import { setCredentials, logout } from "../../store/authSlice";
 import { useNotifications } from "../../context/NotificationContext";
+import { userKeys } from "../user/hooks";
+import Cookies from "js-cookie";
 
 export const useAuthActions = () => {
-  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginRequest) =>
-      api.post<AuthResponse>("/auth/login", credentials),
-    onSuccess: (data, variables) => {
-      dispatch(
-        setCredentials({
-          accessToken: data.tokens.accessToken,
-          refreshToken: data.tokens.refreshToken,
-          userId: data.user.id,
-          expiresIn: data.tokens.expiresIn,
-          rememberMe: variables.rememberMe,
-        }),
-      );
+      fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      }).then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw { status: res.status, data };
+        return data;
+      }),
+    onSuccess: (data) => {
+      // Set the user data in the cache immediately to avoid fetch delay
+      if (data.user) {
+        queryClient.setQueryData(userKeys.me(), data.user);
+      }
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       addNotification("success", "Welcome back!");
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequest) =>
-      api.post<AuthResponse>("/auth/register", data),
-    onSuccess: (data) => {
-      dispatch(
-        setCredentials({
-          accessToken: data.tokens.accessToken,
-          refreshToken: data.tokens.refreshToken,
-          userId: data.user.id,
-          expiresIn: data.tokens.expiresIn,
-        }),
-      );
+      fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }).then(async (res) => {
+        const json = await res.json();
+        if (!res.ok) throw { status: res.status, data: json };
+        return json;
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       addNotification("success", "Account created successfully!");
     },
   });
 
   const googleAuthMutation = useMutation({
     mutationFn: (data: GoogleOAuthRequest) =>
-      api.post<AuthResponse>("/auth/google", data),
+      fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }).then(async (res) => {
+        const json = await res.json();
+        if (!res.ok) throw { status: res.status, data: json };
+        return json;
+      }),
     onSuccess: (data) => {
-      dispatch(
-        setCredentials({
-          accessToken: data.tokens.accessToken,
-          refreshToken: data.tokens.refreshToken,
-          userId: data.user.id,
-          expiresIn: data.tokens.expiresIn,
-          rememberMe: true,
-        }),
-      );
+      if (data.user) {
+        queryClient.setQueryData(userKeys.me(), data.user);
+      }
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       addNotification("success", "Signed in with Google");
     },
   });
 
   const logoutMutation = useMutation({
-    mutationFn: () => api.post("/auth/logout", {}),
+    mutationFn: () =>
+      fetch("/api/auth/logout", { method: "POST" }).then(async (res) => {
+        const json = await res.json();
+        if (!res.ok) throw { status: res.status, data: json };
+        return json;
+      }),
     onSettled: () => {
-      dispatch(logout());
+      // Cookies cleared by proxy. Clear client cache and reload.
+      Cookies.remove("accessToken");
+      queryClient.clear();
       window.location.reload();
     },
   });
+
   const forgotPasswordMutation = useMutation({
     mutationFn: (data: ForgotPasswordRequest) =>
       api.post("/auth/forgot-password", data),

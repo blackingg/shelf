@@ -5,18 +5,16 @@ import { Book } from "../../types/book";
 import { Folder } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
-import { useAppSelector, store } from "../../store/store";
-import { selectIsAuthenticated, selectIsHydrated } from "../../store/authSlice";
 import { getErrorMessage } from "../../helpers/error";
 import { discoverKeys } from "../discover";
 import { departmentKeys } from "../departments";
 import { bookKeys } from "../books";
 import { searchKeys } from "../search";
+import Cookies from "js-cookie";
 
 export const userKeys = {
   all: ["user"] as const,
-  me: (isAuthenticated: boolean) =>
-    [...userKeys.all, "me", { authenticated: isAuthenticated }] as const,
+  me: () => [...userKeys.all, "me"] as const,
   byUsername: (username: string) => [...userKeys.all, username] as const,
   books: (username: string) =>
     [...userKeys.byUsername(username), "books"] as const,
@@ -25,13 +23,14 @@ export const userKeys = {
 };
 
 export const useGetMeQuery = (options?: { enabled?: boolean }) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const hasToken = !!Cookies.get("accessToken");
   return useQuery<User>({
-    queryKey: userKeys.me(isAuthenticated),
+    queryKey: userKeys.me(),
     queryFn: () => api.get<User>("/users/me"),
-    enabled: options?.enabled ?? isAuthenticated,
+    enabled: options?.enabled ?? hasToken,
     staleTime: 5 * 60 * 1000, // 5 minutes — user profile rarely changes mid-session
     gcTime: 30 * 60 * 1000,
+    retry: false,
   });
 };
 
@@ -105,8 +104,7 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
 
 export const useUser = (options?: { enabled?: boolean }) => {
   const { addNotification } = useNotifications();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const isHydrated = useAppSelector(selectIsHydrated);
+  const hasToken = !!Cookies.get("accessToken");
 
   const {
     data: me,
@@ -114,7 +112,7 @@ export const useUser = (options?: { enabled?: boolean }) => {
     isFetching,
     error,
   } = useGetMeQuery({
-    enabled: options?.enabled ?? (isAuthenticated && isHydrated),
+    enabled: options?.enabled ?? hasToken,
   });
 
   const updateMutation = useUpdateMeMutation();
@@ -143,11 +141,12 @@ export const useUser = (options?: { enabled?: boolean }) => {
 
   return {
     me: me || null,
-    isLoading: isLoading || !isHydrated,
+    isLoading,
     isFetching,
     error,
-    isAuthenticated,
-    isHydrated,
+    isAuthenticated: !!me,
+    // Hydrated when not loading, OR when we definitely don't have a token (guest)
+    isHydrated: !isLoading || !hasToken,
     actions: {
       updateProfile,
       uploadAvatar,

@@ -1,6 +1,7 @@
+"use client";
+
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { store } from "../../store/store";
-import { logout, updateTokens } from "../../store/authSlice";
+import Cookies from "js-cookie";
 import { Mutex } from "async-mutex";
 import { getErrorMessage } from "../../helpers/error";
 
@@ -11,11 +12,10 @@ const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Request Interceptor: Inject Bearer Token
+// Request Interceptor: Read token from cookie
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const state = store.getState();
-    const token = state.auth.accessToken;
+    const token = Cookies.get("accessToken");
 
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -34,13 +34,16 @@ axiosInstance.interceptors.response.use(
 
     // 1. Handle 401: Unauthorized (Token Expired)
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // If we are already refreshing, wait for the mutex to unlock and retry with new token
+      const hasToken = !!Cookies.get("accessToken");
+
+      // If we don't even have a token, we are a guest. Just reject the error.
+      if (!hasToken) {
+        return Promise.reject(error);
+      }
+
+      // If we are already refreshing, wait for the mutex to unlock and retry
       if (mutex.isLocked()) {
         await mutex.waitForUnlock();
-        const newState = store.getState();
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${newState.auth.accessToken}`;
-        }
         return axiosInstance(originalRequest);
       }
 
@@ -48,38 +51,21 @@ axiosInstance.interceptors.response.use(
       const release = await mutex.acquire();
 
       try {
-        const state = store.getState();
-        const refreshToken = state.auth.refreshToken;
+        const refreshRes = await fetch("/api/auth/refresh", {
+          method: "POST",
+        });
 
-        if (refreshToken) {
-          // Use base axios to avoid infinite interceptor loops
-          const refreshRes = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-            refreshToken,
-          });
-
-          if (refreshRes.status === 200) {
-            const { accessToken, refreshToken: newRefreshToken, expiresIn } = refreshRes.data;
-            
-            store.dispatch(
-              updateTokens({
-                accessToken,
-                refreshToken: newRefreshToken,
-                expiresIn,
-              })
-            );
-
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            }
-            return axiosInstance(originalRequest);
-          }
+        if (refreshRes.ok) {
+          return axiosInstance(originalRequest);
         }
-        
-        // No refresh token or refresh failed
-        store.dispatch(logout());
+
+        // Refresh failed — only redirect if we were previously logged in
+        Cookies.remove("accessToken");
+        window.location.href = "/auth/login";
         return Promise.reject(error);
       } catch (refreshError) {
-        store.dispatch(logout());
+        Cookies.remove("accessToken");
+        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       } finally {
         release();
@@ -88,12 +74,16 @@ axiosInstance.interceptors.response.use(
 
     // 2. Handle 403: Specific "Not authenticated" check
     const errorData = error.response?.data as any;
-    if (error.response?.status === 403 && errorData?.detail === "Not authenticated") {
-      store.dispatch(logout());
+    if (
+      error.response?.status === 403 &&
+      errorData?.detail === "Not authenticated" &&
+      Cookies.get("accessToken") // Only redirect if they have a token that is presumably invalid
+    ) {
+      Cookies.remove("accessToken");
+      window.location.href = "/auth/login";
     }
 
     // 3. Process Error Message using helper
-    // axiosError.response is passed to getErrorMessage which expects { data: ... }
     const meaningfulMessage = getErrorMessage(error.response);
     
     // Create a new error with the meaningful message but keep original status
