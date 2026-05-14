@@ -11,10 +11,10 @@ export default function AdminProtectedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { me, isAuthenticated, isLoading, isHydrated } = useUser();
+  const { me, isAuthenticated, isLoading } = useUser();
 
   useEffect(() => {
-    if (isHydrated && !isLoading) {
+    if (!isLoading) {
       if (!isAuthenticated) {
         router.replace("/admin/auth/login");
       } else if (me?.role !== "ADMIN") {
@@ -22,9 +22,9 @@ export default function AdminProtectedRoute({
         router.replace("/discover");
       }
     }
-  }, [isAuthenticated, me, isLoading, isHydrated, router]);
+  }, [isAuthenticated, me, isLoading, router]);
 
-  if (!isHydrated || isLoading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 

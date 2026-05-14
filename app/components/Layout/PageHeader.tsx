@@ -14,7 +14,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   searchQuery,
   onSearchChange,
 }) => {
-  const { isAuthenticated, isHydrated } = useUser();
+  const { isAuthenticated } = useUser();
 
   return (
     <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 lg:px-8 py-4 sticky top-0 z-30 transition-colors duration-200">
@@ -31,12 +31,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </Suspense>
 
         <div className="flex items-center lg:space-x-4 space-x-2">
-          {isHydrated && (
-            <>
-              {isAuthenticated && <NotificationPanel />}
-              <UserProfileDropdown />
-            </>
-          )}
+          {isAuthenticated && <NotificationPanel />}
+          <UserProfileDropdown />
         </div>
       </div>
     </header>

@@ -145,8 +145,6 @@ export const useUser = (options?: { enabled?: boolean }) => {
     isFetching,
     error,
     isAuthenticated: !!me,
-    // Hydrated when not loading, OR when we definitely don't have a token (guest)
-    isHydrated: !isLoading || !hasToken,
     actions: {
       updateProfile,
       uploadAvatar,

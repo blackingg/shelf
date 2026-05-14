@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/app/services";
 
 export const PublicNavButtons: React.FC = () => {
-  const { isAuthenticated, isHydrated } = useUser();
+  const { isAuthenticated } = useUser();
   const router = useRouter();
-
-  if (!isHydrated) return null;
 
   if (isAuthenticated) {
     return (
