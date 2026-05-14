@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   DepartmentCard,
@@ -17,17 +17,16 @@ export default function DepartmentsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { me: user, isAuthenticated, isHydrated } = useUser();
+  const { me: user, isAuthenticated, isLoading: isUserLoading } = useUser();
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
   const { data: schools = [] } = useGetSchoolsQuery();
 
   const isGalleryView = searchParams.get("view") === "gallery";
-  const viewDepartments = !isHydrated || !isAuthenticated || isGalleryView;
+  const viewDepartments = !isAuthenticated || isGalleryView;
 
-  const { departments: allDepartments, isLoading } = useDepartments(
-    selectedSchoolId ? { school_id: selectedSchoolId } : {},
-  );
+  const { departments: allDepartments, isLoading: isDepartmentsLoading } =
+    useDepartments(selectedSchoolId ? { school_id: selectedSchoolId } : {});
 
   const userDepartment = allDepartments.find(
     (d) => d.id === user?.department?.id,
@@ -36,10 +35,10 @@ export default function DepartmentsPage() {
   const userDepartmentSlug = userDepartment?.slug || null;
 
   useEffect(() => {
-    if (isHydrated && user?.school?.id && !selectedSchoolId) {
+    if (!isUserLoading && user?.school?.id && !selectedSchoolId) {
       setSelectedSchoolId(user.school.id);
     }
-  }, [isHydrated, user?.school?.id, selectedSchoolId]);
+  }, [isUserLoading, user?.school?.id, selectedSchoolId]);
 
   const departmentSkeletonCount = useResponsiveLimit(
     { base: 2, md: 3, lg: 5 },
@@ -80,7 +79,7 @@ export default function DepartmentsPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-start lg:items-center gap-4">
-              {isHydrated && !isAuthenticated && (
+              {!isUserLoading && !isAuthenticated && (
                 <SortFilter
                   value={selectedSchoolId}
                   onValueChange={setSelectedSchoolId}
@@ -96,7 +95,7 @@ export default function DepartmentsPage() {
                 />
               )}
 
-              {isHydrated && isAuthenticated && (
+              {!isUserLoading && isAuthenticated && (
                 <button
                   onClick={toggleViewDepartments}
                   className="flex items-center gap-3 px-6 py-3.5 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group w-full sm:w-auto justify-center sm:justify-start"
@@ -121,7 +120,7 @@ export default function DepartmentsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                {isLoading ? (
+                {isDepartmentsLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
                     {Array.from({ length: departmentSkeletonCount }).map(
                       (_, i) => (
