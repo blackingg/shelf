@@ -9,8 +9,6 @@ import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useDepartments, useUser } from "@/app/services";
 import { useGetSchoolsQuery } from "@/app/services/onboarding";
-import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "@/app/store";
 import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
 import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
