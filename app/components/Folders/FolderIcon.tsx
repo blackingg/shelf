@@ -1,13 +1,17 @@
+"use client";
 import React from "react";
-import Image from "next/image";
 import { FolderVisibility } from "@/app/types/folder";
+import FolderPublicEmpty from "@/app/assets/icons/folder/folder-public-empty.svg";
+import FolderPublicFull from "@/app/assets/icons/folder/folder-public-full.svg";
+import FolderPrivateEmpty from "@/app/assets/icons/folder/folder-private-empty.svg";
+import FolderPrivateFull from "@/app/assets/icons/folder/folder-private-full.svg";
 
 interface FolderIconProps {
   visibility: FolderVisibility;
   booksCount: number;
   className?: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
 }
 
 export const FolderIcon: React.FC<FolderIconProps> = ({
@@ -20,27 +24,29 @@ export const FolderIcon: React.FC<FolderIconProps> = ({
   const isPublic = visibility === "PUBLIC";
   const isEmpty = (booksCount || 0) === 0;
 
-  const getImagePath = () => {
+  const getIcon = () => {
     if (isPublic) {
-      return isEmpty
-        ? "/folder/folder-public-empty.svg"
-        : "/folder/folder-public-full.svg";
+      return isEmpty ? FolderPublicEmpty : FolderPublicFull;
     } else {
-      return isEmpty
-        ? "/folder/folder-private-empty.svg"
-        : "/folder/folder-private-full.svg";
+      return isEmpty ? FolderPrivateEmpty : FolderPrivateFull;
     }
   };
 
+  const Icon = getIcon();
+
   return (
-    <div className={`relative ${className}`}>
-      <Image
-        src={getImagePath()}
-        alt={`${isPublic ? "Public" : "Private"} folder (${isEmpty ? "empty" : "full"})`}
-        width={width}
-        height={height}
-        className="w-full h-auto"
-        priority={width > 200} // Prioritize large icons (cards)
+    <div 
+      className={`relative ${className}`}
+      style={{ 
+        width: typeof width === 'number' ? `${width}px` : width,
+        height: typeof height === 'number' ? `${height}px` : height,
+      }}
+    >
+      <Icon
+        width="100%"
+        height="100%"
+        style={{ display: 'block' }}
+        aria-hidden="true"
       />
     </div>
   );

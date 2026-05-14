@@ -10,7 +10,6 @@ import {
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { useDispatch } from "react-redux";
 import { useUser, useAuthActions } from "@/app/services";
 import { ConfirmModal } from "../Shared/ConfirmModal";
 
