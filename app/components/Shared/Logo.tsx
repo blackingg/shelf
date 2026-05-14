@@ -1,85 +1,49 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import LogoIcon from "@/app/assets/icons/logo.svg";
+import LogoStackedIcon from "@/app/assets/icons/logo-stacked-1.svg";
+import LogoStacked2Icon from "@/app/assets/icons/logo-stacked-2.svg";
 
-function useSvg(src: string): string | null {
-  const [svg, setSvg] = useState<string | null>(null);
+/**
+ * These components use the imported SVG source files via SVGR.
+ * The config in next.config.ts (dimensions: false) ensures that the SVGs 
+ * don't have fixed width/height and instead fill their containers.
+ */
 
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch(src)
-      .then((res) => (res.ok ? res.text() : null))
-      .then((text) => {
-        if (!cancelled) setSvg(text);
-      })
-      .catch(() => {
-        if (!cancelled) setSvg(null);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [src]);
-
-  return svg;
-}
-
-function normalizeSvg(svg: string): string {
-  return svg.replace(
-    /<svg/,
-    '<svg width="100%" height="100%" style="display:block"',
-  );
-}
-
-interface SvgIconProps {
-  src: string;
-  className?: string;
+type LogoProps = { 
+  className?: string; 
   title?: string;
-}
-
-const SvgIcon: React.FC<SvgIconProps> = ({ src, className, title }) => {
-  const raw = useSvg(src);
-
-  if (!raw) return null;
-
-  return (
-    <span
-      role="img"
-      aria-label={title}
-      className={["inline-block", className].filter(Boolean).join(" ")}
-      style={{ lineHeight: 0 }}
-      dangerouslySetInnerHTML={{ __html: normalizeSvg(raw) }}
-    />
-  );
+  width?: number | string;
+  height?: number | string;
 };
 
-const LOGOS = {
-  Logo: "/logo.svg",
-  LogoStacked: "/logo-stacked-1.svg",
-  LogoStacked2: "/logo-stacked-2.svg",
-} as const;
-
-type LogoProps = { className?: string; title?: string };
-
 export const Logo = (p: LogoProps) => (
-  <SvgIcon
-    src={LOGOS.Logo}
-    title={p.title ?? "Shelf"}
+  <LogoIcon
+    width={p.width}
+    height={p.height}
     className={p.className}
+    role="img"
+    aria-label={p.title ?? "Shelf"}
   />
 );
+
 export const LogoStacked = (p: LogoProps) => (
-  <SvgIcon
-    src={LOGOS.LogoStacked}
-    title={p.title ?? "Shelf"}
+  <LogoStackedIcon
+    width={p.width}
+    height={p.height}
     className={p.className}
+    role="img"
+    aria-label={p.title ?? "Shelf"}
   />
 );
+
 export const LogoStacked2 = (p: LogoProps) => (
-  <SvgIcon
-    src={LOGOS.LogoStacked2}
-    title={p.title ?? "Shelf"}
+  <LogoStacked2Icon
+    width={p.width}
+    height={p.height}
     className={p.className}
+    role="img"
+    aria-label={p.title ?? "Shelf"}
   />
 );
 

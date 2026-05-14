@@ -2,13 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
-import StoreProvider from "@/app/provider/StoreProvider";
+import AppProviders from "@/app/provider/AppProviders";
 import { ErrorBoundaryWithNotification } from "@/app/components/Shared/ErrorBoundary";
-import ProtectedRoute from "@/app/components/Auth/ProtectedRoute";
 import { ThemeProvider } from "@/app/provider/ThemeProvider";
 import { QueryProvider } from "@/app/provider/QueryProvider";
 import { BufferProvider } from "@/app/context/FileBufferContext";
-import { HydrationGuard } from "@/app/components/Layout/HydrationGuard";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 
 const inter = Inter({
@@ -69,17 +67,13 @@ export default function AppRootLayout({
               maskAllInputs: true,
             }}
           />
-          <StoreProvider>
+          <AppProviders>
             <QueryProvider>
               <ErrorBoundaryWithNotification>
-                <HydrationGuard>
-                  <ProtectedRoute>
-                    <BufferProvider>{children}</BufferProvider>
-                  </ProtectedRoute>
-                </HydrationGuard>
+                <BufferProvider>{children}</BufferProvider>
               </ErrorBoundaryWithNotification>
             </QueryProvider>
-          </StoreProvider>
+          </AppProviders>
         </ThemeProvider>
         <Analytics />
       </body>

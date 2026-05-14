@@ -12,10 +12,8 @@ import {
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { useAppDispatch } from "@/app/store";
 
 export default function AccountSettingsPage() {
-  const dispatch = useAppDispatch();
   const { addNotification } = useNotifications();
   const { data: user } = useGetMeQuery();
   const updateMe = useUpdateMeMutation();

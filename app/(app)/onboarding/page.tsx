@@ -11,7 +11,6 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
-import { useAppDispatch, useAppSelector } from "@/app/store";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
@@ -34,8 +33,6 @@ interface FormData {
 export default function Onboarding() {
   const router = useRouter();
   const { addNotification } = useNotifications();
-  const dispatch = useAppDispatch();
-
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
   const [formData, setFormData] = useState<FormData>({

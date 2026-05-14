@@ -10,7 +10,6 @@ import {
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { useDispatch } from "react-redux";
 import { useUser, useAuthActions } from "@/app/services";
 import { ConfirmModal } from "../Shared/ConfirmModal";
 
@@ -18,9 +17,7 @@ export const UserProfileDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { logout: performLogout } = useAuthActions();
-  const { me: user, isAuthenticated, isHydrated } = useUser();
-
-  if (!isHydrated) return null;
+  const { me: user, isAuthenticated } = useUser();
 
   const userFullName = user?.fullName || "";
   const userName = user?.username || "User";

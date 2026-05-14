@@ -26,19 +26,18 @@ export const useGetDiscoverFeedQuery = (options?: {
 // --- Domain Hooks ---
 
 export const useDiscoverFeed = (options?: { enabled?: boolean }) => {
-  const { me, isHydrated } = useUser();
+  const { me } = useUser();
   const userId = me?.id || "guest";
 
   const { data, isLoading, error } = useGetDiscoverFeedQuery({
     ...options,
     userId,
-    enabled: isHydrated && (options?.enabled ?? true),
     staleTime: 0, // Ensure we always talk to the server on mount/identity shift
   });
 
   return {
     recommendations: data || null,
-    isLoading: !isHydrated || isLoading,
+    isLoading,
     error,
   };
 };

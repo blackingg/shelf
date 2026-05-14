@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
-import StoreProvider from "@/app/provider/StoreProvider";
+import AppProviders from "@/app/provider/AppProviders";
 import { ThemeProvider } from "@/app/provider/ThemeProvider";
 import { QueryProvider } from "@/app/provider/QueryProvider";
 import { Analytics } from "@vercel/analytics/next";
@@ -27,9 +27,9 @@ export default function AdminRootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <StoreProvider>
+          <AppProviders>
             <QueryProvider>{children}</QueryProvider>
-          </StoreProvider>
+          </AppProviders>
         </ThemeProvider>
         <Analytics />
       </body>

@@ -15,8 +15,7 @@ import {
 } from "./readerThemes";
 import { usePersistentReaderSettings } from "@/app/hooks/usePersistentReaderSettings";
 import { useProgressActions } from "@/app/services";
-import { useAppSelector } from "@/app/store/store";
-import { selectIsAuthenticated } from "@/app/store/authSlice";
+import Cookies from "js-cookie";
 
 /** Represents a chapter or section in a book's Table of Contents */
 export interface TableOfContentsItem {
@@ -154,7 +153,7 @@ function ReaderProgressSyncer({
 }) {
   const { currentPage, totalPages, isReady, isInitialLoad } = useReader();
   const { actions: progressActions } = useProgressActions();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = !!Cookies.get("accessToken");
   const lastSyncedPage = useRef(initialPage ?? 0);
 
   useEffect(() => {

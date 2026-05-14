@@ -8,8 +8,7 @@ import { EpubViewer } from "@/app/components/Reader/EpubViewer";
 import { useGetBookBySlugQuery, useGetBookProgressQuery } from "@/app/services";
 import { LoadingScreen } from "@/app/components/Loader/LoadingScreen";
 import { fileTypeFromBuffer } from "file-type";
-import { useAppSelector } from "@/app/store/store";
-import { selectIsAuthenticated } from "@/app/store/authSlice";
+import Cookies from "js-cookie";
 import {
   useReader,
   ReaderProvider,
@@ -162,7 +161,7 @@ export default function ReaderPage() {
   const [fileType, setFileType] = useState<"epub" | "pdf" | "">("");
   const [isFetchingFile, setIsFetchingFile] = useState(false);
 
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = !!Cookies.get("accessToken");
   const { data, isLoading } = useGetBookBySlugQuery(String(slug));
   const { data: progressData, isLoading: isLoadingProgress } =
     useGetBookProgressQuery(isAuthenticated && data?.id ? data.id : "");
