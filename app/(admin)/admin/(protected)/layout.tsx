@@ -1,5 +1,5 @@
 import { AdminSidebar } from "@/app/components/Admin/AdminSidebar";
-import ProtectedRoute from "@/app/components/Auth/ProtectedRoute";
+import AdminProtectedRoute from "@/app/components/Auth/AdminProtectedRoute";
 
 export default function AdminLayout({
   children,
@@ -7,7 +7,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedRoute roles={["ADMIN", "SUPER_ADMIN"]}>
+    <AdminProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-black flex font-sans">
         <AdminSidebar />
 
@@ -24,6 +24,6 @@ export default function AdminLayout({
           <div className="p-8 lg:p-12 max-w-7xl mx-auto w-full">{children}</div>
         </main>
       </div>
-    </ProtectedRoute>
+    </AdminProtectedRoute>
   );
 }
