@@ -47,10 +47,19 @@ export default function AppRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
-        <link rel="me" href="https://x.com/shelfng_" />
-        <link rel="me" href="https://www.instagram.com/shelf_ng" />
+        <link
+          rel="me"
+          href="https://x.com/shelfng_"
+        />
+        <link
+          rel="me"
+          href="https://www.instagram.com/shelf_ng"
+        />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
