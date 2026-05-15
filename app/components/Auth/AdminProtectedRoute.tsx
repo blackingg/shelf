@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
+import { UserRole } from "@/app/types/user";
+
+const ADMIN_ROLES: UserRole[] = ["ADMIN", "SUPER_ADMIN"];
 
 export default function AdminProtectedRoute({
   children,
@@ -17,7 +20,7 @@ export default function AdminProtectedRoute({
     if (!isLoading) {
       if (!isAuthenticated) {
         router.replace("/admin/auth/login");
-      } else if (me?.role !== "ADMIN") {
+      } else if (!ADMIN_ROLES.includes(me?.role as UserRole)) {
         // If logged in but not admin, send back to main app
         router.replace("/discover");
       }
@@ -28,7 +31,7 @@ export default function AdminProtectedRoute({
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated || me?.role !== "ADMIN") {
+  if (!isAuthenticated || !ADMIN_ROLES.includes(me?.role as UserRole)) {
     return null;
   }
 
