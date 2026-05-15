@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAdminActions, useGetAdminUsersQuery } from "@/app/services";
 import { UserRole } from "@/app/types/user";
-import { FiSearch, FiMoreHorizontal, FiUser } from "react-icons/fi";
+import { FiSearch, FiMoreHorizontal, FiUser, FiX } from "react-icons/fi";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import UserComponent from "./UserComponent";
 import { AdminUserResponse } from "@/app/types/admin";
