@@ -1,35 +1,46 @@
 "use client";
 
-import { useGetAdminStatsQuery } from "@/app/services";
-import { FiUsers, FiBook, FiFlag, FiInbox } from "react-icons/fi";
+import { useGetAdminStatsQuery, useGetAuditLogsQuery } from "@/app/services";
+import {
+  FiUsers,
+  FiBook,
+  FiFlag,
+  FiInbox,
+  FiExternalLink,
+} from "react-icons/fi";
 
 export default function AdminDashboardPage() {
   const { data: stats, isLoading } = useGetAdminStatsQuery();
+  const {
+    data: auditLogs,
+    isLoading: isGettingAudit,
+    isSuccess,
+  } = useGetAuditLogsQuery();
 
   const cards = [
-    { 
-      label: "Total Users", 
-      value: stats?.totalUsers ?? 0, 
+    {
+      label: "Total Users",
+      value: stats?.totalUsers ?? 0,
       icon: <FiUsers className="text-purple-500" />,
-      dotColor: "bg-purple-500"
+      dotColor: "bg-purple-500",
     },
-    { 
-      label: "Total Books", 
-      value: stats?.totalBooks ?? 0, 
+    {
+      label: "Total Books",
+      value: stats?.totalBooks ?? 0,
       icon: <FiBook className="text-blue-500" />,
-      dotColor: "bg-blue-500"
+      dotColor: "bg-blue-500",
     },
-    { 
-      label: "Unreviewed Flags", 
-      value: stats?.unreviewedFlags ?? 0, 
+    {
+      label: "Unreviewed Flags",
+      value: stats?.unreviewedFlags ?? 0,
       icon: <FiFlag className="text-amber-500" />,
-      dotColor: "bg-amber-400"
+      dotColor: "bg-amber-400",
     },
-    { 
-      label: "Pending Books", 
-      value: stats?.pendingBooks ?? 0, 
+    {
+      label: "Pending Books",
+      value: stats?.pendingBooks ?? 0,
       icon: <FiInbox className="text-emerald-500" />,
-      dotColor: "bg-emerald-500"
+      dotColor: "bg-emerald-500",
     },
   ];
 
@@ -77,14 +88,16 @@ export default function AdminDashboardPage() {
             Chart Placeholder
           </div>
         </section>
-        
+
         <section className="p-8 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md">
           <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-6">
             Recent Admin Actions
           </h3>
           <div className="space-y-4">
             <p className="text-sm text-gray-500 dark:text-neutral-500 italic">
-              Audit log integration coming soon...
+              {isGettingAudit
+                ? "Getting Audit Details..."
+                : "Audited successfully"}
             </p>
           </div>
         </section>
