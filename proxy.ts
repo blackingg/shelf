@@ -12,6 +12,7 @@ const PUBLIC_PATHS = ["/", "/privacy", "/terms", "/discover"];
  */
 const PUBLIC_PREFIXES = [
   "/auth",
+  "/admin/auth",
   "/books/",
   "/folders/",
   "/profile/",
