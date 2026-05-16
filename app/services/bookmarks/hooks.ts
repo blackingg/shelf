@@ -10,8 +10,9 @@ import { Folder } from "../../types/folder";
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 import { getErrorMessage } from "../../helpers/error";
-import { useAppSelector, store } from "../../store/store";
-import { selectIsAuthenticated } from "../../store/authSlice";
+import Cookies from "js-cookie";
+
+const getIsAuthenticated = () => !!Cookies.get("accessToken");
 
 export const bookmarkKeys = {
   all: ["bookmarks"] as const,
@@ -49,7 +50,7 @@ export const useGetBookmarkedBooksQuery = (
   params: any,
   options?: { enabled?: boolean },
 ) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = getIsAuthenticated();
   return useQuery<PaginatedResponse<Book>>({
     queryKey: bookmarkKeys.books(params, isAuthenticated),
     queryFn: () =>
@@ -65,7 +66,7 @@ export const useGetBookmarkedFoldersQuery = (
   params: any,
   options?: { enabled?: boolean },
 ) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = getIsAuthenticated();
   return useQuery<PaginatedResponse<Folder>>({
     queryKey: bookmarkKeys.folders(params, isAuthenticated),
     queryFn: () =>
@@ -84,7 +85,7 @@ export const useAddBookmarkMutation = () => {
   return useMutation({
     mutationFn: (bookId: string) => api.post(`/books/${bookId}/bookmark`),
     onMutate: async (bookId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       await queryClient.cancelQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
@@ -106,7 +107,7 @@ export const useAddBookmarkMutation = () => {
       }
     },
     onSettled: (_, __, bookId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
@@ -121,7 +122,7 @@ export const useRemoveBookmarkMutation = () => {
   return useMutation({
     mutationFn: (bookId: string) => api.delete(`/books/${bookId}/bookmark`),
     onMutate: async (bookId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       await queryClient.cancelQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
@@ -156,7 +157,7 @@ export const useRemoveBookmarkMutation = () => {
       }
     },
     onSettled: (_, __, bookId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
       });
@@ -171,7 +172,7 @@ export const useGetIsBookBookmarkedQuery = (
   bookId: string,
   options?: { enabled?: boolean },
 ) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = getIsAuthenticated();
   return useQuery<BookmarkedStatus>({
     queryKey: bookmarkKeys.bookStatus(bookId, isAuthenticated),
     queryFn: () => api.get<BookmarkedStatus>(`/books/${bookId}/bookmarked`),
@@ -184,7 +185,7 @@ export const useGetIsFolderBookmarkedQuery = (
   folderId: string,
   options?: { enabled?: boolean },
 ) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = getIsAuthenticated();
   return useQuery<BookmarkedStatus>({
     queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
     queryFn: () => api.get<BookmarkedStatus>(`/folders/${folderId}/bookmarked`),
@@ -200,7 +201,7 @@ export const useBookmarkFolderMutation = () => {
   return useMutation({
     mutationFn: (folderId: string) => api.post(`/folders/${folderId}/bookmark`),
     onMutate: async (folderId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       await queryClient.cancelQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });
@@ -222,7 +223,7 @@ export const useBookmarkFolderMutation = () => {
       }
     },
     onSettled: (_, __, folderId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });
@@ -239,7 +240,7 @@ export const useUnbookmarkFolderMutation = () => {
     mutationFn: (folderId: string) =>
       api.delete(`/folders/${folderId}/bookmark`),
     onMutate: async (folderId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       await queryClient.cancelQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });
@@ -276,7 +277,7 @@ export const useUnbookmarkFolderMutation = () => {
       }
     },
     onSettled: (_, __, folderId) => {
-      const isAuthenticated = store.getState().auth.isAuthenticated;
+      const isAuthenticated = getIsAuthenticated();
       queryClient.invalidateQueries({
         queryKey: bookmarkKeys.folderStatus(folderId, isAuthenticated),
       });

@@ -32,7 +32,7 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { logout: performLogout } = useAuthActions();
-  const { me: user, isAuthenticated, isHydrated } = useUser();
+  const { me: user, isAuthenticated, isLoading } = useUser();
   const [showSidebar, setShowSideBar] = useState<boolean>(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -127,7 +127,7 @@ export const Sidebar: React.FC = () => {
           </Link>
         </div>
 
-        {!isHydrated ? (
+        {isLoading ? (
           <>
             <nav className="flex-1 px-3 py-4 space-y-0.5">
               {[1, 2, 3].map((i) => (
@@ -247,7 +247,7 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
 
-        {!isHydrated ? (
+        {isLoading ? (
           <nav className="flex-1 px-4 py-6 space-y-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div

@@ -150,6 +150,22 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: [
+          {
+            loader: "@svgr/webpack",
+            options: {
+              dimensions: false,
+              svgo: false,
+            },
+          },
+        ],
+        as: "*.js",
+      },
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -169,6 +185,31 @@ const nextConfig: NextConfig = {
         hostname: "cdna.artstation.com",
       },
     ],
+  },
+  webpack(config) {
+    config.module.rules.push(
+      {
+        test: /\.svg$/i,
+        resourceQuery: /url/,
+        type: "asset/resource",
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: { not: [/url/] },
+        use: [
+          {
+            loader: "@svgr/webpack",
+            options: {
+              dimensions: false,
+              svgo: false,
+            },
+          },
+        ],
+      }
+    );
+
+    return config;
   },
 };
 

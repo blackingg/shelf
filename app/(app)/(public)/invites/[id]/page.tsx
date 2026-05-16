@@ -7,13 +7,12 @@ import { useNotifications } from "@/app/context/NotificationContext";
 import { useInviteById } from "@/app/services/folders";
 import { FiFolder, FiCheck, FiX, FiAlertCircle } from "react-icons/fi";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
-import { useAppSelector } from "@/app/store/store";
-import { selectIsAuthenticated } from "@/app/store/authSlice";
+import { useUser } from "@/app/services";
 
 export default function InvitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { isAuthenticated } = useUser();
   const { addNotification } = useNotifications();
   const { invite, isLoading, isError, actions, isResponding } = useInviteById(id);
 

@@ -20,8 +20,7 @@ import {
 import { PaginatedResponse } from "../../types/common";
 import { useNotifications } from "../../context/NotificationContext";
 import { getErrorMessage } from "../../helpers/error";
-import { useAppSelector } from "../../store/store";
-import { selectIsAuthenticated } from "../../store/authSlice";
+import Cookies from "js-cookie";
 
 export const folderKeys = {
   all: ["folders"] as const,
@@ -52,7 +51,7 @@ export const useGetMeFoldersQuery = (
   params: any,
   options?: { enabled?: boolean },
 ) => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = !!Cookies.get("accessToken");
   return useQuery<PaginatedResponse<Folder>>({
     queryKey: folderKeys.me(params, isAuthenticated),
     queryFn: () =>

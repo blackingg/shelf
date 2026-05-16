@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,10 +20,12 @@ export const metadata: Metadata = {
   },
 };
 
+import { LoadingScreen } from "@/app/components/Loader/LoadingScreen";
+
 export default function DepartmentsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;
 }

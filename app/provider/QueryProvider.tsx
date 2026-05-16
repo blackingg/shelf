@@ -1,11 +1,10 @@
 "use client";
 
 import { QueryClient, Query, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useEffect, useMemo, useRef } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { useAppSelector, store } from "../store/store";
-import { selectIsAuthenticated, selectIsHydrated } from "../store/authSlice";
+import Cookies from "js-cookie";
 
 const PERSIST_BASE_KEY = "shelf-query-cache";
 
@@ -21,18 +20,17 @@ const PERSISTED_QUERY_KEYS = [
 ];
 
 export function QueryProvider({ children }: { children: ReactNode }) {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const isHydrated = useAppSelector(selectIsHydrated);
+  const token = typeof window !== "undefined" ? Cookies.get("accessToken") : undefined;
+  const isAuthenticated = !!token;
 
-  // Use a stable user ID rather than a rotating access token to avoid
-  // orphaning cache entries in localStorage on every token refresh.
+  // Derive a stable identity key from the token's first 10 chars (or "guest")
   const identity = isAuthenticated
-    ? store.getState().auth.userId || "auth"
+    ? (token!.substring(0, 10))
     : "guest";
 
-  const currentPersistKey = `${PERSIST_BASE_KEY}-${identity.substring(0, 10)}`;
+  const currentPersistKey = `${PERSIST_BASE_KEY}-${identity}`;
 
-  // Recreate the QueryClient only when auth state or hydration changes.
+  // Recreate the QueryClient only when auth state changes.
   // This fully destroys in-memory cache, active queries, and observers,
   // ensuring a clean slate for each identity context.
   const queryClient = useMemo(() => {
@@ -47,21 +45,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       },
     });
   }, [isAuthenticated]);
-
-  // Log auth state changes as a proper side effect, not inside useMemo.
-  const prevAuthRef = useRef<boolean | null>(null);
-  useEffect(() => {
-    if (
-      isHydrated &&
-      prevAuthRef.current !== null &&
-      prevAuthRef.current !== isAuthenticated
-    ) {
-      console.log(
-        "Auth state changed, QueryClient regenerated for fresh identity context.",
-      );
-    }
-    prevAuthRef.current = isAuthenticated;
-  }, [isAuthenticated, isHydrated]);
 
   // Clean up stale identity-scoped cache keys from localStorage to prevent
   // unbounded growth as users log in and out over time.
