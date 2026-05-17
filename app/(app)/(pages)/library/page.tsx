@@ -436,11 +436,11 @@ export default function LibraryPage() {
         {/* ── FOLDERS TAB ── */}
         {activeTab === "folders" && (
           <div>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <p className="text-sm text-gray-500 dark:text-neutral-400">
                 {myFolders.length} folder{myFolders.length !== 1 ? "s" : ""}
               </p>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
                 <button
                   onClick={() => {
                     const newMode = !isSelectionMode;
@@ -449,7 +449,7 @@ export default function LibraryPage() {
                       setSelectedFolderIds([]);
                     }
                   }}
-                  className={`flex items-center text-[10px] uppercase tracking-widest space-x-2 px-4 py-2 rounded-sm font-bold transition-all border ${
+                  className={`flex items-center text-[10px] uppercase tracking-widest space-x-1.5 sm:space-x-2 px-2.5 py-2 sm:px-4 rounded-sm font-bold transition-all border ${
                     isSelectionMode
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"
                       : "bg-white dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 border-gray-100 dark:border-neutral-700 hover:border-primary hover:text-primary"
@@ -457,7 +457,17 @@ export default function LibraryPage() {
                 >
                   <FiCheckSquare className="w-3.5 h-3.5" />
                   <span>
-                    {isSelectionMode ? "Exit Selection" : "Select Items"}
+                    {isSelectionMode ? (
+                      <>
+                        <span className="hidden sm:inline">Exit Selection</span>
+                        <span className="sm:hidden">Exit</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="hidden sm:inline">Select Items</span>
+                        <span className="sm:hidden">Select</span>
+                      </>
+                    )}
                   </span>
                 </button>
 
@@ -470,20 +480,31 @@ export default function LibraryPage() {
                         setSelectedFolderIds(myFolders.map((f) => f.id));
                       }
                     }}
-                    className="flex items-center text-[10px] uppercase tracking-widest space-x-2 px-4 py-2 rounded-sm font-bold transition-all border border-gray-100 dark:border-neutral-700 text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                    className="flex items-center text-[10px] uppercase tracking-widest space-x-2 px-2.5 py-2 sm:px-4 rounded-sm font-bold transition-all border border-gray-100 dark:border-neutral-700 text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800"
                   >
                     <span>
-                      {selectedFolderIds.length === myFolders.length
-                        ? "Deselect All"
-                        : "Select All"}
+                      {selectedFolderIds.length === myFolders.length ? (
+                        <>
+                          <span className="hidden sm:inline">Deselect All</span>
+                          <span className="sm:hidden">None</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="hidden sm:inline">Select All</span>
+                          <span className="sm:hidden">All</span>
+                        </>
+                      )}
                     </span>
                   </button>
                 )}
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="flex items-center text-sm space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
+                  className="flex items-center text-xs sm:text-sm space-x-1.5 sm:space-x-2 bg-primary text-primary-foreground px-3 py-2 sm:px-4 rounded-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
                 >
-                  <span>Create Folder</span>
+                  <span>
+                    <span className="hidden sm:inline">Create Folder</span>
+                    <span className="sm:hidden">Create</span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -660,29 +681,33 @@ export default function LibraryPage() {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-2xl p-4 flex items-center space-x-6 min-w-[400px]"
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-2xl p-4 flex flex-row items-center space-x-3 sm:space-x-6 w-[calc(100%-2rem)] max-w-md sm:w-auto sm:min-w-[400px] justify-between"
             >
-              <div className="flex items-center space-x-3 pr-6 border-r border-gray-100 dark:border-white/5">
-                <div className="w-8 h-8 bg-primary/10 rounded-sm flex items-center justify-center text-primary font-bold text-xs">
+              <div className="flex items-center space-x-2 sm:space-x-3 pr-3 sm:pr-6 border-r border-gray-100 dark:border-white/5 shrink-0">
+                <div className="w-8 h-8 bg-primary/10 rounded-sm flex items-center justify-center text-primary font-bold text-xs shrink-0">
                   {selectedFolderIds.length}
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  Folders Selected
+                <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <span className="hidden sm:inline">Folders Selected</span>
+                  <span className="sm:hidden">Selected</span>
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
                 <button
                   onClick={() => setShowMoveFoldersModal(true)}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-sm text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-colors flex items-center space-x-2"
+                  className="px-3 py-2 sm:px-4 bg-primary text-primary-foreground rounded-sm text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-colors flex items-center space-x-1.5 sm:space-x-2"
                 >
-                  <FiFolder className="w-3.5 h-3.5" />
-                  <span>Move Folders</span>
+                  <FiFolder className="w-3.5 h-3.5 shrink-0" />
+                  <span>
+                    <span className="hidden sm:inline">Move Folders</span>
+                    <span className="sm:hidden">Move</span>
+                  </span>
                 </button>
 
                 <button
                   onClick={() => setSelectedFolderIds([])}
-                  className="px-4 py-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                  className="px-2.5 py-2 sm:px-4 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
                 >
                   Cancel
                 </button>
