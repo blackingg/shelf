@@ -16,6 +16,7 @@ import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FiCheckCircle } from "react-icons/fi";
 import { StepHeader } from "@/app/components/Onboarding/StepHeader";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 interface FormData {
   firstName: string;
@@ -27,6 +28,7 @@ interface FormData {
 
 export default function SignupPage() {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const { addNotification } = useNotifications();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -60,6 +62,12 @@ export default function SignupPage() {
         email: userInfo.email,
         fullName: userInfo.name,
         avatar: userInfo.picture,
+      });
+
+      openPanel.identify({
+        profileId: userInfo.sub,
+        email: userInfo.email,
+        name: userInfo.name,
       });
 
       if (result.user.onboardingCompleted) {
@@ -160,6 +168,7 @@ export default function SignupPage() {
         agreeToTerms: acceptTerms,
       });
 
+      openPanel.track("signup_completed");
       setIsSubmitted(true);
     } catch (error: any) {
       console.error("Signup failed:", error);
