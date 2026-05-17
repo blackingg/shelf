@@ -82,7 +82,7 @@ function LoginPageContent() {
       });
 
       openPanel.identify({
-        profileID: userInfo.sub,
+        profileId: userInfo.sub,
         email: userInfo.email,
         name: userInfo.name,
       });
@@ -137,7 +137,7 @@ function LoginPageContent() {
         rememberMe,
       });
       openPanel.identify({
-        profileID: result.user.id,
+        profileId: result.user.id,
         name: result.user.fullName,
         email: result.user.email,
         onboarded: result.user.onboardingCompleted,
