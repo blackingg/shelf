@@ -26,6 +26,7 @@ import {
   DepartmentCardSkeleton,
 } from "@/app/components/Library/DepartmentCard";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 type RecommendedItem =
   | (BookPreview & { type: "book" })
@@ -33,6 +34,7 @@ type RecommendedItem =
 
 export default function DiscoverPage() {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const { me: user } = useUser();
   const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
 
@@ -84,6 +86,7 @@ export default function DiscoverPage() {
     limit: STABLE_FETCH_LIMIT,
     sort_by: "createdAt",
     order: "desc",
+    root_only: true,
   });
 
   const displayFolders = useMemo(
@@ -250,7 +253,14 @@ export default function DiscoverPage() {
 
             <CategoryFilter
               activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
+              onCategoryChange={(slug) => {
+                setActiveCategory(slug);
+                const categoryName = categories.find((c) => c.slug === slug)?.name || slug;
+                openPanel.track("discover_category_clicked", {
+                  categorySlug: slug,
+                  categoryName,
+                });
+              }}
             />
 
             {isCategoryLoading ? (
