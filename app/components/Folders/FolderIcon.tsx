@@ -9,6 +9,7 @@ import FolderPrivateFull from "@/app/assets/icons/folder/folder-private-full.svg
 interface FolderIconProps {
   visibility: FolderVisibility;
   booksCount: number;
+  childrenCount?: number;
   className?: string;
   width?: number | string;
   height?: number | string;
@@ -17,12 +18,13 @@ interface FolderIconProps {
 export const FolderIcon: React.FC<FolderIconProps> = ({
   visibility,
   booksCount,
+  childrenCount = 0,
   className = "",
   width = 278,
   height = 194,
 }) => {
   const isPublic = visibility === "PUBLIC";
-  const isEmpty = (booksCount || 0) === 0;
+  const isEmpty = (booksCount || 0) === 0 && (childrenCount || 0) === 0;
 
   const getIcon = () => {
     if (isPublic) {

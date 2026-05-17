@@ -240,6 +240,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
           <FolderIcon
             visibility={folder.visibility}
             booksCount={folder.booksCount}
+            childrenCount={folder.childrenCount}
           />
         </div>
         {isSelected && (

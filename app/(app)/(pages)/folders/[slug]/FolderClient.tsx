@@ -294,6 +294,7 @@ export default function FolderClient() {
                   <FolderIcon
                     visibility={folder.visibility}
                     booksCount={folder.booksCount}
+                    childrenCount={folder.childrenCount}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-sm overflow-hidden"
                   />
                 </div>
