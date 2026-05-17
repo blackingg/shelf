@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   FiArrowLeft,
   FiSave,
@@ -12,6 +13,7 @@ import {
   FiX,
   FiEdit2,
   FiCheck,
+  FiInfo,
 } from "react-icons/fi";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { useFolderPermissions } from "@/app/hooks/useFolderPermissions";
@@ -23,6 +25,7 @@ import {
 } from "@/app/types/folder";
 import { UserMinimal } from "@/app/types/user";
 import { ConfirmModal } from "@/app/components/Shared/ConfirmModal";
+import { MoveFoldersModal } from "@/app/components/Folders/MoveFoldersModal";
 import UserSearchInput from "@/app/components/User/UserSearchInput";
 import {
   useFolderBySlug,
@@ -52,7 +55,7 @@ export default function EditFolderPage() {
     folder?.id || "",
     { status: "PENDING" },
   );
-  const { actions, isUpdating, isUpdatingSettings, isDeleting } =
+  const { actions, isUpdating, isUpdatingSettings, isDeleting, isMoving } =
     useFolderActions();
 
   const {
@@ -64,6 +67,9 @@ export default function EditFolderPage() {
   } = useFolderPermissions(folder);
 
   const canEdit = canEditFolder;
+
+  const isSubfolder = !!(folder?.parentId || folder?.parent_id || folder?.parent);
+  const isLoading = isFolderLoading || (!isSubfolder && (isCollaboratorsLoading || isInvitesLoading));
 
   // Form State
   const [name, setName] = useState("");
@@ -77,6 +83,7 @@ export default function EditFolderPage() {
   const [inviteRole, setInviteRole] =
     useState<Exclude<FolderRoles, "OWNER">>("VIEWER");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showMoveModal, setShowMoveModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"collaborators" | "invites">(
     "collaborators",
   );
@@ -299,7 +306,7 @@ export default function EditFolderPage() {
   }, []);
 
   // Loading state
-  if (isFolderLoading || isCollaboratorsLoading || isInvitesLoading) {
+  if (isLoading) {
     return <FolderEditSkeleton />;
   }
 
@@ -428,6 +435,12 @@ export default function EditFolderPage() {
     router.push("/folders");
   };
 
+  const handleMoveFolder = async (newParentId: string | null) => {
+    if (!folder) return;
+    await actions.moveFolder(folder.id, newParentId);
+    setShowMoveModal(false);
+  };
+
   const handleVisibilityChange = async (newVisibility: FolderVisibility) => {
     if (!folder || newVisibility === visibility) return;
     setVisibility(newVisibility);
@@ -502,6 +515,29 @@ export default function EditFolderPage() {
           onSubmit={(e) => e.preventDefault()}
           className="space-y-10"
         >
+          {isSubfolder && (
+            <div className="p-4 bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-sm flex items-start space-x-3 mb-8 animate-in fade-in duration-300">
+              <div className="mt-0.5 text-primary shrink-0">
+                <FiInfo className="w-4 h-4" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary">
+                  Subfolder Settings
+                </h4>
+                <p className="text-xs text-gray-600 dark:text-neutral-400 leading-relaxed">
+                  This folder is a subfolder of{" "}
+                  <Link
+                    href={`/folders/${folder.parent?.slug || folder.parentId || folder.parent_id}`}
+                    className="font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary underline underline-offset-2"
+                  >
+                    {folder.parent?.name || "Parent Folder"}
+                  </Link>.
+                  It automatically inherits its visibility, privacy, and collaboration permissions from the parent.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-10">
             {/* Folder Name */}
             <div className="space-y-3">
@@ -577,44 +613,156 @@ export default function EditFolderPage() {
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">
-              Visibility
+              {isSubfolder ? "Visibility (Inherited)" : "Visibility"}
             </label>
-            <div className="space-y-4">
-              <div className="inline-flex p-1 bg-gray-100 dark:bg-white/5 rounded-sm">
-                <button
-                  type="button"
-                  onClick={() => handleVisibilityChange("PRIVATE")}
-                  className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
-                    visibility === "PRIVATE"
-                      ? "bg-primary text-primary-foreground shadow-none"
-                      : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <FiLock className="w-4 h-4" />
-                  <span>Private</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleVisibilityChange("PUBLIC")}
-                  className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
-                    visibility === "PUBLIC"
-                      ? "bg-primary text-primary-foreground shadow-none"
-                      : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <FiGlobe className="w-4 h-4" />
-                  <span>Public</span>
-                </button>
+            {isSubfolder ? (
+              <div className="space-y-4">
+                <div className="inline-flex items-center space-x-3 px-4 py-2.5 bg-gray-50 dark:bg-white/5 rounded-sm border border-gray-100 dark:border-white/5 text-sm text-gray-700 dark:text-neutral-300">
+                  {visibility === "PUBLIC" ? (
+                    <FiGlobe className="w-4.5 h-4.5 text-primary shrink-0" />
+                  ) : (
+                    <FiLock className="w-4.5 h-4.5 text-primary shrink-0" />
+                  )}
+                  <span className="font-semibold capitalize text-xs uppercase tracking-wider">
+                    {visibility.toLowerCase()}
+                  </span>
+                  <span className="text-xs text-gray-400 dark:text-neutral-500 font-medium">
+                    • Inherited from parent folder
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm">
+                  {visibility === "PRIVATE"
+                    ? "Only authorized users can see this folder and its contents. Its visibility is locked to match the parent folder."
+                    : "Anyone can see this folder and its contents. Its visibility is locked to match the parent folder."}
+                </p>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm">
-                {visibility === "PRIVATE"
-                  ? "Only you can see this folder. It won't appear on your public profile or in searches."
-                  : "Anyone can see this folder and its contents. It will be visible on your public profile."}
-              </p>
-            </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="inline-flex p-1 bg-gray-100 dark:bg-white/5 rounded-sm">
+                  <button
+                    type="button"
+                    onClick={() => handleVisibilityChange("PRIVATE")}
+                    className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
+                      visibility === "PRIVATE"
+                        ? "bg-primary text-primary-foreground shadow-none"
+                        : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                    }`}
+                  >
+                    <FiLock className="w-4 h-4" />
+                    <span>Private</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleVisibilityChange("PUBLIC")}
+                    className={`flex items-center space-x-2 px-6 py-2 rounded-sm text-sm font-medium transition-all ${
+                      visibility === "PUBLIC"
+                        ? "bg-primary text-primary-foreground shadow-none"
+                        : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                    }`}
+                  >
+                    <FiGlobe className="w-4 h-4" />
+                    <span>Public</span>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm">
+                  {visibility === "PRIVATE"
+                    ? "Only you can see this folder. It won't appear on your public profile or in searches."
+                    : "Anyone can see this folder and its contents. It will be visible on your public profile."}
+                </p>
+              </div>
+            )}
           </div>
 
-          {canManageCollaborators && (
+          {/* Location / Re-parenting Section */}
+          {isSubfolder && (
+            <div className="pt-8 border-t border-gray-100 dark:border-white/5 space-y-4 animate-in fade-in duration-300">
+              <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Location
+              </label>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-white/5 rounded-sm border border-gray-100 dark:border-white/5">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-primary/10 rounded-sm text-primary">
+                    <FiFolder className="w-4.5 h-4.5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-neutral-500 font-medium uppercase tracking-wider">
+                      Current Parent Folder
+                    </p>
+                    <Link
+                      href={`/folders/${folder.parent?.slug || folder.parentId || folder.parent_id}`}
+                      className="text-sm font-semibold text-gray-900 dark:text-white hover:text-primary transition-colors underline underline-offset-2"
+                    >
+                      {folder.parent?.name || "Parent Folder"}
+                    </Link>
+                  </div>
+                </div>
+                {canEditFolder && (
+                  <button
+                    type="button"
+                    onClick={() => setShowMoveModal(true)}
+                    className="px-4 py-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-sm transition-colors shadow-sm shrink-0"
+                  >
+                    Move Folder
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Inherited Collaborators Section */}
+          {isSubfolder && (
+            <div className="pt-8 border-t border-gray-100 dark:border-white/5 space-y-4 animate-in fade-in duration-300">
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Access & Collaborators (Inherited)
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                  These collaborators have access to this subfolder through the parent folder. To manage access, please edit the parent folder.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
+                {(collaborators.length > 0
+                  ? collaborators
+                  : folder?.collaborators || []
+                ).map((collaborator) => (
+                  <div
+                    key={collaborator.id}
+                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-sm"
+                  >
+                    <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
+                      {collaborator.user?.avatar ? (
+                        <img
+                          src={collaborator.user.avatar}
+                          alt={collaborator.user.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        collaborator.user?.username?.[0] || "?"
+                      )}
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">
+                        @{collaborator.user?.username || "User"}
+                      </p>
+                      <p className="text-[10px] text-gray-400 dark:text-neutral-500 capitalize font-medium">
+                        {collaborator.role.toLowerCase()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {collaborators.length === 0 &&
+                  (!folder?.collaborators ||
+                    folder.collaborators.length === 0) && (
+                    <div className="col-span-2 text-xs text-gray-400 dark:text-gray-500 italic py-2">
+                      Only you (the owner) have access to this folder. No parent collaborators defined.
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
+
+          {!isSubfolder && canManageCollaborators && (
             <div className="pt-8 border-t border-gray-100 dark:border-white/5 space-y-10">
               <div className="space-y-8">
                 <h3 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center space-x-2">
@@ -1038,15 +1186,16 @@ export default function EditFolderPage() {
                   Danger Zone
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed">
-                  Deleting this folder will permanently remove it and all its
-                  contents. This action cannot be undone.
+                  {isSubfolder
+                    ? "Deleting this subfolder will permanently remove it and all its nested content. Sibling folders and the parent folder will remain untouched."
+                    : "Deleting this folder will permanently remove it and all its contents. This action cannot be undone."}
                 </p>
                 <button
                   type="button"
                   onClick={handleDelete}
                   className="px-6 py-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-medium rounded-sm border border-red-500/20 transition-all text-sm"
                 >
-                  Delete Folder
+                  {isSubfolder ? "Delete Subfolder" : "Delete Folder"}
                 </button>
               </div>
             </div>
@@ -1061,21 +1210,38 @@ export default function EditFolderPage() {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
-        title="Delete Folder?"
+        title={isSubfolder ? "Delete Subfolder?" : "Delete Folder?"}
         message={
-          <p className="text-gray-500 dark:text-neutral-400 text-center text-sm">
-            Are you sure you want to permanently delete{" "}
-            <span className="font-bold text-gray-600 dark:text-gray-300">
-              "{name}"
-            </span>
-            ?
-          </p>
+          <div className="text-gray-500 dark:text-neutral-400 text-center text-sm space-y-2">
+            <p>
+              Are you sure you want to permanently delete{" "}
+              <span className="font-bold text-gray-600 dark:text-gray-300">
+                "{name}"
+              </span>
+              ?
+            </p>
+            {isSubfolder && (
+              <p className="text-xs text-red-500 dark:text-red-400 font-medium">
+                ⚠️ Sibling subfolders and the parent folder will NOT be affected.
+              </p>
+            )}
+          </div>
         }
-        confirmText="Yes, Delete"
+        confirmText={isSubfolder ? "Yes, Delete Subfolder" : "Yes, Delete"}
         cancelText="Cancel"
         isLoading={isDeleting}
         isDanger={true}
       />
+
+      {folder && (
+        <MoveFoldersModal
+          isOpen={showMoveModal}
+          onClose={() => setShowMoveModal(false)}
+          onConfirm={handleMoveFolder}
+          folderIds={[folder.id]}
+          isMoving={isMoving}
+        />
+      )}
     </div>
   );
 }
