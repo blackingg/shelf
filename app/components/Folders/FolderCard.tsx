@@ -240,7 +240,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
           <FolderIcon
             visibility={folder.parent?.visibility || folder.visibility}
             booksCount={folder.booksCount}
-            childrenCount={folder.childrenCount}
+            childrenCount={folder.children && folder.children.length > 0 ? folder.children.length : folder.childrenCount || 0}
             width="100%"
             height="100%"
           />
