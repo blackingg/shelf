@@ -68,7 +68,11 @@ export default function EditFolderPage() {
 
   const canEdit = canEditFolder;
 
-  const isSubfolder = !!(folder?.parentId || folder?.parent_id || folder?.parent);
+  const isSubfolder = !!(
+    folder?.parentId ||
+    folder?.parent_id ||
+    folder?.parent
+  );
   const isLoading =
     isFolderLoading ||
     (isFolderFetching && !folder) ||
@@ -77,6 +81,8 @@ export default function EditFolderPage() {
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [isSavingDescription, setIsSavingDescription] = useState(false);
   const [visibility, setVisibility] = useState<FolderVisibility>("PUBLIC");
   const [allowCollaboration, setAllowCollaboration] = useState(false);
   const [requireApproval, setRequireApproval] = useState(false);
@@ -452,9 +458,22 @@ export default function EditFolderPage() {
 
   const handleFieldSave = async (field: "name" | "description") => {
     if (!folder) return;
-    await actions.updateFolder(folder.id, {
-      [field]: field === "name" ? name : description,
-    });
+    if (field === "name") {
+      setIsSavingName(true);
+    } else {
+      setIsSavingDescription(true);
+    }
+    try {
+      await actions.updateFolder(folder.id, {
+        [field]: field === "name" ? name : description,
+      });
+    } finally {
+      if (field === "name") {
+        setIsSavingName(false);
+      } else {
+        setIsSavingDescription(false);
+      }
+    }
   };
 
   const handleCollaborationUpdate = async (
@@ -534,8 +553,9 @@ export default function EditFolderPage() {
                     className="font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary underline underline-offset-2"
                   >
                     {folder.parent?.name || "Parent Folder"}
-                  </Link>.
-                  It automatically inherits its visibility, privacy, and collaboration permissions from the parent.
+                  </Link>
+                  . It automatically inherits its visibility, privacy, and
+                  collaboration permissions from the parent.
                 </p>
               </div>
             </div>
@@ -561,10 +581,10 @@ export default function EditFolderPage() {
                     <button
                       type="button"
                       onClick={() => handleFieldSave("name")}
-                      disabled={isUpdating || !name.trim()}
+                      disabled={isSavingName || !name.trim()}
                       className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-sm hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
-                      {isUpdating ? "Saving..." : "Save Name"}
+                      {isSavingName ? "Saving..." : "Save Name"}
                     </button>
                     <button
                       type="button"
@@ -596,10 +616,10 @@ export default function EditFolderPage() {
                     <button
                       type="button"
                       onClick={() => handleFieldSave("description")}
-                      disabled={isUpdating}
+                      disabled={isSavingDescription}
                       className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-sm hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
-                      {isUpdating ? "Saving..." : "Save Description"}
+                      {isSavingDescription ? "Saving..." : "Save Description"}
                     </button>
                     <button
                       type="button"
@@ -720,7 +740,9 @@ export default function EditFolderPage() {
                   Access & Collaborators (Inherited)
                 </label>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
-                  These collaborators have access to this subfolder through the parent folder. To manage access, please edit the parent folder.
+                  These collaborators have access to this subfolder through the
+                  parent folder. To manage access, please edit the parent
+                  folder.
                 </p>
               </div>
 
@@ -758,7 +780,8 @@ export default function EditFolderPage() {
                   (!folder?.collaborators ||
                     folder.collaborators.length === 0) && (
                     <div className="col-span-2 text-xs text-gray-400 dark:text-gray-500 italic py-2">
-                      Only you (the owner) have access to this folder. No parent collaborators defined.
+                      Only you (the owner) have access to this folder. No parent
+                      collaborators defined.
                     </div>
                   )}
               </div>
@@ -1225,7 +1248,8 @@ export default function EditFolderPage() {
             </p>
             {isSubfolder && (
               <p className="text-xs text-red-500 dark:text-red-400 font-medium">
-                ⚠️ Sibling subfolders and the parent folder will NOT be affected.
+                ⚠️ Sibling subfolders and the parent folder will NOT be
+                affected.
               </p>
             )}
           </div>
