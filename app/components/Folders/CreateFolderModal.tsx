@@ -17,6 +17,7 @@ interface CreateFolderModalProps {
   ) => void;
   parentId?: string;
   lockParent?: boolean;
+  parentVisibility?: FolderVisibility;
 }
 
 export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
@@ -25,6 +26,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   onSubmit,
   parentId: initialParentId,
   lockParent = false,
+  parentVisibility,
 }) => {
   const [folderName, setFolderName] = useState("");
   const [description, setDescription] = useState("");
@@ -41,7 +43,9 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
       setDescription("");
 
       // Inherit visibility from parent
-      if (initialParentId) {
+      if (parentVisibility) {
+        setVisibility(parentVisibility);
+      } else if (initialParentId) {
         const parent = folders.find((f) => f.id === initialParentId);
         if (parent?.visibility === "PUBLIC") {
           setVisibility("PUBLIC");
@@ -52,7 +56,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
         setVisibility("PRIVATE");
       }
     }
-  }, [isOpen, initialParentId, folders]);
+  }, [isOpen, initialParentId, parentVisibility, folders]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
