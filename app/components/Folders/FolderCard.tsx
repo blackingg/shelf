@@ -235,12 +235,14 @@ export const FolderCard: React.FC<FolderCardProps> = ({
         <div
           className={`relative z-10 transition-all duration-200 ${
             isSelected ? "opacity-60 scale-[0.98]" : ""
-          }`}
+          } w-full aspect-[278/194]`}
         >
           <FolderIcon
             visibility={folder.parent?.visibility || folder.visibility}
             booksCount={folder.booksCount}
             childrenCount={folder.childrenCount}
+            width="100%"
+            height="100%"
           />
         </div>
         {isSelected && (
