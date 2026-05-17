@@ -155,6 +155,13 @@ export default function DiscoverPage() {
   const displayItems: RecommendedItem[] = [];
 
   const handleViewMoreCategories = () => {
+    const categoryName = categories.find((c) => c.slug === activeCategory)?.name || activeCategory;
+    openPanel.track("category_clicked", {
+      categorySlug: activeCategory,
+      categoryName,
+      source: "discover",
+      type: "view_more",
+    });
     router.push(`/library/categories/${activeCategory}`);
   };
 
@@ -256,9 +263,10 @@ export default function DiscoverPage() {
               onCategoryChange={(slug) => {
                 setActiveCategory(slug);
                 const categoryName = categories.find((c) => c.slug === slug)?.name || slug;
-                openPanel.track("discover_category_clicked", {
+                openPanel.track("category_clicked", {
                   categorySlug: slug,
                   categoryName,
+                  source: "discover",
                 });
               }}
             />

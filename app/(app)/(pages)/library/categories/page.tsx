@@ -3,9 +3,11 @@ import { useRouter } from "next/navigation";
 import { CategoryCard } from "@/app/components/Library/CategoryCard";
 import { useCategories } from "@/app/services";
 import { Skeleton } from "@/app/components/Layout/Skeleton";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 export default function CategoriesPage() {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const { categories, isLoading } = useCategories();
 
   return (
@@ -42,9 +44,14 @@ export default function CategoriesPage() {
                 <CategoryCard
                   key={category.id}
                   category={category}
-                  onClick={() =>
-                    router.push(`/library/categories/${category.slug}`)
-                  }
+                  onClick={() => {
+                    openPanel.track("category_clicked", {
+                      categorySlug: category.slug,
+                      categoryName: category.name,
+                      source: "categories_page",
+                    });
+                    router.push(`/library/categories/${category.slug}`);
+                  }}
                 />
               ))}
             </div>
