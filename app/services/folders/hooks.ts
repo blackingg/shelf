@@ -78,6 +78,7 @@ export const useGetUserFoldersQuery = (params: {
   username: string;
   page?: number;
   limit?: number;
+  root_only?: boolean;
 }) => {
   const { username, ...queryParams } = params;
   return useQuery<PaginatedResponse<Folder>>({
@@ -112,8 +113,12 @@ export const useCreateFolderMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
       const parentId = data?.parentId || data?.parent_id;
       if (parentId) {
-        queryClient.invalidateQueries({ queryKey: folderKeys.children(parentId) });
-        queryClient.invalidateQueries({ queryKey: folderKeys.detail(parentId) });
+        queryClient.invalidateQueries({
+          queryKey: folderKeys.children(parentId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: folderKeys.detail(parentId),
+        });
       }
     },
   });
@@ -458,6 +463,7 @@ export const useUserFolders = (params: {
   username: string;
   page?: number;
   limit?: number;
+  root_only?: boolean;
 }) => {
   const { data, isLoading, isFetching, isError, error } =
     useGetUserFoldersQuery(params);

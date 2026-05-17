@@ -109,7 +109,12 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     totalPages: publicFoldersTotalPages,
     isLoading: isLoadingPublicFolders,
     isFetching: isFetchingPublicFolders,
-  } = useUserFolders({ username, page: folderPage, limit: pageSize });
+  } = useUserFolders({
+    username,
+    page: folderPage,
+    limit: pageSize,
+    root_only: true,
+  });
 
   const {
     folders: ownerFolders,
@@ -119,6 +124,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     isFetching: isFetchingOwnerFolders,
   } = useMeFolders({
     include_collaborated: true,
+    root_only: true,
     page: folderPage,
     limit: pageSize,
     enabled: isOwner && !!currentUser,
