@@ -69,7 +69,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   const isAuthenticated = !!activeUser;
   const { addNotification } = useNotifications();
   const [showMenu, setShowMenu] = useState(false);
-  const isPublic = folder.visibility === "PUBLIC";
+  const isPublic = (folder.parent?.visibility || folder.visibility) === "PUBLIC";
 
   const { canEditFolder, canDeleteFolder, canMoveFolder } =
     useFolderPermissions(folder);
@@ -238,7 +238,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
           }`}
         >
           <FolderIcon
-            visibility={folder.visibility}
+            visibility={folder.parent?.visibility || folder.visibility}
             booksCount={folder.booksCount}
             childrenCount={folder.childrenCount}
           />

@@ -563,6 +563,7 @@ export default function FolderClient() {
           setShowCreateSubfolderModal(false);
         }}
         parentId={folder?.id}
+        parentVisibility={folder?.visibility}
         lockParent={true}
       />
 
