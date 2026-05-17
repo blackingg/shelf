@@ -106,10 +106,15 @@ export const useCreateFolderMutation = () => {
   return useMutation({
     mutationFn: (data: CreateFolderRequest) =>
       api.post<Folder>("/folders/", data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       // New folder appears in my-folders list and possibly public list
       queryClient.invalidateQueries({ queryKey: ["folders", "me"] });
       queryClient.invalidateQueries({ queryKey: ["folders", "public"] });
+      const parentId = data?.parentId || data?.parent_id;
+      if (parentId) {
+        queryClient.invalidateQueries({ queryKey: folderKeys.children(parentId) });
+        queryClient.invalidateQueries({ queryKey: folderKeys.detail(parentId) });
+      }
     },
   });
 };
