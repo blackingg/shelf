@@ -290,12 +290,11 @@ export default function FolderClient() {
           <div className="space-y-6 md:space-y-10">
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
               <div className="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
-                <div className="shrink-0">
+                <div className="shrink-0 w-20 aspect-[278/194] md:w-24 rounded-sm overflow-hidden">
                   <FolderIcon
                     visibility={folder.visibility}
                     booksCount={folder.booksCount}
                     childrenCount={children && children.length > 0 ? children.length : folder.childrenCount || 0}
-                    className="w-20 h-20 md:w-24 md:h-24 rounded-sm overflow-hidden"
                     width="100%"
                     height="100%"
                   />
