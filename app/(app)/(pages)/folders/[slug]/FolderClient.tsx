@@ -60,7 +60,7 @@ export default function FolderClient() {
   const [showMoveFoldersModal, setShowMoveFoldersModal] = useState(false);
   const [isProcessingBulk, setIsProcessingBulk] = useState(false);
 
-  const { folder, isLoading, error } = useFolderBySlug(slug);
+  const { folder, isLoading, isFetching, error } = useFolderBySlug(slug);
   const { actions, isDeleting, isMoving } = useFolderActions();
   const { isBookmarked } = useIsFolderBookmarked(folder?.id || "");
   const { toggleBookmark } = useBookmarkFolderActions();
@@ -217,7 +217,7 @@ export default function FolderClient() {
           {folder && <FolderBreadcrumbs folderId={folder.id} />}
         </div>
 
-        {isLoading || isLoadingChildren ? (
+        {isLoading || isLoadingChildren || (isFetching && !folder) ? (
           <FolderDetailSkeleton hideHeader />
         ) : isForbidden ? (
           <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">

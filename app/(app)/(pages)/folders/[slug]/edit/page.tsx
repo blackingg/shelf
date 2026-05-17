@@ -69,7 +69,10 @@ export default function EditFolderPage() {
   const canEdit = canEditFolder;
 
   const isSubfolder = !!(folder?.parentId || folder?.parent_id || folder?.parent);
-  const isLoading = isFolderLoading || (!isSubfolder && (isCollaboratorsLoading || isInvitesLoading));
+  const isLoading =
+    isFolderLoading ||
+    (isFolderFetching && !folder) ||
+    (!isSubfolder && (isCollaboratorsLoading || isInvitesLoading));
 
   // Form State
   const [name, setName] = useState("");
