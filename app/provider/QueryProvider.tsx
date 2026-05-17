@@ -5,6 +5,8 @@ import { ReactNode, useEffect, useMemo } from "react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import Cookies from "js-cookie";
+import { useUser } from "../services/user/hooks";
+import { useOpenPanel } from "@openpanel/nextjs";
 
 const PERSIST_BASE_KEY = "shelf-query-cache";
 
@@ -18,6 +20,24 @@ const PERSISTED_QUERY_KEYS = [
   "bookmarks",
   "onboarding",
 ];
+
+function OpenPanelTracker() {
+  const { me } = useUser();
+  const openPanel = useOpenPanel();
+
+  useEffect(() => {
+    if (me) {
+      openPanel.identify({
+        profileID: me.id,
+        name: me.fullName,
+        email: me.email,
+        username: me.username || undefined,
+      });
+    }
+  }, [me, openPanel]);
+
+  return null;
+}
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const token = typeof window !== "undefined" ? Cookies.get("accessToken") : undefined;
@@ -68,7 +88,10 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   // Guard against SSR where localStorage and the persister are unavailable.
   if (!persister) {
     return (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <OpenPanelTracker />
+        {children}
+      </QueryClientProvider>
     );
   }
 
@@ -89,6 +112,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
         },
       }}
     >
+      <OpenPanelTracker />
       {children}
     </PersistQueryClientProvider>
   );
