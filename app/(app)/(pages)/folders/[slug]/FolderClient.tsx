@@ -296,6 +296,8 @@ export default function FolderClient() {
                     booksCount={folder.booksCount}
                     childrenCount={folder.childrenCount}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-sm overflow-hidden"
+                    width="100%"
+                    height="100%"
                   />
                 </div>
                 <div>
