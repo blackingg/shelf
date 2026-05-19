@@ -21,7 +21,12 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [creatingSubfolderId, setCreatingSubfolderId] = useState<string | null>(
+    null,
+  );
+  const [subfolderName, setSubfolderName] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const subfolderInputRef = useRef<HTMLInputElement>(null);
 
   const { folders, isLoading } = useMeFolders({ limit: 100, root_only: false });
   const { actions, isUpdating: isCreating } = useFolderActions();
@@ -39,6 +44,29 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
       newExpanded.add(folderId);
     }
     setExpandedFolders(newExpanded);
+  };
+
+  // Focus subfolder input when creating
+  useEffect(() => {
+    if (creatingSubfolderId && subfolderInputRef.current) {
+      subfolderInputRef.current.focus();
+    }
+  }, [creatingSubfolderId]);
+
+  const handleCreateSubfolder = async (parentId: string) => {
+    if (subfolderName.trim() && !isCreating) {
+      const folder = await actions.createFolder({
+        name: subfolderName.trim(),
+        parentId,
+      });
+      if (folder) {
+        onSelect(folder.id);
+        // Auto-expand parent to show new subfolder
+        setExpandedFolders((prev) => new Set([...prev, parentId]));
+      }
+      setSubfolderName("");
+      setCreatingSubfolderId(null);
+    }
   };
 
   // Recursive renderer
@@ -80,6 +108,7 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
     return tree.map((folder) => {
       const hasChildren = folder.children && folder.children.length > 0;
       const isExpanded = expandedFolders.has(folder.id);
+      const isCreatingSubfolderHere = creatingSubfolderId === folder.id;
 
       return (
         <div key={folder.id}>
@@ -123,6 +152,23 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
             </div>
 
             <div className="flex items-center space-x-2 shrink-0">
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCreatingSubfolderId(
+                    isCreatingSubfolderHere ? null : folder.id,
+                  );
+                  setSubfolderName("");
+                  // Auto-expand so user sees where subfolder will go
+                  if (!isCreatingSubfolderHere) {
+                    setExpandedFolders((prev) => new Set([...prev, folder.id]));
+                  }
+                }}
+                title="Create subfolder"
+                className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-sm transition-colors cursor-pointer text-gray-400 hover:text-emerald-500"
+              >
+                <FiPlus className="w-3.5 h-3.5" />
+              </div>
               {hasChildren && (
                 <div
                   onClick={(e) => toggleFolder(e, folder.id)}
@@ -140,6 +186,54 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
               )}
             </div>
           </button>
+
+          {/* Inline subfolder creation row */}
+          {isCreatingSubfolderHere && (
+            <div
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50/80 dark:bg-neutral-800/60 border-y border-gray-100 dark:border-neutral-800"
+              style={{ paddingLeft: `${(depth + 1) * 24 + 16}px` }}
+            >
+              <FiFolder className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <input
+                ref={subfolderInputRef}
+                type="text"
+                value={subfolderName}
+                onChange={(e) => setSubfolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCreateSubfolder(folder.id);
+                  if (e.key === "Escape") {
+                    setCreatingSubfolderId(null);
+                    setSubfolderName("");
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                placeholder="Subfolder name"
+                className="flex-1 min-w-0 px-2 py-1 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 rounded-sm text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-gray-900 dark:text-white"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCreateSubfolder(folder.id);
+                }}
+                disabled={!subfolderName.trim() || isCreating}
+                className="px-2 py-1 bg-emerald-600 text-white rounded-sm text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-700 disabled:opacity-50 shrink-0"
+              >
+                {isCreating ? "..." : "Create"}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCreatingSubfolderId(null);
+                  setSubfolderName("");
+                }}
+                className="p-1 rounded-sm text-gray-400 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors shrink-0"
+              >
+                <FiX className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
 
           {hasChildren && isExpanded && (
             <div className="animate-in fade-in slide-in-from-top-1 duration-200">
@@ -176,6 +270,8 @@ export const FolderSelectDropdown: React.FC<FolderSelectDropdownProps> = ({
         setIsOpen(false);
         setIsCreatingNew(false);
         setNewFolderName("");
+        setCreatingSubfolderId(null);
+        setSubfolderName("");
       }
     };
 

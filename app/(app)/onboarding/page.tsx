@@ -11,6 +11,7 @@ import { InterestButton } from "@/app/components/Onboarding/InterestButton";
 import { NavigationButtons } from "@/app/components/Onboarding/NavigationButtons";
 import { FormSelect } from "@/app/components/Form/FormSelect";
 import { storage } from "@/app/helpers/storage";
+import { useOpenPanel } from "@openpanel/nextjs";
 import {
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
@@ -32,6 +33,7 @@ interface FormData {
 
 export default function Onboarding() {
   const router = useRouter();
+  const openPanel = useOpenPanel();
   const { addNotification } = useNotifications();
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
@@ -110,6 +112,21 @@ export default function Onboarding() {
         departmentId: formData.departmentId,
         interestIds: formData.interestIds,
       });
+
+      openPanel.track("onboarding_completed", {
+        schoolId: formData.schoolId,
+        departmentId: formData.departmentId,
+        interestsCount: formData.interestIds.length,
+      });
+
+      if (user) {
+        openPanel.identify({
+          profileId: user.id,
+          onboarded: true,
+          schoolId: formData.schoolId,
+          departmentId: formData.departmentId,
+        });
+      }
 
       storage.remove("onboarding_step");
       storage.remove("onboarding_data");
