@@ -28,7 +28,7 @@ function OpenPanelTracker() {
   useEffect(() => {
     if (me) {
       openPanel.identify({
-        profileID: me.id,
+        profileId: me.id,
         name: me.fullName,
         email: me.email,
         username: me.username || undefined,
