@@ -17,25 +17,30 @@ export const moderationKeys = {
 
 export const useGetFlaggedContentQuery = (
   type: "books" | "folders",
-  reviewed: boolean = false,
+  params: { reviewed?: boolean; page?: number; limit?: number } = {},
 ) => {
+  const reviewed = params.reviewed ?? false;
   return useQuery({
-    queryKey: moderationKeys.flags(type, reviewed),
+    queryKey: [...moderationKeys.flags(type, reviewed), params],
     queryFn: () =>
       api.get<PaginatedResponse<FlagWithContentResponse>>(
         `/moderation/flags/${type}`,
         {
-          params: { reviewed },
+          params,
         },
       ),
   });
 };
 
-export const useGetPendingBooksQuery = () => {
+export const useGetPendingBooksQuery = (
+  params: { page?: number; limit?: number } = {},
+) => {
   return useQuery({
-    queryKey: moderationKeys.pending(),
+    queryKey: [...moderationKeys.pending(), params],
     queryFn: () =>
-      api.get<PaginatedResponse<Book>>("/moderation/books/pending"),
+      api.get<PaginatedResponse<Book>>("/moderation/books/pending", {
+        params,
+      }),
   });
 };
 
