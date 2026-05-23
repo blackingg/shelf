@@ -33,7 +33,7 @@ export default function ModeratorRootLayout({
                   <ModeratorSidebar />
 
                   <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
-                    <header className="h-16 bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between px-8 sticky top-0 z-30">
+                    <header className="h-16 bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between pl-16 pr-8 lg:px-8 sticky top-0 z-30">
                       <h1 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-widest">
                         Moderator Center
                       </h1>

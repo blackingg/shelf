@@ -2,11 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiLayout, FiUsers, FiBook, FiSettings } from "react-icons/fi";
+import { useState } from "react";
+import { FiLayout, FiUsers, FiBook, FiLogOut } from "react-icons/fi";
+import { HiMenu, HiX } from "react-icons/hi";
 import { LogoStacked } from "@/app/components/Shared/Logo";
+import { ConfirmModal } from "@/app/components/Shared/ConfirmModal";
+import { useAuthActions } from "@/app/services";
+import { AdminSystemStatus } from "@/app/components/Admin/AdminSystemStatus";
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
+  const { logout: performLogout } = useAuthActions();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const navItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: <FiLayout /> },
@@ -14,52 +22,106 @@ export const AdminSidebar = () => {
     { label: "Resources", href: "/admin/resources", icon: <FiBook /> },
   ];
 
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    performLogout();
+    setShowLogoutModal(false);
+  };
+
   return (
-    <aside className="w-64 bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col h-screen sticky top-0">
-      <div className="p-6 border-b border-gray-100 dark:border-neutral-800">
-        <Link href="/admin/dashboard" className="flex items-center space-x-3">
-          <LogoStacked className="w-28 h-auto text-[#072c0b] dark:text-[#D0FDC2]" />
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1 ml-1">
-            Admin
-          </span>
-        </Link>
-      </div>
+    <>
+      {/* Mobile Toggle Button */}
+      <button
+        onClick={() => setShowMobileSidebar(true)}
+        className="lg:hidden fixed top-3 left-4 z-40 p-2 text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+        aria-label="Toggle menu"
+      >
+        <HiMenu className="text-xl" />
+      </button>
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                isActive
-                  ? "bg-primary/5 text-primary"
-                  : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white"
-              }`}
-            >
-              <span className={`text-lg ${isActive ? "text-primary" : "text-gray-400"}`}>
-                {item.icon}
-              </span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Mobile Backdrop */}
+      {showMobileSidebar && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-30 transition-opacity"
+          onClick={() => setShowMobileSidebar(false)}
+        />
+      )}
 
-      <div className="p-4 border-t border-gray-100 dark:border-neutral-800">
-        <div className="bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
-            System Status
-          </p>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-xs font-bold text-gray-700 dark:text-neutral-300">
-              Operational
+      <aside
+        className={`fixed lg:sticky top-0 left-0 z-40 lg:z-0 w-64 h-screen bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col transition-transform duration-300 lg:transition-none lg:translate-x-0 ${
+          showMobileSidebar ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center space-x-3"
+            onClick={() => setShowMobileSidebar(false)}
+          >
+            <LogoStacked className="w-28 h-auto text-primary" />
+            <span className="text-[10px] font-medium text-primary uppercase tracking-[0.2em] mt-1 ml-1">
+              Admin
             </span>
-          </div>
+          </Link>
+          <button
+            onClick={() => setShowMobileSidebar(false)}
+            className="lg:hidden p-1.5 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <HiX className="text-lg" />
+          </button>
         </div>
-      </div>
-    </aside>
+
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setShowMobileSidebar(false)}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-primary/5 text-primary"
+                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                <span className={`text-lg ${isActive ? "text-primary" : "text-gray-400"}`}>
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-gray-100 dark:border-neutral-800 space-y-3">
+          <button
+            onClick={handleLogoutClick}
+            className="flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/15 hover:text-red-600 dark:hover:text-red-400 w-full text-left cursor-pointer"
+          >
+            <span className="text-lg text-gray-400 hover:text-inherit">
+              <FiLogOut />
+            </span>
+            <span>Logout</span>
+          </button>
+
+          <AdminSystemStatus />
+        </div>
+      </aside>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out of your admin session?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isDanger={true}
+      />
+    </>
   );
 };
