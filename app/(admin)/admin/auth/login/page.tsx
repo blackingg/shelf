@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md px-4 py-3 text-gray-900 dark:text-white focus:border-primary outline-none transition-colors font-medium"
-                placeholder="admin@shelf.ng"
+                placeholder="example@shelf.ng"
               />
             </div>
             <div className="space-y-2">
