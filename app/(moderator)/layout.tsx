@@ -6,6 +6,8 @@ import { QueryProvider } from "@/app/provider/QueryProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { ModeratorSidebar } from "@/app/components/Moderator/ModeratorSidebar";
 import ModeratorProtectedRoute from "@/app/components/Auth/ModeratorProtectedRoute";
+import Link from "next/link";
+import { FiArrowLeft } from "react-icons/fi";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +40,13 @@ export default function ModeratorRootLayout({
                         Moderator Center
                       </h1>
                       <div className="flex items-center space-x-4">
-                        <div className="w-8 h-8 rounded-md bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-700" />
+                        <Link
+                          href="/library"
+                          className="flex items-center gap-2 px-4 py-2 text-xs font-medium uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white border border-gray-100 dark:border-neutral-800 rounded-md hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                          <FiArrowLeft className="w-3.5 h-3.5" />
+                          Back to App
+                        </Link>
                       </div>
                     </header>
 
