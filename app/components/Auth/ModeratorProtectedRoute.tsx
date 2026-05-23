@@ -14,24 +14,32 @@ export default function ModeratorProtectedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { me, isAuthenticated, isLoading } = useUser();
+  const { me, hasToken, isAuthenticated, isLoading, isPending, isFetching } =
+    useUser();
+
+  const isResolvingSession =
+    hasToken && !me && (isLoading || isPending || isFetching);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.replace("/auth/login");
-      } else if (!MODERATOR_ROLES.includes(me?.role as UserRole)) {
-        // If logged in but not moderator/admin, send back to main app
-        router.replace("/discover");
-      }
+    if (isResolvingSession) return;
+
+    if (!hasToken || !isAuthenticated) {
+      router.replace("/auth/login");
+      return;
     }
-  }, [isAuthenticated, me, isLoading, router]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+    if (!MODERATOR_ROLES.includes(me?.role as UserRole)) {
+      router.replace("/discover");
+    }
+  }, [hasToken, isAuthenticated, me, isResolvingSession, router]);
 
-  if (!isAuthenticated || !MODERATOR_ROLES.includes(me?.role as UserRole)) {
+  if (isResolvingSession) return <LoadingScreen />;
+
+  if (
+    !hasToken ||
+    !isAuthenticated ||
+    !MODERATOR_ROLES.includes(me?.role as UserRole)
+  ) {
     return null;
   }
 
