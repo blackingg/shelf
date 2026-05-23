@@ -8,6 +8,13 @@ import { getErrorMessage } from "../../helpers/error";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const mutex = new Mutex();
 
+function getLoginPath(): string {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
+    return "/admin/auth/login";
+  }
+  return "/auth/login";
+}
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
@@ -61,11 +68,11 @@ axiosInstance.interceptors.response.use(
 
         // Refresh failed — only redirect if we were previously logged in
         Cookies.remove("accessToken");
-        window.location.href = "/auth/login";
+        window.location.href = getLoginPath();
         return Promise.reject(error);
       } catch (refreshError) {
         Cookies.remove("accessToken");
-        window.location.href = "/auth/login";
+        window.location.href = getLoginPath();
         return Promise.reject(refreshError);
       } finally {
         release();
@@ -80,7 +87,7 @@ axiosInstance.interceptors.response.use(
       Cookies.get("accessToken") // Only redirect if they have a token that is presumably invalid
     ) {
       Cookies.remove("accessToken");
-      window.location.href = "/auth/login";
+      window.location.href = getLoginPath();
     }
 
     // 3. Process Error Message using helper

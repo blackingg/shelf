@@ -6,9 +6,9 @@ import { useUser } from "@/app/services";
 import { LoadingScreen } from "../Loader/LoadingScreen";
 import { UserRole } from "@/app/types/user";
 
-const ADMIN_ROLES: UserRole[] = ["ADMIN", "SUPER_ADMIN"];
+const MODERATOR_ROLES: UserRole[] = ["MODERATOR", "ADMIN", "SUPER_ADMIN"];
 
-export default function AdminProtectedRoute({
+export default function ModeratorProtectedRoute({
   children,
 }: {
   children: React.ReactNode;
@@ -24,11 +24,11 @@ export default function AdminProtectedRoute({
     if (isResolvingSession) return;
 
     if (!hasToken || !isAuthenticated) {
-      router.replace("/admin/auth/login");
+      router.replace("/auth/login");
       return;
     }
 
-    if (!ADMIN_ROLES.includes(me?.role as UserRole)) {
+    if (!MODERATOR_ROLES.includes(me?.role as UserRole)) {
       router.replace("/discover");
     }
   }, [hasToken, isAuthenticated, me, isResolvingSession, router]);
@@ -38,7 +38,7 @@ export default function AdminProtectedRoute({
   if (
     !hasToken ||
     !isAuthenticated ||
-    !ADMIN_ROLES.includes(me?.role as UserRole)
+    !MODERATOR_ROLES.includes(me?.role as UserRole)
   ) {
     return null;
   }

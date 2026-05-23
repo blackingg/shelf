@@ -45,6 +45,14 @@ export const useGetBookBySlugQuery = (slug: string) => {
   });
 };
 
+export const useGetBookByIdQuery = (id: string) => {
+  return useQuery<Book>({
+    queryKey: bookKeys.detail(id),
+    queryFn: () => api.get<Book>(`/books/${id}`),
+    enabled: !!id,
+  });
+};
+
 export const useGetRecommendedBooksQuery = (params: any) => {
   return useQuery<RecommendedBooksResponse>({
     queryKey: bookKeys.recommended(params),
