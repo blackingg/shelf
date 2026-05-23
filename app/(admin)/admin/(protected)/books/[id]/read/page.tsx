@@ -100,7 +100,7 @@ function AdminReaderPageInner({
       </ReaderLayout>
 
       {/* Admin context banner */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg z-[110]">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-600 text-white text-[10px] font-medium uppercase tracking-widest rounded-md z-[110]">
         System Admin Mode
       </div>
     </div>
@@ -164,7 +164,7 @@ export default function AdminReaderPage() {
           <p className="text-sm text-neutral-400">{errorMessage}</p>
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center space-x-2 text-emerald-400 font-medium pt-4"
+            className="inline-flex items-center space-x-2 text-primary font-medium pt-4"
           >
             <FiArrowLeft />
             <span>Go Back</span>
