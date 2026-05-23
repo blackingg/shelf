@@ -15,6 +15,7 @@ export const adminKeys = {
   stats: () => [...adminKeys.all, "stats"] as const,
   users: (params: AdminListUsersParams) =>
     [...adminKeys.all, "users", params] as const,
+  user: (id: string) => [...adminKeys.all, "users", id] as const,
   auditLogs: (params: AdminAuditLogParams) =>
     [...adminKeys.all, "audit-logs", params] as const,
 };
@@ -34,11 +35,20 @@ export const useGetAdminUsersQuery = (params: AdminListUsersParams = {}) => {
   });
 };
 
+export const useGetAdminUserByIdQuery = (id: string) => {
+  return useQuery({
+    queryKey: adminKeys.user(id),
+    queryFn: () => api.get<AdminUserResponse>(`/admin/users/${id}`),
+    enabled: !!id,
+  });
+};
+
 export const useGetAuditLogsQuery = (params: AdminAuditLogParams = {}) => {
   return useQuery({
     queryKey: adminKeys.auditLogs(params),
     queryFn: () =>
       api.get<PaginatedResponse<AuditLogEntry>>("/admin/audit-log", { params }),
+    retry: false,
   });
 };
 
@@ -49,7 +59,7 @@ export const useAdminActions = () => {
     mutationFn: ({ userId, role }: { userId: string; role: UserRole }) =>
       api.patch(`/admin/users/${userId}/role`, { role }),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminKeys.users({}) }),
+      queryClient.invalidateQueries({ queryKey: adminKeys.all }),
   });
 
   const banUser = useMutation({
@@ -63,19 +73,19 @@ export const useAdminActions = () => {
       permanent?: boolean;
     }) => api.post(`/admin/users/${userId}/ban`, { reason, permanent }),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminKeys.users({}) }),
+      queryClient.invalidateQueries({ queryKey: adminKeys.all }),
   });
 
   const unbanUser = useMutation({
     mutationFn: (userId: string) => api.post(`/admin/users/${userId}/unban`),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminKeys.users({}) }),
+      queryClient.invalidateQueries({ queryKey: adminKeys.all }),
   });
 
   const deleteUser = useMutation({
     mutationFn: (userId: string) => api.delete(`/admin/users/${userId}`),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminKeys.users({}) }),
+      queryClient.invalidateQueries({ queryKey: adminKeys.all }),
   });
 
   return {

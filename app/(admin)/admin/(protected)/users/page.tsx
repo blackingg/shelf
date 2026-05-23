@@ -1,25 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { useAdminActions, useGetAdminUsersQuery } from "@/app/services";
+import { useGetAdminUsersQuery } from "@/app/services";
 import { UserRole } from "@/app/types/user";
-import { FiSearch, FiMoreHorizontal, FiUser, FiX } from "react-icons/fi";
+import { FiSearch, FiUser } from "react-icons/fi";
 import { FormSelect } from "@/app/components/Form/FormSelect";
-import UserComponent from "./UserComponent";
+import UserComponent from "@/app/components/Admin/UserComponent";
 import { AdminUserResponse } from "@/app/types/admin";
-import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
-import { isatty } from "tty";
-interface UserActionInterface {
-  action_type: string;
-  action_is_on: AdminUserResponse;
+import { Pagination } from "@/app/components/Library/Pagination";
+import {
+  UserActionModals,
+  UserActionType,
+} from "@/app/components/Admin/UserActionModals";
+import AdminTableSkeleton from "@/app/components/Skeletons/Admin/AdminTableSkeleton";
+
+interface RoleOption {
+  value: UserRole | "";
+  label: string;
+}
+
+interface StatusOption {
+  value: "" | "active" | "banned";
+  label: string;
 }
 
 export default function AdminUsersPage() {
-  interface RoleOption {
-    value: UserRole | "";
-    label: string;
-  }
-
   const roleOptions: RoleOption[] = [
     { value: "", label: "All Roles" },
     { value: "USER", label: "Regular Users" },
@@ -28,31 +33,74 @@ export default function AdminUsersPage() {
     { value: "SUPER_ADMIN", label: "Super Admins" },
   ];
 
+  const statusOptions: StatusOption[] = [
+    { value: "", label: "All Status" },
+    { value: "active", label: "Active" },
+    { value: "banned", label: "Banned" },
+  ];
+
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleOption>(roleOptions[0]);
+  const [statusFilter, setStatusFilter] = useState<StatusOption>(
+    statusOptions[0],
+  );
+  const [page, setPage] = useState(1);
+
+  const [actionUser, setActionUser] = useState<AdminUserResponse | null>(null);
+  const [actionType, setActionType] = useState<UserActionType | null>(null);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleStatusChange = (option: StatusOption | null) => {
+    if (option) {
+      setStatusFilter(option);
+      setPage(1);
+    }
+  };
+
+  const handleRoleChange = (option: RoleOption | null) => {
+    if (option) {
+      setRoleFilter(option);
+      setPage(1);
+    }
+  };
 
   const { data: userData, isLoading } = useGetAdminUsersQuery({
     q: search || undefined,
     role: roleFilter.value || undefined,
+    is_banned:
+      statusFilter.value === "banned"
+        ? true
+        : statusFilter.value === "active"
+          ? false
+          : undefined,
+    page,
+    limit: 10,
   });
-  const { banUser, unbanUser, deleteUser, assignRole } = useAdminActions();
-
-  const [actionObj, attemptAction] = useState<UserActionInterface>({
-    action_type: "",
-    action_is_on: {} as AdminUserResponse,
-  });
-
-  const [isActionModalShown, showActionModal] = useState(false);
 
   const users = userData?.items;
 
+  const openAction = (user: AdminUserResponse, type: UserActionType) => {
+    setActionUser(user);
+    setActionType(type);
+  };
+
+  const closeAction = () => {
+    setActionUser(null);
+    setActionType(null);
+  };
+
   return (
     <div className="space-y-10">
-      <ActionProcessingModal
-        action={actionObj}
-        isShown={isActionModalShown}
-        onClick={() => showActionModal(false)}
+      <UserActionModals
+        user={actionUser}
+        actionType={actionType}
+        onClose={closeAction}
       />
+
       <section>
         <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
           User Management
@@ -69,15 +117,23 @@ export default function AdminUsersPage() {
             type="text"
             placeholder="Search name, username, or email..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm focus:outline-none focus:border-emerald-500/50 transition-colors"
+            onChange={handleSearchChange}
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
         <div className="flex items-center space-x-3">
+          <FormSelect<StatusOption>
+            options={statusOptions}
+            value={statusFilter}
+            onChange={handleStatusChange}
+            isClearable={false}
+            isSearchable={false}
+            className="w-36"
+          />
           <FormSelect<RoleOption>
             options={roleOptions}
             value={roleFilter}
-            onChange={(option) => option && setRoleFilter(option)}
+            onChange={handleRoleChange}
             isClearable={false}
             isSearchable={false}
             className="w-48"
@@ -85,11 +141,9 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden flex flex-col">
         {isLoading ? (
-          <div className="p-12 text-center text-sm text-gray-500 dark:text-neutral-400">
-            Loading users...
-          </div>
+          <AdminTableSkeleton rows={10} />
         ) : users?.length === 0 ? (
           <div className="p-12 text-center space-y-2">
             <FiUser className="mx-auto text-3xl text-gray-200 dark:text-neutral-800" />
@@ -98,194 +152,50 @@ export default function AdminUsersPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-gray-50 dark:border-neutral-800/50">
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
-                    User
-                  </th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
-                    Role
-                  </th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 text-right">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/30">
-                {users?.map((user) => (
-                  <UserComponent
-                    user={user}
-                    key={user.id}
-                    onClick={(action_type) => {
-                      showActionModal(true);
-                      attemptAction({
-                        ...actionObj,
-                        action_type: action_type,
-                        action_is_on: user,
-                      });
-                    }}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-gray-50 dark:border-neutral-800/50">
+                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                      User
+                    </th>
+                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                      Role
+                    </th>
+                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 text-right">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-neutral-800/30">
+                  {users?.map((user) => (
+                    <UserComponent
+                      user={user}
+                      key={user.id}
+                      onAction={(type) => openAction(user, type)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {userData && userData.totalPages > 1 && (
+              <div className="border-t border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-neutral-900/30 px-6">
+                <Pagination
+                  currentPage={page}
+                  totalPages={userData.totalPages}
+                  onPageChange={(p) => setPage(p)}
+                  isLoading={isLoading}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
-  );
-}
-
-function ActionProcessingModal({
-  isShown,
-  onClick,
-  action,
-}: {
-  action: UserActionInterface;
-  onClick: () => void;
-  isShown: boolean;
-}) {
-  const { action_type, action_is_on: user } = action;
-  const {
-    isAssigning,
-    isBanning,
-    isDeleting,
-    isUnbanning,
-    banUser,
-    deleteUser,
-    assignRole,
-    unbanUser,
-  } = useAdminActions();
-  const roleTypes: UserRole[] = ["USER", "MODERATOR", "ADMIN", "SUPER_ADMIN"];
-  const [roleState, updateRole] = useState<UserRole>("USER");
-  const [banType, changeBanType] = useState(true);
-  const [banReason, updateBanReason] = useState("");
-
-  const handleUpdateRole = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (value.includes("USER")) {
-      updateRole("USER");
-    }
-    if (value.includes("MOD")) {
-      updateRole("MODERATOR");
-    }
-    if (value == "ADMIN") {
-      updateRole("ADMIN");
-    }
-    if (value.includes("SUPER")) {
-      updateRole("SUPER_ADMIN");
-    }
-  };
-
-  return (
-    isShown && (
-      <div className="fixed top-0 left-0 z-30 bg-red-400/60 p-4 grid place-items-center min-h-screen w-screen">
-        <div className="w-1/2 h-1/2 rounded-xl border-4 border-zinc-600  p-2 flex flex-col bg-background">
-          <span
-            className="w-full text-right p-2 grid justify-end"
-            onClick={onClick}
-          >
-            <FiX className="w-8 h-8 text-xl font-bold text-white hover:text-red" />
-          </span>
-          <p className="capitalize font-semibold text-lg">
-            {action_type} Confirmation
-          </p>
-          <p>
-            You are about to {action_type} this user{" "}
-            <span className="text-xl font-bold">{user.username}</span>.
-          </p>
-          <p>Proceed with caution</p>
-          {action_type.includes("ban") && (
-            <div className="flex flex-col">
-              <label className="block my-3">Reason for Ban</label>
-              <input
-                type="text"
-                className="w-3/4 rounded-lg block p-2 my-2 border-2 border-gray"
-                onChange={(e) => updateBanReason(e.target.value)}
-              />
-              <div>
-                <input
-                  type="radio"
-                  name="banType"
-                  id="permanent"
-                  onChange={(e) => changeBanType(false)}
-                />{" "}
-                <label>Temporary</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  name="banType"
-                  id="temporary"
-                  onChange={(e) => changeBanType(true)}
-                />{" "}
-                <label>Permanent</label>
-              </div>
-              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
-                <button>Cancel</button>
-                <button
-                  className="flex gap-x-4"
-                  onClick={() =>
-                    banUser({
-                      userId: user.id,
-                      reason: "lorem",
-                      permanent: banType,
-                    })
-                  }
-                >
-                  {isBanning && <SpinnerLoader className="shrink-0" />}
-                  <span>{isBanning ? "Enacting Ban..." : "Confirm"}</span>
-                </button>
-              </div>
-            </div>
-          )}
-          {action_type.includes("assign") && (
-            <div className="flex flex-col">
-              <select onChange={handleUpdateRole}>
-                {roleTypes.map((role) => (
-                  <option value={role} key={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
-                <button>Cancel</button>
-                <button
-                  className="gap-x-4 flex"
-                  onClick={() =>
-                    assignRole({
-                      userId: user.id,
-                      role: roleState,
-                    })
-                  }
-                >
-                  {isAssigning && <SpinnerLoader />}
-                  <span>{isAssigning ? "Assigning Role..." : "Confirm"}</span>
-                </button>
-              </div>
-            </div>
-          )}
-          {action_type.includes("delete") && (
-            <div className="flex flex-col">
-              <p>You are about to delete this user: </p>
-              <div className="flex justify-self-center justify-center self-center w-full md:gap-x-4 md:p-4">
-                <button>Cancel</button>
-                <button
-                  onClick={() => deleteUser(user.id)}
-                  className="flex gap-x-4"
-                >
-                  {isDeleting && <SpinnerLoader className="shrink-0" />}
-                  <span>{isDeleting ? "Deleting..." : "Confirm Deletion"}</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    )
   );
 }
