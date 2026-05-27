@@ -514,9 +514,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               totalPages={foldersTotalPages}
               currentPage={folderPage}
               onPageChange={setFolderPage}
-              onFolderClick={(folder) =>
-                router.push(`/folders/${folder.slug}`)
-              }
+              onFolderClick={(folder) => router.push(`/folders/${folder.slug}`)}
               onFolderEdit={(folder) =>
                 router.push(`/folders/${folder.slug}/edit`)
               }

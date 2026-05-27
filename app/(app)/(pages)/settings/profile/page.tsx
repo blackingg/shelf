@@ -8,6 +8,7 @@ import {
   useUser,
   useGetSchoolsQuery,
   useGetOnboardingDepartmentsQuery,
+  useGetMeQuery,
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
@@ -123,10 +124,7 @@ export default function SettingsProfilePage() {
 
       <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
         <div className="p-5 md:p-8 lg:p-10">
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-8 md:space-y-10"
-          >
+          <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-sm bg-linear-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-primary/5">

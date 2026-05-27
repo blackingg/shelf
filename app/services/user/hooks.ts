@@ -109,7 +109,9 @@ export const useUser = (options?: { enabled?: boolean }) => {
   const {
     data: me,
     isLoading,
+    isPending,
     isFetching,
+    isError,
     error,
   } = useGetMeQuery({
     enabled: options?.enabled ?? hasToken,
@@ -142,8 +144,11 @@ export const useUser = (options?: { enabled?: boolean }) => {
   return {
     me: me || null,
     isLoading,
+    isPending,
     isFetching,
+    isError,
     error,
+    hasToken,
     isAuthenticated: !!me,
     actions: {
       updateProfile,
