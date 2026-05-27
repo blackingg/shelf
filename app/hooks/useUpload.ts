@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const AUTH_KEY = "upload_auth_session";
-const EXPIRY_TIME = 1000 * 60 * 60; // 1 hour session validity
+const EXPIRY_TIME = 1000 * 60 * 60; // 1 hour of inactivity before session expires
+const ACTIVITY_THROTTLE = 1000 * 60; // Refresh session timestamp at most once per minute
+const EXPIRY_CHECK_INTERVAL = 1000 * 30; // Check for expiry every 30 seconds
 
 /**
  * A hook that manages password-protected access for upload functionality.
- * It provides authentication state, persistence via localStorage, and session expiry handling.
- * 
+ * Uses a sliding session window — the session timer resets on user activity,
+ * so active users are never logged out mid-work. The session only expires
+ * after the full EXPIRY_TIME duration of inactivity.
+ *
  * @returns An object containing:
  * - isAuthorized: Boolean indicating if the user is currently authenticated.
  * - isLoading: Boolean indicating if the authentication state is being initialized.
@@ -22,10 +26,12 @@ export const useUpload = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const lastRefreshRef = useRef<number>(0);
 
   /**
    * Validates the current session stored in localStorage.
-   * Checks for existence, structure, and whether the 1-hour session has expired.
+   * Checks for existence, structure, and whether the session has expired
+   * due to inactivity (no user interaction for EXPIRY_TIME).
    */
   const checkAuth = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -38,9 +44,9 @@ export const useUpload = () => {
 
     try {
       const session = JSON.parse(sessionStr);
-      const now = new Date().getTime();
-      
-      // Check if session has expired
+      const now = Date.now();
+
+      // Check if session has expired due to inactivity
       if (now - session.timestamp < EXPIRY_TIME) {
         setIsAuthorized(true);
       } else {
@@ -53,27 +59,67 @@ export const useUpload = () => {
     }
   }, []);
 
+  /**
+   * Refreshes the session timestamp in localStorage to extend the sliding window.
+   * Throttled to avoid excessive writes — updates at most once per ACTIVITY_THROTTLE interval.
+   */
+  const refreshSession = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshRef.current < ACTIVITY_THROTTLE) return;
+
+    const sessionStr = localStorage.getItem(AUTH_KEY);
+    if (!sessionStr) return;
+
+    try {
+      const session = JSON.parse(sessionStr);
+      session.timestamp = now;
+      localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+      lastRefreshRef.current = now;
+    } catch {
+      // Corrupt session — let the next checkAuth handle cleanup
+    }
+  }, []);
+
   useEffect(() => {
     checkAuth();
 
-    // Re-check on window focus to catch expiration while tab is idle
+    // Re-check on window focus to catch expiration while tab was idle
     window.addEventListener("focus", checkAuth);
-    return () => window.removeEventListener("focus", checkAuth);
-  }, [checkAuth]);
+
+    // Periodically check for expiry so stale sessions are caught
+    // even without a focus event
+    const expiryInterval = setInterval(checkAuth, EXPIRY_CHECK_INTERVAL);
+
+    // Listen for user activity to refresh the sliding session window
+    const activityEvents = ["mousemove", "keydown", "click", "scroll"] as const;
+    activityEvents.forEach((event) =>
+      window.addEventListener(event, refreshSession, { passive: true })
+    );
+
+    return () => {
+      window.removeEventListener("focus", checkAuth);
+      clearInterval(expiryInterval);
+      activityEvents.forEach((event) =>
+        window.removeEventListener(event, refreshSession)
+      );
+    };
+  }, [checkAuth, refreshSession]);
 
   /**
-   * Attempts to authorize the user by comparing the local password state 
+   * Attempts to authorize the user by comparing the local password state
    * with the application's environment-defined upload password.
-   * 
+   *
    * @returns {boolean} True if authorization succeeded, false otherwise.
    */
   const authorize = () => {
     if (password === process.env.NEXT_PUBLIC_UPLOAD_PASSWORD) {
+      const now = Date.now();
       const session = {
         authorized: true,
-        timestamp: new Date().getTime(),
+        timestamp: now,
       };
       localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+      lastRefreshRef.current = now;
       setIsAuthorized(true);
       setError(null);
       return true;
@@ -101,13 +147,13 @@ export const useUpload = () => {
     setError(null);
   };
 
-  return { 
-    isAuthorized: isAuthorized ?? false, 
+  return {
+    isAuthorized: isAuthorized ?? false,
     isLoading: isAuthorized === null,
     password,
     setPassword: handlePasswordChange,
     error,
-    authorize, 
-    logout 
+    authorize,
+    logout,
   };
 };
