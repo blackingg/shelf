@@ -1,13 +1,14 @@
 export default function processDescription(descString: string) {
-  const parser = new DOMParser();
-  if (
-    descString.includes("<b>") ||
-    descString.includes("<br>") ||
-    descString.includes("<p>")
-  ) {
+  if (!descString) return "";
+  
+  // Check for any HTML tag
+  const hasHTML = /<\/?[a-z][\s\S]*>/i.test(descString);
+  
+  if (hasHTML) {
+    const parser = new DOMParser();
     const parsedDocument = parser.parseFromString(descString, "text/html");
-    return parsedDocument.documentElement.textContent;
-  } else {
-    return descString;
+    return parsedDocument.body.textContent || "";
   }
+  
+  return descString;
 }
