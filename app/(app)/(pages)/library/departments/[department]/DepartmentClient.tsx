@@ -60,7 +60,8 @@ export default function DepartmentClient({
   });
 
   return (
-    <div className="flex-1 flex flex-col">
+    <>
+      <div className="flex-1 flex flex-col">
       <main className="p-6 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-10">
@@ -202,12 +203,13 @@ export default function DepartmentClient({
           )}
         </div>
       </main>
-
+      </div>
+      
       <BookDetailPanel
         book={selectedBook!}
         isOpen={!!selectedBook}
         onClose={() => setSelectedBook(null)}
       />
-    </div>
+    </>
   );
 }

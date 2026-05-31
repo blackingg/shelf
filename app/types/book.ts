@@ -114,6 +114,9 @@ export interface BookmarkedStatus {
 }
 
 export interface PDFJSInfo {
-  Title: string;
-  Author: string;
+  Title?: string;
+  Author?: string;
+  Subject?: string;
+  Keywords?: string;
+  [key: string]: any;
 }

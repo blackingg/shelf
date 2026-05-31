@@ -9,6 +9,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { FolderDropdown } from "./FolderDropdown";
 import { BookPreview } from "@/app/types/book";
 import {
@@ -31,6 +32,7 @@ export const BookDetailPanel: React.FC<{
 }> = ({ book, onClose, isOpen }) => {
   const router = useRouter();
   const { isAuthenticated } = useUser();
+
   const openPanel = useOpenPanel();
   const { data: bookDetails } = useGetBookBySlugQuery(String(book?.slug));
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
@@ -56,7 +58,9 @@ export const BookDetailPanel: React.FC<{
     openPanel.track("book_bookmarked");
   };
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <>
       <AnimatePresence>
         {isOpen && (
@@ -255,6 +259,7 @@ export const BookDetailPanel: React.FC<{
           </>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body
   );
 };
