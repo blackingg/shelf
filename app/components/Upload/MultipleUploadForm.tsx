@@ -42,6 +42,7 @@ type FileStatusItem = {
   state: boolean;
   file: File;
   uploadStatus: UploadStatus;
+  errorMessage?: string;
 };
 
 type multFileContext = {
@@ -98,6 +99,18 @@ export default function MultipleUploadForm({
   const { addNotification } = useNotifications();
   const router = useRouter();
 
+  const [summaryModalState, setSummaryModalState] = useState<{
+    isOpen: boolean;
+    successCount: number;
+    failCount: number;
+    folderName?: string;
+    folderSlug?: string;
+  }>({
+    isOpen: false,
+    successCount: 0,
+    failCount: 0,
+  });
+
   const toArray = (fileList: FileList) => {
     return Array.from(fileList);
   };
@@ -118,6 +131,7 @@ export default function MultipleUploadForm({
     const shape_fake = await prepareForUpload(file);
     const shapeReal = {
       ...shape_fake,
+      title: shape_fake.title || file.name.replace(/\.[^/.]+$/, ""),
       book_file: file,
       department: "",
     };
@@ -128,13 +142,13 @@ export default function MultipleUploadForm({
     }
   };
 
-  const uploadIndividualItem = async (item: FileStatusItem) => {
+  const uploadIndividualItem = async (item: FileStatusItem): Promise<boolean> => {
     try {
       if (item.state === true) {
         // Mark as uploading
         updateFilesStatusObject((prev) =>
           prev.map((p) =>
-            p.id === item.id ? { ...p, uploadStatus: "uploading" } : p,
+            p.id === item.id ? { ...p, uploadStatus: "uploading", errorMessage: undefined } : p,
           ),
         );
 
@@ -152,27 +166,27 @@ export default function MultipleUploadForm({
         // Mark as success
         updateFilesStatusObject((prev) =>
           prev.map((p) =>
-            p.id === item.id ? { ...p, uploadStatus: "success" } : p,
+            p.id === item.id ? { ...p, uploadStatus: "success", errorMessage: undefined } : p,
           ),
         );
+        return true;
       } else {
         updateFilesStatusObject((prev) =>
           prev.map((p) =>
-            p.id === item.id ? { ...p, uploadStatus: "error" } : p,
+            p.id === item.id ? { ...p, uploadStatus: "error", errorMessage: "Missing or invalid metadata" } : p,
           ),
         );
-        addNotification(
-          `error`,
-          `${item.file.name} could not be uploaded. Reason: Missing or invalid metadata`,
-        );
+        return false;
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMsg = error?.response?.data?.message || error?.message || "Upload failed.";
       updateFilesStatusObject((prev) =>
         prev.map((p) =>
-          p.id === item.id ? { ...p, uploadStatus: "error" } : p,
+          p.id === item.id ? { ...p, uploadStatus: "error", errorMessage: errorMsg } : p,
         ),
       );
       console.error(error);
+      return false;
     }
   };
 
@@ -241,6 +255,7 @@ export default function MultipleUploadForm({
                 ),
                 formDataObject: parsedData as CreateBookRequest,
                 uploadStatus: "idle" as UploadStatus,
+                errorMessage: undefined,
               };
             }
             return item;
@@ -267,7 +282,7 @@ export default function MultipleUploadForm({
         (f) => f.uploadStatus !== "success",
       );
 
-      const results = await Promise.allSettled(
+      const results = await Promise.all(
         itemsToUpload.map((file) => uploadIndividualItem(file)),
       );
 
@@ -275,8 +290,8 @@ export default function MultipleUploadForm({
       let failCount = 0;
       const successfulIdentifiers = new Set<string>();
 
-      results.forEach((result, index) => {
-        if (result.status === "fulfilled") {
+      results.forEach((isSuccess, index) => {
+        if (isSuccess) {
           successCount++;
           const item = itemsToUpload[index];
           successfulIdentifiers.add(item.id);
@@ -285,35 +300,19 @@ export default function MultipleUploadForm({
         }
       });
 
-      if (failCount === 0 && successCount > 0) {
-        const targetFolder = folders.find((f) => f.id === targetFolderId);
+      const targetFolder = folders.find((f) => f.id === targetFolderId);
+      
+      setSummaryModalState({
+        isOpen: true,
+        successCount,
+        failCount,
+        folderName: targetFolder?.name,
+        folderSlug: targetFolder?.slug,
+      });
+
+      if (successCount > 0) {
         openPanel.track("bulk_upload_complete");
-        addNotification(
-          "success",
-          "Bulk Upload Complete",
-          targetFolder
-            ? `Successfully uploaded ${successCount} files and added them to your ${targetFolder.name} folder.`
-            : `Successfully uploaded all ${successCount} files to your library.`,
-          1200000,
-          targetFolder
-            ? `/folders/${targetFolder.slug}`
-            : "/library?tab=uploads",
-        );
-        updateFilesStatusObject([]);
-        updateFilesToBeUploaded([]);
-
-        const targetSlug = folders.find((f) => f.id === targetFolderId)?.slug;
-        if (targetSlug) {
-          router.push(`/folders/${targetSlug}`);
-        } else {
-          router.push("/library?tab=uploads");
-        }
-      } else if (successCount > 0) {
-        addNotification(
-          "warning",
-          `Uploaded ${successCount} files, but ${failCount} failed. Please check the errors.`,
-        );
-
+        
         updateFilesStatusObject((prev) =>
           prev.filter((item) => !successfulIdentifiers.has(item.id)),
         );
@@ -326,7 +325,7 @@ export default function MultipleUploadForm({
 
           const successfulFileFingerprints = new Set(
             itemsToUpload
-              .filter((_, index) => results[index].status === "fulfilled")
+              .filter((_, index) => results[index] === true)
               .map((item) => getFileFingerprint(item.file)),
           );
 
@@ -334,8 +333,6 @@ export default function MultipleUploadForm({
             (f) => !successfulFileFingerprints.has(getFileFingerprint(f)),
           );
         });
-      } else if (failCount > 0) {
-        addNotification("error", `Failed to upload ${failCount} files.`);
       }
     } catch (error) {
       addNotification("error", "An unexpected error occurred during upload.");
@@ -413,12 +410,13 @@ export default function MultipleUploadForm({
 
         <div className="space-y-4">
           {filesWithMetadataState.map(
-            ({ id, file, state, formDataObject, uploadStatus }) => (
+            ({ id, file, state, formDataObject, uploadStatus, errorMessage }) => (
               <FileToBeUploaded
                 key={id}
                 id={id}
                 file={file}
                 uploadStatus={uploadStatus}
+                errorMessage={errorMessage}
                 onDelete={() => {
                   const removedFromContext = filesWithMetadataState.filter(
                     (f) => f.id !== id,
@@ -477,6 +475,7 @@ function FileToBeUploaded({
   state,
   dataObj,
   uploadStatus,
+  errorMessage,
   categoryOptions,
   departmentOptions,
   isLoadingCategories,
@@ -488,6 +487,7 @@ function FileToBeUploaded({
   state: boolean;
   dataObj: CreateBookRequest;
   uploadStatus: UploadStatus;
+  errorMessage?: string;
   categoryOptions: any[];
   departmentOptions: any[];
   isLoadingCategories: boolean;
@@ -502,9 +502,7 @@ function FileToBeUploaded({
   const [formData, setFormData] = useState({
     title: dataObj.title || "",
     author: dataObj.author || "",
-    description: dataObj.description
-      ? processDescription(dataObj.description)
-      : "",
+    description: dataObj.description || "",
     publisher: dataObj.publisher || "",
     publishedYear: dataObj.publishedYear || "",
     isbn: dataObj.isbn || "",
@@ -518,25 +516,23 @@ function FileToBeUploaded({
   useEffect(() => {
     if (
       uploadStatus === "idle" &&
-      formData.title === file.name &&
-      dataObj.title !== file.name
+      (formData.title === file.name || formData.title === "")
     ) {
-      setFormData({
-        title: dataObj.title || "",
-        author: dataObj.author || "",
-        description: dataObj.description
-          ? processDescription(dataObj.description)
-          : "",
-        publisher: dataObj.publisher || "",
-        publishedYear: dataObj.publishedYear || "",
-        isbn: dataObj.isbn || "",
-        department: dataObj.department || user?.department?.id || "",
-        category: dataObj.category || "",
-        pages: dataObj.pages || 0,
-        tags: (dataObj.tags || []).join(", "),
-      });
+      setFormData((prev) => ({
+        title: dataObj.title || prev.title,
+        author: dataObj.author || prev.author,
+        description: dataObj.description || prev.description,
+        publisher: dataObj.publisher || prev.publisher,
+        publishedYear: dataObj.publishedYear || prev.publishedYear,
+        isbn: dataObj.isbn || prev.isbn,
+        department: dataObj.department || user?.department?.id || prev.department,
+        category: dataObj.category || prev.category,
+        pages: dataObj.pages || prev.pages,
+        tags: dataObj.tags?.length ? dataObj.tags.join(", ") : prev.tags,
+      }));
       setIsExpanded(!state);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadStatus, dataObj]);
 
   const isValid =
@@ -547,9 +543,7 @@ function FileToBeUploaded({
     formData.department.length >= 1 &&
     formData.pages > 0;
 
-  const handleUpdate = (e?: React.FormEvent) => {
-    e?.preventDefault();
-
+  useEffect(() => {
     updateFilesStatusObject((prev) =>
       prev.map((item) => {
         if (item.id === id) {
@@ -569,6 +563,10 @@ function FileToBeUploaded({
         return item;
       }),
     );
+  }, [formData, isValid, id, updateFilesStatusObject]);
+
+  const handleDone = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (isValid) setIsExpanded(false);
   };
 
@@ -630,7 +628,7 @@ function FileToBeUploaded({
                 <>
                   <span className="text-gray-200 dark:text-neutral-800">•</span>
                   <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest">
-                    Failed
+                    Failed {errorMessage ? `(${errorMessage})` : ""}
                   </span>
                 </>
               )}
@@ -685,7 +683,7 @@ function FileToBeUploaded({
       <div
         className={`${isExpanded ? "block" : "hidden"} p-6 bg-white dark:bg-neutral-900/50`}
       >
-        <form className="space-y-6" onSubmit={handleUpdate}>
+        <form className="space-y-6" onSubmit={handleDone}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-1">
               <Label>Title</Label>
@@ -803,7 +801,12 @@ function FileToBeUploaded({
               />
             </div>
             <div className="space-y-1">
-              <Label>Tags (Comma separated)</Label>
+              <div className="flex items-center justify-between">
+                <Label>Tags</Label>
+                <span className="text-[10px] text-gray-400 font-medium">
+                  Separate with commas
+                </span>
+              </div>
               <input
                 type="text"
                 className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
@@ -811,13 +814,12 @@ function FileToBeUploaded({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, tags: e.target.value }))
                 }
-                placeholder="engineering, exam, study-guide"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label>Description (Min. 10 chars)</Label>
+            <Label>Short Description</Label>
             <textarea
               rows={3}
               className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
@@ -850,11 +852,11 @@ function FileToBeUploaded({
           <div className="flex justify-end pt-2">
             <button
               type="button"
-              onClick={handleUpdate}
+              onClick={handleDone}
               disabled={!isValid}
               className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold uppercase tracking-widest hover:bg-primary dark:hover:bg-primary hover:text-primary-foreground transition-all rounded-sm disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-gray-900 dark:disabled:hover:bg-white"
             >
-              Update Metadata
+              Done
             </button>
           </div>
         </form>
