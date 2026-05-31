@@ -129,10 +129,8 @@ export const useAddBookToFolderMutation = () => {
   return useMutation({
     mutationFn: ({ folderId, bookId }: { folderId: string; bookId: string }) =>
       api.post(`/folders/${folderId}/books`, { bookId }),
-    onSuccess: (_, { folderId }) => {
-      // Only the specific folder's contents changed
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(folderId) });
-      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
@@ -142,10 +140,8 @@ export const useRemoveBookFromFolderMutation = () => {
   return useMutation({
     mutationFn: ({ id, bookId }: { id: string; bookId: string }) =>
       api.delete(`/folders/${id}/books/${bookId}`),
-    onSuccess: (_, { id }) => {
-      // Only the specific folder's contents changed
-      queryClient.invalidateQueries({ queryKey: folderKeys.detail(id) });
-      queryClient.invalidateQueries({ queryKey: ["folders", "slug"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderKeys.all });
     },
   });
 };
