@@ -93,9 +93,25 @@ body {
   padding-bottom: var(--safe-area-inset-bottom);
 }
 
+/* Prevent iOS Safari auto-zoom on focused inputs (triggered when font-size < 16px) */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+  touch-action: manipulation;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
 /* Standalone Specifics */
 @media (display-mode: standalone) {
   body {
     overscroll-behavior-y: none;
+    /* Prevent pull-to-refresh and bounce scroll in installed PWA */
+    overscroll-behavior: none;
   }
 }
