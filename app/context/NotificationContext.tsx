@@ -28,10 +28,17 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     type: NotificationType,
     message: string,
     description?: string,
+    // Long default is intentional: the popup toast auto-hides after a few
+    // seconds (via dismissedFromStack in NotificationItem), but the record is
+    // retained in the "System Alerts" section of the bell panel until the user
+    // clears it. Pass duration=0 to keep it until manually removed.
     duration = 1200000,
     actionLink?: string,
   ) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2, 11);
     const notification = {
       id,
       type,

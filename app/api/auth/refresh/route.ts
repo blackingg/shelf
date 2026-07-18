@@ -36,6 +36,15 @@ export async function POST(req: NextRequest) {
 
     const data = await backendRes.json();
 
+    if (!data?.accessToken || !data?.refreshToken) {
+      const response = NextResponse.json(
+        { detail: "Unexpected refresh response" },
+        { status: 401 },
+      );
+      clearAuthCookies(response);
+      return response;
+    }
+
     const response = NextResponse.json({ success: true }, { status: 200 });
     setAuthCookies(
       response,

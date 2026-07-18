@@ -24,7 +24,7 @@ import {
 } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { getErrorMessage } from "@/app/helpers/error";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useIsOwner } from "@/app/hooks/useIsOwner";
 
 export default function EditBookPage() {

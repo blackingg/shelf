@@ -7,16 +7,19 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import Cookies from "js-cookie";
 import { useUser } from "../services/user/hooks";
 import { useOpenPanel } from "@openpanel/nextjs";
+import { getActiveIdentity, setActiveIdentity } from "../lib/identity";
 
 const PERSIST_BASE_KEY = "shelf-query-cache";
 
+// NOTE: "user" is deliberately NOT persisted. The /users/me payload contains PII
+// (name, email, username); keeping it out of localStorage limits what an XSS
+// payload can read at rest. It stays in the in-memory cache only.
 const PERSISTED_QUERY_KEYS = [
   "categories",
   "departments",
   "discover",
   "folders",
   "books",
-  "user",
   "bookmarks",
   "onboarding",
 ];
@@ -27,6 +30,9 @@ function OpenPanelTracker() {
 
   useEffect(() => {
     if (me) {
+      // Keep the cache namespace pinned to this user (covers sessions that were
+      // already active before login recorded the identity).
+      setActiveIdentity(me.id);
       openPanel.identify({
         profileId: me.id,
         name: me.fullName,
@@ -43,10 +49,9 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   const token = typeof window !== "undefined" ? Cookies.get("accessToken") : undefined;
   const isAuthenticated = !!token;
 
-  // Derive a stable identity key from the token's first 10 chars (or "guest")
-  const identity = isAuthenticated
-    ? (token!.substring(0, 10))
-    : "guest";
+  // Namespace the persisted cache by a stable per-user identity (user id) rather
+  // than the access token, which rotates on every refresh. See lib/identity.ts.
+  const identity = isAuthenticated ? getActiveIdentity() : "guest";
 
   const currentPersistKey = `${PERSIST_BASE_KEY}-${identity}`;
 

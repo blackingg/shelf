@@ -39,8 +39,13 @@ export async function proxy(request: NextRequest) {
     PUBLIC_PATHS.includes(pathname) ||
     PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 
-  // Sensitive sub-routes are never public (e.g. /books/x/edit)
-  const isSensitive = SENSITIVE_SEGMENTS.some((s) => pathname.includes(s));
+  // Sensitive sub-routes are never public (e.g. /books/x/edit).
+  // Match whole path segments only — a plain `includes` would wrongly gate a
+  // public resource whose slug merely starts with these words
+  // (e.g. /books/read-me-first contains "/read").
+  const isSensitive = SENSITIVE_SEGMENTS.some(
+    (s) => pathname.endsWith(s) || pathname.includes(`${s}/`),
+  );
 
   if (!token && (!isPublic || isSensitive)) {
     const loginUrl = new URL("/auth/login", request.url);
