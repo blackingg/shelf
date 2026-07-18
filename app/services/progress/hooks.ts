@@ -79,7 +79,6 @@ export const useProgressActions = () => {
       deleteProgress: async (bookId: string) => {
         try {
           const res = await deleteMutation.mutateAsync(bookId);
-          console.error("Progress deleted:", res);
           return res;
         } catch (err: any) {
           console.error("Failed to reset progress:", err);

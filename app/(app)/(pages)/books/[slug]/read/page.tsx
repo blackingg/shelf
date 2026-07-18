@@ -26,23 +26,22 @@ function ReaderInitializer({
   progressData: any;
   handlePageChange: (page: number) => void;
 }) {
-  const { setIsInitialLoad } = useReader();
+  const { setIsInitialLoad, isReady } = useReader();
   const hasJumped = useRef(false);
 
   useEffect(() => {
     if (hasJumped.current) return;
 
-    if (progressData !== undefined) {
-      // Once progressData is resolved, we signal that the initial load phase is over.
-      // The viewers themselves use the initialPage prop to mount at the correct position.
-      const timer = setTimeout(() => {
-        hasJumped.current = true;
-        setIsInitialLoad(false);
-      }, 500); // Small delay to allow viewers to finish their first paint
-      return () => clearTimeout(timer);
+    // End the initial-load phase only once BOTH the saved progress has resolved
+    // AND the viewer reports it is ready (it has finished mounting and jumping to
+    // initialPage). Ending earlier on a fixed timer could let the progress syncer
+    // observe the pre-jump page and overwrite saved progress with page 1.
+    if (progressData !== undefined && isReady) {
+      hasJumped.current = true;
+      setIsInitialLoad(false);
     }
-    // If progressData is still undefined (loading), we wait — don't mark done yet
-  }, [progressData, setIsInitialLoad]);
+    // If progress is still loading or the viewer isn't ready, wait.
+  }, [progressData, isReady, setIsInitialLoad]);
 
   return null;
 }
