@@ -41,9 +41,9 @@ async function PDFPromise(buffer: ArrayBuffer) {
   };
 }
 
-export async function metadataParse(buffer: ArrayBuffer) {
-  const derivedType = await fileTypeFromBuffer(buffer);
-  if (derivedType?.ext === "epub") {
+export async function metadataParse(buffer: ArrayBuffer, ext?: string) {
+  const derivedExt = ext ?? (await fileTypeFromBuffer(buffer))?.ext;
+  if (derivedExt === "epub") {
     const bookDetails = Epub(buffer.slice(0));
     await generateLocations(bookDetails);
     const metadata = await bookDetails.loaded.metadata;
@@ -76,9 +76,9 @@ export async function metadataParse(buffer: ArrayBuffer) {
   }
 }
 
-export async function generatePhoto(buffer: ArrayBuffer) {
-  const derivedType = await fileTypeFromBuffer(buffer);
-  if (derivedType?.ext === "epub") {
+export async function generatePhoto(buffer: ArrayBuffer, ext?: string) {
+  const derivedExt = ext ?? (await fileTypeFromBuffer(buffer))?.ext;
+  if (derivedExt === "epub") {
     const picture = await extractEpubCover(buffer);
     return picture;
   } else {
@@ -90,9 +90,13 @@ export async function generatePhoto(buffer: ArrayBuffer) {
 export async function prepareForUpload(file: File) {
   const fileBuffer = await file.arrayBuffer();
 
+  // Derive the file type once and share it, instead of each helper re-sniffing
+  // the buffer independently.
+  const ext = (await fileTypeFromBuffer(fileBuffer))?.ext;
+
   const [photo, metaObj] = await Promise.all([
-    generatePhoto(fileBuffer),
-    metadataParse(fileBuffer),
+    generatePhoto(fileBuffer, ext),
+    metadataParse(fileBuffer, ext),
   ]);
 
   return {
