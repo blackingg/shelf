@@ -38,9 +38,20 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const errorData = error.response?.data as any;
 
-    // 1. Handle 401: Unauthorized (Token Expired)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Detect an expired/invalid access token. This backend (FastAPI HTTPBearer)
+    // returns 403 "Not authenticated" for a bad token, not 401 — so both must go
+    // through the refresh flow. Treating the 403 as an unrecoverable logout was
+    // dropping sessions on long-lived screens (e.g. onboarding) whenever the
+    // 1h access token expired, instead of transparently refreshing it.
+    const isAuthFailure =
+      error.response?.status === 401 ||
+      (error.response?.status === 403 &&
+        errorData?.detail === "Not authenticated");
+
+    // 1. Attempt a token refresh + retry once on auth failure.
+    if (isAuthFailure && !originalRequest._retry) {
       const hasToken = !!Cookies.get("accessToken");
 
       // If we don't even have a token, we are a guest. Just reject the error.
@@ -66,7 +77,7 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         }
 
-        // Refresh failed — only redirect if we were previously logged in
+        // Refresh failed — session is truly dead, send them to login.
         Cookies.remove("accessToken");
         window.location.href = getLoginPath();
         return Promise.reject(error);
@@ -79,18 +90,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // 2. Handle 403: Specific "Not authenticated" check
-    const errorData = error.response?.data as any;
-    if (
-      error.response?.status === 403 &&
-      errorData?.detail === "Not authenticated" &&
-      Cookies.get("accessToken") // Only redirect if they have a token that is presumably invalid
-    ) {
-      Cookies.remove("accessToken");
-      window.location.href = getLoginPath();
-    }
-
-    // 3. Process Error Message using helper
+    // 2. Process Error Message using helper
     const meaningfulMessage = getErrorMessage(error.response);
     
     // Create a new error with the meaningful message but keep original status
