@@ -185,7 +185,7 @@ export default function BookClient() {
                     <img
                       src={book.coverImage || "/dummycover.png"}
                       alt={book.title}
-                      className="object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
                 </motion.div>
@@ -220,7 +220,7 @@ export default function BookClient() {
                           size={18}
                         />
                         <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                          {book.rating?.toFixed(1) || "5.0"}
+                          {book.rating ? book.rating.toFixed(1) : "0.0"}
                         </span>
                       </div>
                     </div>

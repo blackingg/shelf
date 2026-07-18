@@ -7,7 +7,7 @@ import MultipleUploadForm, {
   MultipleFileProvider,
 } from "@/app/components/Upload/MultipleUploadForm";
 import SingleUploadForm from "@/app/components/Upload/SingleUploadForm";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export default function UploadPage() {
   const [mounted, setMounted] = useState(false);

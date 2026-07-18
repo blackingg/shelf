@@ -55,7 +55,9 @@ export function EpubViewer({
     const rendition = book.renderTo(viewRef.current, {
       width: "100%",
       height: "100%",
-      allowScriptedContent: true,
+      // EPUBs are arbitrary user-uploaded HTML/JS. Do NOT allow scripts to run
+      // inside the render iframe — it would be a stored-content execution vector.
+      allowScriptedContent: false,
       flow: "scrolled",
       manager: "continuous",
     });
@@ -71,7 +73,6 @@ export function EpubViewer({
     // Parse book structure
     Promise.all([book.ready, generateLocations(book)])
       .then(() => {
-        console.log(book);
         const total = book.locations.length();
         updateProgress(initialPage ?? 1, total);
         onPageDetails?.({ totalPages: total });
@@ -160,7 +161,12 @@ export function EpubViewer({
       rendition.destroy();
       book.destroy();
     };
-  }, [buffer, fontSize, themeName]);
+    // Only re-initialize when the book buffer changes. Font size and theme are
+    // applied incrementally by the dedicated effects below — including them here
+    // would destroy and rebuild the whole rendition on every tweak, losing
+    // scroll position and re-firing the "loaded" toast.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buffer]);
 
   // Update theme when changed in context
   useEffect(() => {

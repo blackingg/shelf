@@ -21,7 +21,7 @@ import {
   extractEpubCover,
   extractPdfCover,
 } from "@/app/helpers";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import Epub from "epubjs";
 import { PDFJSInfo } from "@/app/types/book";
 import { useGetMeQuery } from "@/app/services";

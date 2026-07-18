@@ -11,6 +11,17 @@ import {
 import { useNotifications } from "../../context/NotificationContext";
 import { userKeys } from "../user/hooks";
 import Cookies from "js-cookie";
+import { setActiveIdentity, clearActiveIdentity } from "../../lib/identity";
+
+const PERSIST_BASE_KEY = "shelf-query-cache";
+
+/** Removes all persisted React Query caches so no user data survives logout. */
+function purgePersistedCache() {
+  if (typeof window === "undefined") return;
+  Object.keys(window.localStorage)
+    .filter((k) => k.startsWith(PERSIST_BASE_KEY))
+    .forEach((k) => window.localStorage.removeItem(k));
+}
 
 export const useAuthActions = () => {
   const queryClient = useQueryClient();
@@ -30,6 +41,7 @@ export const useAuthActions = () => {
     onSuccess: (data) => {
       // Set the user data in the cache immediately to avoid fetch delay
       if (data.user) {
+        setActiveIdentity(data.user.id);
         queryClient.setQueryData(userKeys.me(), data.user);
       }
       queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -67,6 +79,7 @@ export const useAuthActions = () => {
       }),
     onSuccess: (data) => {
       if (data.user) {
+        setActiveIdentity(data.user.id);
         queryClient.setQueryData(userKeys.me(), data.user);
       }
       queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -85,6 +98,10 @@ export const useAuthActions = () => {
       // Cookies cleared by proxy. Clear client cache and reload.
       Cookies.remove("accessToken");
       queryClient.clear();
+      // Drop the persisted cache and identity so the next user on this device
+      // never inherits the previous user's cached data.
+      purgePersistedCache();
+      clearActiveIdentity();
       window.location.reload();
     },
   });

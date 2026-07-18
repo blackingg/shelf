@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/Form/Button";
-import { FiShield } from "react-icons/fi";
+import { FormInput } from "@/app/components/Form/FormInput";
+import { FiShield, FiMail, FiLock } from "react-icons/fi";
 import { useAuthActions } from "@/app/services";
 import { useNotifications } from "@/app/context/NotificationContext";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
@@ -68,30 +69,26 @@ export default function AdminLoginPage() {
 
         <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-8 rounded-md">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-widest px-1">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md px-4 py-3 text-gray-900 dark:text-white focus:border-primary outline-none transition-colors font-medium"
-                placeholder="example@shelf.ng"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-widest px-1">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md px-4 py-3 text-gray-900 dark:text-white focus:border-primary outline-none transition-colors font-medium"
-                placeholder="••••••••"
-              />
-            </div>
+            <FormInput
+              label="Email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              icon={<FiMail className="w-5 h-5" />}
+              placeholder="example@shelf.ng"
+              autoComplete="email"
+            />
+            <FormInput
+              label="Password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              icon={<FiLock className="w-5 h-5" />}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              showPasswordToggle
+            />
             <Button
               type="submit"
               isLoading={isLoginPending}

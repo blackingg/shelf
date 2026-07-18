@@ -23,6 +23,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(data, { status: backendRes.status });
     }
 
+    if (!data?.tokens?.accessToken || !data?.tokens?.refreshToken) {
+      return NextResponse.json(
+        { detail: "Unexpected authentication response" },
+        { status: 502 },
+      );
+    }
+
     const response = NextResponse.json(
       { user: data.user },
       { status: 201 },
