@@ -17,11 +17,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const { isAuthenticated } = useUser();
 
   return (
-    <header className="bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800 px-4 lg:px-8 py-4 sticky top-0 z-30 transition-colors duration-200">
-      <div className="flex items-center justify-between">
+    <header className="lg:bg-surface lg:border-b lg:border-line px-4 lg:px-8 safe-area-top sticky top-0 z-30 transition-colors duration-200">
+      <div className="flex items-center py-2 lg:py-4">
         <Suspense
           fallback={
-            <div className="hidden lg:block w-96 lg:w-160 h-[50px] bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl" />
+            <div className="hidden lg:block w-96 lg:w-160 h-[50px] bg-inset border border-line rounded-xl" />
           }
         >
           <SearchBar
@@ -30,9 +30,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           />
         </Suspense>
 
-        <div className="flex items-center lg:space-x-4 space-x-2">
+        <div className="flex items-center lg:space-x-4 ml-auto">
           {isAuthenticated && <NotificationPanel />}
-          <UserProfileDropdown />
+          <div className="hidden lg:block">
+            <UserProfileDropdown />
+          </div>
         </div>
       </div>
     </header>
