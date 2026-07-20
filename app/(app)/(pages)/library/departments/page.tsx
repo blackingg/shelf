@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   DepartmentCard,
@@ -9,9 +9,8 @@ import UserDepartmentBooks from "@/app/components/Department/UserDepartmentBooks
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { useDepartments, useUser } from "@/app/services";
 import { useGetSchoolsQuery } from "@/app/services/onboarding";
-import { motion, AnimatePresence } from "motion/react";
 import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
-import { FiFilter, FiChevronDown, FiList, FiX } from "react-icons/fi";
+import { FiBriefcase, FiGrid } from "react-icons/fi";
 
 export default function DepartmentsPage() {
   const router = useRouter();
@@ -22,9 +21,6 @@ export default function DepartmentsPage() {
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
   const { data: schools = [] } = useGetSchoolsQuery();
 
-  const isGalleryView = searchParams.get("view") === "gallery";
-  const viewDepartments = !isAuthenticated || isGalleryView;
-
   const { departments: allDepartments, isLoading: isDepartmentsLoading } =
     useDepartments(selectedSchoolId ? { school_id: selectedSchoolId } : {});
 
@@ -33,6 +29,10 @@ export default function DepartmentsPage() {
   );
   const userDepartmentName = user?.department?.name;
   const userDepartmentSlug = userDepartment?.slug || null;
+
+  // Users without a department (and guests) only ever see the full list
+  const hasOwnTab = isAuthenticated && !!userDepartmentName;
+  const showAll = !hasOwnTab || searchParams.get("view") === "gallery";
 
   useEffect(() => {
     if (!isUserLoading && user?.school?.id && !selectedSchoolId) {
@@ -46,118 +46,105 @@ export default function DepartmentsPage() {
     10,
   );
 
-  const toggleViewDepartments = () => {
-    if (!isAuthenticated) return;
+  const selectTab = (tab: "mine" | "all") => {
     const params = new URLSearchParams(searchParams.toString());
-    if (isGalleryView) {
-      params.delete("view");
-    } else {
+    if (tab === "all") {
       params.set("view", "gallery");
+    } else {
+      params.delete("view");
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   };
+
+  const tabs = [
+    { id: "mine" as const, label: "My Department", icon: FiBriefcase },
+    { id: "all" as const, label: "All Departments", icon: FiGrid },
+  ];
+  const activeTab = showAll ? "all" : "mine";
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="p-8 md:p-12">
+      <div className="p-4 md:p-12">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-            <div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-2">
-                Departments
-              </h1>
-              {userDepartmentName ? (
-                <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
-                  Browse resources by your school's department
-                </p>
-              ) : (
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                  Browse resources available, filter by school to find your
-                  department's resources
-                </p>
-              )}
-            </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-10">
+            <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tighter">
+              Departments
+            </h1>
 
-            <div className="flex flex-col sm:flex-row items-start lg:items-center gap-4">
-              {!isUserLoading && !isAuthenticated && (
-                <SortFilter
-                  value={selectedSchoolId}
-                  onValueChange={setSelectedSchoolId}
-                  options={[
-                    { value: "", label: "All Schools" },
-                    ...schools.map((school) => ({
-                      value: school.id,
-                      label: school.name,
-                    })),
-                  ]}
-                  labelPrefix="School:"
-                  className="w-full sm:w-auto"
-                />
-              )}
-
-              {!isUserLoading && isAuthenticated && (
-                <button
-                  onClick={toggleViewDepartments}
-                  className="flex items-center gap-3 px-6 py-3.5 bg-gray-50/50 dark:bg-neutral-900/40 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md border border-gray-100 dark:border-neutral-800 transition-all group w-full sm:w-auto justify-center sm:justify-start"
-                >
-                  {!viewDepartments ? (
-                    <FiList className="w-4 h-4 text-primary transition-transform" />
-                  ) : (
-                    <FiX className="w-4 h-4 text-primary" />
-                  )}
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-primary transition-colors">
-                    {!viewDepartments ? "Explore All" : "Close Gallery"}
-                  </span>
-                </button>
-              )}
-            </div>
+            {showAll && (
+              <SortFilter
+                value={selectedSchoolId}
+                onValueChange={setSelectedSchoolId}
+                options={[
+                  { value: "", label: "All Schools" },
+                  ...schools.map((school) => ({
+                    value: school.id,
+                    label: school.name,
+                  })),
+                ]}
+                labelPrefix="School:"
+                className="w-full sm:w-auto"
+              />
+            )}
           </div>
 
-          <AnimatePresence>
-            {viewDepartments && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                {isDepartmentsLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
-                    {Array.from({ length: departmentSkeletonCount }).map(
-                      (_, i) => (
-                        <DepartmentCardSkeleton key={i} />
-                      ),
-                    )}
-                  </div>
-                ) : allDepartments.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
-                    {allDepartments.map((department) => (
-                      <DepartmentCard
-                        key={department.id}
-                        department={department}
-                        onClick={() =>
-                          router.push(`/library/departments/${department.slug}`)
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="h-[40vh] bg-gray-50/30 dark:bg-neutral-900/10 p-12 md:p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center mb-20">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-                      No departments found for this selection.
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {userDepartmentName && (
-            <div className="pt-8 md:pt-12 border-t border-gray-100 dark:border-neutral-800/50">
-              <UserDepartmentBooks
-                departmentSlug={userDepartmentSlug}
-                departmentName={userDepartmentName}
-              />
+          {hasOwnTab && (
+            <div className="flex gap-1 mb-6 md:mb-10 overflow-x-auto no-scrollbar">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => selectTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-150 shrink-0 ${
+                      isActive
+                        ? "bg-gray-100 dark:bg-white/5 text-foreground"
+                        : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
+          )}
+
+          {showAll ? (
+            isDepartmentsLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
+                {Array.from({ length: departmentSkeletonCount }).map((_, i) => (
+                  <DepartmentCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : allDepartments.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
+                {allDepartments.map((department) => (
+                  <DepartmentCard
+                    key={department.id}
+                    department={department}
+                    onClick={() =>
+                      router.push(`/library/departments/${department.slug}`)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="h-[40vh] bg-gray-50/30 dark:bg-neutral-900/10 p-8 md:p-16 rounded-md border border-line-subtle text-center flex flex-col items-center justify-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-faint">
+                  No departments found for this selection.
+                </p>
+              </div>
+            )
+          ) : (
+            <UserDepartmentBooks
+              departmentSlug={userDepartmentSlug}
+              departmentName={userDepartmentName!}
+            />
           )}
         </div>
       </div>
