@@ -3,19 +3,58 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
   --primary: #072c0b;
   --primary-foreground: #ffffff;
+
+  /* Surfaces */
+  --background: #ffffff; /* page canvas */
+  --surface: #ffffff; /* fixed chrome: sidebar, headers, tab bar, sheets */
+  --inset: #f9fafb; /* sunken fields: inputs, search */
+  --wash: #f9fafb; /* hover wash */
+  --pressed: #f3f4f6; /* touch pressed state */
+
+  /* Borders */
+  --line: #e5e7eb; /* structural borders */
+  --line-subtle: #f3f4f6; /* hairline separators */
+
+  /* Text */
+  --foreground: #111827; /* high-contrast text */
+  --muted: #6b7280; /* secondary text */
+  --faint: #9ca3af; /* metadata, placeholders */
+
+  /* Status */
+  --danger: #dc2626;
+  --danger-wash: #fef2f2;
+
+  /* Type indicators (same in both schemes) */
+  --kind-book: #3b82f6;
+  --kind-folder: #facc15;
+  --kind-user: #a855f7;
+
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
   --primary: #d0fdc2;
   --primary-foreground: #072c0b;
+
+  --background: #171717;
+  --surface: #0a0a0a;
+  --inset: #171717;
+  --wash: rgb(255 255 255 / 0.05);
+  --pressed: rgb(255 255 255 / 0.1);
+
+  --line: #262626;
+  --line-subtle: #262626;
+
+  --foreground: #ffffff;
+  --muted: #a3a3a3;
+  --faint: #737373;
+
+  --danger: #f87171;
+  --danger-wash: rgb(127 29 29 / 0.1);
 }
 
 @theme inline {
@@ -23,6 +62,19 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-surface: var(--surface);
+  --color-inset: var(--inset);
+  --color-wash: var(--wash);
+  --color-pressed: var(--pressed);
+  --color-line: var(--line);
+  --color-line-subtle: var(--line-subtle);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-kind-book: var(--kind-book);
+  --color-kind-folder: var(--kind-folder);
+  --color-kind-user: var(--kind-user);
 
   /* --color-emerald-50: #f0fdf9;
   --color-emerald-100: #ccfbf0;
@@ -82,6 +134,17 @@ body {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Mobile: never show scrollbars — except the reader, which keeps its
+   scrollbar as a reading-progress cue */
+@media (max-width: 1023px) {
+  *:not(.reader-scroll) {
+    scrollbar-width: none;
+  }
+  *:not(.reader-scroll)::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Safe Area Utility Classes */

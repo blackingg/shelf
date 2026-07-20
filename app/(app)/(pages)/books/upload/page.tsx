@@ -36,14 +36,14 @@ export default function UploadPage() {
   };
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
+    <label className="text-[11px] uppercase font-semibold tracking-wider text-faint mb-2 block">
       {children}
     </label>
   );
 
   if (isAuthLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+      <div className="flex-1 flex items-center justify-center bg-background border-l border-line-subtle">
         <div className="flex flex-col items-center gap-3">
           <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -56,7 +56,7 @@ export default function UploadPage() {
 
   if (!isAuthorized) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+      <div className="flex-1 flex flex-col items-center justify-center bg-background border-l border-line-subtle">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -64,7 +64,7 @@ export default function UploadPage() {
         >
           <div className="flex items-center gap-3 mb-8">
             <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl font-medium text-foreground tracking-tight">
               Administrative Access
             </h1>
           </div>
@@ -83,7 +83,7 @@ export default function UploadPage() {
                   className={`w-full pl-4 pr-12 py-3 bg-transparent border ${
                     authError
                       ? "border-red-500"
-                      : "border-gray-200 dark:border-neutral-800"
+                      : "border-line"
                   } text-sm outline-none focus:border-emerald-500 transition-all`}
                   placeholder="••••••••"
                   required
@@ -113,7 +113,7 @@ export default function UploadPage() {
   return (
     <MultipleFileProvider>
       {!multiplesList && !isBulkMode ? (
-        <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-background border-l border-line-subtle overflow-y-auto">
           <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
             <SingleUploadForm
               onSwitchToBulk={(files) => {
@@ -144,12 +144,12 @@ function BulkUploadView({
   multiplesList: FileList | null;
 }) {
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-background border-l border-line-subtle overflow-y-auto">
       <div className="p-6 md:p-12 max-w-4xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-neutral-800 pb-6">
+        <div className="flex items-center justify-between mb-8 border-b border-line-subtle pb-6">
           <div className="flex items-center gap-3">
             <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+            <h1 className="text-3xl font-medium text-foreground tracking-tight">
               Bulk Upload
             </h1>
           </div>

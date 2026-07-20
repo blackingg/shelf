@@ -51,7 +51,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     success: (
       <FiCheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
     ),
-    error: <FiXCircle className="w-5 h-5 text-red-600 dark:text-red-400" />,
+    error: <FiXCircle className="w-5 h-5 text-danger" />,
     warning: (
       <FiAlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
     ),
@@ -60,11 +60,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
   const colors = {
     success:
-      "bg-white dark:bg-neutral-900 border-emerald-100 dark:border-emerald-900/50",
-    error: "bg-white dark:bg-neutral-900 border-red-100 dark:border-red-900/50",
+      "bg-background border-emerald-100 dark:border-emerald-900/50",
+    error: "bg-background border-red-100 dark:border-red-900/50",
     warning:
-      "bg-white dark:bg-neutral-900 border-amber-100 dark:border-amber-900/50",
-    info: "bg-white dark:bg-neutral-900 border-blue-100 dark:border-blue-900/50",
+      "bg-background border-amber-100 dark:border-amber-900/50",
+    info: "bg-background border-blue-100 dark:border-blue-900/50",
   };
 
   // Apply scale/opacity/offset to stack notifications
@@ -121,11 +121,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           {icons[notification.type]}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-gray-900 dark:text-white leading-tight uppercase tracking-wider truncate">
+          <p className="text-xs font-bold text-foreground leading-tight uppercase tracking-wider truncate">
             {notification.message}
           </p>
           {notification.description && (
-            <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1 leading-relaxed line-clamp-2">
+            <p className="text-[10px] text-muted mt-1 leading-relaxed line-clamp-2">
               {notification.description}
             </p>
           )}
@@ -133,7 +133,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         {stackIndex === 0 && (
           <button
             onClick={handleClose}
-            className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-400 dark:text-neutral-500 transition-colors"
+            className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 text-faint transition-colors"
           >
             <FiX className="w-4 h-4" />
           </button>

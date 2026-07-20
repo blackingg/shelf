@@ -99,7 +99,7 @@ export function ReaderLayout({
           className={`flex-1 w-full mx-auto cursor-text transition-all duration-300 ${
             format === "pdf" || format === "epub"
               ? "overflow-hidden"
-              : "overflow-y-auto px-6 py-8 md:py-16 custom-scrollbar"
+              : "overflow-y-auto px-6 py-8 md:py-16 custom-scrollbar reader-scroll"
           } ${contentShrink ? "md:pr-80" : ""} ${shouldPushContentForTableOfContents ? "md:pl-80" : ""}`}
           onClick={() => setShowControls(!showControls)}
         >

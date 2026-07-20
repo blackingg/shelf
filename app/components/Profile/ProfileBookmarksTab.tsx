@@ -60,8 +60,8 @@ export const ProfileBookmarksTab: React.FC<ProfileBookmarksTabProps> = ({
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                 isActive
-                  ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-gray-100 dark:bg-white/5 text-foreground"
+                  : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -69,7 +69,7 @@ export const ProfileBookmarksTab: React.FC<ProfileBookmarksTabProps> = ({
                 className={`ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                   isActive
                     ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
-                    : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
+                    : "bg-gray-100 dark:bg-neutral-800 text-muted"
                 }`}
               >
                 {tab.count}

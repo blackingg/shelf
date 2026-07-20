@@ -13,10 +13,10 @@ export default function AdminNotFound() {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-3xl font-medium text-foreground tracking-tight">
                 Resource Not Found
               </h1>
-              <p className="text-gray-500 dark:text-neutral-400 font-medium">
+              <p className="text-muted font-medium">
                 The administrative page or record you are looking for does not
                 exist or has been moved.
               </p>

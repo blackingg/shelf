@@ -46,19 +46,19 @@ export default function UserDepartmentBooks({
   }, [sortBy, order, departmentSlug, pageSize, debouncedSearch]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       <div>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 shrink-0 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70 flex items-center justify-center">
             <FaBuilding className={`w-3.5 h-3.5 ${departmentIconColor}`} />
           </div>
-          <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
             {departmentName ? `Books in ${departmentName}` : "Department Books"}
           </h2>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-4 border-b border-gray-100 dark:border-neutral-800">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-4 border-b border-line-subtle">
         <div className="relative w-full md:w-96 group">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
           <input
@@ -66,7 +66,7 @@ export default function UserDepartmentBooks({
             placeholder="Search within department..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-gray-50/30 dark:bg-neutral-900/40 border border-transparent focus:border-primary/30 rounded-md outline-none text-gray-900 dark:text-white transition-all text-sm font-medium tracking-tight"
+            className="w-full pl-12 pr-4 py-3 bg-gray-50/30 dark:bg-neutral-900/40 border border-transparent focus:border-primary/30 rounded-md outline-none text-foreground transition-all text-sm font-medium tracking-tight"
           />
         </div>
 
@@ -84,7 +84,7 @@ export default function UserDepartmentBooks({
           />
           <button
             onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-            className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
+            className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-line-subtle text-muted hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
             title={order === "asc" ? "Ascending" : "Descending"}
           >
             <span className="text-sm font-bold">

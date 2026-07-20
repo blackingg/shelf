@@ -26,16 +26,16 @@ export default function ModeratorBookDetailPage() {
       </button>
 
       <section className="flex flex-col md:flex-row gap-10">
-        <div className="w-48 h-64 flex-shrink-0 bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden">
+        <div className="w-48 h-64 flex-shrink-0 bg-gray-50 dark:bg-neutral-900 border border-line-subtle rounded-md overflow-hidden">
           <img src={book.coverImage || "/dummycover.png"} className="w-full h-full object-cover" alt={book.title} />
         </div>
         
         <div className="flex-1 space-y-6">
           <div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white leading-tight">
+            <h1 className="text-3xl font-medium text-foreground leading-tight">
               {book.title}
             </h1>
-            <p className="text-lg text-gray-500 dark:text-neutral-400">{book.author}</p>
+            <p className="text-lg text-muted">{book.author}</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -48,7 +48,7 @@ export default function ModeratorBookDetailPage() {
             </Link>
             <Link 
               href={`/moderator/books/${book.id}/edit`}
-              className="flex items-center gap-2 px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-xs font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-background border border-line-subtle text-gray-600 dark:text-neutral-300 rounded-md text-xs font-bold uppercase tracking-widest hover:bg-wash transition-colors"
             >
               <FiEdit3 />
               <span>Edit Metadata</span>
@@ -80,7 +80,7 @@ export default function ModeratorBookDetailPage() {
 
       <div className="space-y-6 pt-10 border-t border-gray-50 dark:border-neutral-800">
         <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Description</h3>
-        <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm text-muted leading-relaxed whitespace-pre-wrap">
           {book.description || "No description provided."}
         </p>
       </div>
@@ -93,7 +93,7 @@ function MetaItem({ label, value, icon }: { label: string; value: any; icon: any
     <div className="flex items-center gap-3 text-sm">
       <span className="text-gray-300 dark:text-neutral-700">{icon}</span>
       <span className="text-gray-500 dark:text-neutral-500 font-medium w-24">{label}:</span>
-      <span className="text-gray-900 dark:text-white">{value || "-"}</span>
+      <span className="text-foreground">{value || "-"}</span>
     </div>
   );
 }

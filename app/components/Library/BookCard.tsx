@@ -90,7 +90,7 @@ export const BookCard: React.FC<BookCardProps> = ({
               className={`p-1.5 rounded-sm transition-all duration-200 ${
                 isBookmarked
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-primary hover:text-white border border-gray-100 dark:border-white/5"
+                  : "bg-white/90 dark:bg-neutral-800/90 text-muted hover:bg-primary hover:text-white border border-gray-100 dark:border-white/5"
               }`}
               title={isBookmarked ? "Remove Bookmark" : "Bookmark Book"}
             >
@@ -109,7 +109,7 @@ export const BookCard: React.FC<BookCardProps> = ({
                       e.stopPropagation();
                       setShowMenu(!showMenu);
                     }}
-                    className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                    className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-muted border border-gray-100 dark:border-white/5"
                   >
                     <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
                   </button>
@@ -122,14 +122,14 @@ export const BookCard: React.FC<BookCardProps> = ({
                           setShowMenu(false);
                         }}
                       />
-                      <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-md border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                      <div className="absolute right-0 mt-1 w-36 bg-background rounded-md border border-line py-1 z-20 shadow-lg">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             if (id) onEdit?.(id);
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-wash"
                         >
                           Edit
                         </button>
@@ -139,7 +139,7 @@ export const BookCard: React.FC<BookCardProps> = ({
                             if (id) onDelete?.(id);
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                          className="w-full px-3 py-2 text-left text-xs text-danger hover:bg-danger-wash"
                         >
                           Delete
                         </button>
@@ -157,7 +157,7 @@ export const BookCard: React.FC<BookCardProps> = ({
                             }
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2"
                         >
                           <FiShare2 className="w-3 h-3" />
                           <span>Share</span>
@@ -180,7 +180,7 @@ export const BookCard: React.FC<BookCardProps> = ({
                       addNotification("success", "Link copied to clipboard");
                     }
                   }}
-                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-md transition-colors text-muted border border-gray-100 dark:border-white/5"
                   title="Share Resource"
                 >
                   <FiShare2 className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
@@ -193,14 +193,14 @@ export const BookCard: React.FC<BookCardProps> = ({
       <h3 className="font-medium text-gray-900 dark:text-neutral-100 text-sm line-clamp-1 mb-0.5">
         {title}
       </h3>
-      <p className="text-[10px] text-gray-500 dark:text-neutral-400 line-clamp-1 font-medium uppercase tracking-wider">
+      <p className="text-[10px] text-muted line-clamp-1 font-medium uppercase tracking-wider">
         {author}
       </p>
       {donor?.username && (
         <Link
           href={`/profile/${encodeURIComponent(donor.username.replace(/\s+/g, ""))}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-[10px] text-gray-400 dark:text-neutral-500 mt-0.5 block truncate"
+          className="text-[10px] text-faint mt-0.5 block truncate"
         >
           Donated by
           <span className="ml-1 underline-offset-2 hover:underline">
@@ -221,7 +221,7 @@ export const BookCard: React.FC<BookCardProps> = ({
 export function SingleBookCardSkeleton() {
   return (
     <div className="w-full">
-      <div className="h-64 md:h-72 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 mb-3 animate-pulse" />
+      <div className="h-64 md:h-72 rounded-md bg-gray-100 dark:bg-neutral-800 border border-line-subtle mb-3 animate-pulse" />
       <div className="space-y-2">
         <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded-md w-4/5 animate-pulse" />
         <div className="h-3 bg-gray-50 dark:bg-neutral-800/50 rounded-md w-2/5 animate-pulse" />

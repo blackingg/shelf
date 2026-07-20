@@ -14,7 +14,7 @@ export function ProfileCardSkeleton({ count = 1 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="animate-pulse flex flex-col items-center p-4 rounded-md border border-gray-100 dark:border-neutral-800"
+          className="animate-pulse flex flex-col items-center p-4 rounded-md border border-line-subtle"
         >
           <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-neutral-700 mb-3" />
           <div className="h-4 w-24 bg-gray-200 dark:bg-neutral-700 rounded-sm" />
@@ -29,7 +29,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ user, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center p-4 rounded-md border border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors text-center"
+      className="flex flex-col items-center p-4 rounded-md border border-line-subtle hover:bg-wash cursor-pointer transition-colors text-center"
     >
       <div className="w-16 h-16 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
         {user.avatar ? (
@@ -45,10 +45,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ user, onClick }) => {
         )}
       </div>
 
-      <span className="text-sm font-medium text-gray-900 dark:text-white truncate w-full">
+      <span className="text-sm font-medium text-foreground truncate w-full">
         {user.fullName}
       </span>
-      <span className="text-xs text-gray-500 dark:text-neutral-400 truncate w-full mt-0.5">
+      <span className="text-xs text-muted truncate w-full mt-0.5">
         @{user.username}
       </span>
     </button>

@@ -337,7 +337,7 @@ export default function SingleUploadForm({
     Number(formData.pages) > 0;
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
+    <label className="text-[11px] uppercase font-semibold tracking-wider text-faint mb-2 block">
       {children}
     </label>
   );
@@ -348,7 +348,7 @@ export default function SingleUploadForm({
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+            <h1 className="text-3xl font-medium text-foreground tracking-tight">
               Upload Resources
             </h1>
           </div>
@@ -379,7 +379,7 @@ export default function SingleUploadForm({
               className={`flex items-center gap-2 px-4 py-2 border ${
                 step === i + 1
                   ? "border-primary text-primary"
-                  : "border-gray-200 dark:border-neutral-800 text-gray-400"
+                  : "border-line text-gray-400"
               } transition-all duration-300`}
             >
               <span className="text-xs font-bold uppercase tracking-widest">
@@ -422,7 +422,7 @@ export default function SingleUploadForm({
                     className={`h-48 border border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
                       dragActiveBook
                         ? "border-emerald-500 bg-emerald-50/20"
-                        : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                        : "border-line hover:border-emerald-500"
                     }`}
                   >
                     {isExtractingMetadata ? (
@@ -436,7 +436,7 @@ export default function SingleUploadForm({
                       <div className="flex items-center gap-4 px-6 text-center">
                         <FiCheck className="text-emerald-500 text-xl" />
                         <div className="text-left">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                          <p className="text-sm font-medium text-foreground truncate max-w-[150px]">
                             {bookFile.name}
                           </p>
                           <p className="text-[10px] text-gray-400 uppercase">
@@ -477,7 +477,7 @@ export default function SingleUploadForm({
                   />
                   <div
                     onClick={() => !coverFile && coverInputRef.current?.click()}
-                    className={`group relative h-48 border border-gray-200 dark:border-neutral-800 transition-all overflow-hidden flex items-center justify-center ${
+                    className={`group relative h-48 border border-line transition-all overflow-hidden flex items-center justify-center ${
                       !coverFile
                         ? "cursor-pointer hover:border-emerald-500"
                         : ""
@@ -510,7 +510,7 @@ export default function SingleUploadForm({
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
+              <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-line-subtle">
                 <div className="space-y-1.5">
                   <Label>Title</Label>
                   <input
@@ -520,7 +520,7 @@ export default function SingleUploadForm({
                     }
                     placeholder="Resource Title"
                     required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -532,7 +532,7 @@ export default function SingleUploadForm({
                     }
                     placeholder="Author Name"
                     required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                   />
                 </div>
                 <FormSelect<any, false>
@@ -581,7 +581,7 @@ export default function SingleUploadForm({
                     }
                     placeholder="0"
                     required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-sm"
                   />
                 </div>
                 <FolderSelectDropdown
@@ -602,13 +602,13 @@ export default function SingleUploadForm({
                     }
                     placeholder="Provide a brief summary of the book (min. 10 characters)..."
                     required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800">
+            <div className="flex justify-end pt-8 border-t border-line-subtle">
               <Button
                 type="submit"
                 isLoading={isUploading}
@@ -652,7 +652,7 @@ export default function SingleUploadForm({
                         })
                       }
                       placeholder="e.g. Pearson"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -667,7 +667,7 @@ export default function SingleUploadForm({
                         })
                       }
                       placeholder="e.g. 2024"
-                      className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                      className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                     />
                   </div>
                 </div>
@@ -680,7 +680,7 @@ export default function SingleUploadForm({
                       setFormData({ ...formData, isbn: e.target.value })
                     }
                     placeholder="e.g. 978-3-16-148410-0"
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                   />
                 </div>
 
@@ -697,14 +697,14 @@ export default function SingleUploadForm({
                       setFormData({ ...formData, tags: e.target.value })
                     }
                     placeholder="e.g. biology, exam-prep, textbook"
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-6">
                 <Label>Summary Review</Label>
-                <div className="flex-1 p-8 bg-gray-50/50 dark:bg-neutral-800/30 border border-gray-100 dark:border-neutral-800 relative overflow-hidden group">
+                <div className="flex-1 p-8 bg-gray-50/50 dark:bg-neutral-800/30 border border-line-subtle relative overflow-hidden group">
                   <div className="relative z-10 space-y-6">
                     <div className="flex gap-6">
                       <div className="w-24 aspect-2/3 bg-gray-200 dark:bg-neutral-800 shrink-0 overflow-hidden shadow-2xl">
@@ -717,7 +717,7 @@ export default function SingleUploadForm({
                         )}
                       </div>
                       <div className="space-y-2">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
+                        <h3 className="text-lg font-bold text-foreground leading-tight">
                           {formData.title || "Untitled Resource"}
                         </h3>
                         <p className="text-emerald-500 text-xs font-bold uppercase tracking-wider">
@@ -735,7 +735,7 @@ export default function SingleUploadForm({
                         <span className="text-gray-400 uppercase font-bold tracking-widest">
                           Pages
                         </span>
-                        <span className="text-gray-900 dark:text-white font-medium">
+                        <span className="text-foreground font-medium">
                           {formData.pages || "0"}
                         </span>
                       </div>
@@ -743,7 +743,7 @@ export default function SingleUploadForm({
                         <span className="text-gray-400 uppercase font-bold tracking-widest">
                           Publisher
                         </span>
-                        <span className="text-gray-900 dark:text-white font-medium">
+                        <span className="text-foreground font-medium">
                           {formData.publisher || "Not specified"}
                         </span>
                       </div>
@@ -754,7 +754,7 @@ export default function SingleUploadForm({
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-8 border-t border-gray-100 dark:border-neutral-800">
+            <div className="flex items-center justify-between pt-8 border-t border-line-subtle">
               <button
                 type="button"
                 onClick={() => setStep(1)}

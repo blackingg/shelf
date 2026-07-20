@@ -2,7 +2,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto py-16 px-6">
       <div className="mb-12">
-        <h1 className="text-4xl font-medium text-gray-900 dark:text-white mb-2 tracking-tight">
+        <h1 className="text-4xl font-medium text-foreground mb-2 tracking-tight">
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
 
       <div className="space-y-12">
         <section>
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
+          <h2 className="text-xl font-medium text-foreground mb-4">
             1. Information We Collect
           </h2>
           <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
+          <h2 className="text-xl font-medium text-foreground mb-4">
             2. How We Use Information
           </h2>
           <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
+          <h2 className="text-xl font-medium text-foreground mb-4">
             3. Data Security
           </h2>
           <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">

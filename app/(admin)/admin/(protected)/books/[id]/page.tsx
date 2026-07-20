@@ -27,7 +27,7 @@ export default function AdminBookDetailPage() {
       </button>
 
       <section className="flex flex-col md:flex-row gap-10">
-        <div className="w-48 h-64 flex-shrink-0 bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden relative group">
+        <div className="w-48 h-64 flex-shrink-0 bg-gray-50 dark:bg-neutral-900 border border-line-subtle rounded-md overflow-hidden relative group">
           <img src={book.coverImage || "/dummycover.png"} className="w-full h-full object-cover" alt={book.title} />
           <div className="absolute top-2 left-2 px-2 py-0.5 bg-red-600 text-white text-[8px] font-medium uppercase tracking-tighter rounded-md">
             System Resource
@@ -40,10 +40,10 @@ export default function AdminBookDetailPage() {
               <FiShield />
               <span>Admin Override Access</span>
             </div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white leading-tight">
+            <h1 className="text-3xl font-medium text-foreground leading-tight">
               {book.title}
             </h1>
-            <p className="text-lg text-gray-500 dark:text-neutral-400">{book.author}</p>
+            <p className="text-lg text-muted">{book.author}</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -89,7 +89,7 @@ export default function AdminBookDetailPage() {
 
       <div className="space-y-6 pt-10 border-t border-gray-50 dark:border-neutral-800">
         <h3 className="text-xs font-medium uppercase tracking-widest text-gray-400">Content Description</h3>
-        <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm text-muted leading-relaxed whitespace-pre-wrap">
           {book.description || "No description provided."}
         </p>
       </div>
@@ -100,9 +100,9 @@ export default function AdminBookDetailPage() {
 function MetaItem({ label, value, icon }: { label: string; value: any; icon: any }) {
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="text-gray-400 dark:text-neutral-600">{icon}</span>
+      <span className="text-faint">{icon}</span>
       <span className="text-gray-500 dark:text-neutral-500 font-medium w-28">{label}:</span>
-      <span className="text-gray-900 dark:text-white font-mono text-[11px]">{value || "-"}</span>
+      <span className="text-foreground font-mono text-[11px]">{value || "-"}</span>
     </div>
   );
 }

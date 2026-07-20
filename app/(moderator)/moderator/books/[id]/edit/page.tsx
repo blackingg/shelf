@@ -164,7 +164,7 @@ export default function ModeratorEditBookPage() {
   };
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
+    <label className="text-[11px] uppercase font-semibold tracking-wider text-faint mb-2 block">
       {children}
     </label>
   );
@@ -182,10 +182,10 @@ export default function ModeratorEditBookPage() {
       </button>
 
       <div className="mb-10">
-        <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h1 className="text-2xl font-medium text-foreground mb-1">
           Edit Resource Metadata
         </h1>
-        <p className="text-sm text-gray-500 dark:text-neutral-400 italic">
+        <p className="text-sm text-muted italic">
           Moderator Review Mode — Editing "{book?.title}"
         </p>
       </div>
@@ -197,7 +197,7 @@ export default function ModeratorEditBookPage() {
               <Label>Cover Image</Label>
               <div
                 onClick={() => coverInputRef.current?.click()}
-                className="aspect-[3/4] border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden cursor-pointer hover:border-emerald-500/50 transition-colors relative group"
+                className="aspect-[3/4] border border-line-subtle rounded-md overflow-hidden cursor-pointer hover:border-emerald-500/50 transition-colors relative group"
               >
                 {coverPreviewUrl ? (
                   <img src={coverPreviewUrl} className="w-full h-full object-cover" alt="Cover" />
@@ -217,7 +217,7 @@ export default function ModeratorEditBookPage() {
               <Label>Document File</Label>
               <div
                 onClick={() => bookFileRef.current?.click()}
-                className="p-4 border border-dashed border-gray-100 dark:border-neutral-800 rounded-md text-center cursor-pointer hover:border-emerald-500/50 transition-colors"
+                className="p-4 border border-dashed border-line-subtle rounded-md text-center cursor-pointer hover:border-emerald-500/50 transition-colors"
               >
                 <FiFileText className="mx-auto text-gray-300 mb-2" />
                 <p className="text-[10px] font-bold text-gray-500">
@@ -234,7 +234,7 @@ export default function ModeratorEditBookPage() {
               <input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500/50"
+                className="w-full px-4 py-2.5 bg-background border border-line-subtle rounded-md text-sm outline-none focus:border-emerald-500/50"
                 required
               />
             </div>
@@ -244,7 +244,7 @@ export default function ModeratorEditBookPage() {
               <input
                 value={formData.author}
                 onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                className="w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500/50"
+                className="w-full px-4 py-2.5 bg-background border border-line-subtle rounded-md text-sm outline-none focus:border-emerald-500/50"
                 required
               />
             </div>
@@ -264,7 +264,7 @@ export default function ModeratorEditBookPage() {
                   type="number"
                   value={formData.pages}
                   onChange={(e) => setFormData({ ...formData, pages: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500/50"
+                  className="w-full px-4 py-2.5 bg-background border border-line-subtle rounded-md text-sm outline-none focus:border-emerald-500/50"
                   required
                 />
               </div>
@@ -276,7 +276,7 @@ export default function ModeratorEditBookPage() {
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm outline-none focus:border-emerald-500/50 resize-none"
+                className="w-full px-4 py-2.5 bg-background border border-line-subtle rounded-md text-sm outline-none focus:border-emerald-500/50 resize-none"
                 required
               />
             </div>

@@ -42,7 +42,7 @@ export const FormInput: React.FC<{
       </label>
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-neutral-400">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted">
             {icon}
           </div>
         )}
@@ -54,7 +54,7 @@ export const FormInput: React.FC<{
           onKeyPress={onKeyPress}
           className={`w-full ${icon ? "pl-10" : "pl-4"} ${
             showPasswordToggle ? "pr-12" : "pr-4"
-          } py-3 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
+          } py-3 text-foreground bg-gray-50 dark:bg-white/5 border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
             error
               ? "border-red-500"
               : "border-gray-100 dark:border-white/5 focus:border-primary"
@@ -67,7 +67,7 @@ export const FormInput: React.FC<{
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-faint hover:text-gray-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
           >
             {showPassword ? (
               <FiEyeOff className="w-5 h-5" />

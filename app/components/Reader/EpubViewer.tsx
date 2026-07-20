@@ -181,14 +181,14 @@ export function EpubViewer({
   return (
     <div className="w-full h-full relative">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-neutral-900 z-10 transition-opacity duration-500">
+        <div className="absolute inset-0 flex items-center justify-center bg-background z-10 transition-opacity duration-500">
           <SpinnerLoader />
         </div>
       )}
 
       <div
         ref={viewRef}
-        className="w-full overflow-y-auto custom-scrollbar"
+        className="w-full overflow-y-auto custom-scrollbar reader-scroll"
         style={{
           height: "100%",
           width: "100%",

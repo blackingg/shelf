@@ -102,10 +102,10 @@ export default function AdminUsersPage() {
       />
 
       <section>
-        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h2 className="text-2xl font-medium text-foreground mb-1">
           User Management
         </h2>
-        <p className="text-sm text-gray-500 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           Manage system access, roles, and account statuses.
         </p>
       </section>
@@ -118,7 +118,7 @@ export default function AdminUsersPage() {
             placeholder="Search name, username, or email..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-line-subtle rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
         <div className="flex items-center space-x-3">
@@ -141,13 +141,13 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden flex flex-col">
+      <div className="bg-background border border-line-subtle rounded-md overflow-hidden flex flex-col">
         {isLoading ? (
           <AdminTableSkeleton rows={10} />
         ) : users?.length === 0 ? (
           <div className="p-12 text-center space-y-2">
             <FiUser className="mx-auto text-3xl text-gray-200 dark:text-neutral-800" />
-            <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+            <p className="text-sm text-muted font-medium">
               No users found matching your criteria.
             </p>
           </div>
@@ -157,16 +157,16 @@ export default function AdminUsersPage() {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-gray-50 dark:border-neutral-800/50">
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    <th className="px-6 py-4 font-medium text-faint">
                       User
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    <th className="px-6 py-4 font-medium text-faint">
                       Role
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500">
+                    <th className="px-6 py-4 font-medium text-faint">
                       Status
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 text-right">
+                    <th className="px-6 py-4 font-medium text-faint text-right">
                       Actions
                     </th>
                   </tr>
@@ -184,7 +184,7 @@ export default function AdminUsersPage() {
             </div>
 
             {userData && userData.totalPages > 1 && (
-              <div className="border-t border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-neutral-900/30 px-6">
+              <div className="border-t border-line-subtle bg-gray-50/30 dark:bg-neutral-900/30 px-6">
                 <Pagination
                   currentPage={page}
                   totalPages={userData.totalPages}

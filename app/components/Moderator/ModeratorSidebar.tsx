@@ -53,11 +53,11 @@ export const ModeratorSidebar = () => {
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 lg:z-0 w-64 h-screen bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col transition-transform duration-300 lg:transition-none lg:translate-x-0 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 lg:z-0 w-64 h-screen bg-background border-r border-line flex flex-col transition-transform duration-300 lg:transition-none lg:translate-x-0 ${
           showMobileSidebar ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-6 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
+        <div className="p-6 border-b border-line-subtle flex justify-between items-center">
           <Link
             href="/library"
             className="flex items-center space-x-3 group"
@@ -79,7 +79,7 @@ export const ModeratorSidebar = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <p className="px-4 text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest mb-4">
+          <p className="px-4 text-[10px] font-medium text-faint uppercase tracking-widest mb-4">
             MOderator
           </p>
           {navItems.map((item) => {
@@ -92,7 +92,7 @@ export const ModeratorSidebar = () => {
                 className={`flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-primary/5 text-primary"
-                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white"
+                    : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 <span className={`text-lg ${isActive ? "text-primary" : "text-gray-400"}`}>
@@ -107,12 +107,12 @@ export const ModeratorSidebar = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-100 dark:border-neutral-800 space-y-2">
+        <div className="p-4 border-t border-line-subtle space-y-2">
           {isAdmin && (
             <Link
               href="/admin/dashboard"
               onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <FiArrowLeft className="text-lg text-gray-400" />
               <span>Back to Admin</span>
@@ -122,7 +122,7 @@ export const ModeratorSidebar = () => {
           <Link
             href="/library"
             onClick={() => setShowMobileSidebar(false)}
-            className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <FiArrowLeft className="text-lg text-gray-400" />
             <span>Back to App</span>
@@ -130,7 +130,7 @@ export const ModeratorSidebar = () => {
 
           <button
             onClick={handleLogoutClick}
-            className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/15 hover:text-red-600 dark:hover:text-red-400 w-full text-left cursor-pointer mt-1"
+            className="flex items-center space-x-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors text-muted hover:bg-red-50 dark:hover:bg-red-950/15 hover:text-red-600 dark:hover:text-red-400 w-full text-left cursor-pointer mt-1"
           >
             <span className="text-lg text-gray-400 hover:text-inherit">
               <FiLogOut />

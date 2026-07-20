@@ -147,13 +147,13 @@ export default function UploadAndReadPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="text-center space-y-8 p-12"
+          className="text-center space-y-8 p-6 md:p-12"
         >
           <div className="w-20 h-20 mx-auto rounded-sm bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
             <FiUploadCloud className="w-8 h-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-3 tracking-tight">
               Upload & Read
             </h1>
             <p className="text-base text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
