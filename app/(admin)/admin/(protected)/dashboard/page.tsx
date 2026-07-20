@@ -84,10 +84,10 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h2 className="text-2xl font-medium text-foreground mb-1">
           Platform Overview
         </h2>
-        <p className="text-sm text-gray-500 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           Real-time metrics and system health.
         </p>
       </section>
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="p-6 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 animate-pulse"
+                className="p-6 bg-background rounded-md border border-line-subtle animate-pulse"
               >
                 <div className="flex items-center justify-between mb-4">
                   <Skeleton className="w-2 h-2 rounded-full" />
@@ -112,19 +112,19 @@ export default function AdminDashboardPage() {
           : cards.map((card, i) => (
               <div
                 key={i}
-                className="p-6 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800/50"
+                className="p-6 bg-background rounded-md border border-line-subtle transition-colors hover:bg-wash/50"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className={`w-2 h-2 rounded-full ${card.dotColor}`} />
-                  <span className="text-lg text-gray-400 dark:text-neutral-500">
+                  <span className="text-lg text-faint">
                     {card.icon}
                   </span>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-3xl font-medium text-gray-900 dark:text-white">
+                  <p className="text-3xl font-medium text-foreground">
                     {card.value.toLocaleString()}
                   </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="text-sm font-medium text-foreground">
                     {card.label}
                   </p>
                 </div>
@@ -135,8 +135,8 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <ModeratorOverview />
 
-        <section className="p-8 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+        <section className="p-8 bg-background border border-line-subtle rounded-md">
+          <h3 className="text-sm font-medium text-foreground uppercase tracking-wider mb-6">
             Recent Admin Actions
           </h3>
           <div className="space-y-1">
@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center space-x-3 min-w-0">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white truncate">
+                      <p className="text-sm text-foreground truncate">
                         {formatAction(log.action)}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-neutral-500">
@@ -159,7 +159,7 @@ export default function AdminDashboardPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] text-gray-400 dark:text-neutral-600 shrink-0 ml-4">
+                  <span className="text-[10px] text-faint shrink-0 ml-4">
                     {formatDate(log.createdAt)}
                   </span>
                 </div>

@@ -244,7 +244,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
 
     if (!doc || pageDimensions.length === 0) {
       return (
-        <div className="flex h-full items-center justify-center bg-white dark:bg-neutral-900 transition-opacity duration-500">
+        <div className="flex h-full items-center justify-center bg-background transition-opacity duration-500">
           <SpinnerLoader />
         </div>
       );
@@ -253,7 +253,7 @@ export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(
     return (
       <div
         ref={containerRef}
-        className="w-full overflow-y-auto overflow-x-hidden custom-scrollbar"
+        className="w-full overflow-y-auto overflow-x-hidden custom-scrollbar reader-scroll"
         style={{ height: "100%" }}
       >
         <div className="flex flex-col items-center gap-4 py-4">

@@ -37,15 +37,15 @@ export default function FlaggedContent() {
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h2 className="text-2xl font-medium text-foreground mb-1">
           Flagged Content
         </h2>
-        <p className="text-sm text-gray-500 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           Review reports from the community.
         </p>
       </section>
 
-      <div className="flex space-x-8 border-b border-gray-100 dark:border-neutral-800">
+      <div className="flex space-x-8 border-b border-line-subtle">
         <button
           onClick={() => handleTabChange("books")}
           className={`pb-4 text-sm font-medium transition-colors relative ${
@@ -74,15 +74,15 @@ export default function FlaggedContent() {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden flex flex-col">
+      <div className="bg-background border border-line-subtle rounded-md overflow-hidden flex flex-col">
         {isLoading ? (
-          <div className="p-12 text-center text-sm text-gray-500 dark:text-neutral-400">
+          <div className="p-12 text-center text-sm text-muted">
             Loading flags...
           </div>
         ) : items?.length === 0 ? (
           <div className="p-12 text-center space-y-2">
             <FiFlag className="mx-auto text-3xl text-gray-200 dark:text-neutral-800" />
-            <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+            <p className="text-sm text-muted font-medium">
               Clean slate. No pending flags.
             </p>
           </div>
@@ -92,19 +92,19 @@ export default function FlaggedContent() {
               {items?.map((flag) => (
                 <div
                   key={flag.id}
-                  className="group flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-neutral-800/30 transition-colors"
+                  className="group flex items-center justify-between p-6 hover:bg-wash/30 transition-colors"
                 >
                   <div className="flex items-center space-x-6">
                     <div className={`w-2 h-2 rounded-full ${activeTab === "books" ? "bg-blue-500" : "bg-yellow-400"}`} />
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-foreground">
                         {flag.reason.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-neutral-400">
+                      <p className="text-xs text-muted">
                         Reported by <span className="text-gray-900 dark:text-neutral-300">@{flag.reporter?.username || "-"}</span> • {new Date(flag.createdAt).toLocaleDateString()}
                       </p>
                       {flag.comment && (
-                        <p className="text-xs text-gray-400 dark:text-neutral-500 mt-2 italic">
+                        <p className="text-xs text-faint mt-2 italic">
                           "{flag.comment}"
                         </p>
                       )}
@@ -150,7 +150,7 @@ export default function FlaggedContent() {
                     >
                       Resolve
                     </button>
-                    <button className="p-2 text-gray-400 dark:text-neutral-600 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <button className="p-2 text-faint hover:text-gray-900 dark:hover:text-white transition-colors">
                       <FiMoreHorizontal />
                     </button>
                   </div>
@@ -159,7 +159,7 @@ export default function FlaggedContent() {
             </div>
 
             {activeData && activeData.totalPages > 1 && (
-              <div className="border-t border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-neutral-900/30 px-6">
+              <div className="border-t border-line-subtle bg-gray-50/30 dark:bg-neutral-900/30 px-6">
                 <Pagination
                   currentPage={page}
                   totalPages={activeData.totalPages}

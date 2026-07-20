@@ -47,7 +47,7 @@ export const DiscoverFeed = ({
   return (
     <div className="mb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+        <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
           Discover
         </h2>
 
@@ -64,8 +64,8 @@ export const DiscoverFeed = ({
                 onClick={() => setDiscoverTab(tab.id as DiscoverTab)}
                 className={`flex items-center gap-2 px-6 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${
                   isActive
-                    ? "bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "bg-white dark:bg-neutral-800 text-foreground shadow-sm"
+                    : "text-muted hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -116,14 +116,14 @@ export const DiscoverFeed = ({
           ))}
         </div>
       ) : (
-        <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
+        <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-line-subtle text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
             <FiBook className="w-6 h-6 text-primary" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <h3 className="text-xl font-bold text-foreground mb-2">
             No Recommendations Yet
           </h3>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-faint max-w-xs mx-auto">
             Start exploring to get personalized suggestions.
           </p>
         </div>

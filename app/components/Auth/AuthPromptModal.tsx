@@ -60,11 +60,11 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full max-w-sm bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
+            <div className="relative w-full max-w-sm bg-background rounded-sm border border-line-subtle overflow-hidden">
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-1.5 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md transition-colors z-10"
+                className="absolute top-4 right-4 p-1.5 hover:bg-wash rounded-md transition-colors z-10"
                 aria-label="Close"
               >
                 <FiX className="w-4 h-4 text-gray-400" />
@@ -76,7 +76,7 @@ export const AuthPromptModal: React.FC<AuthPromptModalProps> = ({
                   <FiBookOpen className="w-5 h-5 text-primary" />
                 </div>
 
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   Sign in to continue
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-xs mx-auto">

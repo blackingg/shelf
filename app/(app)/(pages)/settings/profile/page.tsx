@@ -114,18 +114,18 @@ export default function SettingsProfilePage() {
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        <h1 className="text-xl md:text-3xl font-extrabold text-foreground tracking-tight">
           Profile Settings
         </h1>
-        <p className="text-gray-500 dark:text-neutral-400 mt-1.5 md:text-lg">
+        <p className="hidden lg:block text-muted mt-1.5 md:text-lg">
           Update your personal details and academic affiliation.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
-        <div className="p-5 md:p-8 lg:p-10">
+      <div className="lg:bg-white lg:dark:bg-neutral-900 lg:rounded-lg lg:border lg:border-gray-200 lg:dark:border-neutral-800">
+        <div className="lg:p-10">
           <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-gray-100 dark:border-neutral-800/50">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-8 border-b border-line-subtle">
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-sm bg-linear-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 overflow-hidden border-2 border-white dark:border-neutral-800 shadow-xl shadow-primary/5">
                   {profileUser?.avatar ? (
@@ -162,10 +162,10 @@ export default function SettingsProfilePage() {
                 </label>
               </div>
               <div className="space-y-1">
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                <h4 className="text-lg font-bold text-foreground">
                   Profile Photo
                 </h4>
-                <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-xs">
+                <p className="text-sm text-muted max-w-xs">
                   Upload a professional photo to help others recognize you. JPG,
                   GIF or PNG. Max size 2MB.
                 </p>
@@ -182,7 +182,7 @@ export default function SettingsProfilePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                  className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                 />
               </div>
               <div className="space-y-1">
@@ -190,7 +190,7 @@ export default function SettingsProfilePage() {
                   Username
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-gray-400 dark:text-neutral-500 text-sm">
+                  <span className="absolute left-4 top-2.5 text-faint text-sm">
                     @
                   </span>
                   <input
@@ -198,7 +198,7 @@ export default function SettingsProfilePage() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function SettingsProfilePage() {
               />
             </div>
 
-            <div className="pt-8 border-t border-gray-100 dark:border-neutral-800/50 flex justify-end">
+            <div className="pt-8 border-t border-line-subtle flex justify-end">
               <Button
                 type="submit"
                 isLoading={userActions.isUpdating}

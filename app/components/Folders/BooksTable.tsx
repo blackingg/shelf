@@ -65,7 +65,7 @@ const BooksTable = ({
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/5">
+    <div className="bg-background rounded-md border border-gray-100 dark:border-white/5">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -90,13 +90,13 @@ const BooksTable = ({
                   </div>
                 </th>
               )}
-              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-faint uppercase tracking-widest">
                 Resource
               </th>
-              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-faint uppercase tracking-widest">
                 Author
               </th>
-              <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-faint uppercase tracking-widest">
                 Actions
               </th>
             </tr>
@@ -106,7 +106,7 @@ const BooksTable = ({
               <tr
                 key={book.id}
                 onClick={() => onBookClick(book.id)}
-                className={`hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-colors group ${
+                className={`hover:bg-wash cursor-pointer transition-colors group ${
                   selectedIds.includes(book.id)
                     ? "bg-primary/5 dark:bg-primary/10"
                     : ""
@@ -151,11 +151,11 @@ const BooksTable = ({
                       )}
                     </div>
                     <div className="max-w-[300px]">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      <div className="text-sm font-medium text-foreground truncate">
                         {book.title}
                       </div>
                       {book.description && (
-                        <div className="text-[10px] text-gray-400 dark:text-neutral-500 truncate mt-0.5">
+                        <div className="text-[10px] text-faint truncate mt-0.5">
                           {book.description}
                         </div>
                       )}
@@ -163,7 +163,7 @@ const BooksTable = ({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-[13px] text-gray-600 dark:text-neutral-400">
+                  <div className="text-[13px] text-muted">
                     {book.author}
                   </div>
                 </td>
@@ -189,7 +189,7 @@ const BooksTable = ({
             top: menuPosition.top,
             right: menuPosition.right,
           }}
-          className="w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-md py-1.5 z-[200] shadow-sm"
+          className="w-48 bg-background border border-gray-100 dark:border-white/10 rounded-md py-1.5 z-[200] shadow-sm"
           onClick={(e) => e.stopPropagation()}
         >
           {(() => {
@@ -202,7 +202,7 @@ const BooksTable = ({
                     onBookClick(book.id);
                     setActiveMenuId(null);
                   }}
-                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                 >
                   <FiBookOpen className="w-3.5 h-3.5" />
                   <span>Read Book</span>
@@ -210,7 +210,7 @@ const BooksTable = ({
                 <Link
                   href={`/books/${book.slug}`}
                   onClick={() => setActiveMenuId(null)}
-                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                 >
                   <FiInfo className="w-3.5 h-3.5" />
                   <span>View Details</span>
@@ -224,7 +224,7 @@ const BooksTable = ({
                         setActiveMenuId(null);
                         setMenuPosition(null);
                       }}
-                      className="w-full px-4 py-2 text-[12px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
+                      className="w-full px-4 py-2 text-[12px] text-danger hover:bg-danger-wash flex items-center space-x-2 transition-colors"
                     >
                       <FiTrash2 className="w-3.5 h-3.5" />
                       <span>Remove from Folder</span>

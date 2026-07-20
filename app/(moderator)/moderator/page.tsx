@@ -40,10 +40,10 @@ export default function ModeratorDashboard() {
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h2 className="text-2xl font-medium text-foreground mb-1">
           Dashboard Overview
         </h2>
-        <p className="text-sm text-gray-500 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           Monitor content health and pending actions.
         </p>
       </section>
@@ -52,22 +52,22 @@ export default function ModeratorDashboard() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="p-6 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800/50"
+            className="p-6 bg-background border border-line-subtle rounded-md transition-colors hover:bg-wash/50"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`w-2 h-2 rounded-full ${card.dotColor}`} />
-              <span className="text-lg text-gray-400 dark:text-neutral-500">
+              <span className="text-lg text-faint">
                 {card.icon}
               </span>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-medium text-gray-900 dark:text-white">
+              <p className="text-3xl font-medium text-foreground">
                 {isLoading ? "..." : card.value}
               </p>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-foreground">
                 {card.label}
               </p>
-              <p className="text-xs text-gray-500 dark:text-neutral-400">
+              <p className="text-xs text-muted">
                 {card.description}
               </p>
             </div>
@@ -76,23 +76,23 @@ export default function ModeratorDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <section className="p-8 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+        <section className="p-8 bg-background border border-line-subtle rounded-md">
+          <h3 className="text-sm font-medium text-foreground uppercase tracking-wider mb-6">
             Recent Activity
           </h3>
           <div className="space-y-6">
-            <p className="text-sm text-gray-500 dark:text-neutral-400 italic">
+            <p className="text-sm text-muted italic">
               Activity feed coming soon...
             </p>
           </div>
         </section>
 
-        <section className="p-8 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+        <section className="p-8 bg-background border border-line-subtle rounded-md">
+          <h3 className="text-sm font-medium text-foreground uppercase tracking-wider mb-6">
             Moderation Policy
           </h3>
           <div className="prose prose-sm dark:prose-invert">
-            <p className="text-sm text-gray-500 dark:text-neutral-400 leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed">
               Ensure all content follows community guidelines. Prioritize "Inappropriate Content" and "Copyright Violations".
             </p>
           </div>

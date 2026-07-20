@@ -59,7 +59,7 @@ export const UserProfileDropdown: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors border border-transparent hover:bg-gray-50 dark:hover:bg-neutral-800 hover:border-gray-100 dark:hover:border-neutral-700/50"
+        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors border border-transparent hover:bg-wash hover:border-gray-100 dark:hover:border-neutral-700/50"
       >
         {isAuthenticated && user ? (
           <>
@@ -109,11 +109,11 @@ export const UserProfileDropdown: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="absolute top-full right-0 mt-3 w-64 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 text-left"
+              className="absolute top-full right-0 mt-3 w-64 bg-background rounded-md border border-line-subtle overflow-hidden z-50 text-left"
             >
               {isAuthenticated && user ? (
                 <>
-                  <div className="p-5 border-b border-gray-100 dark:border-neutral-800">
+                  <div className="p-5 border-b border-line-subtle">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-md flex items-center justify-center bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white font-medium text-base shrink-0 overflow-hidden border border-gray-100 dark:border-white/10">
                         {userAvatar ? (
@@ -127,7 +127,7 @@ export const UserProfileDropdown: React.FC = () => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 dark:text-white text-sm truncate leading-tight mb-0.5">
+                        <p className="font-medium text-foreground text-sm truncate leading-tight mb-0.5">
                           {userFullName}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -140,7 +140,7 @@ export const UserProfileDropdown: React.FC = () => {
                   <div className="py-2">
                     <button
                       onClick={handleViewProfile}
-                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
+                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-wash transition-colors text-left group"
                     >
                       <FiUser className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
@@ -149,7 +149,7 @@ export const UserProfileDropdown: React.FC = () => {
                     </button>
                     <button
                       onClick={handleSettings}
-                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left group"
+                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-wash transition-colors text-left group"
                     >
                       <FiSettings className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-600 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
@@ -158,7 +158,7 @@ export const UserProfileDropdown: React.FC = () => {
                     </button>
                   </div>
 
-                  <div className="border-t border-gray-100 dark:border-neutral-800 py-2">
+                  <div className="border-t border-line-subtle py-2">
                     <button
                       onClick={handleLogoutClick}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left group"
@@ -172,8 +172,8 @@ export const UserProfileDropdown: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <div className="p-5 border-b border-gray-100 dark:border-neutral-800">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                  <div className="p-5 border-b border-line-subtle">
+                    <p className="text-sm font-medium text-foreground mb-1.5">
                       Welcome to Shelf
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -184,7 +184,7 @@ export const UserProfileDropdown: React.FC = () => {
                   <div className="py-2">
                     <button
                       onClick={handleLogin}
-                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
+                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-wash transition-colors text-left group"
                     >
                       <FiLogIn className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-gray-900 dark:group-hover:text-white">
@@ -193,7 +193,7 @@ export const UserProfileDropdown: React.FC = () => {
                     </button>
                     <button
                       onClick={handleRegister}
-                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
+                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-wash transition-colors text-left group"
                     >
                       <FiUserPlus className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                       <span className="text-sm font-medium text-primary group-hover:text-primary">

@@ -69,7 +69,7 @@ function ModeratorReaderPageInner({
   );
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white dark:bg-neutral-950">
+    <div className="fixed inset-0 z-[100] bg-surface">
       <ReaderLayout
         title={`[REVIEW] ${data.title}`}
         subtitle={data.author}
@@ -157,12 +157,12 @@ export default function ModeratorReaderPage() {
     );
 
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-neutral-950">
+      <div className="flex items-center justify-center min-h-screen bg-surface">
         <div className="text-center space-y-4 max-w-md px-6">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white">
+          <h2 className="text-xl font-medium text-foreground">
             Review Load Failure
           </h2>
-          <p className="text-sm text-gray-500 dark:text-neutral-400">
+          <p className="text-sm text-muted">
             {errorMessage}
           </p>
           <button

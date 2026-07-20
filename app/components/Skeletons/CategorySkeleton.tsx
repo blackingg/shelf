@@ -18,7 +18,7 @@ export default function CategorySkeleton() {
                 </div>
               </div>
 
-              <div className="w-52 h-24 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800/50 animate-pulse" />
+              <div className="w-52 h-24 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-line-subtle animate-pulse" />
             </div>
           </div>
 

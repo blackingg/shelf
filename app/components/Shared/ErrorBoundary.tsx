@@ -58,7 +58,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-surface flex items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -66,16 +66,16 @@ class ErrorBoundary extends Component<Props, State> {
             className="max-w-xl w-full text-center"
           >
             <div className="flex justify-center mb-10">
-              <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-neutral-800 flex items-center justify-center">
+              <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-900 rounded-md border border-line-subtle flex items-center justify-center">
                 <FiAlertTriangle className="w-8 h-8 text-red-500" />
               </div>
             </div>
 
-            <span className="inline-block text-[11px] font-black uppercase tracking-[0.4em] text-red-600 dark:text-red-500 mb-6 px-4 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-100 dark:border-red-800/30">
+            <span className="inline-block text-[11px] font-black uppercase tracking-[0.4em] text-danger mb-6 px-4 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-100 dark:border-red-800/30">
               System Error
             </span>
 
-            <h1 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tighter leading-none">
+            <h1 className="text-5xl md:text-6xl font-black text-foreground mb-6 tracking-tighter leading-none">
               Something went <span className="text-red-600">wrong</span>.
             </h1>
 
@@ -86,10 +86,10 @@ class ErrorBoundary extends Component<Props, State> {
 
             {process.env.NODE_ENV === "development" && this.state.error && (
               <div className="mb-10 p-5 bg-red-50/50 dark:bg-red-950/20 border border-red-100/50 dark:border-red-900/30 rounded-md text-left overflow-auto max-h-48 custom-scrollbar">
-                <p className="text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400 mb-2">
+                <p className="text-xs font-black uppercase tracking-widest text-danger mb-2">
                   Developer Stack Trace
                 </p>
-                <p className="text-sm font-mono text-gray-900 dark:text-white break-words mb-3">
+                <p className="text-sm font-mono text-foreground break-words mb-3">
                   {this.state.error.message}
                 </p>
                 {this.state.errorInfo && (
@@ -110,15 +110,15 @@ class ErrorBoundary extends Component<Props, State> {
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 h-14 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 h-14 bg-background border border-line-subtle text-muted text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-wash/50 hover:text-gray-900 dark:hover:text-white transition-all"
               >
                 <FiHome className="w-4 h-4" />
                 Go Back Home
               </button>
             </div>
 
-            <div className="mt-16 pt-8 border-t border-dashed border-gray-100 dark:border-neutral-800/50">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-600">
+            <div className="mt-16 pt-8 border-t border-dashed border-line-subtle">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-faint">
                 If this persists, please reach out to our support team.
               </p>
             </div>

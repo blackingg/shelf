@@ -100,7 +100,7 @@ export default function ShelfLanding() {
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl font-medium leading-[0.95] tracking-tighter text-gray-900 dark:text-white mb-6">
+            <h1 className="text-6xl md:text-7xl font-medium leading-[0.95] tracking-tighter text-foreground mb-6">
               Knowledge
               <br />
               for Students <br />
@@ -126,7 +126,7 @@ export default function ShelfLanding() {
               {!isAuthenticated && (
                 <button
                   onClick={() => router.push("/auth/login")}
-                  className="px-7 py-3.5 border border-gray-200 dark:border-white/10 bg-white dark:bg-transparent text-gray-900 dark:text-white rounded-sm font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                  className="px-7 py-3.5 border border-gray-200 dark:border-white/10 bg-white dark:bg-transparent text-foreground rounded-sm font-medium text-sm hover:bg-wash transition-colors"
                 >
                   Sign In
                 </button>
@@ -143,7 +143,7 @@ export default function ShelfLanding() {
                   key={i}
                   className={`flex flex-col gap-0.5 ${i === 0 ? "pr-6" : "px-6"}`}
                 >
-                  <span className="text-2xl font-medium tracking-tight text-gray-900 dark:text-white leading-none">
+                  <span className="text-2xl font-medium tracking-tight text-foreground leading-none">
                     {stat.value}
                   </span>
                   <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">
@@ -159,7 +159,7 @@ export default function ShelfLanding() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <div className="relative bg-white dark:bg-neutral-900 rounded-sm p-1 border border-gray-100 dark:border-white/10 overflow-hidden">
+            <div className="relative bg-background rounded-sm p-1 border border-gray-100 dark:border-white/10 overflow-hidden">
               <div className="bg-gray-100 dark:bg-white/5 p-8 lg:p-10 border border-gray-100 dark:border-white/5 rounded-sm">
                 <div className="flex items-center justify-between mb-12">
                   <div>
@@ -174,14 +174,14 @@ export default function ShelfLanding() {
                   {folders.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between bg-white dark:bg-black px-4 py-3.5 border border-gray-100 dark:border-white/10 rounded-sm group cursor-default hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                      className="flex items-center justify-between bg-white dark:bg-black px-4 py-3.5 border border-gray-100 dark:border-white/10 rounded-sm group cursor-default hover:bg-wash transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-2 h-2 rounded-full shrink-0 ${item.color}`}
                         />
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-foreground">
                             {item.title}
                           </div>
                           <div className="text-[10px] text-gray-400 font-medium mt-0.5">
@@ -208,7 +208,7 @@ export default function ShelfLanding() {
                 Features
               </span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-medium tracking-tighter text-gray-900 dark:text-white leading-[0.95] mb-4">
+            <h2 className="text-4xl md:text-5xl font-medium tracking-tighter text-foreground leading-[0.95] mb-4">
               Built for how you
               <br />
               actually study
@@ -226,7 +226,7 @@ export default function ShelfLanding() {
                 className="p-8 border-r border-b border-gray-100 dark:border-white/10 last:border-r-0 [&:nth-child(3n)]:border-r-0 md:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors group"
               >
                 <div className="text-primary mb-5">{feature.icon}</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-sm font-medium text-foreground mb-2">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -246,7 +246,7 @@ export default function ShelfLanding() {
                 Why Shelf
               </span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-medium tracking-tighter text-gray-900 dark:text-white leading-[0.95] mb-5">
+            <h2 className="text-4xl md:text-5xl font-medium tracking-tighter text-foreground leading-[0.95] mb-5">
               Everything you
               <br />
               need, nothing
@@ -285,7 +285,7 @@ export default function ShelfLanding() {
             </span>
           </div>
 
-          <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-gray-900 dark:text-white leading-[0.95] mb-6">
+          <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-foreground leading-[0.95] mb-6">
             Ready to build
             <br />
             your library?

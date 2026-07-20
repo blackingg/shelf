@@ -65,17 +65,17 @@ export default function AdminUserDetailPage() {
               <FiShield />
               <span>User Account</span>
             </div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-medium text-foreground">
               {user.fullName}
             </h1>
-            <p className="text-lg text-gray-500 dark:text-neutral-400">
+            <p className="text-lg text-muted">
               @{user.username}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {user.isBanned ? (
-              <span className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-500/20">
+              <span className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 dark:bg-red-500/10 text-danger border border-red-100 dark:border-red-500/20">
                 Banned
               </span>
             ) : (
@@ -93,13 +93,13 @@ export default function AdminUserDetailPage() {
               onClick={() =>
                 setActionType(user.isBanned ? "unban" : "ban")
               }
-              className="px-5 py-2 text-xs font-medium uppercase tracking-widest rounded-md border border-gray-100 dark:border-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+              className="px-5 py-2 text-xs font-medium uppercase tracking-widest rounded-md border border-line-subtle text-gray-700 dark:text-neutral-300 hover:bg-wash transition-colors"
             >
               {user.isBanned ? "Unban" : "Ban"}
             </button>
             <button
               onClick={() => setActionType("assign")}
-              className="px-5 py-2 text-xs font-medium uppercase tracking-widest rounded-md border border-gray-100 dark:border-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+              className="px-5 py-2 text-xs font-medium uppercase tracking-widest rounded-md border border-line-subtle text-gray-700 dark:text-neutral-300 hover:bg-wash transition-colors"
             >
               Assign Role
             </button>
@@ -181,11 +181,11 @@ function MetaItem({
 }) {
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="text-gray-400 dark:text-neutral-600">{icon}</span>
+      <span className="text-faint">{icon}</span>
       <span className="text-gray-500 dark:text-neutral-500 font-medium w-28">
         {label}:
       </span>
-      <span className="text-gray-900 dark:text-white font-mono text-[11px] break-all">
+      <span className="text-foreground font-mono text-[11px] break-all">
         {value}
       </span>
     </div>

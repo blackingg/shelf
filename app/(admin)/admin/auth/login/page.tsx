@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
           <div className="w-20 h-20 bg-primary/10 rounded-md flex items-center justify-center mx-auto mb-6 border border-primary/20">
             <FiShield className="w-10 h-10 text-primary" />
           </div>
-          <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl font-medium text-foreground tracking-tight">
             Admin Access
           </h1>
           <p className="text-gray-500 dark:text-neutral-500 mt-2 font-medium">
@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-8 rounded-md">
+        <div className="bg-background border border-line-subtle p-8 rounded-md">
           <form onSubmit={handleSubmit} className="space-y-6">
             <FormInput
               label="Email"

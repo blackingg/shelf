@@ -134,7 +134,7 @@ export default function VerifyEmailPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[440px]">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-2 tracking-tight">
+            <h1 className="text-3xl font-medium text-foreground mb-2 tracking-tight">
               Email Verification
             </h1>
             <p className="text-gray-500 dark:text-gray-400">

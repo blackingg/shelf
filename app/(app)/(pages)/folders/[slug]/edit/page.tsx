@@ -322,8 +322,8 @@ export default function EditFolderPage() {
   // Error / Not Found state
   if (isError || !folder) {
     return (
-      <div className="p-6 md:p-10 bg-white dark:bg-neutral-900 min-h-[60vh]">
-        <div className="max-w-4xl mx-auto border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+      <div className="p-6 md:p-10 bg-background min-h-[60vh]">
+        <div className="max-w-4xl mx-auto border border-line rounded-md bg-background px-6 py-10 sm:px-8 sm:py-12">
           <div className="max-w-xl text-left space-y-5">
             <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               <span className="w-2 h-2 rounded-full bg-yellow-400" />
@@ -331,10 +331,10 @@ export default function EditFolderPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-background flex items-center justify-center">
                 <FiFolder className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </div>
-              <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-medium text-foreground">
                 Folder Not Found
               </h2>
             </div>
@@ -352,7 +352,7 @@ export default function EditFolderPage() {
               </button>
               <button
                 onClick={() => router.back()}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
               >
                 <FiArrowLeft className="w-4 h-4" />
                 Go Back
@@ -369,7 +369,7 @@ export default function EditFolderPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black px-4">
         <div className="text-center">
-          <h1 className="text-4xl font-medium text-gray-900 dark:text-white mb-3">
+          <h1 className="text-4xl font-medium text-foreground mb-3">
             403
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-sm">
@@ -522,7 +522,7 @@ export default function EditFolderPage() {
                 <FiFolder className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+                <h1 className="text-3xl font-medium text-foreground tracking-tight">
                   Edit Folder
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -546,11 +546,11 @@ export default function EditFolderPage() {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-primary">
                   Subfolder Settings
                 </h4>
-                <p className="text-xs text-gray-600 dark:text-neutral-400 leading-relaxed">
+                <p className="text-xs text-muted leading-relaxed">
                   This folder is a subfolder of{" "}
                   <Link
                     href={`/folders/${folder.parent?.slug || folder.parentId || folder.parent_id}`}
-                    className="font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary underline underline-offset-2"
+                    className="font-semibold text-foreground hover:text-primary dark:hover:text-primary underline underline-offset-2"
                   >
                     {folder.parent?.name || "Parent Folder"}
                   </Link>
@@ -572,7 +572,7 @@ export default function EditFolderPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-0 py-2 border-b-2 border-gray-100 dark:border-white/10 focus:border-primary bg-transparent transition-all outline-none text-xl font-medium text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-white/20 pb-4"
+                  className="w-full px-0 py-2 border-b-2 border-gray-100 dark:border-white/10 focus:border-primary bg-transparent transition-all outline-none text-xl font-medium text-foreground placeholder-gray-300 dark:placeholder-white/20 pb-4"
                   placeholder="e.g. Summer Reading List"
                   required
                 />
@@ -649,7 +649,7 @@ export default function EditFolderPage() {
                   <span className="font-semibold capitalize text-xs uppercase tracking-wider">
                     {visibility.toLowerCase()}
                   </span>
-                  <span className="text-xs text-gray-400 dark:text-neutral-500 font-medium">
+                  <span className="text-xs text-faint font-medium">
                     • Inherited from parent folder
                   </span>
                 </div>
@@ -708,12 +708,12 @@ export default function EditFolderPage() {
                     <FiFolder className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 dark:text-neutral-500 font-medium uppercase tracking-wider">
+                    <p className="text-xs text-faint font-medium uppercase tracking-wider">
                       Current Parent Folder
                     </p>
                     <Link
                       href={`/folders/${folder.parent?.slug || folder.parentId || folder.parent_id}`}
-                      className="text-sm font-semibold text-gray-900 dark:text-white hover:text-primary transition-colors underline underline-offset-2"
+                      className="text-sm font-semibold text-foreground hover:text-primary transition-colors underline underline-offset-2"
                     >
                       {folder.parent?.name || "Parent Folder"}
                     </Link>
@@ -723,7 +723,7 @@ export default function EditFolderPage() {
                   <button
                     type="button"
                     onClick={() => setShowMoveModal(true)}
-                    className="px-4 py-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-sm transition-colors shadow-sm shrink-0"
+                    className="px-4 py-2 bg-background border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-widest hover:bg-wash rounded-sm transition-colors shadow-sm shrink-0"
                   >
                     Move Folder
                   </button>
@@ -767,10 +767,10 @@ export default function EditFolderPage() {
                       )}
                     </div>
                     <div className="min-w-0 text-left">
-                      <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">
+                      <p className="text-xs font-semibold text-foreground truncate">
                         @{collaborator.user?.username || "User"}
                       </p>
-                      <p className="text-[10px] text-gray-400 dark:text-neutral-500 capitalize font-medium">
+                      <p className="text-[10px] text-faint capitalize font-medium">
                         {collaborator.role.toLowerCase()}
                       </p>
                     </div>
@@ -805,7 +805,7 @@ export default function EditFolderPage() {
                       className={`flex flex-col p-4 rounded-sm border transition-all text-left ${
                         collaborationMode === "NONE"
                           ? "border-primary bg-primary/10 dark:bg-primary/20"
-                          : "border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+                          : "border-gray-100 dark:border-white/5 hover:bg-wash"
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -813,7 +813,7 @@ export default function EditFolderPage() {
                           className={`w-1.5 h-1.5 rounded-full ${collaborationMode === "NONE" ? "bg-primary" : "bg-gray-300 dark:bg-neutral-700"}`}
                         />
                         <span
-                          className={`text-sm font-medium ${collaborationMode === "NONE" ? "text-gray-900 dark:text-white" : "text-gray-500"}`}
+                          className={`text-sm font-medium ${collaborationMode === "NONE" ? "text-foreground" : "text-gray-500"}`}
                         >
                           Disabled
                         </span>
@@ -829,7 +829,7 @@ export default function EditFolderPage() {
                       className={`flex flex-col p-4 rounded-sm border transition-all text-left ${
                         collaborationMode === "REQUESTS"
                           ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/5"
-                          : "border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+                          : "border-gray-100 dark:border-white/5 hover:bg-wash"
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -837,7 +837,7 @@ export default function EditFolderPage() {
                           className={`w-1.5 h-1.5 rounded-full ${collaborationMode === "REQUESTS" ? "bg-emerald-500" : "bg-gray-300 dark:bg-neutral-700"}`}
                         />
                         <span
-                          className={`text-sm font-medium ${collaborationMode === "REQUESTS" ? "text-gray-900 dark:text-white" : "text-gray-500"}`}
+                          className={`text-sm font-medium ${collaborationMode === "REQUESTS" ? "text-foreground" : "text-gray-500"}`}
                         >
                           Invitations
                         </span>
@@ -853,7 +853,7 @@ export default function EditFolderPage() {
                       className={`flex flex-col p-4 rounded-sm border transition-all text-left ${
                         collaborationMode === "OPEN"
                           ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/5"
-                          : "border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+                          : "border-gray-100 dark:border-white/5 hover:bg-wash"
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -861,7 +861,7 @@ export default function EditFolderPage() {
                           className={`w-1.5 h-1.5 rounded-full ${collaborationMode === "OPEN" ? "bg-emerald-500" : "bg-gray-300 dark:bg-neutral-700"}`}
                         />
                         <span
-                          className={`text-sm font-medium ${collaborationMode === "OPEN" ? "text-gray-900 dark:text-white" : "text-gray-500"}`}
+                          className={`text-sm font-medium ${collaborationMode === "OPEN" ? "text-foreground" : "text-gray-500"}`}
                         >
                           Direct Add
                         </span>
@@ -898,9 +898,9 @@ export default function EditFolderPage() {
                             onClick={() =>
                               setShowInvitePermissions(!showInvitePermissions)
                             }
-                            className="h-full px-4 py-2.5 rounded-sm border border-gray-100 dark:border-white/10 flex items-center justify-between gap-3 bg-white dark:bg-neutral-900 text-sm font-medium hover:border-emerald-500/50 transition-all min-w-[140px]"
+                            className="h-full px-4 py-2.5 rounded-sm border border-gray-100 dark:border-white/10 flex items-center justify-between gap-3 bg-background text-sm font-medium hover:border-emerald-500/50 transition-all min-w-[140px]"
                           >
-                            <span className="text-gray-900 dark:text-white uppercase tracking-wider text-[11px] font-bold">
+                            <span className="text-foreground uppercase tracking-wider text-[11px] font-bold">
                               {activeInviteProfile?.label || "Profile"}
                             </span>
                             <div className="w-4 h-4 text-gray-400">
@@ -918,7 +918,7 @@ export default function EditFolderPage() {
                           </button>
 
                           {showInvitePermissions && (
-                            <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-xl z-50 p-4 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                            <div className="absolute top-full right-0 mt-2 w-72 bg-background border border-gray-100 dark:border-white/10 rounded-sm shadow-xl z-50 p-4 space-y-4 animate-in fade-in zoom-in-95 duration-200">
                               <div className="space-y-2">
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                                   Access Profile
@@ -937,10 +937,10 @@ export default function EditFolderPage() {
                                         }
                                         className={`w-full p-3 rounded-sm text-left transition-all border ${activeProfile === profile.id ? "bg-primary/10 border-primary/40" : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/10 hover:border-primary/40"}`}
                                       >
-                                        <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+                                        <p className="text-[11px] font-bold uppercase tracking-wide text-foreground">
                                           {profile.label}
                                         </p>
-                                        <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1">
+                                        <p className="text-[10px] text-muted mt-1">
                                           {profile.description}
                                         </p>
                                       </button>
@@ -1005,7 +1005,7 @@ export default function EditFolderPage() {
                               ).map((collaborator) => (
                                 <div
                                   key={collaborator.id}
-                                  className={`flex flex-col gap-2 py-4 px-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors rounded-sm group ${editingCollaboratorId === collaborator.id ? "bg-emerald-50/30 dark:bg-emerald-500/5 ring-1 ring-emerald-500/20" : ""}`}
+                                  className={`flex flex-col gap-2 py-4 px-4 hover:bg-wash transition-colors rounded-sm group ${editingCollaboratorId === collaborator.id ? "bg-emerald-50/30 dark:bg-emerald-500/5 ring-1 ring-emerald-500/20" : ""}`}
                                 >
                                   <div className="flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
@@ -1021,7 +1021,7 @@ export default function EditFolderPage() {
                                     </div>
                                     <div className="flex-1 min-w-0 text-left">
                                       <div className="flex items-center gap-2">
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                        <p className="text-sm font-medium text-foreground truncate">
                                           @
                                           {collaborator.user?.username ||
                                             "User"}
@@ -1039,7 +1039,7 @@ export default function EditFolderPage() {
                                         <span className="text-[10px] text-gray-300 dark:text-white/10">
                                           |
                                         </span>
-                                        <p className="text-[10px] text-gray-400 dark:text-neutral-500 truncate">
+                                        <p className="text-[10px] text-faint truncate">
                                           {collaborator.permissions?.length ||
                                             0}{" "}
                                           capabilities
@@ -1122,12 +1122,12 @@ export default function EditFolderPage() {
                                                     visibility,
                                                   )
                                                 }
-                                                className={`p-3 rounded-sm text-left transition-all border ${editingProfileId === profile.id ? "bg-primary/10 border-primary/40" : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-white/10 hover:border-primary/30"}`}
+                                                className={`p-3 rounded-sm text-left transition-all border ${editingProfileId === profile.id ? "bg-primary/10 border-primary/40" : "bg-background border-gray-100 dark:border-white/10 hover:border-primary/30"}`}
                                               >
-                                                <p className="text-[11px] font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+                                                <p className="text-[11px] font-bold uppercase tracking-wide text-foreground">
                                                   {profile.label}
                                                 </p>
-                                                <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-1">
+                                                <p className="text-[10px] text-muted mt-1">
                                                   {profile.description}
                                                 </p>
                                               </button>
@@ -1153,7 +1153,7 @@ export default function EditFolderPage() {
                               {invites.map((invite) => (
                                 <div
                                   key={invite.id}
-                                  className="flex items-center gap-4 py-4 px-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors rounded-sm group"
+                                  className="flex items-center gap-4 py-4 px-4 hover:bg-wash transition-colors rounded-sm group"
                                 >
                                   <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-900/20 overflow-hidden relative flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-800/50 shrink-0">
                                     {invite.user?.avatar ? (
@@ -1168,7 +1168,7 @@ export default function EditFolderPage() {
                                   </div>
                                   <div className="flex-1 min-w-0 text-left">
                                     <div className="flex items-center gap-2">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                      <p className="text-sm font-medium text-foreground truncate">
                                         @{invite.user?.username || "User"}
                                       </p>
                                       <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider">
@@ -1238,7 +1238,7 @@ export default function EditFolderPage() {
         onConfirm={confirmDelete}
         title={isSubfolder ? "Delete Subfolder?" : "Delete Folder?"}
         message={
-          <div className="text-gray-500 dark:text-neutral-400 text-center text-sm space-y-2">
+          <div className="text-muted text-center text-sm space-y-2">
             <p>
               Are you sure you want to permanently delete{" "}
               <span className="font-bold text-gray-600 dark:text-gray-300">

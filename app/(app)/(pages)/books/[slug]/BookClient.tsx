@@ -114,14 +114,14 @@ export default function BookClient() {
   };
 
   return (
-    <div className="flex min-h-full bg-white dark:bg-neutral-900 w-full">
+    <div className="flex min-h-full bg-background w-full">
       <div className="flex-1 flex flex-col">
-        <div className="bg-white dark:bg-neutral-900/50 border-b border-gray-100 dark:border-neutral-800">
+        <div className="bg-background/50 border-b border-line-subtle">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 flex justify-between items-start">
             <BackButton />
             <button
               onClick={handleShare}
-              className="p-2 sm:p-2.5 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-500 dark:text-neutral-400 rounded-sm transition-colors border border-gray-100 dark:border-neutral-700/50 shadow-xs"
+              className="p-2 sm:p-2.5 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-muted rounded-sm transition-colors border border-gray-100 dark:border-neutral-700/50 shadow-xs"
               title="Share Resource"
             >
               <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -134,7 +134,7 @@ export default function BookClient() {
             </div>
           ) : !book ? (
             <div className="px-4 py-10 sm:py-12">
-              <div className="max-w-4xl mx-auto border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+              <div className="max-w-4xl mx-auto border border-line rounded-md bg-background px-6 py-10 sm:px-8 sm:py-12">
                 <div className="max-w-xl text-left space-y-5">
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     <span className="w-2 h-2 rounded-full bg-blue-500" />
@@ -142,10 +142,10 @@ export default function BookClient() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-md border border-gray-200 dark:border-neutral-700 bg-background flex items-center justify-center">
                       <FiFileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     </div>
-                    <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-medium text-foreground">
                       Book Not Found
                     </h2>
                   </div>
@@ -164,7 +164,7 @@ export default function BookClient() {
                     </button>
                     <button
                       onClick={() => router.back()}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
                     >
                       <FiArrowLeft className="w-4 h-4" />
                       Go Back
@@ -201,17 +201,17 @@ export default function BookClient() {
                         {book.category}
                       </span>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 leading-tight wrap-break-word">
+                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-2 leading-tight wrap-break-word">
                       {book.title}
                     </h1>
-                    <p className="text-lg sm:text-xl text-gray-500 dark:text-neutral-400 font-medium wrap-break-word">
+                    <p className="text-lg sm:text-xl text-muted font-medium wrap-break-word">
                       {book.author}
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-6 sm:gap-8 md:gap-10 border-y border-gray-100 dark:border-neutral-800 py-6 sm:py-8">
+                  <div className="flex flex-wrap items-center gap-6 sm:gap-8 md:gap-10 border-y border-line-subtle py-6 sm:py-8">
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-neutral-500 mb-2">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-faint mb-2">
                         Resource Rating
                       </span>
                       <div className="flex items-center gap-2 sm:gap-3">
@@ -219,13 +219,13 @@ export default function BookClient() {
                           rating={book.rating || 0}
                           size={18}
                         />
-                        <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                        <span className="text-lg sm:text-xl font-bold text-foreground">
                           {book.rating ? book.rating.toFixed(1) : "0.0"}
                         </span>
                       </div>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-neutral-500 mb-2">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-faint mb-2">
                         Total Pages
                       </span>
                       <div className="flex items-center text-gray-900 dark:text-neutral-200">
@@ -297,12 +297,12 @@ export default function BookClient() {
                   </p>
                 </section>
 
-                <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-6 sm:p-8 md:p-12 rounded-lg border border-gray-100 dark:border-neutral-800 min-w-0">
+                <section className="bg-gray-50/50 dark:bg-neutral-800/30 p-6 sm:p-8 md:p-12 rounded-lg border border-line-subtle min-w-0">
                   <div className="mb-8 sm:mb-10">
                     <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">
                       Community
                     </p>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white wrap-break-word">
+                    <h2 className="text-xl sm:text-3xl font-bold text-foreground wrap-break-word">
                       Reviews & Discussion
                     </h2>
                   </div>
@@ -311,7 +311,7 @@ export default function BookClient() {
               </div>
 
               <div className="space-y-8 sm:space-y-12 min-w-0">
-                <section className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-sm border border-gray-100 dark:border-neutral-800">
+                <section className="bg-background p-6 sm:p-8 rounded-sm border border-line-subtle">
                   <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6 sm:mb-8">
                     Resource Stats
                   </h3>
@@ -323,7 +323,7 @@ export default function BookClient() {
                       {book.donor?.username && (
                         <a
                           href={`/profile/${encodeURIComponent(book.donor.username.replace(/\s+/g, ""))}`}
-                          className="font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3 min-w-0"
+                          className="font-bold text-foreground flex items-center gap-2 sm:gap-3 min-w-0"
                         >
                           <div className="w-7 h-7 rounded-sm bg-primary/5 border border-primary/20 flex items-center justify-center text-[11px] font-bold shrink-0 text-primary">
                             {book.donor.username.charAt(0).toUpperCase()}
@@ -338,7 +338,7 @@ export default function BookClient() {
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                         Published
                       </span>
-                      <span className="font-bold text-gray-900 dark:text-white">
+                      <span className="font-bold text-foreground">
                         {book.publishedYear || "Unknown Date"}
                       </span>
                     </div>
@@ -351,13 +351,13 @@ export default function BookClient() {
                           rating={book.rating || 0}
                           size={18}
                         />
-                        <span className="font-bold text-gray-900 dark:text-white">
+                        <span className="font-bold text-foreground">
                           {book.rating?.toFixed(1) || "0.0"}
                         </span>
                       </div>
                     </div>
                     {isAuthenticated && (
-                      <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                      <div className="flex flex-col gap-2 pt-4 border-t border-line-subtle">
                         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                           Your Rating
                         </span>
@@ -399,7 +399,7 @@ export default function BookClient() {
                           onClick={() =>
                             router.push(`/books/${similarBook.slug}`)
                           }
-                          className="flex items-center space-x-3 sm:space-x-4 group cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors min-w-0"
+                          className="flex items-center space-x-3 sm:space-x-4 group cursor-pointer p-3 hover:bg-wash rounded-md transition-colors min-w-0"
                         >
                           <div className="w-12 h-16 sm:w-14 sm:h-20 bg-gray-100 dark:bg-neutral-800 rounded-sm shrink-0 overflow-hidden border border-gray-200 dark:border-neutral-700/50">
                             {similarBook.coverImage ? (

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoStacked, Logo } from "@/app/components/Shared/Logo";
+import { LogoStacked } from "@/app/components/Shared/Logo";
 import {
   FiBook,
   FiSettings,
@@ -14,10 +14,9 @@ import {
   FiShield,
 } from "react-icons/fi";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { HiMenu, HiX } from "react-icons/hi";
 import { useUser, useAuthActions } from "@/app/services";
 import { ConfirmModal } from "../Shared/ConfirmModal";
+import { isNavActive } from "./navigation";
 
 interface SidebarItem {
   label: string;
@@ -31,10 +30,8 @@ interface SidebarItem {
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { logout: performLogout } = useAuthActions();
   const { me: user, isAuthenticated, isLoading } = useUser();
-  const [showSidebar, setShowSideBar] = useState<boolean>(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogoutClick = () => {
@@ -103,36 +100,16 @@ export const Sidebar: React.FC = () => {
     ? authenticatedBottomItems
     : guestBottomItems;
 
-  const isActive = (href: string) => {
-    if (pathname === href) return true;
-
-    // Prevent "My Library" from being active on categories/departments sub-routes
-    if (
-      href === "/library" &&
-      (pathname.startsWith("/library/categories") ||
-        pathname.startsWith("/library/departments"))
-    ) {
-      return false;
-    }
-
-    // Prevent "Discover" from matching other /app/* routes
-    if (href === "/discover" && pathname !== "/discover") {
-      return false;
-    }
-
-    return pathname.startsWith(`${href}/`);
-  };
-
-  const navLinkClass = (href: string, isMobile: boolean = false) =>
-    `flex items-center space-x-3 ${isMobile ? "px-4 py-3 text-base" : "px-3 py-2.5 text-sm"} rounded-sm transition-colors duration-150 ${
-      isActive(href)
-        ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white font-medium"
-        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+  const navLinkClass = (href: string) =>
+    `flex items-center space-x-3 px-3 py-2.5 text-sm rounded-sm transition-colors duration-150 ${
+      isNavActive(pathname, href)
+        ? "bg-gray-100 dark:bg-white/5 text-foreground font-medium"
+        : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
     }`;
 
   return (
     <>
-      <aside className="hidden lg:flex w-56 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 h-screen sticky top-0 flex-col">
+      <aside className="hidden lg:flex w-56 bg-surface border-r border-line h-screen sticky top-0 flex-col">
         <div className="px-5 py-8">
           <Link
             href={"/discover"}
@@ -155,7 +132,7 @@ export const Sidebar: React.FC = () => {
                 </div>
               ))}
             </nav>
-            <nav className="px-3 py-4 border-t border-gray-100 dark:border-neutral-800 space-y-0.5">
+            <nav className="px-3 py-4 border-t border-line-subtle space-y-0.5">
               {[1, 2].map((i) => (
                 <div
                   key={i}
@@ -187,14 +164,14 @@ export const Sidebar: React.FC = () => {
               ))}
             </nav>
 
-            <nav className="px-3 py-4 border-t border-gray-100 dark:border-neutral-800 space-y-0.5">
+            <nav className="px-3 py-4 border-t border-line-subtle space-y-0.5">
               {bottomItems.map((item) => {
                 if (item.onClick) {
                   return (
                     <button
                       key={item.label}
                       onClick={item.onClick}
-                      className="flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
+                      className="flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm text-muted hover:bg-danger-wash hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
                     >
                       <span className="w-4 h-4 shrink-0">{item.icon}</span>
                       <span>{item.label}</span>
@@ -213,7 +190,7 @@ export const Sidebar: React.FC = () => {
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150 ${
                       isGuestCTA && isRegister
                         ? "text-primary dark:text-primary hover:bg-primary/5 font-medium"
-                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                        : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
                     <span className="w-4 h-4 shrink-0">{item.icon}</span>
@@ -225,117 +202,6 @@ export const Sidebar: React.FC = () => {
           </>
         )}
       </aside>
-
-      <button
-        onClick={() => setShowSideBar(!showSidebar)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 shadow-sm"
-        aria-label="Toggle menu"
-      >
-        <HiMenu className="text-gray-600 dark:text-neutral-300 text-2xl" />
-      </button>
-
-      {showSidebar && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
-          onClick={() => setShowSideBar(false)}
-        />
-      )}
-
-      <div
-        className={`lg:hidden fixed top-0 left-0 h-full w-72 bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800 z-50 transform transition-transform duration-300 ease-in-out ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="px-5 py-5 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
-          <div className="flex items-center space-x-2.5">
-            <Logo className="w-8 h-8 text-[#072c0b] dark:text-[#D0FDC2]" />
-            <span className="text-xl font-semibold text-gray-900 dark:text-white">
-              Shelf
-            </span>
-          </div>
-          <button
-            onClick={() => setShowSideBar(false)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
-            aria-label="Close menu"
-          >
-            <HiX className="text-gray-500 dark:text-neutral-400 text-2xl" />
-          </button>
-        </div>
-
-        {isLoading ? (
-          <nav className="flex-1 px-4 py-6 space-y-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div
-                key={i}
-                className="flex items-center space-x-3 px-4 py-3"
-              >
-                <div className="w-5 h-5 bg-gray-100 dark:bg-white/5 rounded-md animate-pulse shrink-0" />
-                <div className="h-4 bg-gray-100 dark:bg-white/5 rounded-md w-32 animate-pulse" />
-              </div>
-            ))}
-          </nav>
-        ) : (
-          <>
-            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
-              {visibleMainItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href!}
-                  onClick={() => setShowSideBar(false)}
-                  className={navLinkClass(item.href!, true)}
-                >
-                  <span className="w-5 h-5 shrink-0">{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
-                  {item.badge && (
-                    <span className="ml-auto text-xs bg-gray-200 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300 px-2 py-0.5 rounded-full font-medium">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </nav>
-
-            <nav className="absolute bottom-0 w-full px-4 py-5 border-t border-gray-100 dark:border-neutral-800 space-y-1 bg-white dark:bg-neutral-950 pb-8">
-              {bottomItems.map((item) => {
-                if (item.onClick) {
-                  return (
-                    <button
-                      key={item.label}
-                      onClick={() => {
-                        item.onClick?.();
-                        setShowSideBar(false);
-                      }}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-150 cursor-pointer w-full text-left"
-                    >
-                      <span className="w-5 h-5 shrink-0">{item.icon}</span>
-                      <span className="font-medium">{item.label}</span>
-                    </button>
-                  );
-                }
-
-                const isGuestCTA = !isAuthenticated;
-                const isRegister = item.label === "Create account";
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href!}
-                    onClick={() => setShowSideBar(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base transition-colors duration-150 ${
-                      isGuestCTA && isRegister
-                        ? "text-primary dark:text-primary hover:bg-primary/5 font-medium"
-                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <span className="w-5 h-5 shrink-0">{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </>
-        )}
-      </div>
 
       <ConfirmModal
         isOpen={showLogoutModal}

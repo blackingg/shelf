@@ -351,11 +351,11 @@ export default function MultipleUploadForm({
   }));
 
   return (
-    <div className="w-full bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-      <div className="p-8 border-b border-gray-100 dark:border-neutral-800">
+    <div className="w-full bg-background border border-line-subtle">
+      <div className="p-8 border-b border-line-subtle">
         <label
           htmlFor="swag"
-          className="flex flex-col items-center justify-center h-40 border border-dashed border-gray-200 dark:border-neutral-800 hover:border-emerald-500 transition-all cursor-pointer group"
+          className="flex flex-col items-center justify-center h-40 border border-dashed border-line hover:border-emerald-500 transition-all cursor-pointer group"
         >
           <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-3xl mb-3 group-hover:text-emerald-500 transition-colors" />
           <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
@@ -442,7 +442,7 @@ export default function MultipleUploadForm({
           )}
         </div>
 
-        <div className="mt-12 flex flex-col md:flex-row md:items-end gap-6 p-8 bg-gray-50/50 dark:bg-neutral-800/20 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+        <div className="mt-12 flex flex-col md:flex-row md:items-end gap-6 p-8 bg-gray-50/50 dark:bg-neutral-800/20 border border-line-subtle rounded-2xl">
           <div className="flex-1">
             <FolderSelectDropdown
               selectedFolderId={targetFolderId}
@@ -571,15 +571,15 @@ function FileToBeUploaded({
   };
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400 dark:text-neutral-500 mb-1.5 block">
+    <label className="text-[10px] uppercase font-bold tracking-wider text-faint mb-1.5 block">
       {children}
     </label>
   );
 
   return (
-    <div className="border border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-white/5 overflow-hidden transition-all">
+    <div className="border border-line-subtle bg-gray-50/30 dark:bg-white/5 overflow-hidden transition-all">
       <div
-        className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/10 transition-colors ${isExpanded ? "border-b border-gray-100 dark:border-neutral-800" : ""}`}
+        className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/10 transition-colors ${isExpanded ? "border-b border-line-subtle" : ""}`}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -588,7 +588,7 @@ function FileToBeUploaded({
           />
           <div className="flex flex-col truncate">
             <span
-              className={`text-sm font-medium truncate ${state ? "text-gray-900 dark:text-white" : "text-red-500"}`}
+              className={`text-sm font-medium truncate ${state ? "text-foreground" : "text-red-500"}`}
             >
               {file.name}
             </span>
@@ -663,7 +663,7 @@ function FileToBeUploaded({
             <FiCheck className="text-gray-300 dark:text-neutral-700" />
           )}
 
-          <div className="flex items-center gap-3 border-l border-gray-100 dark:border-neutral-800 pl-6">
+          <div className="flex items-center gap-3 border-l border-line-subtle pl-6">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -681,7 +681,7 @@ function FileToBeUploaded({
       </div>
 
       <div
-        className={`${isExpanded ? "block" : "hidden"} p-6 bg-white dark:bg-neutral-900/50`}
+        className={`${isExpanded ? "block" : "hidden"} p-6 bg-background/50`}
       >
         <form className="space-y-6" onSubmit={handleDone}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -689,7 +689,7 @@ function FileToBeUploaded({
               <Label>Title</Label>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, title: e.target.value }))
@@ -700,7 +700,7 @@ function FileToBeUploaded({
               <Label>Author</Label>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.author}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, author: e.target.value }))
@@ -711,7 +711,7 @@ function FileToBeUploaded({
               <Label>Publisher</Label>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.publisher}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -762,7 +762,7 @@ function FileToBeUploaded({
               <input
                 type="text"
                 maxLength={4}
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.publishedYear}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -779,7 +779,7 @@ function FileToBeUploaded({
               <Label>ISBN</Label>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.isbn}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, isbn: e.target.value }))
@@ -790,7 +790,7 @@ function FileToBeUploaded({
               <Label>Pages</Label>
               <input
                 type="number"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.pages}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -809,7 +809,7 @@ function FileToBeUploaded({
               </div>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
                 value={formData.tags}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, tags: e.target.value }))
@@ -822,7 +822,7 @@ function FileToBeUploaded({
             <Label>Short Description</Label>
             <textarea
               rows={3}
-              className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+              className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all resize-none"
               value={formData.description}
               onChange={(e) =>
                 setFormData((prev) => ({

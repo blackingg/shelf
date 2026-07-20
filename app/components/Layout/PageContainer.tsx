@@ -2,7 +2,7 @@ export const PageContainer: React.FC<{
   children: React.ReactNode;
   centered?: boolean;
 }> = ({ children, centered = true }) => (
-  <div className="min-h-screen bg-white dark:bg-neutral-900">
+  <div className="min-h-screen bg-background">
     <div
       className={`${
         centered

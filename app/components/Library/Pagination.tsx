@@ -62,7 +62,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
-        className="h-10 w-10 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="h-10 w-10 inline-flex items-center justify-center rounded-md border border-line bg-background text-muted hover:bg-wash disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         aria-label="Previous page"
       >
         <FiChevronLeft className="w-5 h-5" />
@@ -77,7 +77,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             className={`h-10 w-10 rounded-md text-sm font-medium transition-colors border ${
               currentPage === page
                 ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
-                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5"
+                : "border-line bg-background text-muted hover:bg-wash"
             }`}
           >
             {page}
@@ -88,7 +88,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || isLoading}
-        className="h-10 w-10 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="h-10 w-10 inline-flex items-center justify-center rounded-md border border-line bg-background text-muted hover:bg-wash disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         aria-label="Next page"
       >
         <FiChevronRight className="w-5 h-5" />

@@ -32,11 +32,11 @@ function ProgressRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-gray-600 dark:text-neutral-400">{label}</span>
-        <span className="font-medium text-gray-900 dark:text-white tabular-nums">
+        <span className="text-muted">{label}</span>
+        <span className="font-medium text-foreground tabular-nums">
           {value.toLocaleString()}
           {total > 0 && (
-            <span className="text-gray-400 dark:text-neutral-500 font-normal">
+            <span className="text-faint font-normal">
               {" "}
               / {total.toLocaleString()}
             </span>
@@ -67,17 +67,17 @@ function StatLink({
   return (
     <Link
       href={href}
-      className="flex items-center justify-between p-3 rounded-md border border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors group"
+      className="flex items-center justify-between p-3 rounded-md border border-line-subtle hover:bg-wash/50 transition-colors group"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="text-gray-400 dark:text-neutral-500 group-hover:text-primary transition-colors">
+        <span className="text-faint group-hover:text-primary transition-colors">
           {icon}
         </span>
         <span className="text-sm text-gray-700 dark:text-neutral-300">
           {label}
         </span>
       </div>
-      <span className="text-sm font-medium text-gray-900 dark:text-white tabular-nums">
+      <span className="text-sm font-medium text-foreground tabular-nums">
         {value.toLocaleString()}
       </span>
     </Link>
@@ -151,7 +151,7 @@ function ModeratorOverviewContent({ stats }: { stats: PlatformStatsResponse }) {
             <Link
               key={book.id}
               href={`/moderator/books/${book.id}`}
-              className="flex items-center gap-2 text-sm text-gray-600 dark:text-neutral-400 hover:text-primary transition-colors truncate"
+              className="flex items-center gap-2 text-sm text-muted hover:text-primary transition-colors truncate"
             >
               <FiBook className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">{book.title}</span>
@@ -175,8 +175,8 @@ export function ModeratorOverview() {
   const { data: stats, isLoading } = useGetAdminStatsQuery();
 
   return (
-    <section className="p-8 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md h-full flex flex-col">
-      <h3 className="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+    <section className="p-8 bg-background border border-line-subtle rounded-md h-full flex flex-col">
+      <h3 className="text-sm font-medium text-foreground uppercase tracking-wider mb-6">
         Moderator Overview
       </h3>
 

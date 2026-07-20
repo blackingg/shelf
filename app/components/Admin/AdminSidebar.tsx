@@ -51,11 +51,11 @@ export const AdminSidebar = () => {
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 lg:z-0 w-64 h-screen bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col transition-transform duration-300 lg:transition-none lg:translate-x-0 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 lg:z-0 w-64 h-screen bg-background border-r border-line flex flex-col transition-transform duration-300 lg:transition-none lg:translate-x-0 ${
           showMobileSidebar ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-6 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
+        <div className="p-6 border-b border-line-subtle flex justify-between items-center">
           <Link
             href="/admin/dashboard"
             className="flex items-center space-x-3"
@@ -85,7 +85,7 @@ export const AdminSidebar = () => {
                 className={`flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-primary/5 text-primary"
-                    : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white"
+                    : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 <span className={`text-lg ${isActive ? "text-primary" : "text-gray-400"}`}>
@@ -97,10 +97,10 @@ export const AdminSidebar = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-100 dark:border-neutral-800 space-y-3">
+        <div className="p-4 border-t border-line-subtle space-y-3">
           <button
             onClick={handleLogoutClick}
-            className="flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors text-gray-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/15 hover:text-red-600 dark:hover:text-red-400 w-full text-left cursor-pointer"
+            className="flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors text-muted hover:bg-red-50 dark:hover:bg-red-950/15 hover:text-red-600 dark:hover:text-red-400 w-full text-left cursor-pointer"
           >
             <span className="text-lg text-gray-400 hover:text-inherit">
               <FiLogOut />

@@ -6,10 +6,10 @@ const SkeletonPulse = ({ className }: { className?: string }) => (
 
 export default function ProfileSkeleton({ isOwner }: { isOwner?: boolean }) {
   return (
-    <div className="bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800">
+    <div className="bg-background border-b border-line-subtle">
       <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
         <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6">
-          <div className="w-32 h-32 rounded-md bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
+          <div className="w-32 h-32 rounded-md bg-background p-1 border border-line-subtle">
             <SkeletonPulse className="w-full h-full rounded-md" />
           </div>
           <div className="flex-1 pb-2 space-y-3">
@@ -56,7 +56,7 @@ export default function ProfileSkeleton({ isOwner }: { isOwner?: boolean }) {
         </div>
 
         {/* Tabs Skeleton */}
-        <div className="flex border-b border-gray-100 dark:border-neutral-800 gap-8">
+        <div className="flex border-b border-line-subtle gap-8">
           <div className="h-10 w-24 relative">
             <SkeletonPulse className="absolute inset-x-0 top-0 bottom-3 rounded-md opacity-40" />
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500/30" />
