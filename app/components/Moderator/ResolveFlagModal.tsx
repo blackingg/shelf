@@ -68,7 +68,7 @@ export const ResolveFlagModal = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-md p-8 border border-gray-200 dark:border-neutral-800 z-50 flex flex-col"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-background rounded-md p-8 border border-line z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -76,7 +76,7 @@ export const ResolveFlagModal = ({
                 <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/30 rounded-md flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-900/50">
                   <FiAlertTriangle className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                <h3 className="text-lg font-medium text-foreground">
                   Resolve Flag
                 </h3>
               </div>
@@ -89,7 +89,7 @@ export const ResolveFlagModal = ({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <p className="text-xs text-gray-500 dark:text-neutral-400 leading-relaxed">
+              <p className="text-xs text-muted leading-relaxed">
                 Choose the appropriate action to resolve this {contentType === "books" ? "book" : "folder"} flag. This action will be recorded in the system audit logs.
               </p>
 
@@ -110,7 +110,7 @@ export const ResolveFlagModal = ({
                   placeholder="Explain your resolution decision..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="w-full min-h-[100px] p-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors text-gray-900 dark:text-white resize-none"
+                  className="w-full min-h-[100px] p-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors text-foreground resize-none"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export const ResolveFlagModal = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 font-medium text-sm rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700"
+                  className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 text-muted font-medium text-sm rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors border border-gray-100 dark:border-neutral-700"
                 >
                   Cancel
                 </button>

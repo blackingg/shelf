@@ -11,6 +11,7 @@ import { departmentKeys } from "../departments";
 import { bookKeys } from "../books";
 import { searchKeys } from "../search";
 import Cookies from "js-cookie";
+import { hasStoredIdentity } from "../../lib/identity";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -23,11 +24,16 @@ export const userKeys = {
 };
 
 export const useGetMeQuery = (options?: { enabled?: boolean }) => {
-  const hasToken = !!Cookies.get("accessToken");
+  // The accessToken cookie expires hourly, so its absence alone doesn't mean
+  // "guest" — it also means "signed-in user whose token needs a refresh".
+  // hasStoredIdentity() covers that case: it stays true across access-token
+  // expiry (only cleared on explicit logout), so this query still fires,
+  // 401s, and lets the fetcher's refresh flow resume the session.
+  const canResumeSession = !!Cookies.get("accessToken") || hasStoredIdentity();
   return useQuery<User>({
     queryKey: userKeys.me(),
     queryFn: () => api.get<User>("/users/me"),
-    enabled: options?.enabled ?? hasToken,
+    enabled: options?.enabled ?? canResumeSession,
     staleTime: 5 * 60 * 1000, // 5 minutes — user profile rarely changes mid-session
     gcTime: 30 * 60 * 1000,
     retry: false,
@@ -104,7 +110,12 @@ export const useGetUserByUsernameQuery = (username: string, options?: any) => {
 
 export const useUser = (options?: { enabled?: boolean }) => {
   const { addNotification } = useNotifications();
-  const hasToken = !!Cookies.get("accessToken");
+  // Broadened past raw cookie presence for the same reason as useGetMeQuery:
+  // the accessToken cookie expires hourly, but a stored identity means the
+  // session may still be resumable via refresh. Consumers (ModeratorProtectedRoute,
+  // AdminProtectedRoute) rely on this to keep "resolving" rather than bouncing
+  // to /auth/login while a refresh is still in flight.
+  const hasToken = !!Cookies.get("accessToken") || hasStoredIdentity();
 
   const {
     data: me,

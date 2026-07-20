@@ -117,7 +117,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
             className={`p-1.5 rounded-sm transition-all duration-200 ${
               isBookmarked
                 ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-white/90 dark:bg-neutral-800/90 text-gray-500 dark:text-neutral-400 hover:bg-primary hover:text-white border border-gray-100 dark:border-white/5"
+                : "bg-white/90 dark:bg-neutral-800/90 text-muted hover:bg-primary hover:text-white border border-gray-100 dark:border-white/5"
             }`}
             title={isBookmarked ? "Remove Bookmark" : "Bookmark Folder"}
           >
@@ -136,7 +136,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                     e.stopPropagation();
                     setShowMenu(!showMenu);
                   }}
-                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                  className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-muted border border-gray-100 dark:border-white/5"
                 >
                   <FiMoreVertical className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
                 </button>
@@ -149,7 +149,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                         setShowMenu(false);
                       }}
                     />
-                    <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-neutral-900 rounded-sm border border-gray-200 dark:border-neutral-800 py-1 z-20 shadow-lg">
+                    <div className="absolute right-0 mt-1 w-36 bg-background rounded-sm border border-line py-1 z-20 shadow-lg">
                       {canEditFolder && (
                         <button
                           onClick={(e) => {
@@ -157,7 +157,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                             onEdit?.();
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-wash"
                         >
                           Edit
                         </button>
@@ -169,7 +169,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                             onDelete?.();
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                          className="w-full px-3 py-2 text-left text-xs text-danger hover:bg-danger-wash"
                         >
                           Delete
                         </button>
@@ -181,7 +181,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                             onMove?.();
                             setShowMenu(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                          className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-wash"
                         >
                           Move to Folder
                         </button>
@@ -199,7 +199,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                           }
                           setShowMenu(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center space-x-2"
+                        className="w-full px-3 py-2 text-left text-xs text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2"
                       >
                         <FiShare2 className="w-3 h-3" />
                         <span>Share</span>
@@ -221,7 +221,7 @@ export const FolderCard: React.FC<FolderCardProps> = ({
                     addNotification("success", "Link copied to clipboard");
                   }
                 }}
-                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-white/5"
+                className="p-1.5 bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-700 rounded-sm transition-colors text-muted border border-gray-100 dark:border-white/5"
                 title="Share Folder"
               >
                 <FiShare2 className="w-3.5 h-3.5 text-gray-600 dark:text-neutral-300" />
@@ -256,13 +256,13 @@ export const FolderCard: React.FC<FolderCardProps> = ({
             {folder.name}
           </h3>
           {isPublic ? (
-            <FiGlobe className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 shrink-0" />
+            <FiGlobe className="w-3.5 h-3.5 text-faint shrink-0" />
           ) : (
-            <FiLock className="w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 shrink-0" />
+            <FiLock className="w-3.5 h-3.5 text-faint shrink-0" />
           )}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+        <div className="flex items-center justify-between text-xs text-muted">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
               <FiBook className="w-3 h-3" />

@@ -18,7 +18,7 @@ export default function NotificationsSettingsPage() {
   return (
     <div className="space-y-12">
       <div>
-        <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+        <h1 className="text-3xl font-medium text-foreground tracking-tight">
           Notifications
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -40,7 +40,7 @@ export default function NotificationsSettingsPage() {
           <div className="space-y-0 border border-gray-100 dark:border-white/5 rounded-sm overflow-hidden divide-y divide-gray-50 dark:divide-white/5">
             <div className="flex items-center justify-between p-6 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
               <div>
-                <div className="font-medium text-gray-900 dark:text-white">
+                <div className="font-medium text-foreground">
                   Folder Updates
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md">
@@ -56,7 +56,7 @@ export default function NotificationsSettingsPage() {
 
             <div className="flex items-center justify-between p-6 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
               <div>
-                <div className="font-medium text-gray-900 dark:text-white">
+                <div className="font-medium text-foreground">
                   Folder Invites
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md">
@@ -85,7 +85,7 @@ export default function NotificationsSettingsPage() {
           <div className="space-y-0 border border-gray-100 dark:border-white/5 rounded-sm overflow-hidden divide-y divide-gray-50 dark:divide-white/5">
             <div className="flex items-center justify-between p-6">
               <div>
-                <div className="font-medium text-gray-900 dark:text-white">
+                <div className="font-medium text-foreground">
                   Weekly Readings
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">

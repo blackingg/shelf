@@ -254,7 +254,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
   return (
     <div className="flex-1 min-h-full w-full">
-      <div className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
+      <div className="bg-background border-b border-line">
         <div className="relative h-48 bg-linear-to-br from-primary via-primary/95 to-primary/85">
           <div className="max-w-7xl mx-auto px-6 pt-6 relative z-10 flex justify-between items-start">
             <BackButton className="text-primary-foreground/80 hover:text-primary-foreground" />
@@ -279,7 +279,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
           </div>
         ) : !displayUser ? (
           <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border border-gray-200 dark:border-neutral-800 rounded-sm bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+            <div className="border border-line rounded-sm bg-background px-6 py-10 sm:px-8 sm:py-12">
               <div className="max-w-xl text-left space-y-5">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-purple-500" />
@@ -287,10 +287,10 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background flex items-center justify-center">
                     <FiUserX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   </div>
-                  <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                  <h2 className="text-2xl font-medium text-foreground">
                     User Not Found
                   </h2>
                 </div>
@@ -309,7 +309,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   </button>
                   <button
                     onClick={() => router.back()}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
                   >
                     <FiArrowLeft className="w-4 h-4" />
                     Go Back
@@ -321,7 +321,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
         ) : (
           <div className="max-w-7xl mx-auto px-6 pt-5 pb-8">
             <div className="relative -mt-16 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
-              <div className="w-32 h-32 rounded-sm bg-white dark:bg-neutral-900 p-1 border border-gray-100 dark:border-neutral-800">
+              <div className="w-32 h-32 rounded-sm bg-background p-1 border border-line-subtle">
                 <div className="w-full h-full rounded-sm bg-gray-50 dark:bg-neutral-800 flex items-center justify-center text-4xl font-bold text-primary overflow-hidden relative border border-gray-100 dark:border-neutral-700/50 group/avatar">
                   {displayUser.avatar ? (
                     <img
@@ -334,7 +334,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   )}
 
                   {isOwner && (
-                    <label className="absolute bottom-1 right-1 w-8 h-8 bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-700 shadow-xs flex items-center justify-center text-primary hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer z-10">
+                    <label className="absolute bottom-1 right-1 w-8 h-8 bg-background rounded-sm border border-gray-100 dark:border-neutral-700 shadow-xs flex items-center justify-center text-primary hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer z-10">
                       <input
                         type="file"
                         className="hidden"
@@ -353,7 +353,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
               </div>
               <div className="flex-1 pb-2">
                 <div className="flex flex-col gap-1">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+                  <h1 className="text-2xl md:text-4xl font-bold text-foreground tracking-tight">
                     {displayUser.fullName}
                   </h1>
                   <p className="text-primary font-bold tracking-[0.2em] text-[10px]">
@@ -426,7 +426,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
 
               <div className="md:col-span-2 flex items-center justify-center md:justify-end gap-16 md:gap-24">
                 <div className="text-center">
-                  <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
+                  <p className="text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tighter">
                     {isOwner ? booksTotal : user?.counts.donatedBooks}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -434,7 +434,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-black text-gray-900 dark:text-white mb-1 tracking-tighter">
+                  <p className="text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tighter">
                     {isOwner ? ownerFoldersTotal : user?.counts.publicFolders}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -454,8 +454,8 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 shrink-0 ${
                       isActive
-                        ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
-                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                        ? "bg-gray-100 dark:bg-white/5 text-foreground"
+                        : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -465,7 +465,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                         className={`ml-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider ${
                           isActive
                             ? "bg-primary/10 text-primary"
-                            : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400"
+                            : "bg-gray-100 dark:bg-neutral-800 text-muted"
                         }`}
                       >
                         {tab.count}

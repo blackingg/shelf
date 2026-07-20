@@ -30,7 +30,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
               className={`px-6 py-2.5 flex items-center justify-center rounded-md text-[11px] font-black uppercase tracking-widest transition-all duration-200 border shrink-0 ${
                 activeCategory === category.slug
                   ? "bg-primary border-primary text-primary-foreground"
-                  : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:border-gray-200 dark:hover:border-neutral-700"
+                  : "bg-background border-line-subtle text-muted hover:border-gray-200 dark:hover:border-neutral-700"
               }`}
             >
               {category.name}

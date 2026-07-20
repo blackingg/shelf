@@ -6,7 +6,7 @@ export default function FolderDetailSkeleton({
   hideHeader?: boolean;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900 animate-pulse">
+    <div className="flex-1 overflow-y-auto bg-background animate-pulse">
       <div className="p-4 md:p-8 space-y-6">
         {/* Back button skeleton */}
         {!hideHeader && (
@@ -44,8 +44,8 @@ export default function FolderDetailSkeleton({
           </div>
 
           {/* Books table skeleton */}
-          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 dark:border-neutral-800">
+          <div className="bg-background rounded-xl border border-line overflow-hidden">
+            <div className="p-4 border-b border-line-subtle">
               <div className="h-6 bg-gray-200 dark:bg-neutral-800 rounded w-32" />
             </div>
 

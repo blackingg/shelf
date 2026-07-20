@@ -102,7 +102,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
               className={`w-full flex items-center justify-between p-3 rounded-sm border transition-all ${
                 selectedId === folder.id
                   ? "border-primary bg-primary/5 dark:bg-primary/10"
-                  : "border-transparent hover:bg-gray-50 dark:hover:bg-neutral-800"
+                  : "border-transparent hover:bg-wash"
               }`}
             >
               <div
@@ -121,11 +121,11 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
 
                 <div className="text-left truncate">
                   <p
-                    className={`text-sm font-medium truncate ${selectedId === folder.id ? "text-primary font-bold" : "text-gray-900 dark:text-white"}`}
+                    className={`text-sm font-medium truncate ${selectedId === folder.id ? "text-primary font-bold" : "text-foreground"}`}
                   >
                     {folder.name}
                   </p>
-                  <p className="text-[10px] text-gray-400 dark:text-neutral-500">
+                  <p className="text-[10px] text-faint">
                     {folder.booksCount} books
                   </p>
                 </div>
@@ -203,11 +203,11 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-sm z-50 p-6 border border-gray-200 dark:border-neutral-800 flex flex-col max-h-[80vh]"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-background rounded-sm z-50 p-6 border border-line flex flex-col max-h-[80vh]"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white uppercase tracking-tight">
+                <h2 className="text-lg font-medium text-foreground uppercase tracking-tight">
                   {modalTitle}
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
@@ -218,7 +218,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-sm transition-colors"
               >
-                <FiX className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
+                <FiX className="w-5 h-5 text-faint" />
               </button>
             </div>
 
@@ -229,7 +229,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                 className={`w-full flex items-center justify-between p-3 rounded-sm border transition-all ${
                   selectedId === null
                     ? "border-primary bg-primary/5 dark:bg-primary/10"
-                    : "border-transparent hover:bg-gray-50 dark:hover:bg-neutral-800"
+                    : "border-transparent hover:bg-wash"
                 }`}
               >
                 <div className="flex items-center space-x-3">
@@ -237,10 +237,10 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                     <FiArrowUp className="w-4 h-4 text-gray-500" />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    <p className="text-sm font-medium text-foreground">
                       Move to Root
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-neutral-500 uppercase tracking-tight">
+                    <p className="text-[10px] text-faint uppercase tracking-tight">
                       Top-level directory
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
               {!showCreateInline ? (
                 <button
                   onClick={() => setShowCreateInline(true)}
-                  className="w-full flex items-center space-x-3 p-3 rounded-sm border border-dashed border-gray-200 dark:border-neutral-800 text-gray-500 hover:border-primary hover:text-primary transition-all text-sm font-medium"
+                  className="w-full flex items-center space-x-3 p-3 rounded-sm border border-dashed border-line text-gray-500 hover:border-primary hover:text-primary transition-all text-sm font-medium"
                 >
                   <FiPlus className="w-4 h-4" />
                   <span>Create new folder</span>
@@ -269,7 +269,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
                     placeholder="Folder name..."
-                    className="w-full bg-white dark:bg-neutral-900 border border-primary/20 rounded-sm px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full bg-background border border-primary/20 rounded-sm px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleCreateAndSelect();
                       if (e.key === "Escape") setShowCreateInline(false);
@@ -285,7 +285,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                     </button>
                     <button
                       onClick={() => setShowCreateInline(false)}
-                      className="px-3 py-1.5 border border-gray-200 dark:border-neutral-800 text-gray-500 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-neutral-800"
+                      className="px-3 py-1.5 border border-line text-gray-500 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-wash"
                     >
                       Cancel
                     </button>
@@ -308,7 +308,7 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
                     {folders.length === 0 ? (
                       <div className="px-4 py-8 text-center bg-gray-50 dark:bg-neutral-800/50 rounded-sm">
                         <FiFolder className="w-8 h-8 text-gray-300 dark:text-neutral-700 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+                        <p className="text-sm text-muted font-medium">
                           No folders yet
                         </p>
                       </div>
@@ -320,11 +320,11 @@ export const MoveFoldersModal: React.FC<MoveFoldersModalProps> = ({
               </div>
             </div>
 
-            <div className="flex space-x-3 pt-6 mt-2 border-t border-gray-100 dark:border-neutral-800">
+            <div className="flex space-x-3 pt-6 mt-2 border-t border-line-subtle">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 rounded-sm font-medium text-sm hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                className="flex-1 px-4 py-2.5 border border-line text-muted rounded-sm font-medium text-sm hover:bg-wash transition-colors"
               >
                 Cancel
               </button>

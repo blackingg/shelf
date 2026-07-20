@@ -4,6 +4,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { Mutex } from "async-mutex";
 import { getErrorMessage } from "../../helpers/error";
+import { clearActiveIdentity } from "../identity";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const mutex = new Mutex();
@@ -13,6 +14,25 @@ function getLoginPath(): string {
     return "/admin/auth/login";
   }
   return "/auth/login";
+}
+
+/**
+ * A definitively dead session (refresh itself failed) must clear the stored
+ * identity marker, not just the accessToken cookie. useGetMeQuery/useUser
+ * treat hasStoredIdentity() as "resumable" and keep firing /users/me — if
+ * that marker survives a confirmed-failed refresh, every page load (this
+ * redirect included, since useUser() runs unconditionally via
+ * QueryProvider's OpenPanelTracker) re-attempts the same doomed refresh and
+ * redirects again, reload-looping on the login page itself.
+ */
+function endDeadSession() {
+  Cookies.remove("accessToken");
+  clearActiveIdentity();
+
+  const loginPath = getLoginPath();
+  if (window.location.pathname !== loginPath) {
+    window.location.href = loginPath;
+  }
 }
 
 const axiosInstance = axios.create({
@@ -52,12 +72,11 @@ axiosInstance.interceptors.response.use(
 
     // 1. Attempt a token refresh + retry once on auth failure.
     if (isAuthFailure && !originalRequest._retry) {
-      const hasToken = !!Cookies.get("accessToken");
-
-      // If we don't even have a token, we are a guest. Just reject the error.
-      if (!hasToken) {
-        return Promise.reject(error);
-      }
+      // Don't gate this on the accessToken cookie's presence: it's exactly
+      // the thing that's expired by the time we're here (1hr lifetime). The
+      // httpOnly refreshToken cookie (7 days) is the real source of truth,
+      // and only /api/auth/refresh can see it — so always ask it, and let
+      // its response decide whether the session is resumable.
 
       // If we are already refreshing, wait for the mutex to unlock and retry
       if (mutex.isLocked()) {
@@ -78,12 +97,10 @@ axiosInstance.interceptors.response.use(
         }
 
         // Refresh failed — session is truly dead, send them to login.
-        Cookies.remove("accessToken");
-        window.location.href = getLoginPath();
+        endDeadSession();
         return Promise.reject(error);
       } catch (refreshError) {
-        Cookies.remove("accessToken");
-        window.location.href = getLoginPath();
+        endDeadSession();
         return Promise.reject(refreshError);
       } finally {
         release();

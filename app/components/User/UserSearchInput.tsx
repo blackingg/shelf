@@ -63,7 +63,7 @@ export default function UserSearchInput({
 
   if (selectedUser) {
     return (
-      <div className="flex items-center justify-between px-3 py-2 bg-white dark:bg-neutral-900 border border-emerald-500 rounded-sm">
+      <div className="flex items-center justify-between px-3 py-2 bg-background border border-emerald-500 rounded-sm">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-sm bg-primary/5 overflow-hidden relative flex items-center justify-center text-primary text-xs font-bold border border-primary/10">
             {selectedUser.avatar ? (
@@ -77,7 +77,7 @@ export default function UserSearchInput({
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <p className="text-sm font-medium text-foreground">
               @{selectedUser.username}
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function UserSearchInput({
       className="relative flex-1"
     >
       <div className="relative">
-        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-neutral-500 pointer-events-none" />
+        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -112,7 +112,7 @@ export default function UserSearchInput({
             if (query.trim().length >= 2) setIsOpen(true);
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 focus:border-emerald-500 bg-white dark:bg-neutral-900 outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 transition-colors"
+          className="w-full pl-10 pr-10 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 focus:border-emerald-500 bg-background outline-none text-sm text-foreground placeholder-gray-400 dark:placeholder-neutral-500 transition-colors"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
           {query && (
@@ -134,7 +134,7 @@ export default function UserSearchInput({
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-sm overflow-hidden">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-background border border-gray-200 dark:border-neutral-700 rounded-sm overflow-hidden">
           {isFetching ? (
             <div className="flex items-center space-x-3 px-4 py-3 animate-pulse">
               <div className="w-8 h-8 bg-gray-200 dark:bg-neutral-700 rounded-sm shrink-0" />
@@ -154,7 +154,7 @@ export default function UserSearchInput({
                   avatar: foundUser.avatar,
                 })
               }
-              className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-left"
+              className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-wash transition-colors text-left"
             >
               <div className="w-8 h-8 bg-primary/5 rounded-sm overflow-hidden relative flex items-center justify-center text-primary text-xs font-bold border border-primary/10 shrink-0">
                 {foundUser.avatar ? (
@@ -168,10 +168,10 @@ export default function UserSearchInput({
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {foundUser.fullName}
                 </p>
-                <p className="text-xs text-gray-400 dark:text-neutral-500 truncate">
+                <p className="text-xs text-faint truncate">
                   @{foundUser.username}
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function UserSearchInput({
           ) : (
             <div className="px-4 py-5 text-center">
               <FiUser className="w-5 h-5 text-gray-300 dark:text-neutral-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-400 dark:text-neutral-500">
+              <p className="text-sm text-faint">
                 {isExcluded
                   ? "User is already a collaborator"
                   : `No user found with username "${debouncedQuery}"`}

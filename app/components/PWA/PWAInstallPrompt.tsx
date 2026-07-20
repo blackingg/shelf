@@ -72,7 +72,7 @@ export const PWAInstallPrompt: React.FC = () => {
               <h3 className="text-xl font-medium text-foreground">
                 Install Shelf
               </h3>
-              <p className="mt-2 text-center text-gray-500 dark:text-neutral-400 text-sm leading-relaxed max-w-60">
+              <p className="mt-2 text-center text-muted text-sm leading-relaxed max-w-60">
                 Add to your home screen for a faster, fullscreen experience.
               </p>
             </div>

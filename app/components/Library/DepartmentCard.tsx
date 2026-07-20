@@ -20,7 +20,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-md p-4 md:p-5 border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-150"
+      className="group cursor-pointer bg-background rounded-md p-4 md:p-5 border border-line hover:bg-wash transition-colors duration-150"
     >
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex flex-col min-w-0">
@@ -30,7 +30,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
             </p>
           )}
 
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 line-clamp-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-faint line-clamp-1">
             {department.faculty || "Department"}
           </p>
         </div>
@@ -44,7 +44,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
         {department.name}
       </h3>
 
-      <p className="text-xs text-gray-500 dark:text-neutral-400">
+      <p className="text-xs text-muted">
         {resourcesCount} {resourcesCount === 1 ? "resource" : "resources"}
       </p>
     </div>
@@ -53,7 +53,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({
 
 export const DepartmentCardSkeleton: React.FC = () => {
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-md p-4 md:p-5 border border-gray-200 dark:border-neutral-800 animate-pulse">
+    <div className="bg-background rounded-md p-4 md:p-5 border border-line animate-pulse">
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="h-3 w-2/3 bg-gray-100 dark:bg-neutral-800 rounded-md" />
         <div className="w-8 h-8 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70" />

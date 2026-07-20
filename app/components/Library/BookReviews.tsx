@@ -52,7 +52,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
             placeholder="Write a review..."
-            className="w-full bg-gray-50 dark:bg-primary/5 border border-gray-200 dark:border-primary/20 rounded-md px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-primary/30 outline-none focus:border-primary/50 min-h-20 resize-none transition-colors"
+            className="w-full bg-gray-50 dark:bg-primary/5 border border-gray-200 dark:border-primary/20 rounded-md px-4 py-3 text-sm text-foreground placeholder-gray-400 dark:placeholder-primary/30 outline-none focus:border-primary/50 min-h-20 resize-none transition-colors"
           />
           <button
             type="submit"
@@ -93,7 +93,7 @@ export const BookReviews: React.FC<BookReviewsProps> = ({
                     )}
                   </div>
                   <div>
-                    <h4 className="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-1">
+                    <h4 className="text-[11px] font-bold text-foreground leading-none mb-1">
                       @{review.user?.username || "user"}
                     </h4>
                     <p className="text-[9px] text-gray-400 dark:text-primary/60 font-bold uppercase tracking-wider opacity-60">

@@ -99,14 +99,14 @@ export const PaginatedSearchResults: React.FC<PaginatedSearchResultsProps> = ({
           })}
         </div>
       ) : (
-        <div className="h-[40vh] flex flex-col items-center justify-center text-center p-8 bg-gray-50/50 dark:bg-neutral-900/40 rounded-lg border border-dashed border-gray-200 dark:border-neutral-800">
-          <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6 border border-gray-100 dark:border-neutral-800">
+        <div className="h-[40vh] flex flex-col items-center justify-center text-center p-8 bg-gray-50/50 dark:bg-neutral-900/40 rounded-lg border border-dashed border-line">
+          <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6 border border-line-subtle">
             <FiSearch className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             No Results Found
           </h2>
-          <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium">
+          <p className="text-sm text-muted max-w-sm font-medium">
             No matches were found for your search. Try adjusting your filters or
             search terms.
           </p>

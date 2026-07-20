@@ -7,20 +7,20 @@ export default function SecuritySettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           Security
         </h1>
-        <p className="text-gray-500 dark:text-neutral-400 mt-1">
+        <p className="text-muted mt-1">
           Protect your account with additional security settings.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 overflow-hidden">
+      <div className="bg-background rounded-lg border border-line overflow-hidden">
         <div className="p-6 md:p-8 space-y-16">
           {/* <div>
             <div className="flex items-center space-x-3 mb-6">
-              <FiKey className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <FiKey className="w-5 h-5 text-faint" />
+              <h3 className="text-lg font-semibold text-foreground">
                 Two-Factor Authentication
               </h3>
             </div>
@@ -31,20 +31,20 @@ export default function SecuritySettingsPage() {
             <Button variant="outline">Enable 2FA</Button>
           </div> */}
 
-          <div className="border-t border-gray-200 dark:border-neutral-800 pt-8">
+          <div className="border-t border-line pt-8">
             <div className="flex items-center space-x-3 mb-6">
-              <FiShield className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <FiShield className="w-5 h-5 text-faint" />
+              <h3 className="text-lg font-semibold text-foreground">
                 Active Sessions
               </h3>
             </div>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-gray-100 dark:border-neutral-800 rounded-md bg-gray-50 dark:bg-neutral-800/50">
+              <div className="flex items-center justify-between p-4 border border-line-subtle rounded-md bg-gray-50 dark:bg-neutral-800/50">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="font-medium text-foreground">
                     Windows PC - Chrome
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
+                  <div className="text-sm text-muted">
                     San Francisco, CA • Active now
                   </div>
                 </div>
@@ -52,16 +52,16 @@ export default function SecuritySettingsPage() {
                   Current
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 border border-gray-100 dark:border-neutral-800 rounded-md dark:bg-neutral-800/30">
+              <div className="flex items-center justify-between p-4 border border-line-subtle rounded-md dark:bg-neutral-800/30">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="font-medium text-foreground">
                     iPhone 13 - Safari
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
+                  <div className="text-sm text-muted">
                     San Francisco, CA • 2 hours ago
                   </div>
                 </div>
-                <button className="text-red-600 dark:text-red-400 text-sm font-medium hover:underline">
+                <button className="text-danger text-sm font-medium hover:underline">
                   Revoke
                 </button>
               </div>

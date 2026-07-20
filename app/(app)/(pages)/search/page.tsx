@@ -9,6 +9,7 @@ import { useSearchQuery, useSearchTypeQuery } from "@/app/services";
 import { SearchResultType } from "@/app/types/search";
 import { SortFilter } from "@/app/components/Library/SortFilter";
 import { PaginatedSearchResults } from "@/app/components/Search/PaginatedSearchResults";
+import { MobileSearchField } from "@/app/components/Search/MobileSearchField";
 
 const sortOptions = [
   { value: "-created_at", label: "Newest" },
@@ -105,16 +106,17 @@ function SearchContent() {
 
   if (!query) {
     return (
-      <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-neutral-900">
+      <main className="flex-1 overflow-y-auto w-full bg-background">
         <div className="p-4 md:p-8">
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6 border border-gray-100 dark:border-neutral-800">
+          <MobileSearchField />
+          <div className="flex flex-col items-center justify-center min-h-[40vh] lg:min-h-[60vh] text-center px-4">
+            <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6 border border-line-subtle">
               <FiSearch className="w-8 h-8 text-gray-300 dark:text-neutral-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl font-bold text-foreground mb-2">
               Search Shelf
             </h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm font-medium">
+            <p className="text-sm text-muted max-w-sm font-medium">
               Find books, folders, and users across the Shelf.
             </p>
           </div>
@@ -132,9 +134,10 @@ function SearchContent() {
 
   return (
     <>
-      <main className="flex-1 w-full bg-white dark:bg-neutral-900 min-h-full">
+      <main className="flex-1 w-full bg-background min-h-full">
         <div className="p-4 md:p-8">
-          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <MobileSearchField />
+          <div className="mb-4 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <button
@@ -143,7 +146,7 @@ function SearchContent() {
                 >
                   <FiArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-xl md:text-2xl font-bold text-foreground">
                   Search Results
                 </h1>
               </div>
@@ -155,7 +158,7 @@ function SearchContent() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-100 dark:border-neutral-800 pb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-line-subtle pb-2">
             <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
               {tabs.map((tab) => (
                 <button
@@ -163,7 +166,7 @@ function SearchContent() {
                   onClick={() => handleTypeChange(tab.id)}
                   className={`px-4 py-2.5 text-sm font-medium transition-all whitespace-nowrap relative ${
                     type === tab.id
-                      ? "text-gray-900 dark:text-white"
+                      ? "text-foreground"
                       : "text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white"
                   }`}
                 >
@@ -213,7 +216,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex-1 bg-white dark:bg-neutral-900 animate-pulse" />
+        <div className="flex-1 bg-background animate-pulse" />
       }
     >
       <SearchContent />

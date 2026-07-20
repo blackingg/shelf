@@ -37,8 +37,8 @@ export default function FolderEditSkeleton() {
             <div className="space-y-4">
               <div className="h-4 bg-gray-100 dark:bg-neutral-800 rounded w-16" />
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="h-24 bg-gray-50 dark:bg-neutral-800/50 border border-gray-200 dark:border-neutral-800 rounded-md" />
-                <div className="h-24 bg-gray-50 dark:bg-neutral-800/50 border border-gray-200 dark:border-neutral-800 rounded-md" />
+                <div className="h-24 bg-gray-50 dark:bg-neutral-800/50 border border-line rounded-md" />
+                <div className="h-24 bg-gray-50 dark:bg-neutral-800/50 border border-line rounded-md" />
               </div>
             </div>
 
@@ -56,7 +56,7 @@ export default function FolderEditSkeleton() {
                 {[1, 2].map((i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-3 bg-white dark:bg-neutral-900 rounded-md border border-gray-100 dark:border-white/5"
+                    className="flex items-center justify-between p-3 bg-background rounded-md border border-gray-100 dark:border-white/5"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gray-100 dark:bg-neutral-800 rounded-md" />

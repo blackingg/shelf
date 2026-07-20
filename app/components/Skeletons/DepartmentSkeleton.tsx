@@ -19,8 +19,8 @@ export default function DepartmentSkeleton() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="w-32 h-20 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800/50 animate-pulse" />
-                <div className="w-32 h-20 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-gray-100 dark:border-neutral-800/50 animate-pulse" />
+                <div className="w-32 h-20 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-line-subtle animate-pulse" />
+                <div className="w-32 h-20 bg-gray-50/50 dark:bg-neutral-900/40 rounded-md border border-line-subtle animate-pulse" />
               </div>
             </div>
           </div>

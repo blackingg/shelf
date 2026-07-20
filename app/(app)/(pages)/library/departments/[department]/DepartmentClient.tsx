@@ -62,9 +62,9 @@ export default function DepartmentClient({
   return (
     <>
       <div className="flex-1 flex flex-col">
-      <main className="p-6 md:p-12">
+      <main className="p-4 md:p-12">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-10">
+          <div className="mb-6 md:mb-10">
             <BackButton />
           </div>
 
@@ -73,14 +73,14 @@ export default function DepartmentClient({
               <DepartmentSkeleton />
             </div>
           ) : !department ? (
-            <div className="border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+            <div className="border border-line rounded-md bg-background px-6 py-10 sm:px-8 sm:py-12">
               <div className="max-w-xl text-left space-y-5">
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-blue-500" />
                   <span>404 department missing</span>
                 </div>
 
-                <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-medium text-foreground">
                   Department Not Found
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
@@ -97,7 +97,7 @@ export default function DepartmentClient({
                   </button>
                   <button
                     onClick={() => router.back()}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
                   >
                     <FiArrowLeft className="w-4 h-4" />
                     Go Back
@@ -107,45 +107,45 @@ export default function DepartmentClient({
             </div>
           ) : (
             <>
-              <div className="mb-12">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+              <div className="mb-6 md:mb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between lg:gap-10">
                   <div className="max-w-3xl">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-8 h-8 shrink-0 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70 flex items-center justify-center">
+                    <div className="flex items-start gap-4 mb-0 lg:mb-4">
+                      <div className="w-8 h-8 shrink-0 rounded-md border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800/70 hidden lg:flex items-center justify-center">
                         <FaBuilding
                           className={`w-3.5 h-3.5 ${departmentIconColor}`}
                         />
                       </div>
                       <div>
-                        <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-2 block">
+                        <span className="hidden lg:block text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-2">
                           {department.faculty}
                         </span>
-                        <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-tight text-balance">
+                        <h1 className="text-xl md:text-4xl lg:text-6xl font-black text-foreground tracking-tight leading-tight text-balance">
                           {department.name}
                         </h1>
                       </div>
                     </div>
-                    <p className="text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
+                    <p className="hidden lg:block text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
                       {department.description ||
                         `Browse through our curated library of resources for ${department.name}.`}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
+                  <div className="hidden lg:flex items-center gap-4">
+                    <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-line-subtle text-center min-w-32">
                       <span className="block text-3xl font-black text-primary tracking-tighter">
                         {totalBooks || 0}
                       </span>
-                      <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+                      <span className="text-[10px] font-bold text-faint uppercase tracking-widest">
                         Resources
                       </span>
                     </div>
                     {department.school && (
-                      <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center min-w-32">
-                        <span className="block text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
+                      <div className="bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md border border-line-subtle text-center min-w-32">
+                        <span className="block text-xl font-black text-foreground tracking-tight uppercase">
                           {department.school.shortName}
                         </span>
-                        <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-faint uppercase tracking-widest">
                           Institution
                         </span>
                       </div>
@@ -154,7 +154,7 @@ export default function DepartmentClient({
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 md:mb-16">
                 <div className="relative w-full md:w-96 group">
                   <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                   <input
@@ -162,7 +162,7 @@ export default function DepartmentClient({
                     placeholder="Search within department..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-gray-900 dark:text-white transition-all text-sm font-bold tracking-tight"
+                    className="w-full pl-12 pr-4 py-3 bg-background border border-line-subtle rounded-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground transition-all text-sm font-bold tracking-tight"
                   />
                 </div>
 
@@ -179,7 +179,7 @@ export default function DepartmentClient({
 
                   <button
                     onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-sm border border-gray-100 dark:border-neutral-800 text-gray-500 dark:text-neutral-400 hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
+                    className="p-3 bg-gray-50/50 dark:bg-neutral-900/40 rounded-sm border border-line-subtle text-muted hover:text-primary transition-colors h-[42px] flex items-center justify-center min-w-[42px]"
                     title={order === "asc" ? "Ascending" : "Descending"}
                   >
                     <span className="text-sm font-black">

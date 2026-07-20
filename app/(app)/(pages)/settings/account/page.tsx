@@ -93,20 +93,20 @@ export default function AccountSettingsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">
           Account Settings
         </h1>
-        <p className="text-gray-500 dark:text-neutral-400 mt-1">
+        <p className="hidden lg:block text-muted mt-1">
           Manage your account information and preferences.
         </p>
       </div>
 
       <div className="space-y-8">
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Contact Info
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
+          <div className="lg:bg-white lg:dark:bg-neutral-900 lg:rounded-lg lg:border lg:border-gray-200 lg:dark:border-neutral-800 lg:p-6">
             {isEditingEmail ? (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
@@ -121,14 +121,14 @@ export default function AccountSettingsPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                      className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                     />
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingEmail(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -148,10 +148,10 @@ export default function AccountSettingsPage() {
                     <FiMail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
+                    <div className="font-semibold text-foreground text-sm md:text-base">
                       Email Address
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-neutral-400 truncate">
+                    <div className="text-sm text-muted truncate">
                       {user?.email}
                     </div>
                   </div>
@@ -168,10 +168,10 @@ export default function AccountSettingsPage() {
         </section>
 
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Security
           </h3>
-          <div className="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 p-4 md:p-6">
+          <div className="lg:bg-white lg:dark:bg-neutral-900 lg:rounded-lg lg:border lg:border-gray-200 lg:dark:border-neutral-800 lg:p-6">
             {isEditingPassword ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
@@ -193,7 +193,7 @@ export default function AccountSettingsPage() {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -210,7 +210,7 @@ export default function AccountSettingsPage() {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                     <div>
@@ -227,7 +227,7 @@ export default function AccountSettingsPage() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
+                        className="w-full px-4 py-2 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder-gray-400 dark:placeholder-neutral-600"
                       />
                     </div>
                   </div>
@@ -235,7 +235,7 @@ export default function AccountSettingsPage() {
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setIsEditingPassword(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -255,7 +255,7 @@ export default function AccountSettingsPage() {
                     <FiLock className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
+                    <div className="font-semibold text-foreground text-sm md:text-base">
                       Password
                     </div>
                   </div>
@@ -272,10 +272,10 @@ export default function AccountSettingsPage() {
         </section>
 
         <section>
-          <h3 className="text-lg font-bold text-red-600 dark:text-red-500 mb-4 flex items-center space-x-2">
+          <h3 className="text-lg font-bold text-danger mb-4 flex items-center space-x-2">
             <span>Danger Zone</span>
           </h3>
-          <div className="bg-red-50/50 dark:bg-red-950/10 rounded-sm border border-red-100 dark:border-red-900/20 p-5 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="bg-danger-wash rounded-sm border border-red-100 dark:border-red-900/20 p-5 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1">
               <div className="font-bold text-red-900 dark:text-red-400">
                 Delete Account

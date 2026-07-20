@@ -115,7 +115,7 @@ export function FormSelect<
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-gray-400 dark:text-neutral-500 pointer-events-none w-5 h-5 flex items-center justify-center">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-faint pointer-events-none w-5 h-5 flex items-center justify-center">
             {icon}
           </div>
         )}

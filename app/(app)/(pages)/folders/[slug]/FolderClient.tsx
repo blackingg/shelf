@@ -210,7 +210,7 @@ export default function FolderClient() {
   };
 
   return (
-    <div className="w-full min-h-full bg-white dark:bg-neutral-900">
+    <div className="w-full min-h-full bg-background">
       <div className="p-4 md:p-8 space-y-6">
         <div className="flex flex-col space-y-4">
           <BackButton />
@@ -224,10 +224,10 @@ export default function FolderClient() {
             <div className="w-20 h-20 bg-amber-50 dark:bg-amber-900/10 rounded-full flex items-center justify-center mb-6">
               <FiLock className="w-10 h-10 text-amber-600 dark:text-amber-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Private Folder
             </h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mb-8 max-w-sm leading-relaxed">
+            <p className="text-sm text-muted mb-8 max-w-sm leading-relaxed">
               This folder is set to private. You don&apos;t have permission to
               view its contents. If you believe this is an error, contact the
               owner.
@@ -248,7 +248,7 @@ export default function FolderClient() {
             </div>
           </div>
         ) : !folder ? (
-          <div className="border border-gray-200 dark:border-neutral-800 rounded-sm bg-white dark:bg-neutral-900 min-h-[48vh] flex items-center justify-center px-6 py-12">
+          <div className="border border-line rounded-sm bg-background min-h-[48vh] flex items-center justify-center px-6 py-12">
             <div className="w-full max-w-xl text-left space-y-5">
               <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-yellow-400" />
@@ -256,10 +256,10 @@ export default function FolderClient() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background flex items-center justify-center">
                   <FiFolder className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </div>
-                <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-medium text-foreground">
                   Folder Not Found
                 </h2>
               </div>
@@ -278,7 +278,7 @@ export default function FolderClient() {
                 </button>
                 <button
                   onClick={() => router.back()}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
                 >
                   <FiArrowLeft className="w-4 h-4" />
                   Go Back
@@ -300,13 +300,13 @@ export default function FolderClient() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-xl md:text-3xl font-medium text-foreground mb-2">
                     {folder.name}
                   </h1>
-                  <p className="text-gray-500 dark:text-neutral-400 max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
+                  <p className="text-muted max-w-2xl mb-4 text-sm md:text-base leading-relaxed">
                     {folder.description || "No description provided."}
                   </p>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400 dark:text-neutral-500">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-faint">
                     <div className="flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       <span>{folder.booksCount} books</span>
@@ -371,19 +371,19 @@ export default function FolderClient() {
                       <>
                         <button
                           onClick={() => setShowMenu(!showMenu)}
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-sm transition-colors text-gray-500 dark:text-neutral-400"
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-sm transition-colors text-muted"
                         >
                           <FiMoreVertical className="w-6 h-6 md:w-5 md:h-5" />
                         </button>
 
                         {showMenu && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-white/10 py-1 z-10 shadow-lg">
+                          <div className="absolute right-0 mt-2 w-48 bg-background rounded-sm border border-gray-100 dark:border-white/10 py-1 z-10 shadow-lg">
                             {canEdit && (
                               <button
                                 onClick={() =>
                                   router.push(`/folders/${folder.slug}/edit`)
                                 }
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                               >
                                 <FiEdit2 className="w-4 h-4" />
                                 <span>Edit Folder</span>
@@ -395,7 +395,7 @@ export default function FolderClient() {
                                   setShowMenu(false);
                                   setShowCreateSubfolderModal(true);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                               >
                                 <FiPlus className="w-4 h-4" />
                                 <span>Add Subfolder</span>
@@ -404,7 +404,7 @@ export default function FolderClient() {
                             {canSeeShare && (
                               <button
                                 onClick={handleShare}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                               >
                                 <FiShare2 className="w-4 h-4" />
                                 <span>Share</span>
@@ -416,7 +416,7 @@ export default function FolderClient() {
                                   setShowMenu(false);
                                   setShowMoveModal(true);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
                               >
                                 <FiFolder className="w-4 h-4" />
                                 <span>Move Folder</span>
@@ -432,7 +432,7 @@ export default function FolderClient() {
                                     setShowMenu(false);
                                     setShowDeleteModal(true);
                                   }}
-                                  className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center space-x-2 transition-colors"
+                                  className="w-full px-4 py-2 text-left text-sm text-danger hover:bg-danger-wash flex items-center space-x-2 transition-colors"
                                 >
                                   <FiTrash2 className="w-4 h-4" />
                                   <span>Delete</span>
@@ -452,7 +452,7 @@ export default function FolderClient() {
                               className={`w-full px-4 py-2 text-left text-sm flex items-center space-x-2 transition-colors ${
                                 isSelectionMode
                                   ? "text-primary bg-primary/5"
-                                  : "text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-white/5"
+                                  : "text-gray-700 dark:text-neutral-300 hover:bg-wash"
                               }`}
                             >
                               <FiCheckSquare className="w-4 h-4" />
@@ -468,7 +468,7 @@ export default function FolderClient() {
                     ) : (
                       <button
                         onClick={handleShare}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-sm transition-colors text-gray-500 dark:text-neutral-400 border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-sm transition-colors text-muted border border-transparent hover:border-gray-100 dark:hover:border-neutral-700/50"
                         title="Share Folder"
                       >
                         <FiShare2 className="w-6 h-6 md:w-5 md:h-5" />
@@ -481,7 +481,7 @@ export default function FolderClient() {
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-faint">
                   Contents
                 </h3>
                 {canEdit && (
@@ -607,7 +607,7 @@ export default function FolderClient() {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-white dark:bg-neutral-900 border border-gray-100 dark:border-white/10 rounded-sm shadow-2xl p-4 flex items-center space-x-6 min-w-[500px]"
+              className="fixed bottom-[calc(4.5rem+var(--safe-area-inset-bottom))] lg:bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-background border border-gray-100 dark:border-white/10 rounded-sm shadow-2xl p-3 sm:p-4 flex items-center justify-between space-x-3 sm:space-x-6 w-[calc(100%-2rem)] max-w-md sm:w-auto sm:max-w-none sm:min-w-[500px]"
             >
               <div className="flex items-center space-x-4 pr-6 border-r border-gray-100 dark:border-white/5">
                 {selectedBookIds.length > 0 && (
@@ -657,7 +657,7 @@ export default function FolderClient() {
                   <button
                     onClick={handleBulkRemoveFromFolder}
                     disabled={isProcessingBulk}
-                    className="px-4 py-2 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center space-x-2 border border-red-100 dark:border-red-900/20"
+                    className="px-4 py-2 bg-red-50 dark:bg-red-900/10 text-danger rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center space-x-2 border border-red-100 dark:border-red-900/20"
                   >
                     <FiTrash2 className="w-3.5 h-3.5" />
                     <span>Remove Books</span>
@@ -669,7 +669,7 @@ export default function FolderClient() {
                     setSelectedBookIds([]);
                     setSelectedSubfolderIds([]);
                   }}
-                  className="px-4 py-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                  className="px-4 py-2 text-muted hover:text-gray-900 dark:hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
                 >
                   Cancel
                 </button>

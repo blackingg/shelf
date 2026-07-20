@@ -68,17 +68,17 @@ export default function NotificationsPage() {
 
   return (
     <>
-      <div className="bg-white dark:bg-neutral-950 border-b border-gray-100 dark:border-neutral-800/50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8 pb-0">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+      <div className="lg:bg-white lg:dark:bg-neutral-950 lg:border-b border-line-subtle">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 lg:pt-8 pb-0">
+          <div className="flex items-center justify-between mb-4 lg:mb-6">
+            <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tighter">
               Notifications
             </h1>
 
             {unreadCount > 0 && (
               <button
                 onClick={() => actions.markAllAsRead()}
-                className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 hover:text-primary uppercase tracking-widest transition-colors flex items-center gap-2"
+                className="text-[10px] font-bold text-faint hover:text-primary uppercase tracking-widest transition-colors flex items-center gap-2"
               >
                 <FiCheck className="w-4 h-4" /> Mark all read
               </button>
@@ -94,8 +94,8 @@ export default function NotificationsPage() {
                   onClick={() => setActiveTab(tab)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-150 shrink-0 ${
                     isActive
-                      ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white"
-                      : "text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                      ? "bg-gray-100 dark:bg-white/5 text-foreground"
+                      : "text-muted hover:bg-wash hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
                   <span className="capitalize">{tab}</span>
@@ -120,10 +120,10 @@ export default function NotificationsPage() {
               </div>
             ) : isEmpty ? (
               <div className="py-24 text-center">
-                <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-900 rounded-sm flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-800">
+                <div className="w-16 h-16 bg-gray-50 dark:bg-neutral-900 rounded-sm flex items-center justify-center mx-auto mb-6 border border-line-subtle">
                   <FiInbox className="w-8 h-8 text-gray-200 dark:text-neutral-800" />
                 </div>
-                <p className="text-xs font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+                <p className="text-xs font-bold text-faint uppercase tracking-widest">
                   No notifications
                 </p>
                 <p className="text-[11px] text-gray-400 mt-2 font-medium">
@@ -143,14 +143,14 @@ export default function NotificationsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-bold text-gray-900 dark:text-white">
+                          <p className="text-sm font-bold text-foreground">
                             Collaboration Invitation
                           </p>
                           <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded-sm">
                             Pending
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 mb-5 leading-relaxed">
+                        <p className="text-sm text-muted mb-5 leading-relaxed">
                           <span className="font-bold text-primary">
                             @
                             {(typeof invite.invitedBy === "object"
@@ -158,7 +158,7 @@ export default function NotificationsPage() {
                               : null) || "Someone"}
                           </span>{" "}
                           invited you to join
-                          <span className="font-bold text-gray-900 dark:text-white ml-1">
+                          <span className="font-bold text-foreground ml-1">
                             "{invite.folder?.name}"
                           </span>
                         </p>
@@ -179,7 +179,7 @@ export default function NotificationsPage() {
                             onClick={() =>
                               handleRespondToInvite(invite.id, false)
                             }
-                            className="px-5 py-2 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all flex items-center gap-2"
+                            className="px-5 py-2 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-muted text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all flex items-center gap-2"
                           >
                             <FiX className="w-3.5 h-3.5" /> Decline
                           </button>
@@ -214,7 +214,7 @@ export default function NotificationsPage() {
                         className={`w-10 h-10 rounded-sm flex items-center justify-center shrink-0 border transition-colors ${
                           !notification.read
                             ? "bg-white dark:bg-neutral-800 border-primary/20 text-primary"
-                            : "bg-gray-50 dark:bg-neutral-800/50 border-gray-100 dark:border-neutral-800 text-gray-400"
+                            : "bg-gray-50 dark:bg-neutral-800/50 border-line-subtle text-gray-400"
                         }`}
                       >
                         {notification.type.includes("book") ? (
@@ -226,7 +226,7 @@ export default function NotificationsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <p
-                            className={`text-sm font-bold ${!notification.read ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-neutral-500"}`}
+                            className={`text-sm font-bold ${!notification.read ? "text-foreground" : "text-gray-500 dark:text-neutral-500"}`}
                           >
                             {notification.title}
                           </p>
@@ -235,12 +235,12 @@ export default function NotificationsPage() {
                           )}
                         </div>
                         <p
-                          className={`text-sm mb-4 leading-relaxed ${!notification.read ? "text-gray-600 dark:text-neutral-300" : "text-gray-400 dark:text-neutral-500"}`}
+                          className={`text-sm mb-4 leading-relaxed ${!notification.read ? "text-gray-600 dark:text-neutral-300" : "text-faint"}`}
                         >
                           {notification.message}
                         </p>
                         <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-bold text-gray-400 dark:text-neutral-600 uppercase tracking-widest">
+                          <span className="text-[10px] font-bold text-faint uppercase tracking-widest">
                             {new Date(
                               notification.timestamp,
                             ).toLocaleDateString(undefined, {

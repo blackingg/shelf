@@ -32,10 +32,10 @@ export default function AdminResourcesPage() {
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+        <h2 className="text-2xl font-medium text-foreground mb-1">
           Global Resources Directory
         </h2>
-        <p className="text-sm text-gray-500 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           Oversee and manage all books and documents across the platform.
         </p>
       </section>
@@ -48,18 +48,18 @@ export default function AdminResourcesPage() {
             placeholder="Search resources by title, author, or ID..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-line-subtle rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-md overflow-hidden flex flex-col">
+      <div className="bg-background border border-line-subtle rounded-md overflow-hidden flex flex-col">
         {isLoading ? (
           <AdminTableSkeleton rows={10} />
         ) : books?.length === 0 ? (
           <div className="p-12 text-center space-y-2">
             <FiBook className="mx-auto text-3xl text-gray-200 dark:text-neutral-800" />
-            <p className="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+            <p className="text-sm text-muted font-medium">
               No resources found in the directory.
             </p>
           </div>
@@ -69,16 +69,16 @@ export default function AdminResourcesPage() {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-gray-50 dark:border-neutral-800/50">
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    <th className="px-6 py-4 font-medium text-faint uppercase text-[10px] tracking-widest">
                       Resource
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    <th className="px-6 py-4 font-medium text-faint uppercase text-[10px] tracking-widest">
                       Category
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest">
+                    <th className="px-6 py-4 font-medium text-faint uppercase text-[10px] tracking-widest">
                       Donor
                     </th>
-                    <th className="px-6 py-4 font-medium text-gray-400 dark:text-neutral-500 uppercase text-[10px] tracking-widest text-right">
+                    <th className="px-6 py-4 font-medium text-faint uppercase text-[10px] tracking-widest text-right">
                       Actions
                     </th>
                   </tr>
@@ -87,11 +87,11 @@ export default function AdminResourcesPage() {
                   {books?.map((book) => (
                     <tr
                       key={book.id}
-                      className="group hover:bg-gray-50 dark:hover:bg-neutral-800/20 transition-colors"
+                      className="group hover:bg-wash/20 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-14 bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-800 rounded-sm overflow-hidden shrink-0">
+                          <div className="w-10 h-14 bg-gray-50 dark:bg-neutral-800 border border-line-subtle rounded-sm overflow-hidden shrink-0">
                             <img
                               src={book.coverImage || "/dummycover.png"}
                               className="w-full h-full object-cover"
@@ -99,7 +99,7 @@ export default function AdminResourcesPage() {
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white line-clamp-1">
+                            <p className="font-medium text-foreground line-clamp-1">
                               {book.title}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-neutral-500">
@@ -109,7 +109,7 @@ export default function AdminResourcesPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-0.5 bg-gray-50 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400 border border-gray-100 dark:border-neutral-700 rounded-sm text-[10px] uppercase font-medium tracking-wider">
+                        <span className="px-2 py-0.5 bg-gray-50 dark:bg-neutral-800 text-muted border border-gray-100 dark:border-neutral-700 rounded-sm text-[10px] uppercase font-medium tracking-wider">
                           {book.category || "-"}
                         </span>
                       </td>
@@ -127,7 +127,7 @@ export default function AdminResourcesPage() {
                           >
                             <FiExternalLink />
                           </Link>
-                          <button className="p-2 text-gray-400 dark:text-neutral-600 hover:text-gray-900 dark:hover:text-white transition-colors">
+                          <button className="p-2 text-faint hover:text-gray-900 dark:hover:text-white transition-colors">
                             <FiMoreHorizontal />
                           </button>
                         </div>
@@ -139,7 +139,7 @@ export default function AdminResourcesPage() {
             </div>
 
             {booksData && booksData.totalPages > 1 && (
-              <div className="border-t border-gray-100 dark:border-neutral-800 bg-gray-50/30 dark:bg-neutral-900/30 px-6">
+              <div className="border-t border-line-subtle bg-gray-50/30 dark:bg-neutral-900/30 px-6">
                 <Pagination
                   currentPage={page}
                   totalPages={booksData.totalPages}

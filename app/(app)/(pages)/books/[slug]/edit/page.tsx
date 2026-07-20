@@ -184,7 +184,7 @@ export default function EditBookPage() {
   };
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[11px] uppercase font-semibold tracking-wider text-gray-400 dark:text-neutral-500 mb-2 block">
+    <label className="text-[11px] uppercase font-semibold tracking-wider text-faint mb-2 block">
       {children}
     </label>
   );
@@ -193,7 +193,7 @@ export default function EditBookPage() {
 
   if (isLoadingBook) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800">
+      <div className="flex-1 flex items-center justify-center bg-background border-l border-line-subtle">
         <div className="flex flex-col items-center gap-3">
           <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -206,15 +206,15 @@ export default function EditBookPage() {
 
   if (!book) {
     return (
-      <div className="flex-1 bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-6 md:p-10">
-        <div className="max-w-4xl mx-auto border border-gray-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 px-6 py-10 sm:px-8 sm:py-12">
+      <div className="flex-1 bg-background border-l border-line-subtle p-6 md:p-10">
+        <div className="max-w-4xl mx-auto border border-line rounded-md bg-background px-6 py-10 sm:px-8 sm:py-12">
           <div className="max-w-xl text-left space-y-5">
             <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
               <span>404 resource missing</span>
             </div>
 
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-medium text-foreground">
               Resource Not Found
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
@@ -231,7 +231,7 @@ export default function EditBookPage() {
               </button>
               <button
                 onClick={() => router.back()}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
               >
                 <FiArrowLeft className="w-4 h-4" />
                 Go Back
@@ -245,7 +245,7 @@ export default function EditBookPage() {
 
   if (!isDonor && user) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 p-8 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center bg-background border-l border-line-subtle p-8 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -254,10 +254,10 @@ export default function EditBookPage() {
           <div className="w-20 h-20 bg-red-50 dark:bg-red-900/10 rounded-full flex items-center justify-center mb-6">
             <FiAlertCircle className="text-3xl text-red-500" />
           </div>
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+          <h2 className="text-xl font-medium text-foreground mb-2">
             Access Restricted
           </h2>
-          <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-sm mb-10 leading-relaxed">
+          <p className="text-sm text-muted max-w-sm mb-10 leading-relaxed">
             You do not have the required permissions to modify this resource.
             Only the original donor can edit its details.
           </p>
@@ -275,7 +275,7 @@ export default function EditBookPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 border-l border-gray-100 dark:border-neutral-800 overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-background border-l border-line-subtle overflow-y-auto">
       <main className="p-6 md:p-12 max-w-4xl mx-auto w-full">
         <button
           onClick={() => router.back()}
@@ -288,7 +288,7 @@ export default function EditBookPage() {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-8 w-1 bg-emerald-500"></div>
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white tracking-tight">
+            <h1 className="text-3xl font-medium text-foreground tracking-tight">
               Edit Resource
             </h1>
           </div>
@@ -310,7 +310,7 @@ export default function EditBookPage() {
                 <Label>Cover Image</Label>
                 <div
                   onClick={() => coverInputRef.current?.click()}
-                  className="group relative aspect-[3/4] border border-gray-200 dark:border-neutral-800 rounded-md overflow-hidden cursor-pointer hover:border-emerald-500 transition-all shadow-sm"
+                  className="group relative aspect-[3/4] border border-line rounded-md overflow-hidden cursor-pointer hover:border-emerald-500 transition-all shadow-sm"
                 >
                   {coverPreviewUrl ? (
                     <img
@@ -346,13 +346,13 @@ export default function EditBookPage() {
                   className={`p-4 border border-dashed rounded-md flex flex-col items-center text-center transition-all cursor-pointer ${
                     bookFile
                       ? "border-emerald-500 bg-emerald-50/20"
-                      : "border-gray-200 dark:border-neutral-800 hover:border-emerald-500"
+                      : "border-line hover:border-emerald-500"
                   }`}
                 >
                   <FiFileText
                     className={`text-xl mb-2 ${bookFile ? "text-emerald-500" : "text-gray-300"}`}
                   />
-                  <p className="text-[10px] font-bold uppercase tracking-tighter text-gray-500 dark:text-neutral-400">
+                  <p className="text-[10px] font-bold uppercase tracking-tighter text-muted">
                     {bookFile
                       ? bookFile.name
                       : book.fileType
@@ -386,7 +386,7 @@ export default function EditBookPage() {
                     }
                     placeholder="Resource Title"
                     required
-                    className="w-full pl-10 pr-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                    className="w-full pl-10 pr-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                   />
                 </div>
               </div>
@@ -400,7 +400,7 @@ export default function EditBookPage() {
                   }
                   placeholder="Author Name"
                   required
-                  className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                  className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                 />
               </div>
 
@@ -433,7 +433,7 @@ export default function EditBookPage() {
                     }
                     placeholder="0"
                     required
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                   />
                 </div>
               </div>
@@ -451,7 +451,7 @@ export default function EditBookPage() {
                   }
                   placeholder="Brief summary..."
                   required
-                  className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all resize-none rounded-md"
+                  className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all resize-none rounded-md"
                 />
               </div>
 
@@ -488,7 +488,7 @@ export default function EditBookPage() {
                     setFormData({ ...formData, publisher: e.target.value })
                   }
                   placeholder="e.g. Pearson, O'Reilly"
-                  className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                  className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                 />
               </div>
 
@@ -505,7 +505,7 @@ export default function EditBookPage() {
                       })
                     }
                     placeholder="YYYY"
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -516,7 +516,7 @@ export default function EditBookPage() {
                       setFormData({ ...formData, isbn: e.target.value })
                     }
                     placeholder="Optional"
-                    className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                    className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                   />
                 </div>
               </div>
@@ -529,13 +529,13 @@ export default function EditBookPage() {
                     setFormData({ ...formData, tags: e.target.value })
                   }
                   placeholder="e.g. engineering, study guide, exam"
-                  className="w-full px-4 py-3 bg-transparent border border-gray-200 dark:border-neutral-800 text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
+                  className="w-full px-4 py-3 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all rounded-md"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-8 border-t border-gray-100 dark:border-neutral-800 gap-4">
+          <div className="flex justify-end pt-8 border-t border-line-subtle gap-4">
             <Button
               type="button"
               variant="secondary"

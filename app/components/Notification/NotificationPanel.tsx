@@ -145,9 +145,10 @@ export const NotificationPanel: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-md transition-colors group"
+        className="relative p-2.5 lg:p-2 active:bg-pressed lg:hover:bg-wash rounded-md transition-colors group"
+        aria-label="Notifications"
       >
-        <FiBell className="w-5 h-5 text-gray-500 group-hover:text-primary transition-colors" />
+        <FiBell className="w-6 h-6 lg:w-5 lg:h-5 text-foreground lg:text-muted group-hover:text-primary transition-colors" />
         {totalUnread > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full border-2 border-white dark:border-neutral-900 flex items-center justify-center px-1 shadow-sm">
             {bucketedCount}
@@ -170,11 +171,11 @@ export const NotificationPanel: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="absolute top-full -right-20 mt-3 w-80 lg:w-96 bg-white dark:bg-neutral-900 rounded-sm border border-gray-100 dark:border-neutral-800 overflow-hidden z-50 shadow-sm"
+              className="absolute top-full right-0 lg:-right-20 mt-3 w-80 lg:w-96 bg-background rounded-sm border border-line-subtle overflow-hidden z-50 shadow-sm"
             >
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between bg-gray-50/50 dark:bg-neutral-800/20">
+              <div className="px-5 py-4 border-b border-line-subtle flex items-center justify-between bg-gray-50/50 dark:bg-neutral-800/20">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest leading-none">
+                  <h3 className="text-[10px] font-bold text-faint uppercase tracking-widest leading-none">
                     Notifications
                   </h3>
                   {totalUnread > 0 && (
@@ -186,7 +187,7 @@ export const NotificationPanel: React.FC = () => {
                 {unreadCount > 0 && (
                   <button
                     onClick={() => actions.markAllAsRead()}
-                    className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 hover:text-primary uppercase tracking-widest transition-colors"
+                    className="text-[9px] font-bold text-faint hover:text-primary uppercase tracking-widest transition-colors"
                   >
                     Mark All as Read
                   </button>
@@ -196,9 +197,9 @@ export const NotificationPanel: React.FC = () => {
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
                 {/* Local Alerts / Toasts */}
                 {localNotifications.length > 0 && (
-                  <div className="bg-gray-50/30 dark:bg-neutral-800/20 border-b border-gray-100 dark:border-neutral-800">
+                  <div className="bg-gray-50/30 dark:bg-neutral-800/20 border-b border-line-subtle">
                     <div className="px-5 py-2 flex items-center justify-between">
-                      <p className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+                      <p className="text-[9px] font-bold text-faint uppercase tracking-widest">
                         System Alerts ({localNotifications.length})
                       </p>
                       <button
@@ -218,7 +219,7 @@ export const NotificationPanel: React.FC = () => {
                             removeNotification(local.id);
                           }
                         }}
-                        className={`px-5 py-3 border-t border-gray-100 dark:border-neutral-800 animate-in fade-in slide-in-from-top-2 duration-200 group/alert transition-colors ${
+                        className={`px-5 py-3 border-t border-line-subtle animate-in fade-in slide-in-from-top-2 duration-200 group/alert transition-colors ${
                           local.actionLink
                             ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800/60"
                             : ""
@@ -236,11 +237,11 @@ export const NotificationPanel: React.FC = () => {
                               }`}
                             />
                             <div className="flex-1 min-w-0">
-                              <p className="text-[11px] font-bold text-gray-900 dark:text-white uppercase tracking-tight truncate">
+                              <p className="text-[11px] font-bold text-foreground uppercase tracking-tight truncate">
                                 {local.message}
                               </p>
                               {local.description && (
-                                <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
+                                <p className="text-[10px] text-muted mt-0.5 leading-relaxed">
                                   {local.description}
                                 </p>
                               )}
@@ -271,22 +272,22 @@ export const NotificationPanel: React.FC = () => {
                 {/* Collaboration Invites */}
                 {sortedInvites.length > 0 && (
                   <div className="bg-gray-50/50 dark:bg-neutral-800/20">
-                    <div className="px-5 py-2 border-b border-gray-100 dark:border-neutral-800">
-                      <p className="text-[9px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+                    <div className="px-5 py-2 border-b border-line-subtle">
+                      <p className="text-[9px] font-bold text-faint uppercase tracking-widest">
                         Collaboration Invites ({invites.length})
                       </p>
                     </div>
                     {sortedInvites.map((invite) => (
                       <div
                         key={invite.id}
-                        className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-colors"
+                        className="px-5 py-4 border-b border-line-subtle hover:bg-wash/40 transition-colors"
                       >
                         <div className="flex items-start gap-4">
                           <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center shrink-0">
                             <FiUser className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-gray-900 dark:text-white mb-0.5 truncate">
+                            <p className="text-xs font-bold text-foreground mb-0.5 truncate">
                               Invite from @
                               {(typeof invite.invitedBy === "object"
                                 ? (invite.invitedBy as any)?.username
@@ -294,7 +295,7 @@ export const NotificationPanel: React.FC = () => {
                                 invite.folder?.user?.username ||
                                 "Someone"}
                             </p>
-                            <p className="text-[11px] text-gray-600 dark:text-neutral-400 mb-3 leading-relaxed">
+                            <p className="text-[11px] text-muted mb-3 leading-relaxed">
                               wants you to join{" "}
                               <span className="font-bold text-primary">
                                 {invite.folder?.name || "a folder"}
@@ -317,7 +318,7 @@ export const NotificationPanel: React.FC = () => {
                                 onClick={() =>
                                   handleRespondToInvite(invite.id, false)
                                 }
-                                className="flex-1 py-1.5 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider rounded-sm hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all flex items-center justify-center gap-1"
+                                className="flex-1 py-1.5 bg-gray-100 dark:bg-neutral-800 text-muted text-[10px] font-bold uppercase tracking-wider rounded-sm hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all flex items-center justify-center gap-1"
                               >
                                 <FiX className="w-3 h-3" /> Decline
                               </button>
@@ -333,13 +334,13 @@ export const NotificationPanel: React.FC = () => {
                 invites.length === 0 &&
                 localNotifications.length === 0 ? (
                   <div className="px-8 py-16 text-center">
-                    <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-neutral-800">
+                    <div className="w-12 h-12 bg-gray-50 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4 border border-line-subtle">
                       <FiBell className="w-5 h-5 text-gray-300 dark:text-neutral-600" />
                     </div>
-                    <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-widest mb-1">
                       Clear Sky
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-medium">
+                    <p className="text-[10px] text-faint font-medium">
                       Nothing new to report right now.
                     </p>
                   </div>
@@ -347,7 +348,7 @@ export const NotificationPanel: React.FC = () => {
                   userNotifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`px-5 py-4 border-b border-gray-50 dark:border-neutral-800/50 hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-colors cursor-pointer group ${
+                      className={`px-5 py-4 border-b border-gray-50 dark:border-neutral-800/50 hover:bg-wash/40 transition-colors cursor-pointer group ${
                         !notification.read ? "bg-primary/5" : ""
                       }`}
                       onClick={() => handleNotificationClick(notification)}
@@ -357,7 +358,7 @@ export const NotificationPanel: React.FC = () => {
                           className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 border transition-colors ${
                             !notification.read
                               ? "bg-white dark:bg-neutral-800 border-primary/20 shadow-sm"
-                              : "bg-gray-50 dark:bg-neutral-800/50 border-gray-100 dark:border-neutral-800"
+                              : "bg-gray-50 dark:bg-neutral-800/50 border-line-subtle"
                           }`}
                         >
                           {getNotificationIcon(notification.type)}
@@ -367,8 +368,8 @@ export const NotificationPanel: React.FC = () => {
                             <p
                               className={`text-xs font-bold ${
                                 !notification.read
-                                  ? "text-gray-900 dark:text-white"
-                                  : "text-gray-600 dark:text-neutral-400"
+                                  ? "text-foreground"
+                                  : "text-muted"
                               }`}
                             >
                               {notification.title}
@@ -381,12 +382,12 @@ export const NotificationPanel: React.FC = () => {
                             className={`text-[11px] leading-relaxed mb-2 ${
                               !notification.read
                                 ? "text-gray-600 dark:text-neutral-300"
-                                : "text-gray-400 dark:text-neutral-500"
+                                : "text-faint"
                             }`}
                           >
                             {notification.message}
                           </p>
-                          <p className="text-[9px] font-bold text-gray-400 dark:text-neutral-600 tracking-widest uppercase">
+                          <p className="text-[9px] font-bold text-faint tracking-widest uppercase">
                             {formatTimestamp(new Date(notification.timestamp))}
                           </p>
                         </div>
@@ -401,7 +402,7 @@ export const NotificationPanel: React.FC = () => {
                   router.push("/notifications");
                   setIsOpen(false);
                 }}
-                className="w-full py-4 bg-gray-50/50 dark:bg-neutral-800/20 border-t border-gray-100 dark:border-neutral-800 text-[10px] font-bold text-gray-400 dark:text-neutral-500 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gray-50/50 dark:bg-neutral-800/20 border-t border-line-subtle text-[10px] font-bold text-faint hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
               >
                 See all notifications
               </button>

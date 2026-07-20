@@ -39,3 +39,13 @@ export function clearActiveIdentity(): void {
     // no-op
   }
 }
+
+/**
+ * Whether this browser had a signed-in session that wasn't explicitly logged
+ * out. Unlike the accessToken cookie (which expires hourly), this persists for
+ * as long as the refresh token could still be valid — use it to decide whether
+ * a session is worth attempting to resume, not just whether it's live right now.
+ */
+export function hasStoredIdentity(): boolean {
+  return getActiveIdentity() !== "guest";
+}

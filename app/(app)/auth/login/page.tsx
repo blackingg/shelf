@@ -15,6 +15,7 @@ import { useAuthActions } from "@/app/services";
 import { useGoogleLogin } from "@react-oauth/google";
 import { SpinnerLoader } from "@/app/components/Loader/SpinnerLoader";
 import { useOpenPanel } from "@openpanel/nextjs";
+import { getErrorMessage } from "@/app/helpers/error";
 
 interface FormData {
   email: string;
@@ -90,6 +91,10 @@ function LoginPageContent() {
       router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Google Auth Error:", error);
+      addNotification(
+        "error",
+        getErrorMessage(error, "Google login was unsuccessful"),
+      );
     }
   };
 
@@ -146,6 +151,10 @@ function LoginPageContent() {
       router.push(getPostLoginRoute(result.user.onboardingCompleted));
     } catch (error: any) {
       console.error("Login failed:", error);
+      addNotification(
+        "error",
+        getErrorMessage(error, "Login failed. Please check your credentials."),
+      );
     }
   };
 
@@ -175,7 +184,7 @@ function LoginPageContent() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
           <div className="mb-4 md:mb-6 text-center">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-white mb-3 tracking-tight">
+            <h1 className="text-3xl font-medium text-foreground mb-3 tracking-tight">
               Welcome Back
             </h1>
             <p className="text-gray-500 dark:text-gray-400">

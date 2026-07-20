@@ -15,10 +15,10 @@ export default function CategoriesPage() {
       <div className="p-8 md:p-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-2">
+            <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tighter mb-2">
               Browse Categories
             </h1>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-faint">
               Explore resources by discipline and specialization
             </p>
           </div>
@@ -56,8 +56,8 @@ export default function CategoriesPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-gray-100 dark:border-neutral-800/50">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+            <div className="text-center py-24 bg-gray-50/30 dark:bg-neutral-900/10 rounded-md border border-line-subtle">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-faint">
                 No categories found.
               </p>
             </div>

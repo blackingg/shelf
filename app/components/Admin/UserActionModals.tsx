@@ -102,7 +102,7 @@ export function UserActionModals({
           <div className="space-y-4">
             <p>
               You are about to ban{" "}
-              <span className="font-medium text-gray-900 dark:text-white">
+              <span className="font-medium text-foreground">
                 @{user.username}
               </span>
               . Proceed with caution.
@@ -115,7 +115,7 @@ export function UserActionModals({
                 type="text"
                 placeholder="Enter ban reason..."
                 value={banReason}
-                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-md text-sm focus:outline-none focus:border-primary/50 transition-colors text-foreground"
                 onChange={(e) => setBanReason(e.target.value)}
               />
             </div>
@@ -160,7 +160,7 @@ export function UserActionModals({
         message={
           <p>
             Are you sure you want to unban{" "}
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-foreground">
               @{user.username}
             </span>
             ? They will regain access to the platform.
@@ -179,7 +179,7 @@ export function UserActionModals({
           <div className="space-y-4">
             <p>
               Select a new role for{" "}
-              <span className="font-medium text-gray-900 dark:text-white">
+              <span className="font-medium text-foreground">
                 @{user.username}
               </span>
               .
@@ -193,7 +193,7 @@ export function UserActionModals({
                   className={`px-3 py-2 text-sm rounded-md border transition-colors ${
                     roleState === role
                       ? "border-primary bg-primary/10 text-primary"
-                      : "border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800"
+                      : "border-line-subtle text-muted hover:bg-wash"
                   }`}
                 >
                   {role.replace("_", " ")}
@@ -216,7 +216,7 @@ export function UserActionModals({
           <div className="space-y-3">
             <p>
               You are about to permanently delete{" "}
-              <span className="font-medium text-gray-900 dark:text-white">
+              <span className="font-medium text-foreground">
                 @{user.username}
               </span>
               . All associated data will be removed.

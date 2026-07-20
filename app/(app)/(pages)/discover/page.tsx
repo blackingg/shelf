@@ -8,7 +8,8 @@ import {
   FolderCardSkeleton,
 } from "@/app/components/Folders/FolderCard";
 import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
-import { FiBook } from "react-icons/fi";
+import { FiBook, FiBookOpen } from "react-icons/fi";
+import Link from "next/link";
 import { ConfirmModal } from "@/app/components/Shared/ConfirmModal";
 import { BookPreview } from "@/app/types/book";
 import { Folder } from "@/app/types/folder";
@@ -192,7 +193,7 @@ export default function DiscoverPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-20">
             <div className="flex items-center justify-between mb-10">
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
                 Discover
               </h2>
             </div>
@@ -237,14 +238,14 @@ export default function DiscoverPage() {
                 ))}
               </div>
             ) : (
-              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center flex flex-col items-center justify-center">
+              <div className="h-[30vh] bg-gray-50/30 dark:bg-neutral-900/10 p-16 rounded-md border border-line-subtle text-center flex flex-col items-center justify-center">
                 <div className="w-16 h-16 bg-white dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-neutral-700/50">
                   <FiBook className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-bold text-foreground mb-2">
                   No Recommendations Yet
                 </h3>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 max-w-xs mx-auto">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-faint max-w-xs mx-auto">
                   Start exploring to get personalized suggestions.
                 </p>
               </div>
@@ -253,7 +254,7 @@ export default function DiscoverPage() {
 
           <div>
             <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
                 Categories
               </h2>
             </div>
@@ -291,7 +292,7 @@ export default function DiscoverPage() {
                   <div className="mt-10 flex justify-center">
                     <button
                       onClick={handleViewMoreCategories}
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-muted hover:text-primary hover:border-primary transition-colors"
                     >
                       View More
                     </button>
@@ -299,8 +300,8 @@ export default function DiscoverPage() {
                 )}
               </>
             ) : (
-              <div className="min-h-144 md:min-h-176 bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-gray-100 dark:border-neutral-800/50 mt-12 flex items-center justify-center">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+              <div className="min-h-144 md:min-h-176 bg-gray-50/30 dark:bg-neutral-900/10 p-24 rounded-md text-center border border-line-subtle mt-12 flex items-center justify-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-faint">
                   No resources found in this category.
                 </p>
               </div>
@@ -309,7 +310,7 @@ export default function DiscoverPage() {
 
           <div className="mt-20">
             <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
                 Departments
               </h2>
             </div>
@@ -340,7 +341,7 @@ export default function DiscoverPage() {
                       onClick={() =>
                         router.push("/library/departments?view=gallery")
                       }
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-muted hover:text-primary hover:border-primary transition-colors"
                     >
                       View All
                     </button>
@@ -348,8 +349,8 @@ export default function DiscoverPage() {
                 )}
               </>
             ) : (
-              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
+              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-line-subtle text-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-faint mb-4 max-w-sm mx-auto">
                   Explore specialized folders from your school&apos;s
                   departments.
                 </p>
@@ -357,7 +358,7 @@ export default function DiscoverPage() {
                   onClick={() =>
                     router.push("/library/departments?view=gallery")
                   }
-                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
+                  className="px-6 py-2 bg-background border border-line-subtle text-gray-600 dark:text-neutral-300 rounded-md text-[10px] font-bold uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors shadow-sm"
                 >
                   Browse Departments
                 </button>
@@ -367,7 +368,7 @@ export default function DiscoverPage() {
 
           <div className="mt-20">
             <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
                 Community Folders
               </h2>
             </div>
@@ -395,7 +396,7 @@ export default function DiscoverPage() {
                   <div className="mt-10 flex justify-center">
                     <button
                       onClick={() => router.push("/folders")}
-                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-neutral-400 hover:text-primary hover:border-primary transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 dark:border-neutral-700 rounded-sm text-[10px] font-bold uppercase tracking-widest text-muted hover:text-primary hover:border-primary transition-colors"
                     >
                       View More
                     </button>
@@ -403,14 +404,14 @@ export default function DiscoverPage() {
                 )}
               </>
             ) : (
-              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-gray-100 dark:border-neutral-800/50 text-center">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4 max-w-sm mx-auto">
+              <div className="h-[20vh] flex flex-col items-center justify-center bg-gray-50/30 dark:bg-neutral-900/10 p-8 rounded-md border border-line-subtle text-center">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-faint mb-4 max-w-sm mx-auto">
                   Discover curated reading lists and folders created by the
                   community.
                 </p>
                 <button
                   onClick={() => router.push("/folders")}
-                  className="px-6 py-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 text-gray-600 dark:text-neutral-300 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors shadow-sm"
+                  className="px-6 py-2 bg-background border border-line-subtle text-gray-600 dark:text-neutral-300 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors shadow-sm"
                 >
                   Browse Folders
                 </button>
@@ -447,6 +448,16 @@ export default function DiscoverPage() {
         isDanger={true}
         isLoading={isDeleting}
       />
+
+      {user && (
+        <Link
+          href="/upload-and-read"
+          aria-label="Open Viewer"
+          className="lg:hidden fixed right-4 bottom-[calc(4.5rem+var(--safe-area-inset-bottom))] z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center active:opacity-80 transition-opacity"
+        >
+          <FiBookOpen className="w-5 h-5" />
+        </Link>
+      )}
     </div>
   );
 }
