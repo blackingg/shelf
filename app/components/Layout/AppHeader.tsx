@@ -21,10 +21,8 @@ export const AppHeader: React.FC<{
 
   return (
     <nav
-      className={`bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-50 px-4 md:px-6 transition-all duration-200 ${
-        isScrolled
-          ? "border-b border-gray-100 dark:border-white/10 shadow-sm"
-          : "border-b border-transparent"
+      className={`bg-background/80 backdrop-blur-md sticky top-0 z-50 px-4 md:px-6 transition-all duration-200 ${
+        isScrolled ? "border-b border-line" : "border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto">

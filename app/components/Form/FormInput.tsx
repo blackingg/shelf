@@ -37,7 +37,7 @@ export const FormInput: React.FC<{
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+      <label className="block text-sm font-medium text-foreground mb-2">
         {label}
       </label>
       <div className="relative">
@@ -54,10 +54,10 @@ export const FormInput: React.FC<{
           onKeyPress={onKeyPress}
           className={`w-full ${icon ? "pl-10" : "pl-4"} ${
             showPasswordToggle ? "pr-12" : "pr-4"
-          } py-3 text-foreground bg-gray-50 dark:bg-white/5 border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
+          } py-3 text-foreground bg-inset border rounded-sm focus:ring-0 outline-none transition-colors duration-200 ${
             error
-              ? "border-red-500"
-              : "border-gray-100 dark:border-white/5 focus:border-primary"
+              ? "border-danger"
+              : "border-line-subtle focus:border-primary"
           }`}
           placeholder={placeholder}
           autoComplete={autoComplete}
@@ -67,7 +67,7 @@ export const FormInput: React.FC<{
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-faint hover:text-gray-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-faint hover:text-muted transition-colors cursor-pointer"
           >
             {showPassword ? (
               <FiEyeOff className="w-5 h-5" />
@@ -78,7 +78,7 @@ export const FormInput: React.FC<{
         )}
       </div>
       {error && (
-        <p className="text-red-500 text-sm mt-1 flex items-center space-x-1">
+        <p className="text-danger text-sm mt-1 flex items-center space-x-1">
           <FiAlertCircle className="w-4 h-4" />
           <span>{error}</span>
         </p>

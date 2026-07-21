@@ -23,7 +23,7 @@ export const PublicNavButtons: React.FC = () => {
     <div className="flex items-center space-x-4">
       <button
         onClick={() => router.push("/auth/login")}
-        className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-colors"
+        className="text-muted hover:text-foreground text-sm font-medium transition-colors"
       >
         Login
       </button>
