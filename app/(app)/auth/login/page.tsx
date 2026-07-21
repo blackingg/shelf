@@ -25,7 +25,7 @@ interface FormData {
 export default function LoginPage() {
   return (
     <Suspense
-      fallback={<div className="min-h-screen bg-white dark:bg-black" />}
+      fallback={<div className="min-h-screen bg-background" />}
     >
       <LoginPageContent />
     </Suspense>
@@ -169,7 +169,7 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
@@ -184,10 +184,10 @@ function LoginPageContent() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
           <div className="mb-4 md:mb-6 text-center">
-            <h1 className="text-3xl font-medium text-foreground mb-3 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-3 tracking-tight">
               Welcome Back
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-muted">
               Log in to your account to continue
             </p>
           </div>
@@ -207,20 +207,20 @@ function LoginPageContent() {
                 value={formData.email}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                icon={<FiMail className="w-5 h-5 text-faint" />}
                 placeholder="you@example.com"
                 autoComplete="email"
               />
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                  <label className="text-sm font-medium text-foreground">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-xs text-gray-400 hover:text-primary transition-colors"
+                    className="text-xs text-faint hover:text-primary transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -232,7 +232,7 @@ function LoginPageContent() {
                   value={formData.password}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                  icon={<FiLock className="w-5 h-5 text-faint" />}
                   placeholder="••••••••"
                   autoComplete="current-password"
                   showPasswordToggle={true}
@@ -269,7 +269,7 @@ function LoginPageContent() {
             />
           </Card>
 
-          <p className="mt-8 text-center text-sm text-gray-500">
+          <p className="mt-8 text-center text-sm text-muted">
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"

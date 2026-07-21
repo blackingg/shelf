@@ -5,7 +5,7 @@ export const Card: React.FC<{
 }> = ({ children, className = "", onClick }) => (
   <div
     onClick={onClick}
-    className={`bg-white  dark:bg-black border border-gray-100 dark:border-white/5 rounded-sm p-10 ${className}`}
+    className={`bg-surface border border-line-subtle rounded-sm p-10 ${className}`}
   >
     {children}
   </div>

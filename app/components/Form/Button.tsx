@@ -24,8 +24,7 @@ export const Button: React.FC<{
 
   const variantStyles = {
     primary: "bg-primary text-primary-foreground hover:opacity-90",
-    secondary:
-      "bg-gray-100 dark:bg-white/5 text-foreground hover:bg-gray-200 dark:hover:bg-white/10",
+    secondary: "bg-inset text-foreground hover:bg-wash",
     outline: "border border-primary text-primary hover:bg-primary/5",
   };
 

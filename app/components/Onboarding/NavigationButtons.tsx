@@ -25,8 +25,8 @@ export const NavigationButtons: React.FC<{
       disabled={!canGoBack}
       className={`flex items-center space-x-2 px-6 py-3 rounded-sm font-medium transition-colors ${
         !canGoBack
-          ? "text-gray-300 dark:text-gray-700 cursor-not-allowed opacity-0 pointer-events-none"
-          : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white cursor-pointer"
+          ? "text-faint cursor-not-allowed opacity-0 pointer-events-none"
+          : "text-muted hover:text-foreground cursor-pointer"
       }`}
     >
       <FiArrowLeft className="w-4 h-4" />
@@ -39,7 +39,7 @@ export const NavigationButtons: React.FC<{
       className={`flex-1 flex items-center space-x-2 px-8 py-3 rounded-sm font-medium transition-all ${
         canProceed && !isLoading
           ? "bg-primary text-primary-foreground hover:opacity-90 cursor-pointer"
-          : "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+          : "bg-inset text-faint cursor-not-allowed"
       }`}
     >
       <div className="flex items-center justify-center w-full space-x-2">
