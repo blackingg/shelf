@@ -191,7 +191,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
@@ -206,10 +206,10 @@ export default function SignupPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-6">
         <div className="w-full max-w-[440px]">
           <div className="mb-4 md:mb-6 text-center">
-            <h1 className="text-3xl font-medium text-foreground mb-3 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-3 tracking-tight">
               Create Account
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-muted">
               Join thousands of students and readers
             </p>
           </div>
@@ -233,7 +233,7 @@ export default function SignupPage() {
                   Continue to Login
                 </Button>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted">
                   Didn't receive the email?{" "}
                   <button
                     onClick={() => handleSubmit()}
@@ -262,7 +262,7 @@ export default function SignupPage() {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                    icon={<FiUser className="w-5 h-5 text-faint" />}
                     placeholder="John"
                     autoComplete="given-name"
                   />
@@ -274,7 +274,7 @@ export default function SignupPage() {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    icon={<FiUser className="w-5 h-5 text-gray-400" />}
+                    icon={<FiUser className="w-5 h-5 text-faint" />}
                     placeholder="Doe"
                     autoComplete="family-name"
                   />
@@ -287,7 +287,7 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  icon={<FiMail className="w-5 h-5 text-gray-400" />}
+                  icon={<FiMail className="w-5 h-5 text-faint" />}
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -300,7 +300,7 @@ export default function SignupPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                    icon={<FiLock className="w-5 h-5 text-faint" />}
                     placeholder="••••••••"
                     autoComplete="new-password"
                     showPasswordToggle={true}
@@ -314,7 +314,7 @@ export default function SignupPage() {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  icon={<FiLock className="w-5 h-5 text-gray-400" />}
+                  icon={<FiLock className="w-5 h-5 text-faint" />}
                   placeholder="••••••••"
                   autoComplete="new-password"
                   showPasswordToggle={true}
@@ -325,7 +325,7 @@ export default function SignupPage() {
                   checked={acceptTerms}
                   onChange={setAcceptTerms}
                   label={
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted">
                       I agree to the{" "}
                       <Link
                         href="/terms"
@@ -368,7 +368,7 @@ export default function SignupPage() {
             </Card>
           )}
 
-          <p className="mt-8 text-center text-sm text-gray-500">
+          <p className="mt-8 text-center text-sm text-muted">
             Already have an account?{" "}
             <Link
               href="/auth/login"

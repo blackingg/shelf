@@ -2,10 +2,10 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto py-16 px-6">
       <div className="mb-12">
-        <h1 className="text-4xl font-medium text-foreground mb-2 tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-medium text-foreground mb-2 tracking-tight">
           Privacy Policy
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           Last Updated: April 26, 2026
         </p>
       </div>
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             1. Information We Collect
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               We collect information you provide directly to us when you create
               an account, such as your name and email address. We also store the
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             2. How We Use Information
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               We use your information to provide, maintain, and improve Shelf.
               This includes personalizing your experience, facilitating sharing
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             3. Data Security
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               We take reasonable measures to protect your information from
               unauthorized access, loss, or misuse. However, no internet-based
@@ -61,13 +61,13 @@ export default function PrivacyPage() {
           </div>
         </section>
 
-        <section className="pt-8 border-t border-gray-100 dark:border-white/5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <section className="pt-8 border-t border-line-subtle">
+          <p className="text-sm text-muted">
             If you have any questions about this Privacy Policy, please contact
             us at{" "}
             <a
               href="mailto:privacy@shelf.ng"
-              className="text-emerald-600 font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               privacy@shelf.ng
             </a>

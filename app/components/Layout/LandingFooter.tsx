@@ -6,7 +6,7 @@ import { LogoStacked } from "@/app/components/Shared/Logo";
 
 export const LandingFooter: React.FC = () => {
   return (
-    <footer className="bg-white dark:bg-black py-20 px-6 border-t border-gray-100 dark:border-white/5">
+    <footer className="bg-background py-20 px-6 border-t border-line-subtle">
       <div className="max-w-7xl mx-auto text-center">
         <Link
           href="/"
@@ -14,11 +14,11 @@ export const LandingFooter: React.FC = () => {
         >
           <LogoStacked className="w-20 h-6 text-primary" />
         </Link>
-        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-8">
+        <p className="text-sm text-muted max-w-sm mx-auto mb-8">
           Building the future of digital libraries. Knowledge for students and
           readers, everywhere.
         </p>
-        <div className="flex justify-center space-x-8 mb-8 text-[10px] font-medium uppercase tracking-widest text-gray-400">
+        <div className="flex justify-center space-x-8 mb-8 text-[10px] font-medium uppercase tracking-widest text-faint">
           <Link
             href="/privacy"
             className="hover:text-primary transition-colors"
@@ -48,7 +48,7 @@ export const LandingFooter: React.FC = () => {
             Instagram
           </a>
         </div>
-        <p className="text-[10px] text-gray-400">
+        <p className="text-[10px] text-faint">
           © {new Date().getFullYear()} Shelf. All rights reserved.
         </p>
       </div>

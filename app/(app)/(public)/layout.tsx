@@ -15,7 +15,7 @@ export default function PublicLayout({
   const showFooter = pathname === "/";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
       <AppHeader rightContent={<PublicNavButtons />} />
       <div className="overflow-x-clip">
         <main>{children}</main>
