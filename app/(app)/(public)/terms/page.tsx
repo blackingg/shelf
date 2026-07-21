@@ -2,10 +2,10 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto py-16 px-6">
       <div className="mb-12">
-        <h1 className="text-4xl font-medium text-foreground mb-2 tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-medium text-foreground mb-2 tracking-tight">
           Terms of Service
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           Last Updated: April 26, 2026
         </p>
       </div>
@@ -15,7 +15,7 @@ export default function TermsPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             1. Acceptance of Terms
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               By accessing and using Shelf, you agree to be bound by these Terms
               of Service. If you do not agree to these terms, please do not use
@@ -33,7 +33,7 @@ export default function TermsPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             2. User Obligations
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               You agree to use Shelf in compliance with all applicable laws and
               regulations. You must not use the platform to share illegal,
@@ -50,7 +50,7 @@ export default function TermsPage() {
           <h2 className="text-xl font-medium text-foreground mb-4">
             3. Content & Intellectual Property
           </h2>
-          <div className="text-base text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+          <div className="text-base text-muted space-y-4 leading-relaxed">
             <p>
               Shelf allows you to upload, store, and share digital materials.
               While you retain ownership of your content, you grant Shelf a
@@ -64,12 +64,12 @@ export default function TermsPage() {
           </div>
         </section>
 
-        <section className="pt-8 border-t border-gray-100 dark:border-white/5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <section className="pt-8 border-t border-line-subtle">
+          <p className="text-sm text-muted">
             If you have any questions about these Terms, please contact us at{" "}
             <a
               href="mailto:support@shelf.ng"
-              className="text-emerald-600 font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               support@shelf.ng
             </a>

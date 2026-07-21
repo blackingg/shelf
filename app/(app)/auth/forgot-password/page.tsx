@@ -99,9 +99,7 @@ export default function ForgotPassword() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && canProceed() && handleNext()
                   }
-                  icon={
-                    <FiMail className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                  }
+                  icon={<FiMail className="w-5 h-5 text-faint" />}
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -136,7 +134,7 @@ export default function ForgotPassword() {
           </Card>
 
           {currentStep === "email" && (
-            <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-8 text-center text-sm text-muted">
               Remember your password?{" "}
               <Link
                 href="/auth/login"

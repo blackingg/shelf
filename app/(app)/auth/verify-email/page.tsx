@@ -61,7 +61,7 @@ function VerifyEmailContent() {
       <Card className="p-4! md:p-8! text-center">
         <div className="flex flex-col items-center justify-center py-8">
           <SpinnerLoader />
-          <p className="mt-4 text-gray-500 dark:text-gray-400 font-medium">
+          <p className="mt-4 text-muted font-medium">
             {message}
           </p>
         </div>
@@ -92,7 +92,7 @@ function VerifyEmailContent() {
   return (
     <Card className="p-4! md:p-8! text-center">
       <StepHeader
-        icon={<FiAlertCircle className="w-10 h-10 text-red-500" />}
+        icon={<FiAlertCircle className="w-10 h-10 text-danger" />}
         title="Verification Failed"
         description={message}
       />
@@ -103,7 +103,7 @@ function VerifyEmailContent() {
         >
           Back to Sign In
         </Link>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           Didn't receive an email?{" "}
           <Link
             href="/auth/register"
@@ -119,7 +119,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <AppHeader
         rightContent={
           <Link
@@ -134,10 +134,10 @@ export default function VerifyEmailPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[440px]">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-medium text-foreground mb-2 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-2 tracking-tight">
               Email Verification
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-muted">
               Securing your account access
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function VerifyEmailPage() {
             fallback={
               <Card className="p-8 text-center">
                 <SpinnerLoader />
-                <p className="mt-4 text-gray-500">Loading...</p>
+                <p className="mt-4 text-muted">Loading...</p>
               </Card>
             }
           >

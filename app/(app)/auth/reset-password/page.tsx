@@ -85,7 +85,7 @@ function ResetPasswordForm() {
     return (
       <Card className="p-4! md:p-8! text-center">
         <StepHeader
-          icon={<FiAlertCircle className="w-6 h-6 text-red-500" />}
+          icon={<FiAlertCircle className="w-6 h-6 text-danger" />}
           title="Invalid Link"
           description={error}
         />
@@ -114,9 +114,7 @@ function ResetPasswordForm() {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            icon={
-              <FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-            }
+            icon={<FiLock className="w-5 h-5 text-faint" />}
             placeholder="••••••••"
             autoComplete="new-password"
             showPasswordToggle
@@ -134,7 +132,7 @@ function ResetPasswordForm() {
             confirmPassword &&
             handlePasswordSubmit()
           }
-          icon={<FiLock className="w-5 h-5 text-gray-400 dark:text-gray-500" />}
+          icon={<FiLock className="w-5 h-5 text-faint" />}
           placeholder="••••••••"
           autoComplete="new-password"
           showPasswordToggle
@@ -171,7 +169,7 @@ export default function ResetPasswordPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[440px]">
           <Suspense
-            fallback={<Card className="!p-8 text-center">Loading...</Card>}
+            fallback={<Card className="p-8! text-center">Loading...</Card>}
           >
             <ResetPasswordForm />
           </Suspense>
