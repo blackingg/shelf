@@ -29,6 +29,7 @@ export async function generateMetadata({
     return {
       title,
       description,
+      robots: { index: false, follow: false },
       openGraph: {
         title,
         description,
@@ -50,6 +51,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/books/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -65,6 +69,40 @@ export async function generateMetadata({
   };
 }
 
-export default function Page() {
-  return <BookClient />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const book = await getBook(slug);
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.shelf.ng";
+  const jsonLd = book
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Book",
+        name: book.title,
+        author: {
+          "@type": "Person",
+          name: book.author,
+        },
+        description: book.description,
+        url: `${siteUrl}/books/${slug}`,
+        ...(book.coverImage && { image: book.coverImage }),
+        ...(book.category && { genre: book.category }),
+      }
+    : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <BookClient />
+    </>
+  );
 }

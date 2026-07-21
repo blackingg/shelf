@@ -24,7 +24,9 @@ export async function generateMetadata({
   const folder = await getFolder(slug);
 
   if (!folder) {
-    return {};
+    return {
+      robots: { index: false, follow: false },
+    };
   }
 
   const title = folder.name;
@@ -36,6 +38,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/folders/${slug}`,
+    },
     openGraph: {
       title,
       description,

@@ -40,7 +40,24 @@ export const metadata: Metadata = {
     default: "Shelf",
     template: "%s | Shelf",
   },
-  description: "Community-driven book collections",
+  description:
+    "Discover, organize and share books and course materials with a community of readers and students on Shelf.",
+  openGraph: {
+    type: "website",
+    siteName: "Shelf",
+    title: "Shelf",
+    description:
+      "Discover, organize and share books and course materials with a community of readers and students on Shelf.",
+    images: [{ url: "/logo.png", alt: "Shelf" }],
+  },
+  twitter: {
+    card: "summary",
+    site: "@shelfng_",
+    title: "Shelf",
+    description:
+      "Discover, organize and share books and course materials with a community of readers and students on Shelf.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function AppRootLayout({
@@ -61,6 +78,10 @@ export default function AppRootLayout({
         <link
           rel="me"
           href="https://www.instagram.com/shelf_ng"
+        />
+        <link
+          rel="me"
+          href="https://www.linkedin.com/company/shelfng/"
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
