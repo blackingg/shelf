@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 
 interface DepartmentResponse {
   slug: string;
@@ -23,6 +23,32 @@ interface FolderResponse {
 interface PaginatedResponse<T> {
   items: T[];
   total: number;
+  totalPages: number;
+  hasNext: boolean;
+}
+
+const PAGE_LIMIT = 500;
+// Safety cap so a bad totalPages value can't loop forever (50k URLs is
+// also the per-file limit of the sitemap protocol).
+const MAX_PAGES = 100;
+
+async function fetchAllPages<T>(url: string): Promise<T[]> {
+  const items: T[] = [];
+  const separator = url.includes("?") ? "&" : "?";
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res = await fetch(`${url}${separator}limit=${PAGE_LIMIT}&page=${page}`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) break;
+
+    const data: PaginatedResponse<T> = await res.json();
+    items.push(...data.items);
+
+    if (!data.hasNext) break;
+  }
+
+  return items;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -41,28 +67,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch data in parallel
   try {
-    const [resDepts, resCats, resBooks, resFolders] = await Promise.all([
+    const [resDepts, resCats, allBooks, allFolders] = await Promise.all([
       fetch(`${apiUrl}/departments/`, { next: { revalidate: 3600 } }),
       fetch(`${apiUrl}/categories/`, { next: { revalidate: 3600 } }),
-      fetch(`${apiUrl}/books/?limit=500`, { next: { revalidate: 3600 } }),
-      fetch(`${apiUrl}/folders/public?limit=500`, {
-        next: { revalidate: 3600 },
-      }),
+      fetchAllPages<BookResponse>(`${apiUrl}/books/`),
+      fetchAllPages<FolderResponse>(`${apiUrl}/folders/public`),
     ]);
 
     if (resDepts.ok) departments = await resDepts.json();
     if (resCats.ok) categories = await resCats.json();
-
-    if (resBooks.ok) {
-      const booksData: PaginatedResponse<BookResponse> = await resBooks.json();
-      books = booksData.items;
-    }
-
-    if (resFolders.ok) {
-      const foldersData: PaginatedResponse<FolderResponse> =
-        await resFolders.json();
-      folders = foldersData.items;
-    }
+    books = allBooks;
+    folders = allFolders;
   } catch (error) {
     console.error("Error fetching data for sitemap:", error);
   }
@@ -71,43 +86,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}`,
-      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: `${baseUrl}/discover`,
-      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${baseUrl}/library/departments`,
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/library/categories`,
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/folders`,
-      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.3,
     },
     {
       url: `${baseUrl}/terms`,
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.3,
     },
