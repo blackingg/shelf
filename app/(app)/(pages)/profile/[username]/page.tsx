@@ -29,6 +29,7 @@ export async function generateMetadata({
     return {
       title,
       description,
+      robots: { index: false, follow: false },
       openGraph: {
         title,
         description,
@@ -52,6 +53,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/profile/${username}`,
+    },
     openGraph: {
       title,
       description,

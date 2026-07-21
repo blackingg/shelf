@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "The terms and conditions for using Shelf.",
+  alternates: {
+    canonical: "/terms",
+  },
+};
+
 export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto py-16 px-6">
