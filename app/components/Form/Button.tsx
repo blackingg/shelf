@@ -1,0 +1,61 @@
+export const Button: React.FC<{
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: "button" | "submit";
+  variant?: "primary" | "secondary" | "outline";
+  isLoading?: boolean;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  className?: string;
+  loader?: React.ReactNode;
+}> = ({
+  children,
+  onClick,
+  type = "button",
+  variant = "primary",
+  isLoading = false,
+  disabled = false,
+  icon,
+  className = "",
+  loader,
+}) => {
+  const baseStyles =
+    "w-full py-3 px-4 rounded-sm font-medium transition-colors duration-150 flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const variantStyles = {
+    primary: "bg-primary text-primary-foreground hover:opacity-90",
+    secondary: "bg-inset text-foreground hover:bg-wash",
+    outline: "border border-primary text-primary hover:bg-primary/5",
+  };
+
+  const activeStyles =
+    disabled || isLoading
+      ? ""
+      : variantStyles[variant as keyof typeof variantStyles] ||
+        variantStyles.primary;
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled || isLoading}
+      className={`${baseStyles} ${activeStyles} ${className}`}
+    >
+      {isLoading ? (
+        <>
+          {loader ? (
+            <span className="mr-2">{loader}</span>
+          ) : (
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          )}
+          <span>Loading...</span>
+        </>
+      ) : (
+        <>
+          <span>{children}</span>
+          {icon}
+        </>
+      )}
+    </button>
+  );
+};

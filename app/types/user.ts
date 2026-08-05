@@ -1,0 +1,67 @@
+export type UserRole = "USER" | "MODERATOR" | "ADMIN" | "SUPER_ADMIN";
+
+export interface User {
+  id: string;
+  uuid: string;
+  email: string;
+  fullName: string;
+  username: string;
+  avatar: string | null;
+  bio: string | null;
+  role: UserRole;
+  booksCount: number;
+  foldersCount: number;
+  onboardingCompleted: boolean;
+  school: { id: string; name: string; shortName: string } | null;
+  department: { id: string; name: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateUserRequest {
+  fullName?: string;
+  username?: string;
+  bio?: string;
+  avatar?: string;
+  schoolId?: string;
+  departmentId?: string;
+  email?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface UserCounts {
+  donatedBooks: number;
+  publicFolders: number;
+  ratings: number;
+  reviews: number;
+}
+
+export interface UserPublic {
+  id: string;
+  uuid: string;
+  email: string;
+  fullName: string;
+  username: string;
+  avatar: string | null;
+  bio: string | null;
+  role: UserRole;
+  booksCount: number;
+  foldersCount: number;
+  onboardingCompleted: boolean;
+  school?: { id: string; name: string; shortName: string | null } | null;
+  department?: { id: string; name: string } | null;
+  counts: UserCounts;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserMinimal {
+  id: string;
+  username: string;
+  fullName: string;
+  avatar: string | null;
+}

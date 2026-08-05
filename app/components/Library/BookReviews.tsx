@@ -1,0 +1,130 @@
+import React, { useState } from "react";
+import { useRatings, useUser } from "@/app/services";
+import { FiTrash2, FiSend } from "react-icons/fi";
+import Image from "next/image";
+import Link from "next/link";
+
+interface BookReviewsProps {
+  bookId: string;
+  limit?: number;
+  hideForm?: boolean;
+}
+
+export const BookReviews: React.FC<BookReviewsProps> = ({
+  bookId,
+  limit,
+  hideForm = false,
+}) => {
+  const { reviews, isLoading, actions: ratingActions } = useRatings(bookId);
+  const { me: currentUser, isAuthenticated } = useUser();
+  const [newReview, setNewReview] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReview.trim()) return;
+
+    await ratingActions.createReview(newReview);
+    setNewReview("");
+  };
+
+  const handleDelete = async (reviewId: string) => {
+    await ratingActions.deleteReview(reviewId);
+  };
+
+  if (isLoading)
+    return (
+      <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-primary/60">
+        Loading reviews...
+      </div>
+    );
+
+  const totalReviews = reviews.length;
+  const displayReviews = limit ? reviews.slice(0, limit) : reviews;
+
+  return (
+    <div className="space-y-6">
+      {!hideForm && isAuthenticated && (
+        <form
+          onSubmit={handleSubmit}
+          className="relative"
+        >
+          <textarea
+            value={newReview}
+            onChange={(e) => setNewReview(e.target.value)}
+            placeholder="Write a review..."
+            className="w-full bg-gray-50 dark:bg-primary/5 border border-gray-200 dark:border-primary/20 rounded-md px-4 py-3 text-sm text-foreground placeholder-gray-400 dark:placeholder-primary/30 outline-none focus:border-primary/50 min-h-20 resize-none transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={ratingActions.isSubmittingReview || !newReview.trim()}
+            className="absolute bottom-3 right-3 p-2 bg-primary hover:opacity-90 text-primary-foreground rounded-md transition-colors disabled:opacity-50"
+          >
+            <FiSend className="w-4 h-4" />
+          </button>
+        </form>
+      )}
+
+      <div className="space-y-3">
+        {displayReviews.length === 0 ? (
+          <div className="text-center py-6 text-gray-400 dark:text-primary/30 text-xs italic font-medium">
+            No reviews yet.
+          </div>
+        ) : (
+          displayReviews.map((review: any) => (
+            <div
+              key={review.id}
+              className="bg-white dark:bg-primary/5 rounded-md p-4 border border-gray-100 dark:border-primary/15"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <Link
+                  href={`/profile/${review.user?.username}`}
+                  className="flex items-center space-x-3 transition-opacity hover:opacity-80"
+                >
+                  <div className="w-7 h-7 rounded-md overflow-hidden bg-gray-100 dark:bg-primary/15 relative flex items-center justify-center text-[10px] font-bold shrink-0 border border-gray-200 dark:border-primary/20 text-gray-600 dark:text-primary-foreground">
+                    {review.user?.avatar ? (
+                      <Image
+                        src={review.user.avatar}
+                        alt={review.user.username}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      review.user?.username?.charAt(0).toUpperCase() || "?"
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-[11px] font-bold text-foreground leading-none mb-1">
+                      @{review.user?.username || "user"}
+                    </h4>
+                    <p className="text-[9px] text-gray-400 dark:text-primary/60 font-bold uppercase tracking-wider opacity-60">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </Link>
+                {currentUser?.id === review.userId && (
+                  <button
+                    onClick={() => handleDelete(review.id)}
+                    className="text-gray-400 dark:text-primary/40 hover:text-red-500 transition-colors p-1"
+                  >
+                    <FiTrash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-white/90 leading-relaxed font-medium">
+                {review.content}
+              </p>
+            </div>
+          ))
+        )}
+
+        {limit && totalReviews > limit && (
+          <div className="pt-2 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-primary dark:text-primary/60">
+              And {totalReviews - limit} more reviews
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

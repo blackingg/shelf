@@ -1,0 +1,243 @@
+import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import {
+  FiMoreVertical,
+  FiFile,
+  FiBookOpen,
+  FiTrash2,
+  FiInfo,
+} from "react-icons/fi";
+import { Book } from "@/app/types/book";
+
+interface BooksTableProps {
+  books: (Partial<Book> & { id: string; title: string; author: string })[];
+  onBookClick: (id: string) => void;
+  folderId?: string;
+  onRemoveBook?: (bookId: string) => void;
+  canEdit?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+}
+
+const BooksTable = ({
+  books,
+  onBookClick,
+  folderId,
+  onRemoveBook,
+  canEdit = false,
+  selectedIds = [],
+  onSelectionChange,
+}: BooksTableProps) => {
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveMenuId(null);
+        setMenuPosition(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMenuToggle = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    bookId: string,
+  ) => {
+    e.stopPropagation();
+    if (activeMenuId === bookId) {
+      setActiveMenuId(null);
+      setMenuPosition(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + window.scrollY + 4,
+      right: window.innerWidth - rect.right,
+    });
+    setActiveMenuId(bookId);
+  };
+
+  return (
+    <div className="bg-background rounded-md border border-gray-100 dark:border-white/5">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-100 dark:border-white/5">
+              {onSelectionChange && (
+                <th className="w-12 px-6 py-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={
+                        books.length > 0 && selectedIds.length === books.length
+                      }
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          onSelectionChange(books.map((b) => b.id));
+                        } else {
+                          onSelectionChange([]);
+                        }
+                      }}
+                      className="w-4 h-4 rounded-sm border-gray-200 dark:border-white/10 text-primary focus:ring-primary dark:bg-neutral-800 transition-colors"
+                    />
+                  </div>
+                </th>
+              )}
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-faint uppercase tracking-widest">
+                Resource
+              </th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-faint uppercase tracking-widest">
+                Author
+              </th>
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-faint uppercase tracking-widest">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+            {books.map((book) => (
+              <tr
+                key={book.id}
+                onClick={() => onBookClick(book.id)}
+                className={`hover:bg-wash cursor-pointer transition-colors group ${
+                  selectedIds.includes(book.id)
+                    ? "bg-primary/5 dark:bg-primary/10"
+                    : ""
+                }`}
+              >
+                {onSelectionChange && (
+                  <td
+                    className="px-6 py-4 whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(book.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            onSelectionChange([...selectedIds, book.id]);
+                          } else {
+                            onSelectionChange(
+                              selectedIds.filter((id) => id !== book.id),
+                            );
+                          }
+                        }}
+                        className="w-4 h-4 rounded-sm border-gray-200 dark:border-white/10 text-primary focus:ring-primary dark:bg-neutral-800 transition-colors"
+                      />
+                    </div>
+                  </td>
+                )}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-8 h-10 bg-gray-50 dark:bg-neutral-800 rounded-sm flex-shrink-0 overflow-hidden border border-gray-100 dark:border-white/5">
+                      {book.coverImage ? (
+                        <img
+                          src={book.coverImage}
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <FiFile className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="max-w-[300px]">
+                      <div className="text-sm font-medium text-foreground truncate">
+                        {book.title}
+                      </div>
+                      {book.description && (
+                        <div className="text-[10px] text-faint truncate mt-0.5">
+                          {book.description}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-[13px] text-muted">
+                    {book.author}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <button
+                    onClick={(e) => handleMenuToggle(e, book.id)}
+                    className="p-1.5 hover:bg-white dark:hover:bg-neutral-800 rounded-sm transition-colors text-gray-400 hover:text-primary border border-transparent hover:border-gray-100 dark:hover:border-white/10"
+                  >
+                    <FiMoreVertical className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {activeMenuId && menuPosition && (
+        <div
+          ref={menuRef}
+          style={{
+            position: "fixed",
+            top: menuPosition.top,
+            right: menuPosition.right,
+          }}
+          className="w-48 bg-background border border-gray-100 dark:border-white/10 rounded-md py-1.5 z-[200] shadow-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {(() => {
+            const book = books.find((b) => b.id === activeMenuId);
+            if (!book) return null;
+            return (
+              <>
+                <button
+                  onClick={() => {
+                    onBookClick(book.id);
+                    setActiveMenuId(null);
+                  }}
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
+                >
+                  <FiBookOpen className="w-3.5 h-3.5" />
+                  <span>Read Book</span>
+                </button>
+                <Link
+                  href={`/books/${book.slug}`}
+                  onClick={() => setActiveMenuId(null)}
+                  className="w-full px-4 py-2 text-[12px] text-gray-700 dark:text-neutral-300 hover:bg-wash flex items-center space-x-2 transition-colors"
+                >
+                  <FiInfo className="w-3.5 h-3.5" />
+                  <span>View Details</span>
+                </Link>
+                {canEdit && onRemoveBook && (
+                  <>
+                    <div className="border-t border-gray-50 dark:border-white/5 my-1" />
+                    <button
+                      onClick={() => {
+                        onRemoveBook(book.id);
+                        setActiveMenuId(null);
+                        setMenuPosition(null);
+                      }}
+                      className="w-full px-4 py-2 text-[12px] text-danger hover:bg-danger-wash flex items-center space-x-2 transition-colors"
+                    >
+                      <FiTrash2 className="w-3.5 h-3.5" />
+                      <span>Remove from Folder</span>
+                    </button>
+                  </>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default BooksTable;

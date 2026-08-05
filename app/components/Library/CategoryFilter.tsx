@@ -1,0 +1,41 @@
+"use client";
+
+import { useCategories } from "@/app/services";
+import { Skeleton } from "@/app/components/Layout/Skeleton";
+
+interface CategoryFilterProps {
+  activeCategory: string;
+  onCategoryChange: (slug: string) => void;
+}
+
+export const CategoryFilter: React.FC<CategoryFilterProps> = ({
+  activeCategory,
+  onCategoryChange,
+}) => {
+  const { categories, isLoading } = useCategories();
+
+  return (
+    <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar">
+      {isLoading
+        ? Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className="h-10 w-24 rounded-md"
+            />
+          ))
+        : categories.map((category: any) => (
+            <button
+              key={category.id}
+              onClick={() => onCategoryChange(category.slug)}
+              className={`px-6 py-2.5 flex items-center justify-center rounded-md text-[11px] font-black uppercase tracking-widest transition-all duration-200 border shrink-0 ${
+                activeCategory === category.slug
+                  ? "bg-primary border-primary text-primary-foreground"
+                  : "bg-background border-line-subtle text-muted hover:border-gray-200 dark:hover:border-neutral-700"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+    </div>
+  );
+};

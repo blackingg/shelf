@@ -1,0 +1,866 @@
+import React, {
+  FormEventHandler,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  FiTrash,
+  FiUploadCloud,
+  FiChevronDown,
+  FiChevronUp,
+  FiAlertCircle,
+  FiCheck,
+  FiLayout,
+  FiBookOpen,
+} from "react-icons/fi";
+import { FolderSelectDropdown } from "../Library/FolderSelectDropdown";
+import { prepareForUpload } from "../../helpers";
+import { useNotifications } from "../../context/NotificationContext";
+import { useRouter } from "next/navigation";
+import { useBookActions, useDepartments, useCategories } from "../../services";
+import { useFolderActions, useMeFolders } from "../../services/folders/hooks";
+import { Book, CreateBookRequest } from "../../types/book";
+import processDescription from "../../helpers/processDescription";
+import { createContext } from "react";
+import { FormSelect } from "../Form/FormSelect";
+import { useGetMeQuery } from "@/app/services";
+import { useOpenPanel } from "@openpanel/nextjs";
+
+const processFileType = (fileType: string) => {
+  if (fileType.includes("pdf")) return "PDF";
+  else return "EPUB";
+};
+
+type UploadStatus = "idle" | "uploading" | "success" | "error" | "processing";
+
+type FileStatusItem = {
+  id: string;
+  formDataObject: CreateBookRequest;
+  state: boolean;
+  file: File;
+  uploadStatus: UploadStatus;
+  errorMessage?: string;
+};
+
+type multFileContext = {
+  filesWithMetadataState: FileStatusItem[];
+  updateFilesStatusObject: React.Dispatch<SetStateAction<FileStatusItem[]>>;
+};
+
+const MultipleFileContext = createContext<multFileContext>(
+  {} as multFileContext,
+);
+
+export const useMultipleFiles = () => useContext(MultipleFileContext);
+
+export const MultipleFileProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const [filesWithMetadataState, updateFilesStatusObject] = useState<
+    FileStatusItem[]
+  >([]);
+
+  return (
+    <MultipleFileContext.Provider
+      value={{ filesWithMetadataState, updateFilesStatusObject }}
+    >
+      {children}
+    </MultipleFileContext.Provider>
+  );
+};
+
+export default function MultipleUploadForm({
+  files,
+}: {
+  files: FileList | null;
+}) {
+  const { actions: bookActions } = useBookActions();
+  const { folders, isLoading: isLoadingFolders } = useMeFolders({ limit: 100 });
+  const { actions: folderActions } = useFolderActions();
+  const [targetFolderId, setTargetFolderId] = useState<string | null>(null);
+  const openPanel = useOpenPanel();
+  const { data: user } = useGetMeQuery();
+  const { departments, isLoading: isLoadingDepts } = useDepartments(
+    user?.school?.id ? { school_id: user.school.id } : undefined,
+  );
+  const { categories, isLoading: isLoadingCategories } = useCategories();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  let filesNew = files ? Array.from(files) : null;
+  const [filesToBeUploaded, updateFilesToBeUploaded] = useState<File[] | null>(
+    filesNew,
+  );
+  const [isLoading, updateLoadingState] = useState(false);
+  const { filesWithMetadataState, updateFilesStatusObject } =
+    useMultipleFiles();
+  const { addNotification } = useNotifications();
+  const router = useRouter();
+
+  const [summaryModalState, setSummaryModalState] = useState<{
+    isOpen: boolean;
+    successCount: number;
+    failCount: number;
+    folderName?: string;
+    folderSlug?: string;
+  }>({
+    isOpen: false,
+    successCount: 0,
+    failCount: 0,
+  });
+
+  const toArray = (fileList: FileList) => {
+    return Array.from(fileList);
+  };
+
+  function validateBookToBeUploaded(book: CreateBookRequest) {
+    const { title, author, description, category, pages, department } = book;
+    return (
+      title?.length >= 1 &&
+      author?.length >= 1 &&
+      description?.trim().length >= 10 &&
+      category?.length >= 1 &&
+      (department?.length ?? 0) >= 1 &&
+      pages > 0
+    );
+  }
+
+  const parseIndividualItemData = async (file: File) => {
+    const shape_fake = await prepareForUpload(file);
+    const shapeReal = {
+      ...shape_fake,
+      title: shape_fake.title || file.name.replace(/\.[^/.]+$/, ""),
+      book_file: file,
+      department: "",
+    };
+    try {
+      return shapeReal;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const uploadIndividualItem = async (item: FileStatusItem): Promise<boolean> => {
+    try {
+      if (item.state === true) {
+        // Mark as uploading
+        updateFilesStatusObject((prev) =>
+          prev.map((p) =>
+            p.id === item.id ? { ...p, uploadStatus: "uploading", errorMessage: undefined } : p,
+          ),
+        );
+
+        const result = await bookActions.createBook(item.formDataObject);
+
+        // Add to folder if selected
+        if (targetFolderId && result?.id) {
+          await folderActions.addBookToFolder(
+            targetFolderId,
+            result.id,
+            item.formDataObject.title,
+          );
+        }
+
+        // Mark as success
+        updateFilesStatusObject((prev) =>
+          prev.map((p) =>
+            p.id === item.id ? { ...p, uploadStatus: "success", errorMessage: undefined } : p,
+          ),
+        );
+        return true;
+      } else {
+        updateFilesStatusObject((prev) =>
+          prev.map((p) =>
+            p.id === item.id ? { ...p, uploadStatus: "error", errorMessage: "Missing or invalid metadata" } : p,
+          ),
+        );
+        return false;
+      }
+    } catch (error: any) {
+      const errorMsg = error?.response?.data?.message || error?.message || "Upload failed.";
+      updateFilesStatusObject((prev) =>
+        prev.map((p) =>
+          p.id === item.id ? { ...p, uploadStatus: "error", errorMessage: errorMsg } : p,
+        ),
+      );
+      console.error(error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const doStuff = async () => {
+      if (!filesToBeUploaded || filesToBeUploaded.length === 0) return;
+
+      // Identify which files haven't been processed yet based on a unique temporary key (fingerprint)
+      const getFileFingerprint = (f: File) =>
+        `${f.name}-${f.size}-${f.lastModified || 0}`;
+
+      const processedIdentifiers = new Set(
+        filesWithMetadataState.map((item) => getFileFingerprint(item.file)),
+      );
+
+      const newFiles = filesToBeUploaded.filter(
+        (file) => !processedIdentifiers.has(getFileFingerprint(file)),
+      );
+
+      if (newFiles.length === 0) return;
+
+      // Immediately mark these files as "processing" in the UI with a random ID
+      const processingItems: FileStatusItem[] = newFiles.map((file) => {
+        const randomId =
+          Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+        return {
+          id: randomId,
+          state: false,
+          formDataObject: {
+            title: file.name,
+            author: "",
+            description: "",
+            category: "",
+            pages: 0,
+            book_file: file,
+            coverImage: null,
+          },
+          file: file,
+          uploadStatus: "processing" as UploadStatus,
+        };
+      });
+
+      // Map temporary deduplication key to the new random ID for the subsequent updates
+      const fileToIdMap = new Map(
+        processingItems.map((item) => [getFileFingerprint(item.file), item.id]),
+      );
+
+      updateFilesStatusObject((prev) => [...prev, ...processingItems]);
+
+      // Process each file individually to update its metadata
+      newFiles.forEach(async (file) => {
+        const parsedData = await parseIndividualItemData(file);
+        const fileKey = getFileFingerprint(file);
+        const targetId = fileToIdMap.get(fileKey);
+
+        updateFilesStatusObject((prev) =>
+          prev.map((item) => {
+            if (item.id === targetId) {
+              if (!parsedData) {
+                return { ...item, uploadStatus: "error" };
+              }
+              return {
+                ...item,
+                state: validateBookToBeUploaded(
+                  parsedData as CreateBookRequest,
+                ),
+                formDataObject: parsedData as CreateBookRequest,
+                uploadStatus: "idle" as UploadStatus,
+                errorMessage: undefined,
+              };
+            }
+            return item;
+          }),
+        );
+      });
+    };
+
+    doStuff();
+  }, [filesToBeUploaded]);
+
+  async function uploadAllItems() {
+    if (filesWithMetadataState.some((f) => !f.state)) {
+      addNotification(
+        "error",
+        "Please fix file metadata errors before uploading.",
+      );
+      return;
+    }
+
+    updateLoadingState(true);
+    try {
+      const itemsToUpload = filesWithMetadataState.filter(
+        (f) => f.uploadStatus !== "success",
+      );
+
+      const results = await Promise.all(
+        itemsToUpload.map((file) => uploadIndividualItem(file)),
+      );
+
+      let successCount = 0;
+      let failCount = 0;
+      const successfulIdentifiers = new Set<string>();
+
+      results.forEach((isSuccess, index) => {
+        if (isSuccess) {
+          successCount++;
+          const item = itemsToUpload[index];
+          successfulIdentifiers.add(item.id);
+        } else {
+          failCount++;
+        }
+      });
+
+      const targetFolder = folders.find((f) => f.id === targetFolderId);
+      
+      setSummaryModalState({
+        isOpen: true,
+        successCount,
+        failCount,
+        folderName: targetFolder?.name,
+        folderSlug: targetFolder?.slug,
+      });
+
+      if (successCount > 0) {
+        openPanel.track("bulk_upload_complete");
+        
+        updateFilesStatusObject((prev) =>
+          prev.filter((item) => !successfulIdentifiers.has(item.id)),
+        );
+
+        updateFilesToBeUploaded((prev) => {
+          if (!prev) return null;
+
+          const getFileFingerprint = (f: File) =>
+            `${f.name}-${f.size}-${f.lastModified || 0}`;
+
+          const successfulFileFingerprints = new Set(
+            itemsToUpload
+              .filter((_, index) => results[index] === true)
+              .map((item) => getFileFingerprint(item.file)),
+          );
+
+          return prev.filter(
+            (f) => !successfulFileFingerprints.has(getFileFingerprint(f)),
+          );
+        });
+      }
+    } catch (error) {
+      addNotification("error", "An unexpected error occurred during upload.");
+    } finally {
+      updateLoadingState(false);
+    }
+  }
+
+  const departmentOptions = departments.map((dept: any) => ({
+    value: dept.id,
+    label: dept.name,
+  }));
+  const categoryOptions = categories.map((cat: any) => ({
+    value: cat.name,
+    label: cat.name,
+  }));
+
+  return (
+    <div className="w-full bg-background border border-line-subtle">
+      <div className="p-8 border-b border-line-subtle">
+        <label
+          htmlFor="swag"
+          className="flex flex-col items-center justify-center h-40 border border-dashed border-line hover:border-emerald-500 transition-all cursor-pointer group"
+        >
+          <FiUploadCloud className="text-gray-300 dark:text-neutral-700 text-3xl mb-3 group-hover:text-emerald-500 transition-colors" />
+          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+            Click or Drag More Files
+          </p>
+
+          <input
+            id="swag"
+            type="file"
+            ref={inputRef}
+            className="hidden"
+            multiple={true}
+            onChange={(e) => {
+              if (e.target.files) {
+                const incomingFiles = toArray(e.target.files);
+                updateFilesToBeUploaded((prev) => {
+                  const existing = prev || [];
+                  const getFileFingerprint = (f: File) =>
+                    `${f.name}-${f.size}-${f.lastModified || 0}`;
+                  const existingFingerprints = new Set(
+                    existing.map((f) => getFileFingerprint(f)),
+                  );
+                  const uniqueIncoming = incomingFiles.filter(
+                    (f) => !existingFingerprints.has(getFileFingerprint(f)),
+                  );
+                  return [...existing, ...uniqueIncoming];
+                });
+              }
+            }}
+          />
+        </label>
+      </div>
+
+      <div className="p-8">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+            Files to be Uploaded ({filesWithMetadataState.length})
+          </h2>
+          {filesWithMetadataState.length > 0 && (
+            <button
+              onClick={() => {
+                updateFilesStatusObject([]);
+                updateFilesToBeUploaded([]);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
+              className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors"
+            >
+              Clear All Selection
+            </button>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          {filesWithMetadataState.map(
+            ({ id, file, state, formDataObject, uploadStatus, errorMessage }) => (
+              <FileToBeUploaded
+                key={id}
+                id={id}
+                file={file}
+                uploadStatus={uploadStatus}
+                errorMessage={errorMessage}
+                onDelete={() => {
+                  const removedFromContext = filesWithMetadataState.filter(
+                    (f) => f.id !== id,
+                  );
+                  updateFilesStatusObject(removedFromContext);
+                  const goodFiles = (filesToBeUploaded || []).filter(
+                    (f) =>
+                      file.name !== f.name ||
+                      file.size !== f.size ||
+                      (file.lastModified || 0) !== (f.lastModified || 0),
+                  );
+                  updateFilesToBeUploaded(goodFiles);
+                  if (inputRef.current) inputRef.current.value = "";
+                }}
+                state={state}
+                dataObj={formDataObject}
+                categoryOptions={categoryOptions}
+                departmentOptions={departmentOptions}
+                isLoadingCategories={isLoadingCategories}
+                isLoadingDepts={isLoadingDepts}
+              />
+            ),
+          )}
+        </div>
+
+        <div className="mt-12 flex flex-col md:flex-row md:items-end gap-6 p-8 bg-gray-50/50 dark:bg-neutral-800/20 border border-line-subtle rounded-2xl">
+          <div className="flex-1">
+            <FolderSelectDropdown
+              selectedFolderId={targetFolderId}
+              onSelect={(id) => setTargetFolderId(id)}
+            />
+          </div>
+
+          <button
+            className="px-12 py-4 bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-widest transition-all rounded-sm hover:opacity-90 disabled:opacity-50 disabled:bg-gray-200 dark:disabled:bg-neutral-800 disabled:text-gray-400 flex items-center gap-3"
+            onClick={uploadAllItems}
+            disabled={isLoading || filesWithMetadataState.length === 0}
+          >
+            {isLoading && (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            )}
+            {isLoading
+              ? "Uploading..."
+              : `Start Bulk Upload (${filesWithMetadataState.length} files)`}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FileToBeUploaded({
+  id,
+  file,
+  onDelete,
+  state,
+  dataObj,
+  uploadStatus,
+  errorMessage,
+  categoryOptions,
+  departmentOptions,
+  isLoadingCategories,
+  isLoadingDepts,
+}: {
+  id: string;
+  file: File;
+  onDelete: () => void;
+  state: boolean;
+  dataObj: CreateBookRequest;
+  uploadStatus: UploadStatus;
+  errorMessage?: string;
+  categoryOptions: any[];
+  departmentOptions: any[];
+  isLoadingCategories: boolean;
+  isLoadingDepts: boolean;
+}) {
+  const { updateFilesStatusObject, filesWithMetadataState } =
+    useMultipleFiles();
+  const { data: user } = useGetMeQuery();
+  const [isExpanded, setIsExpanded] = useState(!state);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    title: dataObj.title || "",
+    author: dataObj.author || "",
+    description: dataObj.description || "",
+    publisher: dataObj.publisher || "",
+    publishedYear: dataObj.publishedYear || "",
+    isbn: dataObj.isbn || "",
+    department: dataObj.department || "",
+    category: dataObj.category || "",
+    pages: dataObj.pages || 0,
+    tags: (dataObj.tags || []).join(", "),
+  });
+
+  // Sync form data once processing is complete
+  useEffect(() => {
+    if (
+      uploadStatus === "idle" &&
+      (formData.title === file.name || formData.title === "")
+    ) {
+      setFormData((prev) => ({
+        title: dataObj.title || prev.title,
+        author: dataObj.author || prev.author,
+        description: dataObj.description || prev.description,
+        publisher: dataObj.publisher || prev.publisher,
+        publishedYear: dataObj.publishedYear || prev.publishedYear,
+        isbn: dataObj.isbn || prev.isbn,
+        department: dataObj.department || user?.department?.id || prev.department,
+        category: dataObj.category || prev.category,
+        pages: dataObj.pages || prev.pages,
+        tags: dataObj.tags?.length ? dataObj.tags.join(", ") : prev.tags,
+      }));
+      setIsExpanded(!state);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadStatus, dataObj]);
+
+  const isValid =
+    formData.title.length >= 1 &&
+    formData.author.length >= 1 &&
+    formData.description.trim().length >= 10 &&
+    formData.category.length >= 1 &&
+    formData.department.length >= 1 &&
+    formData.pages > 0;
+
+  useEffect(() => {
+    updateFilesStatusObject((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            formDataObject: {
+              ...item.formDataObject,
+              ...formData,
+              tags: formData.tags
+                .split(",")
+                .map((t: string) => t.trim())
+                .filter(Boolean),
+            },
+            state: isValid,
+          };
+        }
+        return item;
+      }),
+    );
+  }, [formData, isValid, id, updateFilesStatusObject]);
+
+  const handleDone = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (isValid) setIsExpanded(false);
+  };
+
+  const Label = ({ children }: { children: React.ReactNode }) => (
+    <label className="text-[10px] uppercase font-bold tracking-wider text-faint mb-1.5 block">
+      {children}
+    </label>
+  );
+
+  return (
+    <div className="border border-line-subtle bg-gray-50/30 dark:bg-white/5 overflow-hidden transition-all">
+      <div
+        className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/10 transition-colors ${isExpanded ? "border-b border-line-subtle" : ""}`}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div
+            className={`w-2 h-2 rounded-full shrink-0 ${state ? "bg-emerald-500" : "bg-red-500 animate-pulse"}`}
+          />
+          <div className="flex flex-col truncate">
+            <span
+              className={`text-sm font-medium truncate ${state ? "text-foreground" : "text-red-500"}`}
+            >
+              {file.name}
+            </span>
+            <div className="flex items-center gap-3 mt-1">
+              <span className="text-[10px] text-gray-400 uppercase font-medium">
+                {(file.size / 1048576).toFixed(2)} MB
+              </span>
+              <span className="text-gray-200 dark:text-neutral-800">•</span>
+              <span className="text-[10px] text-gray-400 uppercase font-medium">
+                {processFileType(file.type)}
+              </span>
+              {uploadStatus === "processing" && (
+                <>
+                  <span className="text-gray-200 dark:text-neutral-800">•</span>
+                  <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest animate-pulse">
+                    Processing Metadata...
+                  </span>
+                </>
+              )}
+              {uploadStatus === "uploading" && (
+                <>
+                  <span className="text-gray-200 dark:text-neutral-800">•</span>
+                  <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest animate-pulse">
+                    Uploading...
+                  </span>
+                </>
+              )}
+              {uploadStatus === "success" && (
+                <>
+                  <span className="text-gray-200 dark:text-neutral-800">•</span>
+                  <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">
+                    Uploaded
+                  </span>
+                </>
+              )}
+              {uploadStatus === "error" && (
+                <>
+                  <span className="text-gray-200 dark:text-neutral-800">•</span>
+                  <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest">
+                    Failed {errorMessage ? `(${errorMessage})` : ""}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-6 ml-4">
+          {(uploadStatus === "uploading" || uploadStatus === "processing") && (
+            <div
+              className={`w-4 h-4 border-2 ${uploadStatus === "processing" ? "border-blue-500" : "border-emerald-500"} border-t-transparent rounded-full animate-spin`}
+            />
+          )}
+
+          {uploadStatus === "idle" && !state && (
+            <div className="hidden md:flex items-center gap-2 text-red-500">
+              <FiAlertCircle className="text-sm" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                Incomplete
+              </span>
+            </div>
+          )}
+
+          {uploadStatus === "success" && (
+            <FiCheck className="text-emerald-500" />
+          )}
+
+          {uploadStatus === "error" && (
+            <FiAlertCircle className="text-red-500 animate-bounce" />
+          )}
+
+          {uploadStatus === "idle" && state && (
+            <FiCheck className="text-gray-300 dark:text-neutral-700" />
+          )}
+
+          <div className="flex items-center gap-3 border-l border-line-subtle pl-6">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="text-gray-400 hover:text-red-500 transition-colors p-1"
+            >
+              <FiTrash className="text-lg" />
+            </button>
+            <div className="text-gray-300 dark:text-neutral-700">
+              {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={`${isExpanded ? "block" : "hidden"} p-6 bg-background/50`}
+      >
+        <form className="space-y-6" onSubmit={handleDone}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-1">
+              <Label>Title</Label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Author</Label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.author}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, author: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Publisher</Label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.publisher}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    publisher: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormSelect
+              label="Category"
+              icon={<FiLayout />}
+              options={categoryOptions}
+              isLoading={isLoadingCategories}
+              placeholder="Select Category"
+              onChange={(opt: any) =>
+                setFormData((prev) => ({ ...prev, category: opt?.value || "" }))
+              }
+              value={
+                categoryOptions.find(
+                  (opt: any) => opt.value === formData.category,
+                ) || null
+              }
+            />
+            <FormSelect
+              label="Department"
+              icon={<FiBookOpen />}
+              options={departmentOptions}
+              isLoading={isLoadingDepts}
+              placeholder="Select Department"
+              onChange={(opt: any) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  department: opt?.value || "",
+                }))
+              }
+              value={
+                departmentOptions.find(
+                  (opt: any) => opt.value === formData.department,
+                ) || null
+              }
+            />
+            <div className="space-y-1">
+              <Label>Year of Publication</Label>
+              <input
+                type="text"
+                maxLength={4}
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.publishedYear}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    publishedYear: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-1">
+              <Label>ISBN</Label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.isbn}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isbn: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Pages</Label>
+              <input
+                type="number"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.pages}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    pages: parseInt(e.target.value) || 0,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Label>Tags</Label>
+                <span className="text-[10px] text-gray-400 font-medium">
+                  Separate with commas
+                </span>
+              </div>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all"
+                value={formData.tags}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, tags: e.target.value }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label>Short Description</Label>
+            <textarea
+              rows={3}
+              className="w-full px-3 py-2 bg-transparent border border-line text-sm outline-none focus:border-emerald-500 transition-all resize-none"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          {!isValid && (
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-red-500 bg-red-50 dark:bg-red-900/10 px-4 py-3 border border-red-500/20">
+              <FiAlertCircle className="text-sm shrink-0" />
+              <span>
+                Please fill all required fields:
+                {!formData.title && " Title,"}
+                {!formData.author && " Author,"}
+                {formData.description.trim().length < 10 &&
+                  " Description (min 10 chars),"}
+                {!formData.category && " Category,"}
+                {!formData.department && " Department,"}
+                {formData.pages <= 0 && " Page count"}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={handleDone}
+              disabled={!isValid}
+              className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold uppercase tracking-widest hover:bg-primary dark:hover:bg-primary hover:text-primary-foreground transition-all rounded-sm disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-gray-900 dark:disabled:hover:bg-white"
+            >
+              Done
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,129 @@
+"use client";
+import React, { useState, useEffect, useCallback } from "react";
+import { ReaderHeader } from "./ReaderHeader";
+import { ReaderFooter } from "./ReaderFooter";
+import { TableOfContentsPanel } from "./TableOfContentsPanel";
+import { useReader } from "./ReaderContext";
+
+interface ReaderLayoutProps {
+  /** Title shown in the header */
+  title: string;
+  /** Subtitle shown below the title (e.g. author name) */
+  subtitle?: string;
+  /** Prefix shown before the title in lighter text (e.g. "Reviewing:") */
+  titlePrefix?: string;
+  /** Called when user navigates to the next page */
+  onNextPage: () => void;
+  /** Called when user navigates to the previous page */
+  onPrevPage: () => void;
+  /** Called when user jumps to a specific page */
+  onPageChange?: (page: number) => void;
+  /** The main content to render in the reader area */
+  children: React.ReactNode;
+  /** Extra action buttons rendered in the header (e.g. moderator review panel toggle) */
+  extraHeaderActions?: React.ReactNode;
+  /** Extra side panels or overlays rendered alongside the content area */
+  extraPanels?: React.ReactNode;
+  /** Whether the content area should shrink for a side panel (e.g. moderator review panel) */
+  contentShrink?: boolean;
+}
+
+export function ReaderLayout({
+  title,
+  subtitle,
+  titlePrefix,
+  onNextPage,
+  onPrevPage,
+  onPageChange,
+  children,
+  extraHeaderActions,
+  extraPanels,
+  contentShrink = false,
+}: ReaderLayoutProps) {
+  const {
+    fontSize,
+    currentTheme,
+    format,
+    isTableOfContentsOpen,
+    currentPage,
+    totalPages,
+  } = useReader();
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+
+  const toggleFullScreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        setIsFullScreen(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        onNextPage();
+      } else if (e.key === "ArrowLeft") {
+        onPrevPage();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onNextPage, onPrevPage]);
+
+  // Determine if Table of Contents is pushing content
+  const shouldPushContentForTableOfContents = isTableOfContentsOpen;
+
+  return (
+    <div
+      className={`h-screen flex flex-col overflow-hidden transition-colors duration-300 ${currentTheme.bg}`}
+    >
+      <ReaderHeader
+        title={title}
+        subtitle={subtitle}
+        titlePrefix={titlePrefix}
+        showControls={showControls}
+        isFullScreen={isFullScreen}
+        onToggleFullScreen={toggleFullScreen}
+        extraActions={extraHeaderActions}
+      />
+
+      <TableOfContentsPanel />
+
+      <div className="flex flex-1 relative overflow-hidden">
+        <main
+          className={`flex-1 w-full mx-auto cursor-text transition-all duration-300 ${
+            format === "pdf" || format === "epub"
+              ? "overflow-hidden"
+              : "overflow-y-auto px-6 py-8 md:py-16 custom-scrollbar reader-scroll"
+          } ${contentShrink ? "md:pr-80" : ""} ${shouldPushContentForTableOfContents ? "md:pl-80" : ""}`}
+          onClick={() => setShowControls(!showControls)}
+        >
+          <div
+            className={`${format === "pdf" ? "max-w-full " : "max-w-[85vw]"} mx-auto h-full`}
+            style={{
+              fontSize: format === "epub" ? `${fontSize}px` : undefined,
+            }}
+          >
+            {children}
+          </div>
+        </main>
+
+        {extraPanels}
+      </div>
+
+      <ReaderFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        showControls={showControls}
+        onNextPage={onNextPage}
+        onPrevPage={onPrevPage}
+        onPageChange={onPageChange}
+      />
+    </div>
+  );
+}

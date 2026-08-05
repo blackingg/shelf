@@ -1,0 +1,180 @@
+"use client";
+import { useState, use, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import CategorySkeleton from "@/app/components/Skeletons/CategorySkeleton";
+import { BookDetailPanel } from "@/app/components/Library/BookDetailPanel";
+import { BackButton } from "@/app/components/Layout/BackButton";
+import { FiSearch, FiLayers, FiArrowLeft } from "react-icons/fi";
+import { BookPreview } from "@/app/types/book";
+import { useBooksByCategory } from "@/app/services";
+import { PaginatedBookGrid } from "@/app/components/Library/PaginatedBookGrid";
+import { SortFilter } from "@/app/components/Library/SortFilter";
+import { useResponsiveLimit } from "@/app/hooks/useResponsiveLimit";
+
+export default function CategoryClient({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  const resolvedParams = use(params);
+  const slug = resolvedParams.category;
+  const router = useRouter();
+
+  const [selectedBook, setSelectedBook] = useState<BookPreview | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState("rating");
+  const pageSize = useResponsiveLimit({ base: 2, md: 4, lg: 5 }, 3, 15);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const commonBooksParams = {
+    q: debouncedSearch,
+    page,
+    limit: pageSize,
+    sort_by: sortBy as any,
+    order: "desc" as const,
+  };
+
+  const {
+    category: categoryView,
+    books,
+    totalPages,
+    total: totalBooks,
+    isLoading: isLoadingBooks,
+    isFetching: isFetchingBooks,
+  } = useBooksByCategory(slug, commonBooksParams);
+
+  const isLoadingCategory = isLoadingBooks;
+
+  return (
+    <div className="flex-1 flex flex-col">
+      <main className="flex-1 p-4 md:p-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6 md:mb-10">
+            <BackButton />
+          </div>
+
+          {isLoadingCategory && !categoryView ? (
+            <div className="">
+              <CategorySkeleton />
+            </div>
+          ) : !categoryView ? (
+            <div className="border border-line rounded-md bg-background px-6 py-10 sm:px-8 sm:py-12">
+              <div className="max-w-xl text-left space-y-5">
+                <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>404 category missing</span>
+                </div>
+
+                <h2 className="text-2xl font-medium text-foreground">
+                  Category Not Found
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                  The category you are looking for does not exist.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => router.push("/discover")}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-sm text-sm font-medium transition-colors hover:opacity-90 active:opacity-100"
+                  >
+                    <FiSearch className="w-4 h-4" />
+                    Explore Library
+                  </button>
+                  <button
+                    onClick={() => router.back()}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-gray-200 dark:border-neutral-700 bg-background text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-wash transition-colors"
+                  >
+                    <FiArrowLeft className="w-4 h-4" />
+                    Go Back
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6 md:mb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between lg:gap-10">
+                  <div className="max-w-3xl">
+                    <p className="hidden lg:block text-[11px] font-bold text-primary uppercase tracking-[0.3em] mb-4">
+                      Community Library
+                    </p>
+                    <h1 className="text-xl md:text-4xl lg:text-6xl font-black text-foreground mb-0 lg:mb-6 tracking-tight leading-tight text-balance">
+                      {categoryView.name}
+                    </h1>
+                    <p className="hidden lg:block text-gray-500 dark:text-neutral-500 text-lg font-medium leading-relaxed max-w-2xl">
+                      {categoryView.description ||
+                        `Explore our extensive library of community-curated resources for ${categoryView.name}.`}
+                    </p>
+                  </div>
+
+                  <div className="hidden lg:flex items-center gap-4 bg-gray-50/50 dark:bg-neutral-900/40 p-5 rounded-md lg:border border-line-subtle min-w-[200px]">
+                    <div className="w-12 h-12 rounded-md bg-white dark:bg-neutral-800 flex items-center justify-center border border-gray-100 dark:border-neutral-700/50 shadow-sm">
+                      <FiLayers className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <span className="block text-3xl font-black text-foreground tracking-tighter">
+                        {totalBooks || 0}
+                      </span>
+                      <span className="text-[10px] font-bold uppercase text-faint tracking-widest">
+                        Resources
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row items-center gap-4 mb-8 md:mb-16">
+                <div className="relative w-full md:w-96 group">
+                  <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search folder..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-background border border-line-subtle rounded-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground transition-all text-sm font-bold tracking-tight"
+                  />
+                </div>
+
+                <SortFilter
+                  value={sortBy}
+                  onValueChange={setSortBy}
+                  options={[
+                    { value: "rating", label: "Top Rated" },
+                    { value: "createdAt", label: "Recently Added" },
+                    { value: "title", label: "Alphabetical" },
+                  ]}
+                />
+              </div>
+
+              <PaginatedBookGrid
+                books={books}
+                isLoading={isFetchingBooks}
+                totalPages={totalPages}
+                currentPage={page}
+                onPageChange={setPage}
+                onBookClick={(book) => setSelectedBook(book)}
+                pageSize={pageSize}
+                emptyMessage="No resources found matching your search."
+              />
+            </>
+          )}
+        </div>
+      </main>
+
+      <BookDetailPanel
+        book={selectedBook!}
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
+    </div>
+  );
+}

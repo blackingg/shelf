@@ -1,0 +1,92 @@
+import { FiFolder } from "react-icons/fi";
+import { FolderCard, FolderCardSkeleton } from "./FolderCard";
+import { Folder, Collaborator } from "@/app/types/folder";
+
+interface FolderGridProps {
+  folders: (Folder & { collaborator?: Collaborator })[];
+  onFolderClick: (folder: Folder) => void;
+  onFolderEdit?: (folder: Folder) => void;
+  onFolderDelete?: (folder: Folder) => void;
+  onFolderMove?: (folder: Folder) => void;
+  showActions?: boolean;
+  emptyMessage?: string;
+  isLoading?: boolean;
+  skeletonCount?: number;
+  className?: string;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+}
+
+export const FolderGrid: React.FC<FolderGridProps> = ({
+  folders,
+  onFolderClick,
+  onFolderEdit,
+  onFolderDelete,
+  onFolderMove,
+  showActions = false,
+  emptyMessage = "No folders yet",
+  isLoading = false,
+  skeletonCount = 8,
+  className = "",
+  selectedIds = [],
+  onSelectionChange,
+}) => {
+  if (isLoading && folders.length === 0) {
+    return (
+      <div
+        className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}
+      >
+        <FolderCardSkeleton count={skeletonCount} />
+      </div>
+    );
+  }
+
+  if (folders.length === 0) {
+    return (
+      <div
+        className={`min-h-[50vh] flex items-center justify-center ${className}`}
+      >
+        <div className="text-center py-16">
+          <div className="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden text-faint">
+            <FiFolder className="w-8 h-8" />
+          </div>
+          <p className="text-muted text-lg">
+            {emptyMessage}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}
+    >
+      {folders.map((folder) => (
+        <FolderCard
+          key={folder.id}
+          folder={folder}
+          onClick={() => onFolderClick(folder)}
+          onEdit={() => onFolderEdit?.(folder)}
+          onDelete={() => onFolderDelete?.(folder)}
+          onMove={() => onFolderMove?.(folder)}
+          showActions={showActions}
+          isSelected={selectedIds.includes(folder.id)}
+          onSelect={
+            onSelectionChange
+              ? (selected) => {
+                  if (selected) {
+                    onSelectionChange([...selectedIds, folder.id]);
+                  } else {
+                    onSelectionChange(
+                      selectedIds.filter((id) => id !== folder.id),
+                    );
+                  }
+                }
+              : undefined
+          }
+        />
+      ))}
+    </div>
+  );
+};
