@@ -5,7 +5,7 @@
   <h1>Shelf – Student Resource Hub</h1>
   <p>
     <strong>The Future of Digital Libraries</strong>
-  </p>
+  </p> 
   
   ![License](https://img.shields.io/badge/license-MIT-blue.svg)
   ![Next.js](https://img.shields.io/badge/Next.js-16.0-black)
