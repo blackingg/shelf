@@ -152,9 +152,13 @@ const withPWA = withPWAInit({
 // Static, zero-maintenance security headers. A Content-Security-Policy is
 // intentionally omitted for now — it would need per-origin upkeep on every new
 // third-party integration. These headers require no such maintenance.
+//
+// X-Frame-Options is deliberately absent: Shelf is embeddable in iframes by any
+// origin. If framing ever needs to be restricted to specific partners, add a
+// `Content-Security-Policy: frame-ancestors ...` header rather than
+// reintroducing X-Frame-Options, which cannot express an allowlist.
 const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
