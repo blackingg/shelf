@@ -10,10 +10,10 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
+    const environment = process.env.NODE_ENV || "development";
     const backendRes = await fetch(`${API_BASE}/auth/google`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${environment === "development" ? process.env.AUTH_KEY_DEV : process.env.AUTH_KEY_PROD}` },
       body: JSON.stringify(body),
     });
 
