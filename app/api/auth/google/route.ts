@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const environment = process.env.NODE_ENV || "development";
     const backendRes = await fetch(`${API_BASE}/auth/google`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${environment === "development" ? process.env.AUTH_KEY_DEV : process.env.AUTH_KEY_PROD}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${environment === "development" ? process.env.OAUTH_SECURITY_KEY_DEV : process.env.OAUTH_SECURITY_KEY_PROD}` },
       body: JSON.stringify(body),
     });
 
